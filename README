@@ -1,0 +1,19 @@
+How to install Gray:
+
+1. If glut libraries are not installed:
+
+sudo apt-get install freeglut3 freeglut3-dev
+
+2. If zlib not installed:
+
+sudo apt-get zlib1g-dev
+
+3. Compile program:
+
+from Gray home directory
+
+source GRAY_ENVIRONMENT_VARIABLES.sh
+cd workspace
+source buildGray.csh
+
+4. Executable code is workspace/RayTraceKd/debug/Gray. A symbolic link is also created in the Gray home directory

@@ -1,0 +1,44 @@
+# set background color to near gray
+b 0.9 0.9 0.9
+# setup view settings for rendering
+v
+from 0 0 -30
+up 0 1 0
+angle 35
+hither -100.0
+at 0.0 0.0 0.0
+resolution 256 256
+# create two bright white lightsources
+l 0.0 20.0 -1.0 0.3 0.3 0.3
+l 0.0 -20.0 -1.0 0.3 0.3 0.3
+l 0.0 0.0 0.0 0.3 0.3 0.3
+# create water cylinder
+m 0
+cyl_src 0.0 0.0 0.0 0.0 0.0 1.0 0.01 68 2.7027
+# set the simulation time to be 5 seconds
+time 10.0
+m 2
+color 0.2 0.1 0.1  0.2 0.0 0.0 1.0 1.0 1.0 0.5 0.5 1.0 0.0 0.0 0.0 1.05
+push
+t -2.0 -5.0 0.0
+repeat 1 1 1 1.0 1.0 1.3 0.99 0.99 1.0
+# repeat 8 2 80 1.0 1.0 0.1 0.99 0.99 0.09
+pop
+push
+raxis 0.0 0.0 1.0 90
+t -5.0 0.0 0.0
+repeat 8 2 8 1.0 1.0 1.0 0.99 0.99 0.99
+# repeat 8 2 80 1.0 1.0 0.1 0.99 0.99 0.09
+pop
+push
+raxis 0.0 0.0 1.0 180
+t -0.0 3.0 0.0
+repeat 8 2 8 1.0 1.0 1.0 0.99 0.99 0.99
+# repeat 8 2 80 1.0 1.0 0.1 0.99 0.99 0.09
+pop
+push
+raxis 0.0 0.0 1.0 90
+t 3.0 -2.0 0.0
+repeat 8 2 8 1.0 1.0 1.0 0.99 0.99 0.99
+# repeat 8 2 80 1.0 1.0 0.1 0.99 0.99 0.09
+pop

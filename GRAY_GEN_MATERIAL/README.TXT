@@ -1,0 +1,1 @@
+This will generate a GRAY material look-up table based on the file Gray_Materials.txt. This file will only run on the CLIENTS WRAP[1-8] because g77 is only installed on the clients and not on burrito.

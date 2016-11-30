@@ -1,0 +1,17 @@
+#name         Chemical Formula   Density       Sensitive   Gray_Number
+# NO NEWLINE AT END OF FILE !!
+# MAX NUMBER OF FILES = 50
+# Elements/Compounds are CASE SeNsiTiVe !!!!!!!!!!
+air           N2                    1.2E-3        0            0      
+al            Al                    2.7           0            1
+bgo           Bi12GeO20             7.13          1            2 
+lead          Pb                   11.35          0            3
+lso           Lu2SiO5               7.4           1            4
+tungsten      W                    19.3           0            5
+water         H2O                   0.9982        0            6
+czt           Cd8Zn2Te10            5.78          1            7
+alumina       Al2O3                 3.69          0            8
+lyso          Lu16Y4Si10O50         7.1           1            9
+silicon	      Si		    2.33          0           10 
+PEI          C37H24O6N2              1.27          1           11
+PCB          Si5O17Cu26C24H24BNaKZn  3.683         1          12
