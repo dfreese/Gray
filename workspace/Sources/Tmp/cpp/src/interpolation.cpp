@@ -43,28 +43,34 @@ IDW interpolant.
 _idwinterpolant_owner::_idwinterpolant_owner()
 {
     p_struct = (alglib_impl::idwinterpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::idwinterpolant), NULL);
-    if( p_struct==NULL )
+    if( p_struct==NULL ) {
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_idwinterpolant_init(p_struct, NULL, ae_false) )
+    }
+    if( !alglib_impl::_idwinterpolant_init(p_struct, NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
 }
 
 _idwinterpolant_owner::_idwinterpolant_owner(const _idwinterpolant_owner &rhs)
 {
     p_struct = (alglib_impl::idwinterpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::idwinterpolant), NULL);
-    if( p_struct==NULL )
+    if( p_struct==NULL ) {
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_idwinterpolant_init_copy(p_struct, const_cast<alglib_impl::idwinterpolant*>(rhs.p_struct), NULL, ae_false) )
+    }
+    if( !alglib_impl::_idwinterpolant_init_copy(p_struct, const_cast<alglib_impl::idwinterpolant*>(rhs.p_struct), NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
 }
 
 _idwinterpolant_owner& _idwinterpolant_owner::operator=(const _idwinterpolant_owner &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
+    }
     alglib_impl::_idwinterpolant_clear(p_struct);
-    if( !alglib_impl::_idwinterpolant_init_copy(p_struct, const_cast<alglib_impl::idwinterpolant*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_idwinterpolant_init_copy(p_struct, const_cast<alglib_impl::idwinterpolant*>(rhs.p_struct), NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
     return *this;
 }
 
@@ -83,18 +89,19 @@ alglib_impl::idwinterpolant* _idwinterpolant_owner::c_ptr() const
 {
     return const_cast<alglib_impl::idwinterpolant*>(p_struct);
 }
-idwinterpolant::idwinterpolant() : _idwinterpolant_owner() 
+idwinterpolant::idwinterpolant() : _idwinterpolant_owner()
 {
 }
 
-idwinterpolant::idwinterpolant(const idwinterpolant &rhs):_idwinterpolant_owner(rhs) 
+idwinterpolant::idwinterpolant(const idwinterpolant &rhs):_idwinterpolant_owner(rhs)
 {
 }
 
 idwinterpolant& idwinterpolant::operator=(const idwinterpolant &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
+    }
     _idwinterpolant_owner::operator=(rhs);
     return *this;
 }
@@ -121,18 +128,13 @@ double idwcalc(const idwinterpolant &z, const real_1d_array &x)
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         double result = alglib_impl::idwcalc(const_cast<alglib_impl::idwinterpolant*>(z.c_ptr()), const_cast<alglib_impl::ae_vector*>(x.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -196,18 +198,13 @@ void idwbuildmodifiedshepard(const real_2d_array &xy, const ae_int_t n, const ae
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::idwbuildmodifiedshepard(const_cast<alglib_impl::ae_matrix*>(xy.c_ptr()), n, nx, d, nq, nw, const_cast<alglib_impl::idwinterpolant*>(z.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -243,18 +240,13 @@ void idwbuildmodifiedshepardr(const real_2d_array &xy, const ae_int_t n, const a
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::idwbuildmodifiedshepardr(const_cast<alglib_impl::ae_matrix*>(xy.c_ptr()), n, nx, r, const_cast<alglib_impl::idwinterpolant*>(z.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -326,18 +318,13 @@ void idwbuildnoisy(const real_2d_array &xy, const ae_int_t n, const ae_int_t nx,
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::idwbuildnoisy(const_cast<alglib_impl::ae_matrix*>(xy.c_ptr()), n, nx, d, nq, nw, const_cast<alglib_impl::idwinterpolant*>(z.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -348,28 +335,34 @@ Barycentric interpolant.
 _barycentricinterpolant_owner::_barycentricinterpolant_owner()
 {
     p_struct = (alglib_impl::barycentricinterpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::barycentricinterpolant), NULL);
-    if( p_struct==NULL )
+    if( p_struct==NULL ) {
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_barycentricinterpolant_init(p_struct, NULL, ae_false) )
+    }
+    if( !alglib_impl::_barycentricinterpolant_init(p_struct, NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
 }
 
 _barycentricinterpolant_owner::_barycentricinterpolant_owner(const _barycentricinterpolant_owner &rhs)
 {
     p_struct = (alglib_impl::barycentricinterpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::barycentricinterpolant), NULL);
-    if( p_struct==NULL )
+    if( p_struct==NULL ) {
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_barycentricinterpolant_init_copy(p_struct, const_cast<alglib_impl::barycentricinterpolant*>(rhs.p_struct), NULL, ae_false) )
+    }
+    if( !alglib_impl::_barycentricinterpolant_init_copy(p_struct, const_cast<alglib_impl::barycentricinterpolant*>(rhs.p_struct), NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
 }
 
 _barycentricinterpolant_owner& _barycentricinterpolant_owner::operator=(const _barycentricinterpolant_owner &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
+    }
     alglib_impl::_barycentricinterpolant_clear(p_struct);
-    if( !alglib_impl::_barycentricinterpolant_init_copy(p_struct, const_cast<alglib_impl::barycentricinterpolant*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_barycentricinterpolant_init_copy(p_struct, const_cast<alglib_impl::barycentricinterpolant*>(rhs.p_struct), NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
     return *this;
 }
 
@@ -388,18 +381,19 @@ alglib_impl::barycentricinterpolant* _barycentricinterpolant_owner::c_ptr() cons
 {
     return const_cast<alglib_impl::barycentricinterpolant*>(p_struct);
 }
-barycentricinterpolant::barycentricinterpolant() : _barycentricinterpolant_owner() 
+barycentricinterpolant::barycentricinterpolant() : _barycentricinterpolant_owner()
 {
 }
 
-barycentricinterpolant::barycentricinterpolant(const barycentricinterpolant &rhs):_barycentricinterpolant_owner(rhs) 
+barycentricinterpolant::barycentricinterpolant(const barycentricinterpolant &rhs):_barycentricinterpolant_owner(rhs)
 {
 }
 
 barycentricinterpolant& barycentricinterpolant::operator=(const barycentricinterpolant &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
+    }
     _barycentricinterpolant_owner::operator=(rhs);
     return *this;
 }
@@ -428,18 +422,13 @@ double barycentriccalc(const barycentricinterpolant &b, const double t)
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         double result = alglib_impl::barycentriccalc(const_cast<alglib_impl::barycentricinterpolant*>(b.c_ptr()), t, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -470,18 +459,13 @@ void barycentricdiff1(const barycentricinterpolant &b, const double t, double &f
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::barycentricdiff1(const_cast<alglib_impl::barycentricinterpolant*>(b.c_ptr()), t, &f, &df, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -511,18 +495,13 @@ void barycentricdiff2(const barycentricinterpolant &b, const double t, double &f
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::barycentricdiff2(const_cast<alglib_impl::barycentricinterpolant*>(b.c_ptr()), t, &f, &df, &d2f, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -544,18 +523,13 @@ void barycentriclintransx(const barycentricinterpolant &b, const double ca, cons
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::barycentriclintransx(const_cast<alglib_impl::barycentricinterpolant*>(b.c_ptr()), ca, cb, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -578,18 +552,13 @@ void barycentriclintransy(const barycentricinterpolant &b, const double ca, cons
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::barycentriclintransy(const_cast<alglib_impl::barycentricinterpolant*>(b.c_ptr()), ca, cb, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -613,18 +582,13 @@ void barycentricunpack(const barycentricinterpolant &b, ae_int_t &n, real_1d_arr
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::barycentricunpack(const_cast<alglib_impl::barycentricinterpolant*>(b.c_ptr()), &n, const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_vector*>(w.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -650,18 +614,13 @@ void barycentricbuildxyw(const real_1d_array &x, const real_1d_array &y, const r
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::barycentricbuildxyw(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_vector*>(w.c_ptr()), n, const_cast<alglib_impl::barycentricinterpolant*>(b.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -697,18 +656,13 @@ void barycentricbuildfloaterhormann(const real_1d_array &x, const real_1d_array 
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::barycentricbuildfloaterhormann(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, d, const_cast<alglib_impl::barycentricinterpolant*>(b.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -741,18 +695,13 @@ void polynomialbar2cheb(const barycentricinterpolant &p, const double a, const d
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::polynomialbar2cheb(const_cast<alglib_impl::barycentricinterpolant*>(p.c_ptr()), a, b, const_cast<alglib_impl::ae_vector*>(t.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -781,18 +730,13 @@ void polynomialcheb2bar(const real_1d_array &t, const ae_int_t n, const double a
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::polynomialcheb2bar(const_cast<alglib_impl::ae_vector*>(t.c_ptr()), n, a, b, const_cast<alglib_impl::barycentricinterpolant*>(p.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -819,24 +763,19 @@ OUTPUT PARAMETERS
 *************************************************************************/
 void polynomialcheb2bar(const real_1d_array &t, const double a, const double b, barycentricinterpolant &p)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
 
     n = t.length();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::polynomialcheb2bar(const_cast<alglib_impl::ae_vector*>(t.c_ptr()), n, a, b, const_cast<alglib_impl::barycentricinterpolant*>(p.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -885,18 +824,13 @@ void polynomialbar2pow(const barycentricinterpolant &p, const double c, const do
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::polynomialbar2pow(const_cast<alglib_impl::barycentricinterpolant*>(p.c_ptr()), c, s, const_cast<alglib_impl::ae_vector*>(a.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -943,26 +877,21 @@ NOTES:
 *************************************************************************/
 void polynomialbar2pow(const barycentricinterpolant &p, real_1d_array &a)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     double c;
     double s;
 
     c = 0;
     s = 1;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::polynomialbar2pow(const_cast<alglib_impl::barycentricinterpolant*>(p.c_ptr()), c, s, const_cast<alglib_impl::ae_vector*>(a.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -1007,18 +936,13 @@ void polynomialpow2bar(const real_1d_array &a, const ae_int_t n, const double c,
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::polynomialpow2bar(const_cast<alglib_impl::ae_vector*>(a.c_ptr()), n, c, s, const_cast<alglib_impl::barycentricinterpolant*>(p.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -1061,7 +985,7 @@ NOTES:
 *************************************************************************/
 void polynomialpow2bar(const real_1d_array &a, barycentricinterpolant &p)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
     double c;
     double s;
@@ -1070,19 +994,14 @@ void polynomialpow2bar(const real_1d_array &a, barycentricinterpolant &p)
     c = 0;
     s = 1;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::polynomialpow2bar(const_cast<alglib_impl::ae_vector*>(a.c_ptr()), n, c, s, const_cast<alglib_impl::barycentricinterpolant*>(p.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -1108,18 +1027,13 @@ void polynomialbuild(const real_1d_array &x, const real_1d_array &y, const ae_in
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::polynomialbuild(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, const_cast<alglib_impl::barycentricinterpolant*>(p.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -1143,25 +1057,21 @@ OUTPUT PARAMETERS
 *************************************************************************/
 void polynomialbuild(const real_1d_array &x, const real_1d_array &y, barycentricinterpolant &p)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
-    if( (x.length()!=y.length()))
+    if( (x.length()!=y.length())) {
         throw ap_error("Error while calling 'polynomialbuild': looks like one of arguments has wrong size");
+    }
     n = x.length();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::polynomialbuild(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, const_cast<alglib_impl::barycentricinterpolant*>(p.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -1189,18 +1099,13 @@ void polynomialbuildeqdist(const double a, const double b, const real_1d_array &
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::polynomialbuildeqdist(a, b, const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, const_cast<alglib_impl::barycentricinterpolant*>(p.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -1226,24 +1131,19 @@ OUTPUT PARAMETERS
 *************************************************************************/
 void polynomialbuildeqdist(const double a, const double b, const real_1d_array &y, barycentricinterpolant &p)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
 
     n = y.length();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::polynomialbuildeqdist(a, b, const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, const_cast<alglib_impl::barycentricinterpolant*>(p.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -1272,18 +1172,13 @@ void polynomialbuildcheb1(const double a, const double b, const real_1d_array &y
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::polynomialbuildcheb1(a, b, const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, const_cast<alglib_impl::barycentricinterpolant*>(p.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -1310,24 +1205,19 @@ OUTPUT PARAMETERS
 *************************************************************************/
 void polynomialbuildcheb1(const double a, const double b, const real_1d_array &y, barycentricinterpolant &p)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
 
     n = y.length();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::polynomialbuildcheb1(a, b, const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, const_cast<alglib_impl::barycentricinterpolant*>(p.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -1356,18 +1246,13 @@ void polynomialbuildcheb2(const double a, const double b, const real_1d_array &y
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::polynomialbuildcheb2(a, b, const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, const_cast<alglib_impl::barycentricinterpolant*>(p.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -1394,24 +1279,19 @@ OUTPUT PARAMETERS
 *************************************************************************/
 void polynomialbuildcheb2(const double a, const double b, const real_1d_array &y, barycentricinterpolant &p)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
 
     n = y.length();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::polynomialbuildcheb2(a, b, const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, const_cast<alglib_impl::barycentricinterpolant*>(p.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -1444,18 +1324,13 @@ double polynomialcalceqdist(const double a, const double b, const real_1d_array 
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         double result = alglib_impl::polynomialcalceqdist(a, b, const_cast<alglib_impl::ae_vector*>(f.c_ptr()), n, t, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -1486,24 +1361,19 @@ IMPORTANT
 *************************************************************************/
 double polynomialcalceqdist(const double a, const double b, const real_1d_array &f, const double t)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
 
     n = f.length();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         double result = alglib_impl::polynomialcalceqdist(a, b, const_cast<alglib_impl::ae_vector*>(f.c_ptr()), n, t, &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -1538,18 +1408,13 @@ double polynomialcalccheb1(const double a, const double b, const real_1d_array &
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         double result = alglib_impl::polynomialcalccheb1(a, b, const_cast<alglib_impl::ae_vector*>(f.c_ptr()), n, t, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -1582,24 +1447,19 @@ IMPORTANT
 *************************************************************************/
 double polynomialcalccheb1(const double a, const double b, const real_1d_array &f, const double t)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
 
     n = f.length();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         double result = alglib_impl::polynomialcalccheb1(a, b, const_cast<alglib_impl::ae_vector*>(f.c_ptr()), n, t, &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -1634,18 +1494,13 @@ double polynomialcalccheb2(const double a, const double b, const real_1d_array &
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         double result = alglib_impl::polynomialcalccheb2(a, b, const_cast<alglib_impl::ae_vector*>(f.c_ptr()), n, t, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -1678,24 +1533,19 @@ IMPORTANT
 *************************************************************************/
 double polynomialcalccheb2(const double a, const double b, const real_1d_array &f, const double t)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
 
     n = f.length();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         double result = alglib_impl::polynomialcalccheb2(a, b, const_cast<alglib_impl::ae_vector*>(f.c_ptr()), n, t, &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -1706,28 +1556,34 @@ double polynomialcalccheb2(const double a, const double b, const real_1d_array &
 _spline1dinterpolant_owner::_spline1dinterpolant_owner()
 {
     p_struct = (alglib_impl::spline1dinterpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::spline1dinterpolant), NULL);
-    if( p_struct==NULL )
+    if( p_struct==NULL ) {
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_spline1dinterpolant_init(p_struct, NULL, ae_false) )
+    }
+    if( !alglib_impl::_spline1dinterpolant_init(p_struct, NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
 }
 
 _spline1dinterpolant_owner::_spline1dinterpolant_owner(const _spline1dinterpolant_owner &rhs)
 {
     p_struct = (alglib_impl::spline1dinterpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::spline1dinterpolant), NULL);
-    if( p_struct==NULL )
+    if( p_struct==NULL ) {
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_spline1dinterpolant_init_copy(p_struct, const_cast<alglib_impl::spline1dinterpolant*>(rhs.p_struct), NULL, ae_false) )
+    }
+    if( !alglib_impl::_spline1dinterpolant_init_copy(p_struct, const_cast<alglib_impl::spline1dinterpolant*>(rhs.p_struct), NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
 }
 
 _spline1dinterpolant_owner& _spline1dinterpolant_owner::operator=(const _spline1dinterpolant_owner &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
+    }
     alglib_impl::_spline1dinterpolant_clear(p_struct);
-    if( !alglib_impl::_spline1dinterpolant_init_copy(p_struct, const_cast<alglib_impl::spline1dinterpolant*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_spline1dinterpolant_init_copy(p_struct, const_cast<alglib_impl::spline1dinterpolant*>(rhs.p_struct), NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
     return *this;
 }
 
@@ -1746,18 +1602,19 @@ alglib_impl::spline1dinterpolant* _spline1dinterpolant_owner::c_ptr() const
 {
     return const_cast<alglib_impl::spline1dinterpolant*>(p_struct);
 }
-spline1dinterpolant::spline1dinterpolant() : _spline1dinterpolant_owner() 
+spline1dinterpolant::spline1dinterpolant() : _spline1dinterpolant_owner()
 {
 }
 
-spline1dinterpolant::spline1dinterpolant(const spline1dinterpolant &rhs):_spline1dinterpolant_owner(rhs) 
+spline1dinterpolant::spline1dinterpolant(const spline1dinterpolant &rhs):_spline1dinterpolant_owner(rhs)
 {
 }
 
 spline1dinterpolant& spline1dinterpolant::operator=(const spline1dinterpolant &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
+    }
     _spline1dinterpolant_owner::operator=(rhs);
     return *this;
 }
@@ -1793,18 +1650,13 @@ void spline1dbuildlinear(const real_1d_array &x, const real_1d_array &y, const a
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dbuildlinear(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, const_cast<alglib_impl::spline1dinterpolant*>(c.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -1834,25 +1686,21 @@ Subroutine automatically sorts points, so caller may pass unsorted array.
 *************************************************************************/
 void spline1dbuildlinear(const real_1d_array &x, const real_1d_array &y, spline1dinterpolant &c)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
-    if( (x.length()!=y.length()))
+    if( (x.length()!=y.length())) {
         throw ap_error("Error while calling 'spline1dbuildlinear': looks like one of arguments has wrong size");
+    }
     n = x.length();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dbuildlinear(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, const_cast<alglib_impl::spline1dinterpolant*>(c.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -1914,18 +1762,13 @@ void spline1dbuildcubic(const real_1d_array &x, const real_1d_array &y, const ae
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dbuildcubic(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, boundltype, boundl, boundrtype, boundr, const_cast<alglib_impl::spline1dinterpolant*>(c.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -1985,33 +1828,29 @@ i.e. to make Y[first_point]=Y[last_point].
 *************************************************************************/
 void spline1dbuildcubic(const real_1d_array &x, const real_1d_array &y, spline1dinterpolant &c)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
     ae_int_t boundltype;
     double boundl;
     ae_int_t boundrtype;
     double boundr;
-    if( (x.length()!=y.length()))
+    if( (x.length()!=y.length())) {
         throw ap_error("Error while calling 'spline1dbuildcubic': looks like one of arguments has wrong size");
+    }
     n = x.length();
     boundltype = 0;
     boundl = 0;
     boundrtype = 0;
     boundr = 0;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dbuildcubic(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, boundltype, boundl, boundrtype, boundr, const_cast<alglib_impl::spline1dinterpolant*>(c.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -2081,18 +1920,13 @@ void spline1dgriddiffcubic(const real_1d_array &x, const real_1d_array &y, const
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dgriddiffcubic(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, boundltype, boundl, boundrtype, boundr, const_cast<alglib_impl::ae_vector*>(d.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -2160,33 +1994,29 @@ i.e. to make Y[first_point]=Y[last_point].
 *************************************************************************/
 void spline1dgriddiffcubic(const real_1d_array &x, const real_1d_array &y, real_1d_array &d)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
     ae_int_t boundltype;
     double boundl;
     ae_int_t boundrtype;
     double boundr;
-    if( (x.length()!=y.length()))
+    if( (x.length()!=y.length())) {
         throw ap_error("Error while calling 'spline1dgriddiffcubic': looks like one of arguments has wrong size");
+    }
     n = x.length();
     boundltype = 0;
     boundl = 0;
     boundrtype = 0;
     boundr = 0;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dgriddiffcubic(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, boundltype, boundl, boundrtype, boundr, const_cast<alglib_impl::ae_vector*>(d.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -2257,18 +2087,13 @@ void spline1dgriddiff2cubic(const real_1d_array &x, const real_1d_array &y, cons
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dgriddiff2cubic(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, boundltype, boundl, boundrtype, boundr, const_cast<alglib_impl::ae_vector*>(d1.c_ptr()), const_cast<alglib_impl::ae_vector*>(d2.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -2337,33 +2162,29 @@ i.e. to make Y[first_point]=Y[last_point].
 *************************************************************************/
 void spline1dgriddiff2cubic(const real_1d_array &x, const real_1d_array &y, real_1d_array &d1, real_1d_array &d2)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
     ae_int_t boundltype;
     double boundl;
     ae_int_t boundrtype;
     double boundr;
-    if( (x.length()!=y.length()))
+    if( (x.length()!=y.length())) {
         throw ap_error("Error while calling 'spline1dgriddiff2cubic': looks like one of arguments has wrong size");
+    }
     n = x.length();
     boundltype = 0;
     boundl = 0;
     boundrtype = 0;
     boundr = 0;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dgriddiff2cubic(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, boundltype, boundl, boundrtype, boundr, const_cast<alglib_impl::ae_vector*>(d1.c_ptr()), const_cast<alglib_impl::ae_vector*>(d2.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -2438,18 +2259,13 @@ void spline1dconvcubic(const real_1d_array &x, const real_1d_array &y, const ae_
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dconvcubic(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, boundltype, boundl, boundrtype, boundr, const_cast<alglib_impl::ae_vector*>(x2.c_ptr()), n2, const_cast<alglib_impl::ae_vector*>(y2.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -2522,15 +2338,16 @@ i.e. to make Y[first_point]=Y[last_point].
 *************************************************************************/
 void spline1dconvcubic(const real_1d_array &x, const real_1d_array &y, const real_1d_array &x2, real_1d_array &y2)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
     ae_int_t boundltype;
     double boundl;
     ae_int_t boundrtype;
     double boundr;
     ae_int_t n2;
-    if( (x.length()!=y.length()))
+    if( (x.length()!=y.length())) {
         throw ap_error("Error while calling 'spline1dconvcubic': looks like one of arguments has wrong size");
+    }
     n = x.length();
     boundltype = 0;
     boundl = 0;
@@ -2538,19 +2355,14 @@ void spline1dconvcubic(const real_1d_array &x, const real_1d_array &y, const rea
     boundr = 0;
     n2 = x2.length();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dconvcubic(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, boundltype, boundl, boundrtype, boundr, const_cast<alglib_impl::ae_vector*>(x2.c_ptr()), n2, const_cast<alglib_impl::ae_vector*>(y2.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -2626,18 +2438,13 @@ void spline1dconvdiffcubic(const real_1d_array &x, const real_1d_array &y, const
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dconvdiffcubic(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, boundltype, boundl, boundrtype, boundr, const_cast<alglib_impl::ae_vector*>(x2.c_ptr()), n2, const_cast<alglib_impl::ae_vector*>(y2.c_ptr()), const_cast<alglib_impl::ae_vector*>(d2.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -2711,15 +2518,16 @@ i.e. to make Y[first_point]=Y[last_point].
 *************************************************************************/
 void spline1dconvdiffcubic(const real_1d_array &x, const real_1d_array &y, const real_1d_array &x2, real_1d_array &y2, real_1d_array &d2)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
     ae_int_t boundltype;
     double boundl;
     ae_int_t boundrtype;
     double boundr;
     ae_int_t n2;
-    if( (x.length()!=y.length()))
+    if( (x.length()!=y.length())) {
         throw ap_error("Error while calling 'spline1dconvdiffcubic': looks like one of arguments has wrong size");
+    }
     n = x.length();
     boundltype = 0;
     boundl = 0;
@@ -2727,19 +2535,14 @@ void spline1dconvdiffcubic(const real_1d_array &x, const real_1d_array &y, const
     boundr = 0;
     n2 = x2.length();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dconvdiffcubic(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, boundltype, boundl, boundrtype, boundr, const_cast<alglib_impl::ae_vector*>(x2.c_ptr()), n2, const_cast<alglib_impl::ae_vector*>(y2.c_ptr()), const_cast<alglib_impl::ae_vector*>(d2.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -2817,18 +2620,13 @@ void spline1dconvdiff2cubic(const real_1d_array &x, const real_1d_array &y, cons
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dconvdiff2cubic(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, boundltype, boundl, boundrtype, boundr, const_cast<alglib_impl::ae_vector*>(x2.c_ptr()), n2, const_cast<alglib_impl::ae_vector*>(y2.c_ptr()), const_cast<alglib_impl::ae_vector*>(d2.c_ptr()), const_cast<alglib_impl::ae_vector*>(dd2.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -2904,15 +2702,16 @@ i.e. to make Y[first_point]=Y[last_point].
 *************************************************************************/
 void spline1dconvdiff2cubic(const real_1d_array &x, const real_1d_array &y, const real_1d_array &x2, real_1d_array &y2, real_1d_array &d2, real_1d_array &dd2)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
     ae_int_t boundltype;
     double boundl;
     ae_int_t boundrtype;
     double boundr;
     ae_int_t n2;
-    if( (x.length()!=y.length()))
+    if( (x.length()!=y.length())) {
         throw ap_error("Error while calling 'spline1dconvdiff2cubic': looks like one of arguments has wrong size");
+    }
     n = x.length();
     boundltype = 0;
     boundl = 0;
@@ -2920,19 +2719,14 @@ void spline1dconvdiff2cubic(const real_1d_array &x, const real_1d_array &y, cons
     boundr = 0;
     n2 = x2.length();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dconvdiff2cubic(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, boundltype, boundl, boundrtype, boundr, const_cast<alglib_impl::ae_vector*>(x2.c_ptr()), n2, const_cast<alglib_impl::ae_vector*>(y2.c_ptr()), const_cast<alglib_impl::ae_vector*>(d2.c_ptr()), const_cast<alglib_impl::ae_vector*>(dd2.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -2981,18 +2775,13 @@ void spline1dbuildcatmullrom(const real_1d_array &x, const real_1d_array &y, con
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dbuildcatmullrom(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, boundtype, tension, const_cast<alglib_impl::spline1dinterpolant*>(c.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -3039,29 +2828,25 @@ i.e. to make Y[first_point]=Y[last_point].
 *************************************************************************/
 void spline1dbuildcatmullrom(const real_1d_array &x, const real_1d_array &y, spline1dinterpolant &c)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
     ae_int_t boundtype;
     double tension;
-    if( (x.length()!=y.length()))
+    if( (x.length()!=y.length())) {
         throw ap_error("Error while calling 'spline1dbuildcatmullrom': looks like one of arguments has wrong size");
+    }
     n = x.length();
     boundtype = 0;
     tension = 0;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dbuildcatmullrom(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, boundtype, tension, const_cast<alglib_impl::spline1dinterpolant*>(c.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -3094,18 +2879,13 @@ void spline1dbuildhermite(const real_1d_array &x, const real_1d_array &y, const 
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dbuildhermite(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_vector*>(d.c_ptr()), n, const_cast<alglib_impl::spline1dinterpolant*>(c.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -3136,25 +2916,21 @@ Subroutine automatically sorts points, so caller may pass unsorted array.
 *************************************************************************/
 void spline1dbuildhermite(const real_1d_array &x, const real_1d_array &y, const real_1d_array &d, spline1dinterpolant &c)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
-    if( (x.length()!=y.length()) || (x.length()!=d.length()))
+    if( (x.length()!=y.length()) || (x.length()!=d.length())) {
         throw ap_error("Error while calling 'spline1dbuildhermite': looks like one of arguments has wrong size");
+    }
     n = x.length();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dbuildhermite(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_vector*>(d.c_ptr()), n, const_cast<alglib_impl::spline1dinterpolant*>(c.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -3186,18 +2962,13 @@ void spline1dbuildakima(const real_1d_array &x, const real_1d_array &y, const ae
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dbuildakima(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, const_cast<alglib_impl::spline1dinterpolant*>(c.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -3227,25 +2998,21 @@ Subroutine automatically sorts points, so caller may pass unsorted array.
 *************************************************************************/
 void spline1dbuildakima(const real_1d_array &x, const real_1d_array &y, spline1dinterpolant &c)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
-    if( (x.length()!=y.length()))
+    if( (x.length()!=y.length())) {
         throw ap_error("Error while calling 'spline1dbuildakima': looks like one of arguments has wrong size");
+    }
     n = x.length();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dbuildakima(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, const_cast<alglib_impl::spline1dinterpolant*>(c.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -3267,18 +3034,13 @@ double spline1dcalc(const spline1dinterpolant &c, const double x)
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         double result = alglib_impl::spline1dcalc(const_cast<alglib_impl::spline1dinterpolant*>(c.c_ptr()), x, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -3302,18 +3064,13 @@ void spline1ddiff(const spline1dinterpolant &c, const double x, double &s, doubl
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1ddiff(const_cast<alglib_impl::spline1dinterpolant*>(c.c_ptr()), x, &s, &ds, &d2s, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -3345,18 +3102,13 @@ void spline1dunpack(const spline1dinterpolant &c, ae_int_t &n, real_2d_array &tb
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dunpack(const_cast<alglib_impl::spline1dinterpolant*>(c.c_ptr()), &n, const_cast<alglib_impl::ae_matrix*>(tbl.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -3377,18 +3129,13 @@ void spline1dlintransx(const spline1dinterpolant &c, const double a, const doubl
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dlintransx(const_cast<alglib_impl::spline1dinterpolant*>(c.c_ptr()), a, b, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -3409,18 +3156,13 @@ void spline1dlintransy(const spline1dinterpolant &c, const double a, const doubl
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dlintransy(const_cast<alglib_impl::spline1dinterpolant*>(c.c_ptr()), a, b, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -3442,18 +3184,13 @@ double spline1dintegrate(const spline1dinterpolant &c, const double x)
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         double result = alglib_impl::spline1dintegrate(const_cast<alglib_impl::spline1dinterpolant*>(c.c_ptr()), x, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -3469,28 +3206,34 @@ Polynomial fitting report:
 _polynomialfitreport_owner::_polynomialfitreport_owner()
 {
     p_struct = (alglib_impl::polynomialfitreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::polynomialfitreport), NULL);
-    if( p_struct==NULL )
+    if( p_struct==NULL ) {
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_polynomialfitreport_init(p_struct, NULL, ae_false) )
+    }
+    if( !alglib_impl::_polynomialfitreport_init(p_struct, NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
 }
 
 _polynomialfitreport_owner::_polynomialfitreport_owner(const _polynomialfitreport_owner &rhs)
 {
     p_struct = (alglib_impl::polynomialfitreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::polynomialfitreport), NULL);
-    if( p_struct==NULL )
+    if( p_struct==NULL ) {
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_polynomialfitreport_init_copy(p_struct, const_cast<alglib_impl::polynomialfitreport*>(rhs.p_struct), NULL, ae_false) )
+    }
+    if( !alglib_impl::_polynomialfitreport_init_copy(p_struct, const_cast<alglib_impl::polynomialfitreport*>(rhs.p_struct), NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
 }
 
 _polynomialfitreport_owner& _polynomialfitreport_owner::operator=(const _polynomialfitreport_owner &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
+    }
     alglib_impl::_polynomialfitreport_clear(p_struct);
-    if( !alglib_impl::_polynomialfitreport_init_copy(p_struct, const_cast<alglib_impl::polynomialfitreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_polynomialfitreport_init_copy(p_struct, const_cast<alglib_impl::polynomialfitreport*>(rhs.p_struct), NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
     return *this;
 }
 
@@ -3519,8 +3262,9 @@ polynomialfitreport::polynomialfitreport(const polynomialfitreport &rhs):_polyno
 
 polynomialfitreport& polynomialfitreport::operator=(const polynomialfitreport &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
+    }
     _polynomialfitreport_owner::operator=(rhs);
     return *this;
 }
@@ -3541,28 +3285,34 @@ Barycentric fitting report:
 _barycentricfitreport_owner::_barycentricfitreport_owner()
 {
     p_struct = (alglib_impl::barycentricfitreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::barycentricfitreport), NULL);
-    if( p_struct==NULL )
+    if( p_struct==NULL ) {
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_barycentricfitreport_init(p_struct, NULL, ae_false) )
+    }
+    if( !alglib_impl::_barycentricfitreport_init(p_struct, NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
 }
 
 _barycentricfitreport_owner::_barycentricfitreport_owner(const _barycentricfitreport_owner &rhs)
 {
     p_struct = (alglib_impl::barycentricfitreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::barycentricfitreport), NULL);
-    if( p_struct==NULL )
+    if( p_struct==NULL ) {
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_barycentricfitreport_init_copy(p_struct, const_cast<alglib_impl::barycentricfitreport*>(rhs.p_struct), NULL, ae_false) )
+    }
+    if( !alglib_impl::_barycentricfitreport_init_copy(p_struct, const_cast<alglib_impl::barycentricfitreport*>(rhs.p_struct), NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
 }
 
 _barycentricfitreport_owner& _barycentricfitreport_owner::operator=(const _barycentricfitreport_owner &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
+    }
     alglib_impl::_barycentricfitreport_clear(p_struct);
-    if( !alglib_impl::_barycentricfitreport_init_copy(p_struct, const_cast<alglib_impl::barycentricfitreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_barycentricfitreport_init_copy(p_struct, const_cast<alglib_impl::barycentricfitreport*>(rhs.p_struct), NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
     return *this;
 }
 
@@ -3591,8 +3341,9 @@ barycentricfitreport::barycentricfitreport(const barycentricfitreport &rhs):_bar
 
 barycentricfitreport& barycentricfitreport::operator=(const barycentricfitreport &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
+    }
     _barycentricfitreport_owner::operator=(rhs);
     return *this;
 }
@@ -3616,28 +3367,34 @@ Spline1DFitHermite). Modern fitting functions do NOT fill these fields:
 _spline1dfitreport_owner::_spline1dfitreport_owner()
 {
     p_struct = (alglib_impl::spline1dfitreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::spline1dfitreport), NULL);
-    if( p_struct==NULL )
+    if( p_struct==NULL ) {
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_spline1dfitreport_init(p_struct, NULL, ae_false) )
+    }
+    if( !alglib_impl::_spline1dfitreport_init(p_struct, NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
 }
 
 _spline1dfitreport_owner::_spline1dfitreport_owner(const _spline1dfitreport_owner &rhs)
 {
     p_struct = (alglib_impl::spline1dfitreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::spline1dfitreport), NULL);
-    if( p_struct==NULL )
+    if( p_struct==NULL ) {
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_spline1dfitreport_init_copy(p_struct, const_cast<alglib_impl::spline1dfitreport*>(rhs.p_struct), NULL, ae_false) )
+    }
+    if( !alglib_impl::_spline1dfitreport_init_copy(p_struct, const_cast<alglib_impl::spline1dfitreport*>(rhs.p_struct), NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
 }
 
 _spline1dfitreport_owner& _spline1dfitreport_owner::operator=(const _spline1dfitreport_owner &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
+    }
     alglib_impl::_spline1dfitreport_clear(p_struct);
-    if( !alglib_impl::_spline1dfitreport_init_copy(p_struct, const_cast<alglib_impl::spline1dfitreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_spline1dfitreport_init_copy(p_struct, const_cast<alglib_impl::spline1dfitreport*>(rhs.p_struct), NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
     return *this;
 }
 
@@ -3666,8 +3423,9 @@ spline1dfitreport::spline1dfitreport(const spline1dfitreport &rhs):_spline1dfitr
 
 spline1dfitreport& spline1dfitreport::operator=(const spline1dfitreport &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
+    }
     _spline1dfitreport_owner::operator=(rhs);
     return *this;
 }
@@ -3692,28 +3450,34 @@ Least squares fitting report:
 _lsfitreport_owner::_lsfitreport_owner()
 {
     p_struct = (alglib_impl::lsfitreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::lsfitreport), NULL);
-    if( p_struct==NULL )
+    if( p_struct==NULL ) {
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_lsfitreport_init(p_struct, NULL, ae_false) )
+    }
+    if( !alglib_impl::_lsfitreport_init(p_struct, NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
 }
 
 _lsfitreport_owner::_lsfitreport_owner(const _lsfitreport_owner &rhs)
 {
     p_struct = (alglib_impl::lsfitreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::lsfitreport), NULL);
-    if( p_struct==NULL )
+    if( p_struct==NULL ) {
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_lsfitreport_init_copy(p_struct, const_cast<alglib_impl::lsfitreport*>(rhs.p_struct), NULL, ae_false) )
+    }
+    if( !alglib_impl::_lsfitreport_init_copy(p_struct, const_cast<alglib_impl::lsfitreport*>(rhs.p_struct), NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
 }
 
 _lsfitreport_owner& _lsfitreport_owner::operator=(const _lsfitreport_owner &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
+    }
     alglib_impl::_lsfitreport_clear(p_struct);
-    if( !alglib_impl::_lsfitreport_init_copy(p_struct, const_cast<alglib_impl::lsfitreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_lsfitreport_init_copy(p_struct, const_cast<alglib_impl::lsfitreport*>(rhs.p_struct), NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
     return *this;
 }
 
@@ -3742,8 +3506,9 @@ lsfitreport::lsfitreport(const lsfitreport &rhs):_lsfitreport_owner(rhs) ,taskrc
 
 lsfitreport& lsfitreport::operator=(const lsfitreport &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
+    }
     _lsfitreport_owner::operator=(rhs);
     return *this;
 }
@@ -3762,28 +3527,34 @@ Never try to access its fields directly!
 _lsfitstate_owner::_lsfitstate_owner()
 {
     p_struct = (alglib_impl::lsfitstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::lsfitstate), NULL);
-    if( p_struct==NULL )
+    if( p_struct==NULL ) {
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_lsfitstate_init(p_struct, NULL, ae_false) )
+    }
+    if( !alglib_impl::_lsfitstate_init(p_struct, NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
 }
 
 _lsfitstate_owner::_lsfitstate_owner(const _lsfitstate_owner &rhs)
 {
     p_struct = (alglib_impl::lsfitstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::lsfitstate), NULL);
-    if( p_struct==NULL )
+    if( p_struct==NULL ) {
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_lsfitstate_init_copy(p_struct, const_cast<alglib_impl::lsfitstate*>(rhs.p_struct), NULL, ae_false) )
+    }
+    if( !alglib_impl::_lsfitstate_init_copy(p_struct, const_cast<alglib_impl::lsfitstate*>(rhs.p_struct), NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
 }
 
 _lsfitstate_owner& _lsfitstate_owner::operator=(const _lsfitstate_owner &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
+    }
     alglib_impl::_lsfitstate_clear(p_struct);
-    if( !alglib_impl::_lsfitstate_init_copy(p_struct, const_cast<alglib_impl::lsfitstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_lsfitstate_init_copy(p_struct, const_cast<alglib_impl::lsfitstate*>(rhs.p_struct), NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
     return *this;
 }
 
@@ -3812,8 +3583,9 @@ lsfitstate::lsfitstate(const lsfitstate &rhs):_lsfitstate_owner(rhs) ,needf(p_st
 
 lsfitstate& lsfitstate::operator=(const lsfitstate &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
+    }
     _lsfitstate_owner::operator=(rhs);
     return *this;
 }
@@ -3867,18 +3639,13 @@ void polynomialfit(const real_1d_array &x, const real_1d_array &y, const ae_int_
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::polynomialfit(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, m, &info, const_cast<alglib_impl::barycentricinterpolant*>(p.c_ptr()), const_cast<alglib_impl::polynomialfitreport*>(rep.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -3926,25 +3693,21 @@ NOTES:
 *************************************************************************/
 void polynomialfit(const real_1d_array &x, const real_1d_array &y, const ae_int_t m, ae_int_t &info, barycentricinterpolant &p, polynomialfitreport &rep)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
-    if( (x.length()!=y.length()))
+    if( (x.length()!=y.length())) {
         throw ap_error("Error while calling 'polynomialfit': looks like one of arguments has wrong size");
+    }
     n = x.length();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::polynomialfit(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, m, &info, const_cast<alglib_impl::barycentricinterpolant*>(p.c_ptr()), const_cast<alglib_impl::polynomialfitreport*>(rep.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -4032,18 +3795,13 @@ void polynomialfitwc(const real_1d_array &x, const real_1d_array &y, const real_
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::polynomialfitwc(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_vector*>(w.c_ptr()), n, const_cast<alglib_impl::ae_vector*>(xc.c_ptr()), const_cast<alglib_impl::ae_vector*>(yc.c_ptr()), const_cast<alglib_impl::ae_vector*>(dc.c_ptr()), k, m, &info, const_cast<alglib_impl::barycentricinterpolant*>(p.c_ptr()), const_cast<alglib_impl::polynomialfitreport*>(rep.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -4129,29 +3887,26 @@ above is not guaranteed and may result in inconsistency.
 *************************************************************************/
 void polynomialfitwc(const real_1d_array &x, const real_1d_array &y, const real_1d_array &w, const real_1d_array &xc, const real_1d_array &yc, const integer_1d_array &dc, const ae_int_t m, ae_int_t &info, barycentricinterpolant &p, polynomialfitreport &rep)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
     ae_int_t k;
-    if( (x.length()!=y.length()) || (x.length()!=w.length()))
+    if( (x.length()!=y.length()) || (x.length()!=w.length())) {
         throw ap_error("Error while calling 'polynomialfitwc': looks like one of arguments has wrong size");
-    if( (xc.length()!=yc.length()) || (xc.length()!=dc.length()))
+    }
+    if( (xc.length()!=yc.length()) || (xc.length()!=dc.length())) {
         throw ap_error("Error while calling 'polynomialfitwc': looks like one of arguments has wrong size");
+    }
     n = x.length();
     k = xc.length();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::polynomialfitwc(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_vector*>(w.c_ptr()), n, const_cast<alglib_impl::ae_vector*>(xc.c_ptr()), const_cast<alglib_impl::ae_vector*>(yc.c_ptr()), const_cast<alglib_impl::ae_vector*>(dc.c_ptr()), k, m, &info, const_cast<alglib_impl::barycentricinterpolant*>(p.c_ptr()), const_cast<alglib_impl::polynomialfitreport*>(rep.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -4244,18 +3999,13 @@ void barycentricfitfloaterhormannwc(const real_1d_array &x, const real_1d_array 
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::barycentricfitfloaterhormannwc(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_vector*>(w.c_ptr()), n, const_cast<alglib_impl::ae_vector*>(xc.c_ptr()), const_cast<alglib_impl::ae_vector*>(yc.c_ptr()), const_cast<alglib_impl::ae_vector*>(dc.c_ptr()), k, m, &info, const_cast<alglib_impl::barycentricinterpolant*>(b.c_ptr()), const_cast<alglib_impl::barycentricfitreport*>(rep.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -4299,18 +4049,13 @@ void barycentricfitfloaterhormann(const real_1d_array &x, const real_1d_array &y
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::barycentricfitfloaterhormann(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, m, &info, const_cast<alglib_impl::barycentricinterpolant*>(b.c_ptr()), const_cast<alglib_impl::barycentricfitreport*>(rep.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -4354,18 +4099,13 @@ void spline1dfitpenalized(const real_1d_array &x, const real_1d_array &y, const 
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dfitpenalized(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, m, rho, &info, const_cast<alglib_impl::spline1dinterpolant*>(s.c_ptr()), const_cast<alglib_impl::spline1dfitreport*>(rep.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -4407,25 +4147,21 @@ OUTPUT PARAMETERS:
 *************************************************************************/
 void spline1dfitpenalized(const real_1d_array &x, const real_1d_array &y, const ae_int_t m, const double rho, ae_int_t &info, spline1dinterpolant &s, spline1dfitreport &rep)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
-    if( (x.length()!=y.length()))
+    if( (x.length()!=y.length())) {
         throw ap_error("Error while calling 'spline1dfitpenalized': looks like one of arguments has wrong size");
+    }
     n = x.length();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dfitpenalized(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, m, rho, &info, const_cast<alglib_impl::spline1dinterpolant*>(s.c_ptr()), const_cast<alglib_impl::spline1dfitreport*>(rep.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -4500,18 +4236,13 @@ void spline1dfitpenalizedw(const real_1d_array &x, const real_1d_array &y, const
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dfitpenalizedw(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_vector*>(w.c_ptr()), n, m, rho, &info, const_cast<alglib_impl::spline1dinterpolant*>(s.c_ptr()), const_cast<alglib_impl::spline1dfitreport*>(rep.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -4584,25 +4315,21 @@ array.
 *************************************************************************/
 void spline1dfitpenalizedw(const real_1d_array &x, const real_1d_array &y, const real_1d_array &w, const ae_int_t m, const double rho, ae_int_t &info, spline1dinterpolant &s, spline1dfitreport &rep)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
-    if( (x.length()!=y.length()) || (x.length()!=w.length()))
+    if( (x.length()!=y.length()) || (x.length()!=w.length())) {
         throw ap_error("Error while calling 'spline1dfitpenalizedw': looks like one of arguments has wrong size");
+    }
     n = x.length();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dfitpenalizedw(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_vector*>(w.c_ptr()), n, m, rho, &info, const_cast<alglib_impl::spline1dinterpolant*>(s.c_ptr()), const_cast<alglib_impl::spline1dfitreport*>(rep.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -4710,18 +4437,13 @@ void spline1dfitcubicwc(const real_1d_array &x, const real_1d_array &y, const re
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dfitcubicwc(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_vector*>(w.c_ptr()), n, const_cast<alglib_impl::ae_vector*>(xc.c_ptr()), const_cast<alglib_impl::ae_vector*>(yc.c_ptr()), const_cast<alglib_impl::ae_vector*>(dc.c_ptr()), k, m, &info, const_cast<alglib_impl::spline1dinterpolant*>(s.c_ptr()), const_cast<alglib_impl::spline1dfitreport*>(rep.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -4827,29 +4549,26 @@ above is not guaranteed and may result in inconsistency.
 *************************************************************************/
 void spline1dfitcubicwc(const real_1d_array &x, const real_1d_array &y, const real_1d_array &w, const real_1d_array &xc, const real_1d_array &yc, const integer_1d_array &dc, const ae_int_t m, ae_int_t &info, spline1dinterpolant &s, spline1dfitreport &rep)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
     ae_int_t k;
-    if( (x.length()!=y.length()) || (x.length()!=w.length()))
+    if( (x.length()!=y.length()) || (x.length()!=w.length())) {
         throw ap_error("Error while calling 'spline1dfitcubicwc': looks like one of arguments has wrong size");
-    if( (xc.length()!=yc.length()) || (xc.length()!=dc.length()))
+    }
+    if( (xc.length()!=yc.length()) || (xc.length()!=dc.length())) {
         throw ap_error("Error while calling 'spline1dfitcubicwc': looks like one of arguments has wrong size");
+    }
     n = x.length();
     k = xc.length();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dfitcubicwc(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_vector*>(w.c_ptr()), n, const_cast<alglib_impl::ae_vector*>(xc.c_ptr()), const_cast<alglib_impl::ae_vector*>(yc.c_ptr()), const_cast<alglib_impl::ae_vector*>(dc.c_ptr()), k, m, &info, const_cast<alglib_impl::spline1dinterpolant*>(s.c_ptr()), const_cast<alglib_impl::spline1dfitreport*>(rep.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -4962,18 +4681,13 @@ void spline1dfithermitewc(const real_1d_array &x, const real_1d_array &y, const 
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dfithermitewc(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_vector*>(w.c_ptr()), n, const_cast<alglib_impl::ae_vector*>(xc.c_ptr()), const_cast<alglib_impl::ae_vector*>(yc.c_ptr()), const_cast<alglib_impl::ae_vector*>(dc.c_ptr()), k, m, &info, const_cast<alglib_impl::spline1dinterpolant*>(s.c_ptr()), const_cast<alglib_impl::spline1dfitreport*>(rep.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -5084,29 +4798,26 @@ above is not guaranteed and may result in inconsistency.
 *************************************************************************/
 void spline1dfithermitewc(const real_1d_array &x, const real_1d_array &y, const real_1d_array &w, const real_1d_array &xc, const real_1d_array &yc, const integer_1d_array &dc, const ae_int_t m, ae_int_t &info, spline1dinterpolant &s, spline1dfitreport &rep)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
     ae_int_t k;
-    if( (x.length()!=y.length()) || (x.length()!=w.length()))
+    if( (x.length()!=y.length()) || (x.length()!=w.length())) {
         throw ap_error("Error while calling 'spline1dfithermitewc': looks like one of arguments has wrong size");
-    if( (xc.length()!=yc.length()) || (xc.length()!=dc.length()))
+    }
+    if( (xc.length()!=yc.length()) || (xc.length()!=dc.length())) {
         throw ap_error("Error while calling 'spline1dfithermitewc': looks like one of arguments has wrong size");
+    }
     n = x.length();
     k = xc.length();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dfithermitewc(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_vector*>(w.c_ptr()), n, const_cast<alglib_impl::ae_vector*>(xc.c_ptr()), const_cast<alglib_impl::ae_vector*>(yc.c_ptr()), const_cast<alglib_impl::ae_vector*>(dc.c_ptr()), k, m, &info, const_cast<alglib_impl::spline1dinterpolant*>(s.c_ptr()), const_cast<alglib_impl::spline1dfitreport*>(rep.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -5125,18 +4836,13 @@ void spline1dfitcubic(const real_1d_array &x, const real_1d_array &y, const ae_i
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dfitcubic(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, m, &info, const_cast<alglib_impl::spline1dinterpolant*>(s.c_ptr()), const_cast<alglib_impl::spline1dfitreport*>(rep.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -5153,25 +4859,21 @@ about subroutine parameters (we don't duplicate it here because of length)
 *************************************************************************/
 void spline1dfitcubic(const real_1d_array &x, const real_1d_array &y, const ae_int_t m, ae_int_t &info, spline1dinterpolant &s, spline1dfitreport &rep)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
-    if( (x.length()!=y.length()))
+    if( (x.length()!=y.length())) {
         throw ap_error("Error while calling 'spline1dfitcubic': looks like one of arguments has wrong size");
+    }
     n = x.length();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dfitcubic(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, m, &info, const_cast<alglib_impl::spline1dinterpolant*>(s.c_ptr()), const_cast<alglib_impl::spline1dfitreport*>(rep.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -5191,18 +4893,13 @@ void spline1dfithermite(const real_1d_array &x, const real_1d_array &y, const ae
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dfithermite(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, m, &info, const_cast<alglib_impl::spline1dinterpolant*>(s.c_ptr()), const_cast<alglib_impl::spline1dfitreport*>(rep.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -5220,25 +4917,21 @@ because of length).
 *************************************************************************/
 void spline1dfithermite(const real_1d_array &x, const real_1d_array &y, const ae_int_t m, ae_int_t &info, spline1dinterpolant &s, spline1dfitreport &rep)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
-    if( (x.length()!=y.length()))
+    if( (x.length()!=y.length())) {
         throw ap_error("Error while calling 'spline1dfithermite': looks like one of arguments has wrong size");
+    }
     n = x.length();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline1dfithermite(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, m, &info, const_cast<alglib_impl::spline1dinterpolant*>(s.c_ptr()), const_cast<alglib_impl::spline1dfitreport*>(rep.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -5283,18 +4976,13 @@ void lsfitlinearw(const real_1d_array &y, const real_1d_array &w, const real_2d_
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::lsfitlinearw(const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_vector*>(w.c_ptr()), const_cast<alglib_impl::ae_matrix*>(fmatrix.c_ptr()), n, m, &info, const_cast<alglib_impl::ae_vector*>(c.c_ptr()), const_cast<alglib_impl::lsfitreport*>(rep.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -5337,27 +5025,23 @@ OUTPUT PARAMETERS:
 *************************************************************************/
 void lsfitlinearw(const real_1d_array &y, const real_1d_array &w, const real_2d_array &fmatrix, ae_int_t &info, real_1d_array &c, lsfitreport &rep)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
     ae_int_t m;
-    if( (y.length()!=w.length()) || (y.length()!=fmatrix.rows()))
+    if( (y.length()!=w.length()) || (y.length()!=fmatrix.rows())) {
         throw ap_error("Error while calling 'lsfitlinearw': looks like one of arguments has wrong size");
+    }
     n = y.length();
     m = fmatrix.cols();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::lsfitlinearw(const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_vector*>(w.c_ptr()), const_cast<alglib_impl::ae_matrix*>(fmatrix.c_ptr()), n, m, &info, const_cast<alglib_impl::ae_vector*>(c.c_ptr()), const_cast<alglib_impl::lsfitreport*>(rep.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -5413,18 +5097,13 @@ void lsfitlinearwc(const real_1d_array &y, const real_1d_array &w, const real_2d
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::lsfitlinearwc(const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_vector*>(w.c_ptr()), const_cast<alglib_impl::ae_matrix*>(fmatrix.c_ptr()), const_cast<alglib_impl::ae_matrix*>(cmatrix.c_ptr()), n, m, k, &info, const_cast<alglib_impl::ae_vector*>(c.c_ptr()), const_cast<alglib_impl::lsfitreport*>(rep.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -5478,31 +5157,28 @@ IMPORTANT:
 *************************************************************************/
 void lsfitlinearwc(const real_1d_array &y, const real_1d_array &w, const real_2d_array &fmatrix, const real_2d_array &cmatrix, ae_int_t &info, real_1d_array &c, lsfitreport &rep)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
     ae_int_t m;
     ae_int_t k;
-    if( (y.length()!=w.length()) || (y.length()!=fmatrix.rows()))
+    if( (y.length()!=w.length()) || (y.length()!=fmatrix.rows())) {
         throw ap_error("Error while calling 'lsfitlinearwc': looks like one of arguments has wrong size");
-    if( (fmatrix.cols()!=cmatrix.cols()-1))
+    }
+    if( (fmatrix.cols()!=cmatrix.cols()-1)) {
         throw ap_error("Error while calling 'lsfitlinearwc': looks like one of arguments has wrong size");
+    }
     n = y.length();
     m = fmatrix.cols();
     k = cmatrix.rows();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::lsfitlinearwc(const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_vector*>(w.c_ptr()), const_cast<alglib_impl::ae_matrix*>(fmatrix.c_ptr()), const_cast<alglib_impl::ae_matrix*>(cmatrix.c_ptr()), n, m, k, &info, const_cast<alglib_impl::ae_vector*>(c.c_ptr()), const_cast<alglib_impl::lsfitreport*>(rep.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -5542,18 +5218,13 @@ void lsfitlinear(const real_1d_array &y, const real_2d_array &fmatrix, const ae_
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::lsfitlinear(const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_matrix*>(fmatrix.c_ptr()), n, m, &info, const_cast<alglib_impl::ae_vector*>(c.c_ptr()), const_cast<alglib_impl::lsfitreport*>(rep.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -5591,27 +5262,23 @@ OUTPUT PARAMETERS:
 *************************************************************************/
 void lsfitlinear(const real_1d_array &y, const real_2d_array &fmatrix, ae_int_t &info, real_1d_array &c, lsfitreport &rep)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
     ae_int_t m;
-    if( (y.length()!=fmatrix.rows()))
+    if( (y.length()!=fmatrix.rows())) {
         throw ap_error("Error while calling 'lsfitlinear': looks like one of arguments has wrong size");
+    }
     n = y.length();
     m = fmatrix.cols();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::lsfitlinear(const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_matrix*>(fmatrix.c_ptr()), n, m, &info, const_cast<alglib_impl::ae_vector*>(c.c_ptr()), const_cast<alglib_impl::lsfitreport*>(rep.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -5663,18 +5330,13 @@ void lsfitlinearc(const real_1d_array &y, const real_2d_array &fmatrix, const re
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::lsfitlinearc(const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_matrix*>(fmatrix.c_ptr()), const_cast<alglib_impl::ae_matrix*>(cmatrix.c_ptr()), n, m, k, &info, const_cast<alglib_impl::ae_vector*>(c.c_ptr()), const_cast<alglib_impl::lsfitreport*>(rep.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -5724,31 +5386,28 @@ IMPORTANT:
 *************************************************************************/
 void lsfitlinearc(const real_1d_array &y, const real_2d_array &fmatrix, const real_2d_array &cmatrix, ae_int_t &info, real_1d_array &c, lsfitreport &rep)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
     ae_int_t m;
     ae_int_t k;
-    if( (y.length()!=fmatrix.rows()))
+    if( (y.length()!=fmatrix.rows())) {
         throw ap_error("Error while calling 'lsfitlinearc': looks like one of arguments has wrong size");
-    if( (fmatrix.cols()!=cmatrix.cols()-1))
+    }
+    if( (fmatrix.cols()!=cmatrix.cols()-1)) {
         throw ap_error("Error while calling 'lsfitlinearc': looks like one of arguments has wrong size");
+    }
     n = y.length();
     m = fmatrix.cols();
     k = cmatrix.rows();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::lsfitlinearc(const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_matrix*>(fmatrix.c_ptr()), const_cast<alglib_impl::ae_matrix*>(cmatrix.c_ptr()), n, m, k, &info, const_cast<alglib_impl::ae_vector*>(c.c_ptr()), const_cast<alglib_impl::lsfitreport*>(rep.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -5795,18 +5454,13 @@ void lsfitcreatewf(const real_2d_array &x, const real_1d_array &y, const real_1d
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::lsfitcreatewf(const_cast<alglib_impl::ae_matrix*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_vector*>(w.c_ptr()), const_cast<alglib_impl::ae_vector*>(c.c_ptr()), n, m, k, diffstep, const_cast<alglib_impl::lsfitstate*>(state.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -5851,29 +5505,25 @@ OUTPUT PARAMETERS:
 *************************************************************************/
 void lsfitcreatewf(const real_2d_array &x, const real_1d_array &y, const real_1d_array &w, const real_1d_array &c, const double diffstep, lsfitstate &state)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
     ae_int_t m;
     ae_int_t k;
-    if( (x.rows()!=y.length()) || (x.rows()!=w.length()))
+    if( (x.rows()!=y.length()) || (x.rows()!=w.length())) {
         throw ap_error("Error while calling 'lsfitcreatewf': looks like one of arguments has wrong size");
+    }
     n = x.rows();
     m = x.cols();
     k = c.length();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::lsfitcreatewf(const_cast<alglib_impl::ae_matrix*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_vector*>(w.c_ptr()), const_cast<alglib_impl::ae_vector*>(c.c_ptr()), n, m, k, diffstep, const_cast<alglib_impl::lsfitstate*>(state.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -5919,18 +5569,13 @@ void lsfitcreatef(const real_2d_array &x, const real_1d_array &y, const real_1d_
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::lsfitcreatef(const_cast<alglib_impl::ae_matrix*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_vector*>(c.c_ptr()), n, m, k, diffstep, const_cast<alglib_impl::lsfitstate*>(state.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -5974,29 +5619,25 @@ OUTPUT PARAMETERS:
 *************************************************************************/
 void lsfitcreatef(const real_2d_array &x, const real_1d_array &y, const real_1d_array &c, const double diffstep, lsfitstate &state)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
     ae_int_t m;
     ae_int_t k;
-    if( (x.rows()!=y.length()))
+    if( (x.rows()!=y.length())) {
         throw ap_error("Error while calling 'lsfitcreatef': looks like one of arguments has wrong size");
+    }
     n = x.rows();
     m = x.cols();
     k = c.length();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::lsfitcreatef(const_cast<alglib_impl::ae_matrix*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_vector*>(c.c_ptr()), n, m, k, diffstep, const_cast<alglib_impl::lsfitstate*>(state.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -6050,18 +5691,13 @@ void lsfitcreatewfg(const real_2d_array &x, const real_1d_array &y, const real_1
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::lsfitcreatewfg(const_cast<alglib_impl::ae_matrix*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_vector*>(w.c_ptr()), const_cast<alglib_impl::ae_vector*>(c.c_ptr()), n, m, k, cheapfg, const_cast<alglib_impl::lsfitstate*>(state.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -6113,29 +5749,25 @@ See also:
 *************************************************************************/
 void lsfitcreatewfg(const real_2d_array &x, const real_1d_array &y, const real_1d_array &w, const real_1d_array &c, const bool cheapfg, lsfitstate &state)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
     ae_int_t m;
     ae_int_t k;
-    if( (x.rows()!=y.length()) || (x.rows()!=w.length()))
+    if( (x.rows()!=y.length()) || (x.rows()!=w.length())) {
         throw ap_error("Error while calling 'lsfitcreatewfg': looks like one of arguments has wrong size");
+    }
     n = x.rows();
     m = x.cols();
     k = c.length();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::lsfitcreatewfg(const_cast<alglib_impl::ae_matrix*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_vector*>(w.c_ptr()), const_cast<alglib_impl::ae_vector*>(c.c_ptr()), n, m, k, cheapfg, const_cast<alglib_impl::lsfitstate*>(state.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -6182,18 +5814,13 @@ void lsfitcreatefg(const real_2d_array &x, const real_1d_array &y, const real_1d
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::lsfitcreatefg(const_cast<alglib_impl::ae_matrix*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_vector*>(c.c_ptr()), n, m, k, cheapfg, const_cast<alglib_impl::lsfitstate*>(state.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -6238,29 +5865,25 @@ OUTPUT PARAMETERS:
 *************************************************************************/
 void lsfitcreatefg(const real_2d_array &x, const real_1d_array &y, const real_1d_array &c, const bool cheapfg, lsfitstate &state)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
     ae_int_t m;
     ae_int_t k;
-    if( (x.rows()!=y.length()))
+    if( (x.rows()!=y.length())) {
         throw ap_error("Error while calling 'lsfitcreatefg': looks like one of arguments has wrong size");
+    }
     n = x.rows();
     m = x.cols();
     k = c.length();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::lsfitcreatefg(const_cast<alglib_impl::ae_matrix*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_vector*>(c.c_ptr()), n, m, k, cheapfg, const_cast<alglib_impl::lsfitstate*>(state.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -6300,18 +5923,13 @@ void lsfitcreatewfgh(const real_2d_array &x, const real_1d_array &y, const real_
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::lsfitcreatewfgh(const_cast<alglib_impl::ae_matrix*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_vector*>(w.c_ptr()), const_cast<alglib_impl::ae_vector*>(c.c_ptr()), n, m, k, const_cast<alglib_impl::lsfitstate*>(state.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -6349,29 +5967,25 @@ OUTPUT PARAMETERS:
 *************************************************************************/
 void lsfitcreatewfgh(const real_2d_array &x, const real_1d_array &y, const real_1d_array &w, const real_1d_array &c, lsfitstate &state)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
     ae_int_t m;
     ae_int_t k;
-    if( (x.rows()!=y.length()) || (x.rows()!=w.length()))
+    if( (x.rows()!=y.length()) || (x.rows()!=w.length())) {
         throw ap_error("Error while calling 'lsfitcreatewfgh': looks like one of arguments has wrong size");
+    }
     n = x.rows();
     m = x.cols();
     k = c.length();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::lsfitcreatewfgh(const_cast<alglib_impl::ae_matrix*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_vector*>(w.c_ptr()), const_cast<alglib_impl::ae_vector*>(c.c_ptr()), n, m, k, const_cast<alglib_impl::lsfitstate*>(state.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -6411,18 +6025,13 @@ void lsfitcreatefgh(const real_2d_array &x, const real_1d_array &y, const real_1
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::lsfitcreatefgh(const_cast<alglib_impl::ae_matrix*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_vector*>(c.c_ptr()), n, m, k, const_cast<alglib_impl::lsfitstate*>(state.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -6460,29 +6069,25 @@ OUTPUT PARAMETERS:
 *************************************************************************/
 void lsfitcreatefgh(const real_2d_array &x, const real_1d_array &y, const real_1d_array &c, lsfitstate &state)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
     ae_int_t m;
     ae_int_t k;
-    if( (x.rows()!=y.length()))
+    if( (x.rows()!=y.length())) {
         throw ap_error("Error while calling 'lsfitcreatefgh': looks like one of arguments has wrong size");
+    }
     n = x.rows();
     m = x.cols();
     k = c.length();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::lsfitcreatefgh(const_cast<alglib_impl::ae_matrix*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_vector*>(c.c_ptr()), n, m, k, const_cast<alglib_impl::lsfitstate*>(state.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -6520,18 +6125,13 @@ void lsfitsetcond(const lsfitstate &state, const double epsf, const double epsx,
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::lsfitsetcond(const_cast<alglib_impl::lsfitstate*>(state.c_ptr()), epsf, epsx, maxits, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -6561,18 +6161,13 @@ void lsfitsetstpmax(const lsfitstate &state, const double stpmax)
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::lsfitsetstpmax(const_cast<alglib_impl::lsfitstate*>(state.c_ptr()), stpmax, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -6595,18 +6190,13 @@ void lsfitsetxrep(const lsfitstate &state, const bool needxrep)
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::lsfitsetxrep(const_cast<alglib_impl::lsfitstate*>(state.c_ptr()), needxrep, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -6642,18 +6232,13 @@ void lsfitsetscale(const lsfitstate &state, const real_1d_array &s)
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::lsfitsetscale(const_cast<alglib_impl::lsfitstate*>(state.c_ptr()), const_cast<alglib_impl::ae_vector*>(s.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -6690,18 +6275,13 @@ void lsfitsetbc(const lsfitstate &state, const real_1d_array &bndl, const real_1
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::lsfitsetbc(const_cast<alglib_impl::lsfitstate*>(state.c_ptr()), const_cast<alglib_impl::ae_vector*>(bndl.c_ptr()), const_cast<alglib_impl::ae_vector*>(bndu.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -6715,159 +6295,136 @@ bool lsfititeration(const lsfitstate &state)
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         ae_bool result = alglib_impl::lsfititeration(const_cast<alglib_impl::lsfitstate*>(state.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return *(reinterpret_cast<bool*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
 
 
 void lsfitfit(lsfitstate &state,
-    void (*func)(const real_1d_array &c, const real_1d_array &x, double &func, void *ptr),
-    void  (*rep)(const real_1d_array &c, double func, void *ptr), 
-    void *ptr)
+              void (*func)(const real_1d_array &c, const real_1d_array &x, double &func, void *ptr),
+              void  (*rep)(const real_1d_array &c, double func, void *ptr),
+              void *ptr)
 {
     alglib_impl::ae_state _alglib_env_state;
-    if( func==NULL )
+    if( func==NULL ) {
         throw ap_error("ALGLIB: error in 'lsfitfit()' (func is NULL)");
+    }
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        while( alglib_impl::lsfititeration(state.c_ptr(), &_alglib_env_state) )
-        {
-            if( state.needf )
-            {
+    try {
+        while( alglib_impl::lsfititeration(state.c_ptr(), &_alglib_env_state) ) {
+            if( state.needf ) {
                 func(state.c, state.x, state.f, ptr);
                 continue;
             }
-            if( state.xupdated )
-            {
-                if( rep!=NULL )
+            if( state.xupdated ) {
+                if( rep!=NULL ) {
                     rep(state.c, state.f, ptr);
+                }
                 continue;
             }
             throw ap_error("ALGLIB: error in 'lsfitfit' (some derivatives were not provided?)");
         }
         alglib_impl::ae_state_clear(&_alglib_env_state);
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
 
 
 void lsfitfit(lsfitstate &state,
-    void (*func)(const real_1d_array &c, const real_1d_array &x, double &func, void *ptr),
-    void (*grad)(const real_1d_array &c, const real_1d_array &x, double &func, real_1d_array &grad, void *ptr),
-    void  (*rep)(const real_1d_array &c, double func, void *ptr), 
-    void *ptr)
+              void (*func)(const real_1d_array &c, const real_1d_array &x, double &func, void *ptr),
+              void (*grad)(const real_1d_array &c, const real_1d_array &x, double &func, real_1d_array &grad, void *ptr),
+              void  (*rep)(const real_1d_array &c, double func, void *ptr),
+              void *ptr)
 {
     alglib_impl::ae_state _alglib_env_state;
-    if( func==NULL )
+    if( func==NULL ) {
         throw ap_error("ALGLIB: error in 'lsfitfit()' (func is NULL)");
-    if( grad==NULL )
+    }
+    if( grad==NULL ) {
         throw ap_error("ALGLIB: error in 'lsfitfit()' (grad is NULL)");
+    }
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        while( alglib_impl::lsfititeration(state.c_ptr(), &_alglib_env_state) )
-        {
-            if( state.needf )
-            {
+    try {
+        while( alglib_impl::lsfititeration(state.c_ptr(), &_alglib_env_state) ) {
+            if( state.needf ) {
                 func(state.c, state.x, state.f, ptr);
                 continue;
             }
-            if( state.needfg )
-            {
+            if( state.needfg ) {
                 grad(state.c, state.x, state.f, state.g, ptr);
                 continue;
             }
-            if( state.xupdated )
-            {
-                if( rep!=NULL )
+            if( state.xupdated ) {
+                if( rep!=NULL ) {
                     rep(state.c, state.f, ptr);
+                }
                 continue;
             }
             throw ap_error("ALGLIB: error in 'lsfitfit' (some derivatives were not provided?)");
         }
         alglib_impl::ae_state_clear(&_alglib_env_state);
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
 
 
 void lsfitfit(lsfitstate &state,
-    void (*func)(const real_1d_array &c, const real_1d_array &x, double &func, void *ptr),
-    void (*grad)(const real_1d_array &c, const real_1d_array &x, double &func, real_1d_array &grad, void *ptr),
-    void (*hess)(const real_1d_array &c, const real_1d_array &x, double &func, real_1d_array &grad, real_2d_array &hess, void *ptr),
-    void  (*rep)(const real_1d_array &c, double func, void *ptr), 
-    void *ptr)
+              void (*func)(const real_1d_array &c, const real_1d_array &x, double &func, void *ptr),
+              void (*grad)(const real_1d_array &c, const real_1d_array &x, double &func, real_1d_array &grad, void *ptr),
+              void (*hess)(const real_1d_array &c, const real_1d_array &x, double &func, real_1d_array &grad, real_2d_array &hess, void *ptr),
+              void  (*rep)(const real_1d_array &c, double func, void *ptr),
+              void *ptr)
 {
     alglib_impl::ae_state _alglib_env_state;
-    if( func==NULL )
+    if( func==NULL ) {
         throw ap_error("ALGLIB: error in 'lsfitfit()' (func is NULL)");
-    if( grad==NULL )
+    }
+    if( grad==NULL ) {
         throw ap_error("ALGLIB: error in 'lsfitfit()' (grad is NULL)");
-    if( hess==NULL )
+    }
+    if( hess==NULL ) {
         throw ap_error("ALGLIB: error in 'lsfitfit()' (hess is NULL)");
+    }
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        while( alglib_impl::lsfititeration(state.c_ptr(), &_alglib_env_state) )
-        {
-            if( state.needf )
-            {
+    try {
+        while( alglib_impl::lsfititeration(state.c_ptr(), &_alglib_env_state) ) {
+            if( state.needf ) {
                 func(state.c, state.x, state.f, ptr);
                 continue;
             }
-            if( state.needfg )
-            {
+            if( state.needfg ) {
                 grad(state.c, state.x, state.f, state.g, ptr);
                 continue;
             }
-            if( state.needfgh )
-            {
+            if( state.needfgh ) {
                 hess(state.c, state.x, state.f, state.g, state.h, ptr);
                 continue;
             }
-            if( state.xupdated )
-            {
-                if( rep!=NULL )
+            if( state.xupdated ) {
+                if( rep!=NULL ) {
                     rep(state.c, state.f, ptr);
+                }
                 continue;
             }
             throw ap_error("ALGLIB: error in 'lsfitfit' (some derivatives were not provided?)");
         }
         alglib_impl::ae_state_clear(&_alglib_env_state);
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -6909,18 +6466,13 @@ void lsfitresults(const lsfitstate &state, ae_int_t &info, real_1d_array &c, lsf
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::lsfitresults(const_cast<alglib_impl::lsfitstate*>(state.c_ptr()), &info, const_cast<alglib_impl::ae_vector*>(c.c_ptr()), const_cast<alglib_impl::lsfitreport*>(rep.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -6934,28 +6486,34 @@ functions instead.
 _pspline2interpolant_owner::_pspline2interpolant_owner()
 {
     p_struct = (alglib_impl::pspline2interpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::pspline2interpolant), NULL);
-    if( p_struct==NULL )
+    if( p_struct==NULL ) {
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_pspline2interpolant_init(p_struct, NULL, ae_false) )
+    }
+    if( !alglib_impl::_pspline2interpolant_init(p_struct, NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
 }
 
 _pspline2interpolant_owner::_pspline2interpolant_owner(const _pspline2interpolant_owner &rhs)
 {
     p_struct = (alglib_impl::pspline2interpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::pspline2interpolant), NULL);
-    if( p_struct==NULL )
+    if( p_struct==NULL ) {
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_pspline2interpolant_init_copy(p_struct, const_cast<alglib_impl::pspline2interpolant*>(rhs.p_struct), NULL, ae_false) )
+    }
+    if( !alglib_impl::_pspline2interpolant_init_copy(p_struct, const_cast<alglib_impl::pspline2interpolant*>(rhs.p_struct), NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
 }
 
 _pspline2interpolant_owner& _pspline2interpolant_owner::operator=(const _pspline2interpolant_owner &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
+    }
     alglib_impl::_pspline2interpolant_clear(p_struct);
-    if( !alglib_impl::_pspline2interpolant_init_copy(p_struct, const_cast<alglib_impl::pspline2interpolant*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_pspline2interpolant_init_copy(p_struct, const_cast<alglib_impl::pspline2interpolant*>(rhs.p_struct), NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
     return *this;
 }
 
@@ -6974,18 +6532,19 @@ alglib_impl::pspline2interpolant* _pspline2interpolant_owner::c_ptr() const
 {
     return const_cast<alglib_impl::pspline2interpolant*>(p_struct);
 }
-pspline2interpolant::pspline2interpolant() : _pspline2interpolant_owner() 
+pspline2interpolant::pspline2interpolant() : _pspline2interpolant_owner()
 {
 }
 
-pspline2interpolant::pspline2interpolant(const pspline2interpolant &rhs):_pspline2interpolant_owner(rhs) 
+pspline2interpolant::pspline2interpolant(const pspline2interpolant &rhs):_pspline2interpolant_owner(rhs)
 {
 }
 
 pspline2interpolant& pspline2interpolant::operator=(const pspline2interpolant &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
+    }
     _pspline2interpolant_owner::operator=(rhs);
     return *this;
 }
@@ -7004,28 +6563,34 @@ functions instead.
 _pspline3interpolant_owner::_pspline3interpolant_owner()
 {
     p_struct = (alglib_impl::pspline3interpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::pspline3interpolant), NULL);
-    if( p_struct==NULL )
+    if( p_struct==NULL ) {
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_pspline3interpolant_init(p_struct, NULL, ae_false) )
+    }
+    if( !alglib_impl::_pspline3interpolant_init(p_struct, NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
 }
 
 _pspline3interpolant_owner::_pspline3interpolant_owner(const _pspline3interpolant_owner &rhs)
 {
     p_struct = (alglib_impl::pspline3interpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::pspline3interpolant), NULL);
-    if( p_struct==NULL )
+    if( p_struct==NULL ) {
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_pspline3interpolant_init_copy(p_struct, const_cast<alglib_impl::pspline3interpolant*>(rhs.p_struct), NULL, ae_false) )
+    }
+    if( !alglib_impl::_pspline3interpolant_init_copy(p_struct, const_cast<alglib_impl::pspline3interpolant*>(rhs.p_struct), NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
 }
 
 _pspline3interpolant_owner& _pspline3interpolant_owner::operator=(const _pspline3interpolant_owner &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
+    }
     alglib_impl::_pspline3interpolant_clear(p_struct);
-    if( !alglib_impl::_pspline3interpolant_init_copy(p_struct, const_cast<alglib_impl::pspline3interpolant*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_pspline3interpolant_init_copy(p_struct, const_cast<alglib_impl::pspline3interpolant*>(rhs.p_struct), NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
     return *this;
 }
 
@@ -7044,18 +6609,19 @@ alglib_impl::pspline3interpolant* _pspline3interpolant_owner::c_ptr() const
 {
     return const_cast<alglib_impl::pspline3interpolant*>(p_struct);
 }
-pspline3interpolant::pspline3interpolant() : _pspline3interpolant_owner() 
+pspline3interpolant::pspline3interpolant() : _pspline3interpolant_owner()
 {
 }
 
-pspline3interpolant::pspline3interpolant(const pspline3interpolant &rhs):_pspline3interpolant_owner(rhs) 
+pspline3interpolant::pspline3interpolant(const pspline3interpolant &rhs):_pspline3interpolant_owner(rhs)
 {
 }
 
 pspline3interpolant& pspline3interpolant::operator=(const pspline3interpolant &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
+    }
     _pspline3interpolant_owner::operator=(rhs);
     return *this;
 }
@@ -7100,18 +6666,13 @@ void pspline2build(const real_2d_array &xy, const ae_int_t n, const ae_int_t st,
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::pspline2build(const_cast<alglib_impl::ae_matrix*>(xy.c_ptr()), n, st, pt, const_cast<alglib_impl::pspline2interpolant*>(p.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -7130,18 +6691,13 @@ void pspline3build(const real_2d_array &xy, const ae_int_t n, const ae_int_t st,
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::pspline3build(const_cast<alglib_impl::ae_matrix*>(xy.c_ptr()), n, st, pt, const_cast<alglib_impl::pspline3interpolant*>(p.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -7184,18 +6740,13 @@ void pspline2buildperiodic(const real_2d_array &xy, const ae_int_t n, const ae_i
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::pspline2buildperiodic(const_cast<alglib_impl::ae_matrix*>(xy.c_ptr()), n, st, pt, const_cast<alglib_impl::pspline2interpolant*>(p.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -7215,18 +6766,13 @@ void pspline3buildperiodic(const real_2d_array &xy, const ae_int_t n, const ae_i
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::pspline3buildperiodic(const_cast<alglib_impl::ae_matrix*>(xy.c_ptr()), n, st, pt, const_cast<alglib_impl::pspline3interpolant*>(p.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -7260,18 +6806,13 @@ void pspline2parametervalues(const pspline2interpolant &p, ae_int_t &n, real_1d_
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::pspline2parametervalues(const_cast<alglib_impl::pspline2interpolant*>(p.c_ptr()), &n, const_cast<alglib_impl::ae_vector*>(t.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -7288,18 +6829,13 @@ void pspline3parametervalues(const pspline3interpolant &p, ae_int_t &n, real_1d_
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::pspline3parametervalues(const_cast<alglib_impl::pspline3interpolant*>(p.c_ptr()), &n, const_cast<alglib_impl::ae_vector*>(t.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -7329,18 +6865,13 @@ void pspline2calc(const pspline2interpolant &p, const double t, double &x, doubl
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::pspline2calc(const_cast<alglib_impl::pspline2interpolant*>(p.c_ptr()), t, &x, &y, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -7371,18 +6902,13 @@ void pspline3calc(const pspline3interpolant &p, const double t, double &x, doubl
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::pspline3calc(const_cast<alglib_impl::pspline3interpolant*>(p.c_ptr()), t, &x, &y, &z, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -7414,18 +6940,13 @@ void pspline2tangent(const pspline2interpolant &p, const double t, double &x, do
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::pspline2tangent(const_cast<alglib_impl::pspline2interpolant*>(p.c_ptr()), t, &x, &y, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -7458,18 +6979,13 @@ void pspline3tangent(const pspline3interpolant &p, const double t, double &x, do
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::pspline3tangent(const_cast<alglib_impl::pspline3interpolant*>(p.c_ptr()), t, &x, &y, &z, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -7500,18 +7016,13 @@ void pspline2diff(const pspline2interpolant &p, const double t, double &x, doubl
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::pspline2diff(const_cast<alglib_impl::pspline2interpolant*>(p.c_ptr()), t, &x, &dx, &y, &dy, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -7544,18 +7055,13 @@ void pspline3diff(const pspline3interpolant &p, const double t, double &x, doubl
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::pspline3diff(const_cast<alglib_impl::pspline3interpolant*>(p.c_ptr()), t, &x, &dx, &y, &dy, &z, &dz, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -7588,18 +7094,13 @@ void pspline2diff2(const pspline2interpolant &p, const double t, double &x, doub
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::pspline2diff2(const_cast<alglib_impl::pspline2interpolant*>(p.c_ptr()), t, &x, &dx, &d2x, &y, &dy, &d2y, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -7635,18 +7136,13 @@ void pspline3diff2(const pspline3interpolant &p, const double t, double &x, doub
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::pspline3diff2(const_cast<alglib_impl::pspline3interpolant*>(p.c_ptr()), t, &x, &dx, &d2x, &y, &dy, &d2y, &z, &dz, &d2z, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -7672,18 +7168,13 @@ double pspline2arclength(const pspline2interpolant &p, const double a, const dou
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         double result = alglib_impl::pspline2arclength(const_cast<alglib_impl::pspline2interpolant*>(p.c_ptr()), a, b, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -7709,18 +7200,13 @@ double pspline3arclength(const pspline3interpolant &p, const double a, const dou
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         double result = alglib_impl::pspline3arclength(const_cast<alglib_impl::pspline3interpolant*>(p.c_ptr()), a, b, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -7731,28 +7217,34 @@ double pspline3arclength(const pspline3interpolant &p, const double a, const dou
 _spline2dinterpolant_owner::_spline2dinterpolant_owner()
 {
     p_struct = (alglib_impl::spline2dinterpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::spline2dinterpolant), NULL);
-    if( p_struct==NULL )
+    if( p_struct==NULL ) {
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_spline2dinterpolant_init(p_struct, NULL, ae_false) )
+    }
+    if( !alglib_impl::_spline2dinterpolant_init(p_struct, NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
 }
 
 _spline2dinterpolant_owner::_spline2dinterpolant_owner(const _spline2dinterpolant_owner &rhs)
 {
     p_struct = (alglib_impl::spline2dinterpolant*)alglib_impl::ae_malloc(sizeof(alglib_impl::spline2dinterpolant), NULL);
-    if( p_struct==NULL )
+    if( p_struct==NULL ) {
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_spline2dinterpolant_init_copy(p_struct, const_cast<alglib_impl::spline2dinterpolant*>(rhs.p_struct), NULL, ae_false) )
+    }
+    if( !alglib_impl::_spline2dinterpolant_init_copy(p_struct, const_cast<alglib_impl::spline2dinterpolant*>(rhs.p_struct), NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
 }
 
 _spline2dinterpolant_owner& _spline2dinterpolant_owner::operator=(const _spline2dinterpolant_owner &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
+    }
     alglib_impl::_spline2dinterpolant_clear(p_struct);
-    if( !alglib_impl::_spline2dinterpolant_init_copy(p_struct, const_cast<alglib_impl::spline2dinterpolant*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_spline2dinterpolant_init_copy(p_struct, const_cast<alglib_impl::spline2dinterpolant*>(rhs.p_struct), NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
     return *this;
 }
 
@@ -7771,18 +7263,19 @@ alglib_impl::spline2dinterpolant* _spline2dinterpolant_owner::c_ptr() const
 {
     return const_cast<alglib_impl::spline2dinterpolant*>(p_struct);
 }
-spline2dinterpolant::spline2dinterpolant() : _spline2dinterpolant_owner() 
+spline2dinterpolant::spline2dinterpolant() : _spline2dinterpolant_owner()
 {
 }
 
-spline2dinterpolant::spline2dinterpolant(const spline2dinterpolant &rhs):_spline2dinterpolant_owner(rhs) 
+spline2dinterpolant::spline2dinterpolant(const spline2dinterpolant &rhs):_spline2dinterpolant_owner(rhs)
 {
 }
 
 spline2dinterpolant& spline2dinterpolant::operator=(const spline2dinterpolant &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
+    }
     _spline2dinterpolant_owner::operator=(rhs);
     return *this;
 }
@@ -7810,18 +7303,13 @@ void spline2dbuildbilinear(const real_1d_array &x, const real_1d_array &y, const
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline2dbuildbilinear(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_matrix*>(f.c_ptr()), m, n, const_cast<alglib_impl::spline2dinterpolant*>(c.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -7845,18 +7333,13 @@ void spline2dbuildbicubic(const real_1d_array &x, const real_1d_array &y, const 
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline2dbuildbicubic(const_cast<alglib_impl::ae_vector*>(x.c_ptr()), const_cast<alglib_impl::ae_vector*>(y.c_ptr()), const_cast<alglib_impl::ae_matrix*>(f.c_ptr()), m, n, const_cast<alglib_impl::spline2dinterpolant*>(c.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -7880,18 +7363,13 @@ double spline2dcalc(const spline2dinterpolant &c, const double x, const double y
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         double result = alglib_impl::spline2dcalc(const_cast<alglib_impl::spline2dinterpolant*>(c.c_ptr()), x, y, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -7917,18 +7395,13 @@ void spline2ddiff(const spline2dinterpolant &c, const double x, const double y, 
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline2ddiff(const_cast<alglib_impl::spline2dinterpolant*>(c.c_ptr()), x, y, &f, &fx, &fy, &fxy, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -7969,18 +7442,13 @@ void spline2dunpack(const spline2dinterpolant &c, ae_int_t &m, ae_int_t &n, real
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline2dunpack(const_cast<alglib_impl::spline2dinterpolant*>(c.c_ptr()), &m, &n, const_cast<alglib_impl::ae_matrix*>(tbl.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -8002,18 +7470,13 @@ void spline2dlintransxy(const spline2dinterpolant &c, const double ax, const dou
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline2dlintransxy(const_cast<alglib_impl::spline2dinterpolant*>(c.c_ptr()), ax, bx, ay, by, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -8035,18 +7498,13 @@ void spline2dlintransf(const spline2dinterpolant &c, const double a, const doubl
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline2dlintransf(const_cast<alglib_impl::spline2dinterpolant*>(c.c_ptr()), a, b, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -8074,18 +7532,13 @@ void spline2dresamplebicubic(const real_2d_array &a, const ae_int_t oldheight, c
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline2dresamplebicubic(const_cast<alglib_impl::ae_matrix*>(a.c_ptr()), oldheight, oldwidth, const_cast<alglib_impl::ae_matrix*>(b.c_ptr()), newheight, newwidth, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -8113,18 +7566,13 @@ void spline2dresamplebilinear(const real_2d_array &a, const ae_int_t oldheight, 
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::spline2dresamplebilinear(const_cast<alglib_impl::ae_matrix*>(a.c_ptr()), oldheight, oldwidth, const_cast<alglib_impl::ae_matrix*>(b.c_ptr()), newheight, newwidth, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -8140,161 +7588,161 @@ namespace alglib_impl
 static double idwint_idwqfactor = 1.5;
 static ae_int_t idwint_idwkmin = 5;
 static double idwint_idwcalcq(idwinterpolant* z,
-     /* Real    */ ae_vector* x,
-     ae_int_t k,
-     ae_state *_state);
+                              /* Real    */ ae_vector* x,
+                              ae_int_t k,
+                              ae_state *_state);
 static void idwint_idwinit1(ae_int_t n,
-     ae_int_t nx,
-     ae_int_t d,
-     ae_int_t nq,
-     ae_int_t nw,
-     idwinterpolant* z,
-     ae_state *_state);
+                            ae_int_t nx,
+                            ae_int_t d,
+                            ae_int_t nq,
+                            ae_int_t nw,
+                            idwinterpolant* z,
+                            ae_state *_state);
 static void idwint_idwinternalsolver(/* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     /* Real    */ ae_matrix* fmatrix,
-     /* Real    */ ae_vector* temp,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t* info,
-     /* Real    */ ae_vector* x,
-     double* taskrcond,
-     ae_state *_state);
+        /* Real    */ ae_vector* w,
+        /* Real    */ ae_matrix* fmatrix,
+        /* Real    */ ae_vector* temp,
+        ae_int_t n,
+        ae_int_t m,
+        ae_int_t* info,
+        /* Real    */ ae_vector* x,
+        double* taskrcond,
+        ae_state *_state);
 
 
 static void ratint_barycentricnormalize(barycentricinterpolant* b,
-     ae_state *_state);
+                                        ae_state *_state);
 
 
 
 
 static void spline1d_spline1dgriddiffcubicinternal(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_int_t boundltype,
-     double boundl,
-     ae_int_t boundrtype,
-     double boundr,
-     /* Real    */ ae_vector* d,
-     /* Real    */ ae_vector* a1,
-     /* Real    */ ae_vector* a2,
-     /* Real    */ ae_vector* a3,
-     /* Real    */ ae_vector* b,
-     /* Real    */ ae_vector* dt,
-     ae_state *_state);
+        /* Real    */ ae_vector* y,
+        ae_int_t n,
+        ae_int_t boundltype,
+        double boundl,
+        ae_int_t boundrtype,
+        double boundr,
+        /* Real    */ ae_vector* d,
+        /* Real    */ ae_vector* a1,
+        /* Real    */ ae_vector* a2,
+        /* Real    */ ae_vector* a3,
+        /* Real    */ ae_vector* b,
+        /* Real    */ ae_vector* dt,
+        ae_state *_state);
 static void spline1d_heapsortpoints(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_state *_state);
+        /* Real    */ ae_vector* y,
+        ae_int_t n,
+        ae_state *_state);
 static void spline1d_heapsortppoints(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Integer */ ae_vector* p,
-     ae_int_t n,
-     ae_state *_state);
+        /* Real    */ ae_vector* y,
+        /* Integer */ ae_vector* p,
+        ae_int_t n,
+        ae_state *_state);
 static void spline1d_solvetridiagonal(/* Real    */ ae_vector* a,
-     /* Real    */ ae_vector* b,
-     /* Real    */ ae_vector* c,
-     /* Real    */ ae_vector* d,
-     ae_int_t n,
-     /* Real    */ ae_vector* x,
-     ae_state *_state);
+        /* Real    */ ae_vector* b,
+        /* Real    */ ae_vector* c,
+        /* Real    */ ae_vector* d,
+        ae_int_t n,
+        /* Real    */ ae_vector* x,
+        ae_state *_state);
 static void spline1d_solvecyclictridiagonal(/* Real    */ ae_vector* a,
-     /* Real    */ ae_vector* b,
-     /* Real    */ ae_vector* c,
-     /* Real    */ ae_vector* d,
-     ae_int_t n,
-     /* Real    */ ae_vector* x,
-     ae_state *_state);
+        /* Real    */ ae_vector* b,
+        /* Real    */ ae_vector* c,
+        /* Real    */ ae_vector* d,
+        ae_int_t n,
+        /* Real    */ ae_vector* x,
+        ae_state *_state);
 static double spline1d_diffthreepoint(double t,
-     double x0,
-     double f0,
-     double x1,
-     double f1,
-     double x2,
-     double f2,
-     ae_state *_state);
+                                      double x0,
+                                      double f0,
+                                      double x1,
+                                      double f1,
+                                      double x2,
+                                      double f2,
+                                      ae_state *_state);
 
 
 static ae_int_t lsfit_rfsmax = 10;
 static void lsfit_spline1dfitinternal(ae_int_t st,
-     /* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     ae_int_t n,
-     /* Real    */ ae_vector* xc,
-     /* Real    */ ae_vector* yc,
-     /* Integer */ ae_vector* dc,
-     ae_int_t k,
-     ae_int_t m,
-     ae_int_t* info,
-     spline1dinterpolant* s,
-     spline1dfitreport* rep,
-     ae_state *_state);
+                                      /* Real    */ ae_vector* x,
+                                      /* Real    */ ae_vector* y,
+                                      /* Real    */ ae_vector* w,
+                                      ae_int_t n,
+                                      /* Real    */ ae_vector* xc,
+                                      /* Real    */ ae_vector* yc,
+                                      /* Integer */ ae_vector* dc,
+                                      ae_int_t k,
+                                      ae_int_t m,
+                                      ae_int_t* info,
+                                      spline1dinterpolant* s,
+                                      spline1dfitreport* rep,
+                                      ae_state *_state);
 static void lsfit_lsfitlinearinternal(/* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     /* Real    */ ae_matrix* fmatrix,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t* info,
-     /* Real    */ ae_vector* c,
-     lsfitreport* rep,
-     ae_state *_state);
+        /* Real    */ ae_vector* w,
+        /* Real    */ ae_matrix* fmatrix,
+        ae_int_t n,
+        ae_int_t m,
+        ae_int_t* info,
+        /* Real    */ ae_vector* c,
+        lsfitreport* rep,
+        ae_state *_state);
 static void lsfit_lsfitclearrequestfields(lsfitstate* state,
-     ae_state *_state);
+        ae_state *_state);
 static void lsfit_barycentriccalcbasis(barycentricinterpolant* b,
-     double t,
-     /* Real    */ ae_vector* y,
-     ae_state *_state);
+                                       double t,
+                                       /* Real    */ ae_vector* y,
+                                       ae_state *_state);
 static void lsfit_internalchebyshevfit(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     ae_int_t n,
-     /* Real    */ ae_vector* xc,
-     /* Real    */ ae_vector* yc,
-     /* Integer */ ae_vector* dc,
-     ae_int_t k,
-     ae_int_t m,
-     ae_int_t* info,
-     /* Real    */ ae_vector* c,
-     lsfitreport* rep,
-     ae_state *_state);
+        /* Real    */ ae_vector* y,
+        /* Real    */ ae_vector* w,
+        ae_int_t n,
+        /* Real    */ ae_vector* xc,
+        /* Real    */ ae_vector* yc,
+        /* Integer */ ae_vector* dc,
+        ae_int_t k,
+        ae_int_t m,
+        ae_int_t* info,
+        /* Real    */ ae_vector* c,
+        lsfitreport* rep,
+        ae_state *_state);
 static void lsfit_barycentricfitwcfixedd(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     ae_int_t n,
-     /* Real    */ ae_vector* xc,
-     /* Real    */ ae_vector* yc,
-     /* Integer */ ae_vector* dc,
-     ae_int_t k,
-     ae_int_t m,
-     ae_int_t d,
-     ae_int_t* info,
-     barycentricinterpolant* b,
-     barycentricfitreport* rep,
-     ae_state *_state);
+        /* Real    */ ae_vector* y,
+        /* Real    */ ae_vector* w,
+        ae_int_t n,
+        /* Real    */ ae_vector* xc,
+        /* Real    */ ae_vector* yc,
+        /* Integer */ ae_vector* dc,
+        ae_int_t k,
+        ae_int_t m,
+        ae_int_t d,
+        ae_int_t* info,
+        barycentricinterpolant* b,
+        barycentricfitreport* rep,
+        ae_state *_state);
 
 
 static void pspline_pspline2par(/* Real    */ ae_matrix* xy,
-     ae_int_t n,
-     ae_int_t pt,
-     /* Real    */ ae_vector* p,
-     ae_state *_state);
+        ae_int_t n,
+        ae_int_t pt,
+        /* Real    */ ae_vector* p,
+        ae_state *_state);
 static void pspline_pspline3par(/* Real    */ ae_matrix* xy,
-     ae_int_t n,
-     ae_int_t pt,
-     /* Real    */ ae_vector* p,
-     ae_state *_state);
+        ae_int_t n,
+        ae_int_t pt,
+        /* Real    */ ae_vector* p,
+        ae_state *_state);
 
 
 static void spline2d_bicubiccalcderivatives(/* Real    */ ae_matrix* a,
-     /* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t m,
-     ae_int_t n,
-     /* Real    */ ae_matrix* dx,
-     /* Real    */ ae_matrix* dy,
-     /* Real    */ ae_matrix* dxy,
-     ae_state *_state);
+        /* Real    */ ae_vector* x,
+        /* Real    */ ae_vector* y,
+        ae_int_t m,
+        ae_int_t n,
+        /* Real    */ ae_matrix* dx,
+        /* Real    */ ae_matrix* dy,
+        /* Real    */ ae_matrix* dxy,
+        ae_state *_state);
 
 
 
@@ -8315,8 +7763,8 @@ Result:
      Copyright 02.03.2010 by Bochkanov Sergey
 *************************************************************************/
 double idwcalc(idwinterpolant* z,
-     /* Real    */ ae_vector* x,
-     ae_state *_state)
+               /* Real    */ ae_vector* x,
+               ae_state *_state)
 {
     ae_int_t nx;
     ae_int_t i;
@@ -8331,19 +7779,18 @@ double idwcalc(idwinterpolant* z,
     double result;
 
 
-    
+
     /*
      * these initializers are not really necessary,
      * but without them compiler complains about uninitialized locals
      */
     k = 0;
-    
+
     /*
      * Query
      */
-    if( z->modeltype==0 )
-    {
-        
+    if( z->modeltype==0 ) {
+
         /*
          * NQ/NW-based model
          */
@@ -8352,9 +7799,8 @@ double idwcalc(idwinterpolant* z,
         kdtreequeryresultsdistances(&z->tree, &z->rbuf, _state);
         kdtreequeryresultstags(&z->tree, &z->tbuf, _state);
     }
-    if( z->modeltype==1 )
-    {
-        
+    if( z->modeltype==1 ) {
+
         /*
          * R-based model
          */
@@ -8362,9 +7808,8 @@ double idwcalc(idwinterpolant* z,
         k = kdtreequeryrnn(&z->tree, x, z->r, ae_true, _state);
         kdtreequeryresultsdistances(&z->tree, &z->rbuf, _state);
         kdtreequeryresultstags(&z->tree, &z->tbuf, _state);
-        if( k<idwint_idwkmin )
-        {
-            
+        if( k<idwint_idwkmin ) {
+
             /*
              * we need at least IDWKMin points
              */
@@ -8373,7 +7818,7 @@ double idwcalc(idwinterpolant* z,
             kdtreequeryresultstags(&z->tree, &z->tbuf, _state);
         }
     }
-    
+
     /*
      * initialize weights for linear/quadratic members calculation.
      *
@@ -8394,12 +7839,10 @@ double idwcalc(idwinterpolant* z,
     d0 = z->rbuf.ptr.p_double[0];
     result = 0;
     s = 0;
-    for(i=0; i<=k-1; i++)
-    {
+    for(i=0; i<=k-1; i++) {
         di = z->rbuf.ptr.p_double[i];
-        if( ae_fp_eq(di,d0) )
-        {
-            
+        if( ae_fp_eq(di,d0) ) {
+
             /*
              * distance is equal to shortest, set it 1.0
              * without explicitly calculating (which would give
@@ -8407,10 +7850,8 @@ double idwcalc(idwinterpolant* z,
              * division by zero).
              */
             w = 1;
-        }
-        else
-        {
-            
+        } else {
+
             /*
              * use normalized formula
              */
@@ -8459,7 +7900,7 @@ INPUT PARAMETERS:
 
 OUTPUT PARAMETERS:
     Z   -   IDW interpolant.
-    
+
 NOTES:
   * best results are obtained with quadratic models, worst - with constant
     models
@@ -8482,13 +7923,13 @@ NOTES:
      Copyright 02.03.2010 by Bochkanov Sergey
 *************************************************************************/
 void idwbuildmodifiedshepard(/* Real    */ ae_matrix* xy,
-     ae_int_t n,
-     ae_int_t nx,
-     ae_int_t d,
-     ae_int_t nq,
-     ae_int_t nw,
-     idwinterpolant* z,
-     ae_state *_state)
+        ae_int_t n,
+        ae_int_t nx,
+        ae_int_t d,
+        ae_int_t nq,
+        ae_int_t nw,
+        idwinterpolant* z,
+        ae_state *_state)
 {
     ae_frame _frame_block;
     ae_int_t i;
@@ -8529,53 +7970,50 @@ void idwbuildmodifiedshepard(/* Real    */ ae_matrix* xy,
     ae_vector_init(&temp, 0, DT_REAL, _state, ae_true);
     ae_vector_init(&tags, 0, DT_INT, _state, ae_true);
 
-    
+
     /*
      * these initializers are not really necessary,
      * but without them compiler complains about uninitialized locals
      */
     nc = 0;
-    
+
     /*
      * assertions
      */
     ae_assert(n>0, "IDWBuildModifiedShepard: N<=0!", _state);
     ae_assert(nx>=1, "IDWBuildModifiedShepard: NX<1!", _state);
     ae_assert(d>=-1&&d<=2, "IDWBuildModifiedShepard: D<>-1 and D<>0 and D<>1 and D<>2!", _state);
-    
+
     /*
      * Correct parameters if needed
      */
-    if( d==1 )
-    {
+    if( d==1 ) {
         nq = ae_maxint(nq, ae_iceil(idwint_idwqfactor*(1+nx), _state)+1, _state);
         nq = ae_maxint(nq, ae_round(ae_pow(2, nx, _state), _state)+1, _state);
     }
-    if( d==2 )
-    {
+    if( d==2 ) {
         nq = ae_maxint(nq, ae_iceil(idwint_idwqfactor*(nx+2)*(nx+1)/2, _state)+1, _state);
         nq = ae_maxint(nq, ae_round(ae_pow(2, nx, _state), _state)+1, _state);
     }
     nw = ae_maxint(nw, ae_round(ae_pow(2, nx, _state), _state)+1, _state);
     nq = ae_minint(nq, n, _state);
     nw = ae_minint(nw, n, _state);
-    
+
     /*
      * primary initialization of Z
      */
     idwint_idwinit1(n, nx, d, nq, nw, z, _state);
     z->modeltype = 0;
-    
+
     /*
      * Create KD-tree
      */
     ae_vector_set_length(&tags, n, _state);
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         tags.ptr.p_int[i] = i;
     }
     kdtreebuildtagged(xy, &tags, n, nx, 1, 2, &z->tree, _state);
-    
+
     /*
      * build nodal functions
      */
@@ -8583,28 +8021,25 @@ void idwbuildmodifiedshepard(/* Real    */ ae_matrix* xy,
     ae_vector_set_length(&x, nx, _state);
     ae_vector_set_length(&qrbuf, nq, _state);
     ae_matrix_set_length(&qxybuf, nq, nx+1, _state);
-    if( d==-1 )
-    {
+    if( d==-1 ) {
         ae_vector_set_length(&w, nq, _state);
     }
-    if( d==1 )
-    {
+    if( d==1 ) {
         ae_vector_set_length(&y, nq, _state);
         ae_vector_set_length(&w, nq, _state);
         ae_vector_set_length(&qsol, nx, _state);
-        
+
         /*
          * NX for linear members,
          * 1 for temporary storage
          */
         ae_matrix_set_length(&fmatrix, nq, nx+1, _state);
     }
-    if( d==2 )
-    {
+    if( d==2 ) {
         ae_vector_set_length(&y, nq, _state);
         ae_vector_set_length(&w, nq, _state);
         ae_vector_set_length(&qsol, nx+ae_round(nx*(nx+1)*0.5, _state), _state);
-        
+
         /*
          * NX for linear members,
          * Round(NX*(NX+1)*0.5) for quadratic model,
@@ -8612,19 +8047,17 @@ void idwbuildmodifiedshepard(/* Real    */ ae_matrix* xy,
          */
         ae_matrix_set_length(&fmatrix, nq, nx+ae_round(nx*(nx+1)*0.5, _state)+1, _state);
     }
-    for(i=0; i<=n-1; i++)
-    {
-        
+    for(i=0; i<=n-1; i++) {
+
         /*
          * Initialize center and function value.
          * If D=0 it is all what we need
          */
         ae_v_move(&z->q.ptr.pp_double[i][0], 1, &xy->ptr.pp_double[i][0], 1, ae_v_len(0,nx));
-        if( d==0 )
-        {
+        if( d==0 ) {
             continue;
         }
-        
+
         /*
          * calculate weights for linear/quadratic members calculation.
          *
@@ -8647,12 +8080,10 @@ void idwbuildmodifiedshepard(/* Real    */ ae_matrix* xy,
         kdtreequeryresultsdistances(&z->tree, &qrbuf, _state);
         r = qrbuf.ptr.p_double[k-1];
         d0 = qrbuf.ptr.p_double[0];
-        for(j=0; j<=k-1; j++)
-        {
+        for(j=0; j<=k-1; j++) {
             di = qrbuf.ptr.p_double[j];
-            if( ae_fp_eq(di,d0) )
-            {
-                
+            if( ae_fp_eq(di,d0) ) {
+
                 /*
                  * distance is equal to shortest, set it 1.0
                  * without explicitly calculating (which would give
@@ -8660,10 +8091,8 @@ void idwbuildmodifiedshepard(/* Real    */ ae_matrix* xy,
                  * division by zero).
                  */
                 w.ptr.p_double[j] = 1;
-            }
-            else
-            {
-                
+            } else {
+
                 /*
                  * use normalized formula
                  */
@@ -8672,97 +8101,80 @@ void idwbuildmodifiedshepard(/* Real    */ ae_matrix* xy,
                 w.ptr.p_double[j] = ae_sqr(v1*v2, _state);
             }
         }
-        
+
         /*
          * calculate linear/quadratic members
          */
-        if( d==-1 )
-        {
-            
+        if( d==-1 ) {
+
             /*
              * "Fast" linear nodal function calculated using
              * inverse distance weighting
              */
-            for(j=0; j<=nx-1; j++)
-            {
+            for(j=0; j<=nx-1; j++) {
                 x.ptr.p_double[j] = 0;
             }
             s = 0;
-            for(j=0; j<=k-1; j++)
-            {
-                
+            for(j=0; j<=k-1; j++) {
+
                 /*
                  * calculate J-th inverse distance weighted gradient:
                  *     grad_k = (y_j-y_k)*(x_j-x_k)/sqr(norm(x_j-x_k))
                  *     grad   = sum(wk*grad_k)/sum(w_k)
                  */
                 v = 0;
-                for(j2=0; j2<=nx-1; j2++)
-                {
+                for(j2=0; j2<=nx-1; j2++) {
                     v = v+ae_sqr(qxybuf.ptr.pp_double[j][j2]-xy->ptr.pp_double[i][j2], _state);
                 }
-                
+
                 /*
                  * Although x_j<>x_k, sqr(norm(x_j-x_k)) may be zero due to
                  * underflow. If it is, we assume than J-th gradient is zero
                  * (i.e. don't add anything)
                  */
-                if( ae_fp_neq(v,0) )
-                {
-                    for(j2=0; j2<=nx-1; j2++)
-                    {
+                if( ae_fp_neq(v,0) ) {
+                    for(j2=0; j2<=nx-1; j2++) {
                         x.ptr.p_double[j2] = x.ptr.p_double[j2]+w.ptr.p_double[j]*(qxybuf.ptr.pp_double[j][nx]-xy->ptr.pp_double[i][nx])*(qxybuf.ptr.pp_double[j][j2]-xy->ptr.pp_double[i][j2])/v;
                     }
                 }
                 s = s+w.ptr.p_double[j];
             }
-            for(j=0; j<=nx-1; j++)
-            {
+            for(j=0; j<=nx-1; j++) {
                 z->q.ptr.pp_double[i][nx+1+j] = x.ptr.p_double[j]/s;
             }
-        }
-        else
-        {
-            
+        } else {
+
             /*
              * Least squares models: build
              */
-            if( d==1 )
-            {
-                
+            if( d==1 ) {
+
                 /*
                  * Linear nodal function calculated using
                  * least squares fitting to its neighbors
                  */
-                for(j=0; j<=k-1; j++)
-                {
-                    for(j2=0; j2<=nx-1; j2++)
-                    {
+                for(j=0; j<=k-1; j++) {
+                    for(j2=0; j2<=nx-1; j2++) {
                         fmatrix.ptr.pp_double[j][j2] = qxybuf.ptr.pp_double[j][j2]-xy->ptr.pp_double[i][j2];
                     }
                     y.ptr.p_double[j] = qxybuf.ptr.pp_double[j][nx]-xy->ptr.pp_double[i][nx];
                 }
                 nc = nx;
             }
-            if( d==2 )
-            {
-                
+            if( d==2 ) {
+
                 /*
                  * Quadratic nodal function calculated using
                  * least squares fitting to its neighbors
                  */
-                for(j=0; j<=k-1; j++)
-                {
+                for(j=0; j<=k-1; j++) {
                     offs = 0;
-                    for(j2=0; j2<=nx-1; j2++)
-                    {
+                    for(j2=0; j2<=nx-1; j2++) {
                         fmatrix.ptr.pp_double[j][offs] = qxybuf.ptr.pp_double[j][j2]-xy->ptr.pp_double[i][j2];
                         offs = offs+1;
                     }
-                    for(j2=0; j2<=nx-1; j2++)
-                    {
-                        for(j3=j2; j3<=nx-1; j3++)
-                        {
+                    for(j2=0; j2<=nx-1; j2++) {
+                        for(j3=j2; j3<=nx-1; j3++) {
                             fmatrix.ptr.pp_double[j][offs] = (qxybuf.ptr.pp_double[j][j2]-xy->ptr.pp_double[i][j2])*(qxybuf.ptr.pp_double[j][j3]-xy->ptr.pp_double[i][j3]);
                             offs = offs+1;
                         }
@@ -8772,33 +8184,28 @@ void idwbuildmodifiedshepard(/* Real    */ ae_matrix* xy,
                 nc = nx+ae_round(nx*(nx+1)*0.5, _state);
             }
             idwint_idwinternalsolver(&y, &w, &fmatrix, &temp, k, nc, &info, &qsol, &taskrcond, _state);
-            
+
             /*
              * Least squares models: copy results
              */
-            if( info>0 )
-            {
-                
+            if( info>0 ) {
+
                 /*
                  * LLS task is solved, copy results
                  */
                 z->debugworstrcond = ae_minreal(z->debugworstrcond, taskrcond, _state);
                 z->debugbestrcond = ae_maxreal(z->debugbestrcond, taskrcond, _state);
-                for(j=0; j<=nc-1; j++)
-                {
+                for(j=0; j<=nc-1; j++) {
                     z->q.ptr.pp_double[i][nx+1+j] = qsol.ptr.p_double[j];
                 }
-            }
-            else
-            {
-                
+            } else {
+
                 /*
                  * Solver failure, very strange, but we will use
                  * zero values to handle it.
                  */
                 z->debugsolverfailures = z->debugsolverfailures+1;
-                for(j=0; j<=nc-1; j++)
-                {
+                for(j=0; j<=nc-1; j++) {
                     z->q.ptr.pp_double[i][nx+1+j] = 0;
                 }
             }
@@ -8836,11 +8243,11 @@ NOTES:
      Copyright 11.04.2010 by Bochkanov Sergey
 *************************************************************************/
 void idwbuildmodifiedshepardr(/* Real    */ ae_matrix* xy,
-     ae_int_t n,
-     ae_int_t nx,
-     double r,
-     idwinterpolant* z,
-     ae_state *_state)
+        ae_int_t n,
+        ae_int_t nx,
+        double r,
+        idwinterpolant* z,
+        ae_state *_state)
 {
     ae_frame _frame_block;
     ae_int_t i;
@@ -8850,36 +8257,34 @@ void idwbuildmodifiedshepardr(/* Real    */ ae_matrix* xy,
     _idwinterpolant_clear(z);
     ae_vector_init(&tags, 0, DT_INT, _state, ae_true);
 
-    
+
     /*
      * assertions
      */
     ae_assert(n>0, "IDWBuildModifiedShepardR: N<=0!", _state);
     ae_assert(nx>=1, "IDWBuildModifiedShepardR: NX<1!", _state);
     ae_assert(ae_fp_greater(r,0), "IDWBuildModifiedShepardR: R<=0!", _state);
-    
+
     /*
      * primary initialization of Z
      */
     idwint_idwinit1(n, nx, 0, 0, n, z, _state);
     z->modeltype = 1;
     z->r = r;
-    
+
     /*
      * Create KD-tree
      */
     ae_vector_set_length(&tags, n, _state);
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         tags.ptr.p_int[i] = i;
     }
     kdtreebuildtagged(xy, &tags, n, nx, 1, 2, &z->tree, _state);
-    
+
     /*
      * build nodal functions
      */
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         ae_v_move(&z->q.ptr.pp_double[i][0], 1, &xy->ptr.pp_double[i][0], 1, ae_v_len(0,nx));
     }
     ae_frame_leave(_state);
@@ -8950,13 +8355,13 @@ NOTES:
      Copyright 02.03.2010 by Bochkanov Sergey
 *************************************************************************/
 void idwbuildnoisy(/* Real    */ ae_matrix* xy,
-     ae_int_t n,
-     ae_int_t nx,
-     ae_int_t d,
-     ae_int_t nq,
-     ae_int_t nw,
-     idwinterpolant* z,
-     ae_state *_state)
+                                 ae_int_t n,
+                                 ae_int_t nx,
+                                 ae_int_t d,
+                                 ae_int_t nq,
+                                 ae_int_t nw,
+                                 idwinterpolant* z,
+                                 ae_state *_state)
 {
     ae_frame _frame_block;
     ae_int_t i;
@@ -8991,51 +8396,48 @@ void idwbuildnoisy(/* Real    */ ae_matrix* xy,
     ae_vector_init(&tags, 0, DT_INT, _state, ae_true);
     ae_vector_init(&temp, 0, DT_REAL, _state, ae_true);
 
-    
+
     /*
      * these initializers are not really necessary,
      * but without them compiler complains about uninitialized locals
      */
     nc = 0;
-    
+
     /*
      * assertions
      */
     ae_assert(n>0, "IDWBuildNoisy: N<=0!", _state);
     ae_assert(nx>=1, "IDWBuildNoisy: NX<1!", _state);
     ae_assert(d>=1&&d<=2, "IDWBuildNoisy: D<>1 and D<>2!", _state);
-    
+
     /*
      * Correct parameters if needed
      */
-    if( d==1 )
-    {
+    if( d==1 ) {
         nq = ae_maxint(nq, ae_iceil(idwint_idwqfactor*(1+nx), _state)+1, _state);
     }
-    if( d==2 )
-    {
+    if( d==2 ) {
         nq = ae_maxint(nq, ae_iceil(idwint_idwqfactor*(nx+2)*(nx+1)/2, _state)+1, _state);
     }
     nw = ae_maxint(nw, ae_round(ae_pow(2, nx, _state), _state)+1, _state);
     nq = ae_minint(nq, n, _state);
     nw = ae_minint(nw, n, _state);
-    
+
     /*
      * primary initialization of Z
      */
     idwint_idwinit1(n, nx, d, nq, nw, z, _state);
     z->modeltype = 0;
-    
+
     /*
      * Create KD-tree
      */
     ae_vector_set_length(&tags, n, _state);
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         tags.ptr.p_int[i] = i;
     }
     kdtreebuildtagged(xy, &tags, n, nx, 1, 2, &z->tree, _state);
-    
+
     /*
      * build nodal functions
      * (special algorithm for noisy data is used)
@@ -9044,12 +8446,11 @@ void idwbuildnoisy(/* Real    */ ae_matrix* xy,
     ae_vector_set_length(&x, nx, _state);
     ae_vector_set_length(&qrbuf, nq, _state);
     ae_matrix_set_length(&qxybuf, nq, nx+1, _state);
-    if( d==1 )
-    {
+    if( d==1 ) {
         ae_vector_set_length(&y, nq, _state);
         ae_vector_set_length(&w, nq, _state);
         ae_vector_set_length(&qsol, 1+nx, _state);
-        
+
         /*
          * 1 for constant member,
          * NX for linear members,
@@ -9057,12 +8458,11 @@ void idwbuildnoisy(/* Real    */ ae_matrix* xy,
          */
         ae_matrix_set_length(&fmatrix, nq, 1+nx+1, _state);
     }
-    if( d==2 )
-    {
+    if( d==2 ) {
         ae_vector_set_length(&y, nq, _state);
         ae_vector_set_length(&w, nq, _state);
         ae_vector_set_length(&qsol, 1+nx+ae_round(nx*(nx+1)*0.5, _state), _state);
-        
+
         /*
          * 1 for constant member,
          * NX for linear members,
@@ -9071,14 +8471,13 @@ void idwbuildnoisy(/* Real    */ ae_matrix* xy,
          */
         ae_matrix_set_length(&fmatrix, nq, 1+nx+ae_round(nx*(nx+1)*0.5, _state)+1, _state);
     }
-    for(i=0; i<=n-1; i++)
-    {
-        
+    for(i=0; i<=n-1; i++) {
+
         /*
          * Initialize center.
          */
         ae_v_move(&z->q.ptr.pp_double[i][0], 1, &xy->ptr.pp_double[i][0], 1, ae_v_len(0,nx-1));
-        
+
         /*
          * Calculate linear/quadratic members
          * using least squares fit
@@ -9089,18 +8488,15 @@ void idwbuildnoisy(/* Real    */ ae_matrix* xy,
         k = kdtreequeryknn(&z->tree, &x, nq, ae_true, _state);
         kdtreequeryresultsxy(&z->tree, &qxybuf, _state);
         kdtreequeryresultsdistances(&z->tree, &qrbuf, _state);
-        if( d==1 )
-        {
-            
+        if( d==1 ) {
+
             /*
              * Linear nodal function calculated using
              * least squares fitting to its neighbors
              */
-            for(j=0; j<=k-1; j++)
-            {
+            for(j=0; j<=k-1; j++) {
                 fmatrix.ptr.pp_double[j][0] = 1.0;
-                for(j2=0; j2<=nx-1; j2++)
-                {
+                for(j2=0; j2<=nx-1; j2++) {
                     fmatrix.ptr.pp_double[j][1+j2] = qxybuf.ptr.pp_double[j][j2]-xy->ptr.pp_double[i][j2];
                 }
                 y.ptr.p_double[j] = qxybuf.ptr.pp_double[j][nx];
@@ -9108,26 +8504,21 @@ void idwbuildnoisy(/* Real    */ ae_matrix* xy,
             }
             nc = 1+nx;
         }
-        if( d==2 )
-        {
-            
+        if( d==2 ) {
+
             /*
              * Quadratic nodal function calculated using
              * least squares fitting to its neighbors
              */
-            for(j=0; j<=k-1; j++)
-            {
+            for(j=0; j<=k-1; j++) {
                 fmatrix.ptr.pp_double[j][0] = 1;
                 offs = 1;
-                for(j2=0; j2<=nx-1; j2++)
-                {
+                for(j2=0; j2<=nx-1; j2++) {
                     fmatrix.ptr.pp_double[j][offs] = qxybuf.ptr.pp_double[j][j2]-xy->ptr.pp_double[i][j2];
                     offs = offs+1;
                 }
-                for(j2=0; j2<=nx-1; j2++)
-                {
-                    for(j3=j2; j3<=nx-1; j3++)
-                    {
+                for(j2=0; j2<=nx-1; j2++) {
+                    for(j3=j2; j3<=nx-1; j3++) {
                         fmatrix.ptr.pp_double[j][offs] = (qxybuf.ptr.pp_double[j][j2]-xy->ptr.pp_double[i][j2])*(qxybuf.ptr.pp_double[j][j3]-xy->ptr.pp_double[i][j3]);
                         offs = offs+1;
                     }
@@ -9138,39 +8529,33 @@ void idwbuildnoisy(/* Real    */ ae_matrix* xy,
             nc = 1+nx+ae_round(nx*(nx+1)*0.5, _state);
         }
         idwint_idwinternalsolver(&y, &w, &fmatrix, &temp, k, nc, &info, &qsol, &taskrcond, _state);
-        
+
         /*
          * Least squares models: copy results
          */
-        if( info>0 )
-        {
-            
+        if( info>0 ) {
+
             /*
              * LLS task is solved, copy results
              */
             z->debugworstrcond = ae_minreal(z->debugworstrcond, taskrcond, _state);
             z->debugbestrcond = ae_maxreal(z->debugbestrcond, taskrcond, _state);
-            for(j=0; j<=nc-1; j++)
-            {
+            for(j=0; j<=nc-1; j++) {
                 z->q.ptr.pp_double[i][nx+j] = qsol.ptr.p_double[j];
             }
-        }
-        else
-        {
-            
+        } else {
+
             /*
              * Solver failure, very strange, but we will use
              * zero values to handle it.
              */
             z->debugsolverfailures = z->debugsolverfailures+1;
             v = 0;
-            for(j=0; j<=k-1; j++)
-            {
+            for(j=0; j<=k-1; j++) {
                 v = v+qxybuf.ptr.pp_double[j][nx];
             }
             z->q.ptr.pp_double[i][nx] = v/k;
-            for(j=0; j<=nc-2; j++)
-            {
+            for(j=0; j<=nc-2; j++) {
                 z->q.ptr.pp_double[i][nx+1+j] = 0;
             }
         }
@@ -9186,9 +8571,9 @@ Internal subroutine: K-th nodal function calculation
      Copyright 02.03.2010 by Bochkanov Sergey
 *************************************************************************/
 static double idwint_idwcalcq(idwinterpolant* z,
-     /* Real    */ ae_vector* x,
-     ae_int_t k,
-     ae_state *_state)
+                              /* Real    */ ae_vector* x,
+                              ae_int_t k,
+                              ae_state *_state)
 {
     ae_int_t nx;
     ae_int_t i;
@@ -9198,33 +8583,28 @@ static double idwint_idwcalcq(idwinterpolant* z,
 
 
     nx = z->nx;
-    
+
     /*
      * constant member
      */
     result = z->q.ptr.pp_double[k][nx];
-    
+
     /*
      * linear members
      */
-    if( z->d>=1 )
-    {
-        for(i=0; i<=nx-1; i++)
-        {
+    if( z->d>=1 ) {
+        for(i=0; i<=nx-1; i++) {
             result = result+z->q.ptr.pp_double[k][nx+1+i]*(x->ptr.p_double[i]-z->q.ptr.pp_double[k][i]);
         }
     }
-    
+
     /*
      * quadratic members
      */
-    if( z->d>=2 )
-    {
+    if( z->d>=2 ) {
         offs = nx+1+nx;
-        for(i=0; i<=nx-1; i++)
-        {
-            for(j=i; j<=nx-1; j++)
-            {
+        for(i=0; i<=nx-1; i++) {
+            for(j=i; j<=nx-1; j++) {
                 result = result+z->q.ptr.pp_double[k][offs]*(x->ptr.p_double[i]-z->q.ptr.pp_double[k][i])*(x->ptr.p_double[j]-z->q.ptr.pp_double[k][j]);
                 offs = offs+1;
             }
@@ -9243,12 +8623,12 @@ It assumes correctness of all parameters.
      Copyright 02.03.2010 by Bochkanov Sergey
 *************************************************************************/
 static void idwint_idwinit1(ae_int_t n,
-     ae_int_t nx,
-     ae_int_t d,
-     ae_int_t nq,
-     ae_int_t nw,
-     idwinterpolant* z,
-     ae_state *_state)
+                            ae_int_t nx,
+                            ae_int_t d,
+                            ae_int_t nq,
+                            ae_int_t nw,
+                            idwinterpolant* z,
+                            ae_state *_state)
 {
 
 
@@ -9258,33 +8638,26 @@ static void idwint_idwinit1(ae_int_t n,
     z->n = n;
     z->nx = nx;
     z->d = 0;
-    if( d==1 )
-    {
+    if( d==1 ) {
         z->d = 1;
     }
-    if( d==2 )
-    {
+    if( d==2 ) {
         z->d = 2;
     }
-    if( d==-1 )
-    {
+    if( d==-1 ) {
         z->d = 1;
     }
     z->nw = nw;
-    if( d==-1 )
-    {
+    if( d==-1 ) {
         ae_matrix_set_length(&z->q, n, nx+1+nx, _state);
     }
-    if( d==0 )
-    {
+    if( d==0 ) {
         ae_matrix_set_length(&z->q, n, nx+1, _state);
     }
-    if( d==1 )
-    {
+    if( d==1 ) {
         ae_matrix_set_length(&z->q, n, nx+1+nx, _state);
     }
-    if( d==2 )
-    {
+    if( d==2 ) {
         ae_matrix_set_length(&z->q, n, nx+1+nx+ae_round(nx*(nx+1)*0.5, _state), _state);
     }
     ae_vector_set_length(&z->tbuf, nw, _state);
@@ -9310,15 +8683,15 @@ INPUT PARAMETERS:
     Temp        array[0..N]
 *************************************************************************/
 static void idwint_idwinternalsolver(/* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     /* Real    */ ae_matrix* fmatrix,
-     /* Real    */ ae_vector* temp,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t* info,
-     /* Real    */ ae_vector* x,
-     double* taskrcond,
-     ae_state *_state)
+        /* Real    */ ae_vector* w,
+        /* Real    */ ae_matrix* fmatrix,
+        /* Real    */ ae_vector* temp,
+        ae_int_t n,
+        ae_int_t m,
+        ae_int_t* info,
+        /* Real    */ ae_vector* x,
+        double* taskrcond,
+        ae_state *_state)
 {
     ae_frame _frame_block;
     ae_int_t i;
@@ -9333,99 +8706,85 @@ static void idwint_idwinternalsolver(/* Real    */ ae_vector* y,
     ae_vector_init(&b, 0, DT_REAL, _state, ae_true);
     _densesolverlsreport_init(&srep, _state, ae_true);
 
-    
+
     /*
      * set up info
      */
     *info = 1;
-    
+
     /*
      * prepare matrix
      */
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         fmatrix->ptr.pp_double[i][m] = y->ptr.p_double[i];
         v = w->ptr.p_double[i];
         ae_v_muld(&fmatrix->ptr.pp_double[i][0], 1, ae_v_len(0,m), v);
     }
-    
+
     /*
      * use either fast algorithm or general algorithm
      */
-    if( m<=n )
-    {
-        
+    if( m<=n ) {
+
         /*
          * QR decomposition
          * We assume that M<=N (we would have called LSFit() otherwise)
          */
-        for(i=0; i<=m-1; i++)
-        {
-            if( i<n-1 )
-            {
+        for(i=0; i<=m-1; i++) {
+            if( i<n-1 ) {
                 ae_v_move(&temp->ptr.p_double[1], 1, &fmatrix->ptr.pp_double[i][i], fmatrix->stride, ae_v_len(1,n-i));
                 generatereflection(temp, n-i, &tau, _state);
                 fmatrix->ptr.pp_double[i][i] = temp->ptr.p_double[1];
                 temp->ptr.p_double[1] = 1;
-                for(j=i+1; j<=m; j++)
-                {
+                for(j=i+1; j<=m; j++) {
                     v = ae_v_dotproduct(&fmatrix->ptr.pp_double[i][j], fmatrix->stride, &temp->ptr.p_double[1], 1, ae_v_len(i,n-1));
                     v = tau*v;
                     ae_v_subd(&fmatrix->ptr.pp_double[i][j], fmatrix->stride, &temp->ptr.p_double[1], 1, ae_v_len(i,n-1), v);
                 }
             }
         }
-        
+
         /*
          * Check condition number
          */
         *taskrcond = rmatrixtrrcondinf(fmatrix, m, ae_true, ae_false, _state);
-        
+
         /*
          * use either fast algorithm for non-degenerate cases
          * or slow algorithm for degenerate cases
          */
-        if( ae_fp_greater(*taskrcond,10000*n*ae_machineepsilon) )
-        {
-            
+        if( ae_fp_greater(*taskrcond,10000*n*ae_machineepsilon) ) {
+
             /*
              * solve triangular system R*x = FMatrix[0:M-1,M]
              * using fast algorithm, then exit
              */
             x->ptr.p_double[m-1] = fmatrix->ptr.pp_double[m-1][m]/fmatrix->ptr.pp_double[m-1][m-1];
-            for(i=m-2; i>=0; i--)
-            {
+            for(i=m-2; i>=0; i--) {
                 v = ae_v_dotproduct(&fmatrix->ptr.pp_double[i][i+1], 1, &x->ptr.p_double[i+1], 1, ae_v_len(i+1,m-1));
                 x->ptr.p_double[i] = (fmatrix->ptr.pp_double[i][m]-v)/fmatrix->ptr.pp_double[i][i];
             }
-        }
-        else
-        {
-            
+        } else {
+
             /*
              * use more general algorithm
              */
             ae_vector_set_length(&b, m, _state);
-            for(i=0; i<=m-1; i++)
-            {
-                for(j=0; j<=i-1; j++)
-                {
+            for(i=0; i<=m-1; i++) {
+                for(j=0; j<=i-1; j++) {
                     fmatrix->ptr.pp_double[i][j] = 0.0;
                 }
                 b.ptr.p_double[i] = fmatrix->ptr.pp_double[i][m];
             }
             rmatrixsolvels(fmatrix, m, m, &b, 10000*ae_machineepsilon, info, &srep, x, _state);
         }
-    }
-    else
-    {
-        
+    } else {
+
         /*
          * use more general algorithm
          */
         ae_vector_set_length(&b, n, _state);
-        for(i=0; i<=n-1; i++)
-        {
+        for(i=0; i<=n-1; i++) {
             b.ptr.p_double[i] = fmatrix->ptr.pp_double[i][m];
         }
         rmatrixsolvels(fmatrix, n, m, &b, 10000*ae_machineepsilon, info, &srep, x, _state);
@@ -9437,18 +8796,24 @@ static void idwint_idwinternalsolver(/* Real    */ ae_vector* y,
 
 ae_bool _idwinterpolant_init(idwinterpolant* p, ae_state *_state, ae_bool make_automatic)
 {
-    if( !_kdtree_init(&p->tree, _state, make_automatic) )
+    if( !_kdtree_init(&p->tree, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_matrix_init(&p->q, 0, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_matrix_init(&p->q, 0, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->xbuf, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->xbuf, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->tbuf, 0, DT_INT, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->tbuf, 0, DT_INT, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->rbuf, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->rbuf, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_matrix_init(&p->xybuf, 0, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_matrix_init(&p->xybuf, 0, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
+    }
     return ae_true;
 }
 
@@ -9460,19 +8825,25 @@ ae_bool _idwinterpolant_init_copy(idwinterpolant* dst, idwinterpolant* src, ae_s
     dst->d = src->d;
     dst->r = src->r;
     dst->nw = src->nw;
-    if( !_kdtree_init_copy(&dst->tree, &src->tree, _state, make_automatic) )
+    if( !_kdtree_init_copy(&dst->tree, &src->tree, _state, make_automatic) ) {
         return ae_false;
+    }
     dst->modeltype = src->modeltype;
-    if( !ae_matrix_init_copy(&dst->q, &src->q, _state, make_automatic) )
+    if( !ae_matrix_init_copy(&dst->q, &src->q, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init_copy(&dst->xbuf, &src->xbuf, _state, make_automatic) )
+    }
+    if( !ae_vector_init_copy(&dst->xbuf, &src->xbuf, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init_copy(&dst->tbuf, &src->tbuf, _state, make_automatic) )
+    }
+    if( !ae_vector_init_copy(&dst->tbuf, &src->tbuf, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init_copy(&dst->rbuf, &src->rbuf, _state, make_automatic) )
+    }
+    if( !ae_vector_init_copy(&dst->rbuf, &src->rbuf, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_matrix_init_copy(&dst->xybuf, &src->xybuf, _state, make_automatic) )
+    }
+    if( !ae_matrix_init_copy(&dst->xybuf, &src->xybuf, _state, make_automatic) ) {
         return ae_false;
+    }
     dst->debugsolverfailures = src->debugsolverfailures;
     dst->debugworstrcond = src->debugworstrcond;
     dst->debugbestrcond = src->debugbestrcond;
@@ -9510,8 +8881,8 @@ Result:
      Copyright 17.08.2009 by Bochkanov Sergey
 *************************************************************************/
 double barycentriccalc(barycentricinterpolant* b,
-     double t,
-     ae_state *_state)
+                       double t,
+                       ae_state *_state)
 {
     double s1;
     double s2;
@@ -9522,25 +8893,23 @@ double barycentriccalc(barycentricinterpolant* b,
 
 
     ae_assert(!ae_isinf(t, _state), "BarycentricCalc: infinite T!", _state);
-    
+
     /*
      * special case: NaN
      */
-    if( ae_isnan(t, _state) )
-    {
+    if( ae_isnan(t, _state) ) {
         result = _state->v_nan;
         return result;
     }
-    
+
     /*
      * special case: N=1
      */
-    if( b->n==1 )
-    {
+    if( b->n==1 ) {
         result = b->sy*b->y.ptr.p_double[0];
         return result;
     }
-    
+
     /*
      * Here we assume that task is normalized, i.e.:
      * 1. abs(Y[i])<=1
@@ -9548,24 +8917,20 @@ double barycentriccalc(barycentricinterpolant* b,
      * 3. X[] is ordered
      */
     s = ae_fabs(t-b->x.ptr.p_double[0], _state);
-    for(i=0; i<=b->n-1; i++)
-    {
+    for(i=0; i<=b->n-1; i++) {
         v = b->x.ptr.p_double[i];
-        if( ae_fp_eq(v,t) )
-        {
+        if( ae_fp_eq(v,t) ) {
             result = b->sy*b->y.ptr.p_double[i];
             return result;
         }
         v = ae_fabs(t-v, _state);
-        if( ae_fp_less(v,s) )
-        {
+        if( ae_fp_less(v,s) ) {
             s = v;
         }
     }
     s1 = 0;
     s2 = 0;
-    for(i=0; i<=b->n-1; i++)
-    {
+    for(i=0; i<=b->n-1; i++) {
         v = s/(t-b->x.ptr.p_double[i]);
         v = v*b->w.ptr.p_double[i];
         s1 = s1+v*b->y.ptr.p_double[i];
@@ -9591,7 +8956,7 @@ INPUT PARAMETERS:
 OUTPUT PARAMETERS:
     F   -   barycentric interpolant at T
     DF  -   first derivative
-    
+
 NOTE
 
 
@@ -9599,10 +8964,10 @@ NOTE
      Copyright 17.08.2009 by Bochkanov Sergey
 *************************************************************************/
 void barycentricdiff1(barycentricinterpolant* b,
-     double t,
-     double* f,
-     double* df,
-     ae_state *_state)
+                      double t,
+                      double* f,
+                      double* df,
+                      ae_state *_state)
 {
     double v;
     double vv;
@@ -9628,34 +8993,31 @@ void barycentricdiff1(barycentricinterpolant* b,
     *df = 0;
 
     ae_assert(!ae_isinf(t, _state), "BarycentricDiff1: infinite T!", _state);
-    
+
     /*
      * special case: NaN
      */
-    if( ae_isnan(t, _state) )
-    {
+    if( ae_isnan(t, _state) ) {
         *f = _state->v_nan;
         *df = _state->v_nan;
         return;
     }
-    
+
     /*
      * special case: N=1
      */
-    if( b->n==1 )
-    {
+    if( b->n==1 ) {
         *f = b->sy*b->y.ptr.p_double[0];
         *df = 0;
         return;
     }
-    if( ae_fp_eq(b->sy,0) )
-    {
+    if( ae_fp_eq(b->sy,0) ) {
         *f = 0;
         *df = 0;
         return;
     }
     ae_assert(ae_fp_greater(b->sy,0), "BarycentricDiff1: internal error", _state);
-    
+
     /*
      * We assume than N>1 and B.SY>0. Find:
      * 1. pivot point (X[i] closest to T)
@@ -9665,18 +9027,16 @@ void barycentricdiff1(barycentricinterpolant* b,
     k = 0;
     xmin = b->x.ptr.p_double[0];
     xmax = b->x.ptr.p_double[0];
-    for(i=1; i<=b->n-1; i++)
-    {
+    for(i=1; i<=b->n-1; i++) {
         vv = b->x.ptr.p_double[i];
-        if( ae_fp_less(ae_fabs(vv-t, _state),v) )
-        {
+        if( ae_fp_less(ae_fabs(vv-t, _state),v) ) {
             v = ae_fabs(vv-t, _state);
             k = i;
         }
         xmin = ae_minreal(xmin, vv, _state);
         xmax = ae_maxreal(xmax, vv, _state);
     }
-    
+
     /*
      * pivot point found, calculate dNumerator and dDenominator
      */
@@ -9695,21 +9055,17 @@ void barycentricdiff1(barycentricinterpolant* b,
     d0 = 0;
     d1 = 0;
     xprev = -2;
-    for(i=0; i<=b->n-1; i++)
-    {
+    for(i=0; i<=b->n-1; i++) {
         xi = b->x.ptr.p_double[i];
         xi = xi*xscale1+xoffs1;
         xi = xi*xscale2+xoffs2;
         ae_assert(ae_fp_greater(xi,xprev), "BarycentricDiff1: points are too close!", _state);
         xprev = xi;
-        if( i!=k )
-        {
+        if( i!=k ) {
             vv = ae_sqr(t-xi, _state);
             s0 = (t-xk)/(t-xi);
             s1 = (xk-xi)/vv;
-        }
-        else
-        {
+        } else {
             s0 = 1;
             s1 = 0;
         }
@@ -9722,8 +9078,7 @@ void barycentricdiff1(barycentricinterpolant* b,
     }
     *f = b->sy*n0/d0;
     *df = (n1*d0-n0*d1)/ae_sqr(d0, _state);
-    if( ae_fp_neq(*df,0) )
-    {
+    if( ae_fp_neq(*df,0) ) {
         *df = ae_sign(*df, _state)*ae_exp(ae_log(ae_fabs(*df, _state), _state)+ae_log(b->sy, _state)+ae_log(xscale1, _state)+ae_log(xscale2, _state), _state);
     }
 }
@@ -9751,11 +9106,11 @@ BarycentricDiff1() subroutine in such cases.
      Copyright 17.08.2009 by Bochkanov Sergey
 *************************************************************************/
 void barycentricdiff2(barycentricinterpolant* b,
-     double t,
-     double* f,
-     double* df,
-     double* d2f,
-     ae_state *_state)
+                      double t,
+                      double* f,
+                      double* df,
+                      double* d2f,
+                      ae_state *_state)
 {
     double v;
     double vv;
@@ -9778,36 +9133,33 @@ void barycentricdiff2(barycentricinterpolant* b,
     *d2f = 0;
 
     ae_assert(!ae_isinf(t, _state), "BarycentricDiff1: infinite T!", _state);
-    
+
     /*
      * special case: NaN
      */
-    if( ae_isnan(t, _state) )
-    {
+    if( ae_isnan(t, _state) ) {
         *f = _state->v_nan;
         *df = _state->v_nan;
         *d2f = _state->v_nan;
         return;
     }
-    
+
     /*
      * special case: N=1
      */
-    if( b->n==1 )
-    {
+    if( b->n==1 ) {
         *f = b->sy*b->y.ptr.p_double[0];
         *df = 0;
         *d2f = 0;
         return;
     }
-    if( ae_fp_eq(b->sy,0) )
-    {
+    if( ae_fp_eq(b->sy,0) ) {
         *f = 0;
         *df = 0;
         *d2f = 0;
         return;
     }
-    
+
     /*
      * We assume than N>1 and B.SY>0. Find:
      * 1. pivot point (X[i] closest to T)
@@ -9819,16 +9171,14 @@ void barycentricdiff2(barycentricinterpolant* b,
     *d2f = 0;
     v = ae_fabs(b->x.ptr.p_double[0]-t, _state);
     k = 0;
-    for(i=1; i<=b->n-1; i++)
-    {
+    for(i=1; i<=b->n-1; i++) {
         vv = b->x.ptr.p_double[i];
-        if( ae_fp_less(ae_fabs(vv-t, _state),v) )
-        {
+        if( ae_fp_less(ae_fabs(vv-t, _state),v) ) {
             v = ae_fabs(vv-t, _state);
             k = i;
         }
     }
-    
+
     /*
      * pivot point found, calculate dNumerator and dDenominator
      */
@@ -9840,18 +9190,14 @@ void barycentricdiff2(barycentricinterpolant* b,
     d0 = 0;
     d1 = 0;
     d2 = 0;
-    for(i=0; i<=b->n-1; i++)
-    {
-        if( i!=k )
-        {
+    for(i=0; i<=b->n-1; i++) {
+        if( i!=k ) {
             xi = b->x.ptr.p_double[i];
             vv = ae_sqr(t-xi, _state);
             s0 = (t-xk)/(t-xi);
             s1 = (xk-xi)/vv;
             s2 = -2*(xk-xi)/(vv*(t-xi));
-        }
-        else
-        {
+        } else {
             s0 = 1;
             s1 = 0;
             s2 = 0;
@@ -9885,45 +9231,39 @@ OUTPUT PARAMETERS:
      Copyright 19.08.2009 by Bochkanov Sergey
 *************************************************************************/
 void barycentriclintransx(barycentricinterpolant* b,
-     double ca,
-     double cb,
-     ae_state *_state)
+                          double ca,
+                          double cb,
+                          ae_state *_state)
 {
     ae_int_t i;
     ae_int_t j;
     double v;
 
 
-    
+
     /*
      * special case, replace by constant F(CB)
      */
-    if( ae_fp_eq(ca,0) )
-    {
+    if( ae_fp_eq(ca,0) ) {
         b->sy = barycentriccalc(b, cb, _state);
         v = 1;
-        for(i=0; i<=b->n-1; i++)
-        {
+        for(i=0; i<=b->n-1; i++) {
             b->y.ptr.p_double[i] = 1;
             b->w.ptr.p_double[i] = v;
             v = -v;
         }
         return;
     }
-    
+
     /*
      * general case: CA<>0
      */
-    for(i=0; i<=b->n-1; i++)
-    {
+    for(i=0; i<=b->n-1; i++) {
         b->x.ptr.p_double[i] = (b->x.ptr.p_double[i]-cb)/ca;
     }
-    if( ae_fp_less(ca,0) )
-    {
-        for(i=0; i<=b->n-1; i++)
-        {
-            if( i<b->n-1-i )
-            {
+    if( ae_fp_less(ca,0) ) {
+        for(i=0; i<=b->n-1; i++) {
+            if( i<b->n-1-i ) {
                 j = b->n-1-i;
                 v = b->x.ptr.p_double[i];
                 b->x.ptr.p_double[i] = b->x.ptr.p_double[j];
@@ -9934,9 +9274,7 @@ void barycentriclintransx(barycentricinterpolant* b,
                 v = b->w.ptr.p_double[i];
                 b->w.ptr.p_double[i] = b->w.ptr.p_double[j];
                 b->w.ptr.p_double[j] = v;
-            }
-            else
-            {
+            } else {
                 break;
             }
         }
@@ -9959,25 +9297,22 @@ OUTPUT PARAMETERS:
      Copyright 19.08.2009 by Bochkanov Sergey
 *************************************************************************/
 void barycentriclintransy(barycentricinterpolant* b,
-     double ca,
-     double cb,
-     ae_state *_state)
+                          double ca,
+                          double cb,
+                          ae_state *_state)
 {
     ae_int_t i;
     double v;
 
 
-    for(i=0; i<=b->n-1; i++)
-    {
+    for(i=0; i<=b->n-1; i++) {
         b->y.ptr.p_double[i] = ca*b->sy*b->y.ptr.p_double[i]+cb;
     }
     b->sy = 0;
-    for(i=0; i<=b->n-1; i++)
-    {
+    for(i=0; i<=b->n-1; i++) {
         b->sy = ae_maxreal(b->sy, ae_fabs(b->y.ptr.p_double[i], _state), _state);
     }
-    if( ae_fp_greater(b->sy,0) )
-    {
+    if( ae_fp_greater(b->sy,0) ) {
         v = 1/b->sy;
         ae_v_muld(&b->y.ptr.p_double[0], 1, ae_v_len(0,b->n-1), v);
     }
@@ -10000,11 +9335,11 @@ OUTPUT PARAMETERS:
      Copyright 17.08.2009 by Bochkanov Sergey
 *************************************************************************/
 void barycentricunpack(barycentricinterpolant* b,
-     ae_int_t* n,
-     /* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     ae_state *_state)
+                       ae_int_t* n,
+                       /* Real    */ ae_vector* x,
+                       /* Real    */ ae_vector* y,
+                       /* Real    */ ae_vector* w,
+                       ae_state *_state)
 {
     double v;
 
@@ -10042,17 +9377,17 @@ OUTPUT PARAMETERS:
      Copyright 17.08.2009 by Bochkanov Sergey
 *************************************************************************/
 void barycentricbuildxyw(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     ae_int_t n,
-     barycentricinterpolant* b,
-     ae_state *_state)
+                                       /* Real    */ ae_vector* y,
+                                       /* Real    */ ae_vector* w,
+                                       ae_int_t n,
+                                       barycentricinterpolant* b,
+                                       ae_state *_state)
 {
 
     _barycentricinterpolant_clear(b);
 
     ae_assert(n>0, "BarycentricBuildXYW: incorrect N!", _state);
-    
+
     /*
      * fill X/Y/W
      */
@@ -10063,7 +9398,7 @@ void barycentricbuildxyw(/* Real    */ ae_vector* x,
     ae_v_move(&b->y.ptr.p_double[0], 1, &y->ptr.p_double[0], 1, ae_v_len(0,n-1));
     ae_v_move(&b->w.ptr.p_double[0], 1, &w->ptr.p_double[0], 1, ae_v_len(0,n-1));
     b->n = n;
-    
+
     /*
      * Normalize
      */
@@ -10099,11 +9434,11 @@ Note:
      Copyright 17.06.2007 by Bochkanov Sergey
 *************************************************************************/
 void barycentricbuildfloaterhormann(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_int_t d,
-     barycentricinterpolant* b,
-     ae_state *_state)
+        /* Real    */ ae_vector* y,
+        ae_int_t n,
+        ae_int_t d,
+        barycentricinterpolant* b,
+        ae_state *_state)
 {
     ae_frame _frame_block;
     double s0;
@@ -10126,21 +9461,19 @@ void barycentricbuildfloaterhormann(/* Real    */ ae_vector* x,
 
     ae_assert(n>0, "BarycentricFloaterHormann: N<=0!", _state);
     ae_assert(d>=0, "BarycentricFloaterHormann: incorrect D!", _state);
-    
+
     /*
      * Prepare
      */
-    if( d>n-1 )
-    {
+    if( d>n-1 ) {
         d = n-1;
     }
     b->n = n;
-    
+
     /*
      * special case: N=1
      */
-    if( n==1 )
-    {
+    if( n==1 ) {
         ae_vector_set_length(&b->x, n, _state);
         ae_vector_set_length(&b->y, n, _state);
         ae_vector_set_length(&b->w, n, _state);
@@ -10151,7 +9484,7 @@ void barycentricbuildfloaterhormann(/* Real    */ ae_vector* x,
         ae_frame_leave(_state);
         return;
     }
-    
+
     /*
      * Fill X/Y
      */
@@ -10160,43 +9493,38 @@ void barycentricbuildfloaterhormann(/* Real    */ ae_vector* x,
     ae_v_move(&b->x.ptr.p_double[0], 1, &x->ptr.p_double[0], 1, ae_v_len(0,n-1));
     ae_v_move(&b->y.ptr.p_double[0], 1, &y->ptr.p_double[0], 1, ae_v_len(0,n-1));
     tagsortfastr(&b->x, &b->y, &sortrbuf, &sortrbuf2, n, _state);
-    
+
     /*
      * Calculate Wk
      */
     ae_vector_set_length(&b->w, n, _state);
     s0 = 1;
-    for(k=1; k<=d; k++)
-    {
+    for(k=1; k<=d; k++) {
         s0 = -s0;
     }
-    for(k=0; k<=n-1; k++)
-    {
-        
+    for(k=0; k<=n-1; k++) {
+
         /*
          * Wk
          */
         s = 0;
-        for(i=ae_maxint(k-d, 0, _state); i<=ae_minint(k, n-1-d, _state); i++)
-        {
+        for(i=ae_maxint(k-d, 0, _state); i<=ae_minint(k, n-1-d, _state); i++) {
             v = 1;
-            for(j=i; j<=i+d; j++)
-            {
-                if( j!=k )
-                {
+            for(j=i; j<=i+d; j++) {
+                if( j!=k ) {
                     v = v/ae_fabs(b->x.ptr.p_double[k]-b->x.ptr.p_double[j], _state);
                 }
             }
             s = s+v;
         }
         b->w.ptr.p_double[k] = s0*s;
-        
+
         /*
          * Next S0
          */
         s0 = -s0;
     }
-    
+
     /*
      * Normalize
      */
@@ -10218,8 +9546,8 @@ OUTPUT PARAMETERS:
      Copyright 17.08.2009 by Bochkanov Sergey
 *************************************************************************/
 void barycentriccopy(barycentricinterpolant* b,
-     barycentricinterpolant* b2,
-     ae_state *_state)
+                     barycentricinterpolant* b2,
+                     ae_state *_state)
 {
 
     _barycentricinterpolant_clear(b2);
@@ -10246,7 +9574,7 @@ Normalization of barycentric interpolant:
 Internal subroutine.
 *************************************************************************/
 static void ratint_barycentricnormalize(barycentricinterpolant* b,
-     ae_state *_state)
+                                        ae_state *_state)
 {
     ae_frame _frame_block;
     ae_vector p1;
@@ -10260,37 +9588,30 @@ static void ratint_barycentricnormalize(barycentricinterpolant* b,
     ae_vector_init(&p1, 0, DT_INT, _state, ae_true);
     ae_vector_init(&p2, 0, DT_INT, _state, ae_true);
 
-    
+
     /*
      * Normalize task: |Y|<=1, |W|<=1, sort X[]
      */
     b->sy = 0;
-    for(i=0; i<=b->n-1; i++)
-    {
+    for(i=0; i<=b->n-1; i++) {
         b->sy = ae_maxreal(b->sy, ae_fabs(b->y.ptr.p_double[i], _state), _state);
     }
-    if( ae_fp_greater(b->sy,0)&&ae_fp_greater(ae_fabs(b->sy-1, _state),10*ae_machineepsilon) )
-    {
+    if( ae_fp_greater(b->sy,0)&&ae_fp_greater(ae_fabs(b->sy-1, _state),10*ae_machineepsilon) ) {
         v = 1/b->sy;
         ae_v_muld(&b->y.ptr.p_double[0], 1, ae_v_len(0,b->n-1), v);
     }
     v = 0;
-    for(i=0; i<=b->n-1; i++)
-    {
+    for(i=0; i<=b->n-1; i++) {
         v = ae_maxreal(v, ae_fabs(b->w.ptr.p_double[i], _state), _state);
     }
-    if( ae_fp_greater(v,0)&&ae_fp_greater(ae_fabs(v-1, _state),10*ae_machineepsilon) )
-    {
+    if( ae_fp_greater(v,0)&&ae_fp_greater(ae_fabs(v-1, _state),10*ae_machineepsilon) ) {
         v = 1/v;
         ae_v_muld(&b->w.ptr.p_double[0], 1, ae_v_len(0,b->n-1), v);
     }
-    for(i=0; i<=b->n-2; i++)
-    {
-        if( ae_fp_less(b->x.ptr.p_double[i+1],b->x.ptr.p_double[i]) )
-        {
+    for(i=0; i<=b->n-2; i++) {
+        if( ae_fp_less(b->x.ptr.p_double[i+1],b->x.ptr.p_double[i]) ) {
             tagsort(&b->x, b->n, &p1, &p2, _state);
-            for(j=0; j<=b->n-1; j++)
-            {
+            for(j=0; j<=b->n-1; j++) {
                 j2 = p2.ptr.p_int[j];
                 v = b->y.ptr.p_double[j];
                 b->y.ptr.p_double[j] = b->y.ptr.p_double[j2];
@@ -10308,12 +9629,15 @@ static void ratint_barycentricnormalize(barycentricinterpolant* b,
 
 ae_bool _barycentricinterpolant_init(barycentricinterpolant* p, ae_state *_state, ae_bool make_automatic)
 {
-    if( !ae_vector_init(&p->x, 0, DT_REAL, _state, make_automatic) )
+    if( !ae_vector_init(&p->x, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->y, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->y, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->w, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->w, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
+    }
     return ae_true;
 }
 
@@ -10322,12 +9646,15 @@ ae_bool _barycentricinterpolant_init_copy(barycentricinterpolant* dst, barycentr
 {
     dst->n = src->n;
     dst->sy = src->sy;
-    if( !ae_vector_init_copy(&dst->x, &src->x, _state, make_automatic) )
+    if( !ae_vector_init_copy(&dst->x, &src->x, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init_copy(&dst->y, &src->y, _state, make_automatic) )
+    }
+    if( !ae_vector_init_copy(&dst->y, &src->y, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init_copy(&dst->w, &src->w, _state, make_automatic) )
+    }
+    if( !ae_vector_init_copy(&dst->w, &src->w, _state, make_automatic) ) {
         return ae_false;
+    }
     return ae_true;
 }
 
@@ -10367,10 +9694,10 @@ NOTES:
      Copyright 30.09.2010 by Bochkanov Sergey
 *************************************************************************/
 void polynomialbar2cheb(barycentricinterpolant* p,
-     double a,
-     double b,
-     /* Real    */ ae_vector* t,
-     ae_state *_state)
+                        double a,
+                        double b,
+                        /* Real    */ ae_vector* t,
+                        ae_state *_state)
 {
     ae_frame _frame_block;
     ae_int_t i;
@@ -10392,29 +9719,27 @@ void polynomialbar2cheb(barycentricinterpolant* p,
     ae_assert(ae_isfinite(b, _state), "PolynomialBar2Cheb: B is not finite!", _state);
     ae_assert(ae_fp_neq(a,b), "PolynomialBar2Cheb: A=B!", _state);
     ae_assert(p->n>0, "PolynomialBar2Cheb: P is not correctly initialized barycentric interpolant!", _state);
-    
+
     /*
      * Calculate function values on a Chebyshev grid
      */
     ae_vector_set_length(&vp, p->n, _state);
     ae_vector_set_length(&vx, p->n, _state);
-    for(i=0; i<=p->n-1; i++)
-    {
+    for(i=0; i<=p->n-1; i++) {
         vx.ptr.p_double[i] = ae_cos(ae_pi*(i+0.5)/p->n, _state);
         vp.ptr.p_double[i] = barycentriccalc(p, 0.5*(vx.ptr.p_double[i]+1)*(b-a)+a, _state);
     }
-    
+
     /*
      * T[0]
      */
     ae_vector_set_length(t, p->n, _state);
     v = 0;
-    for(i=0; i<=p->n-1; i++)
-    {
+    for(i=0; i<=p->n-1; i++) {
         v = v+vp.ptr.p_double[i];
     }
     t->ptr.p_double[0] = v/p->n;
-    
+
     /*
      * other T's.
      *
@@ -10425,29 +9750,25 @@ void polynomialbar2cheb(barycentricinterpolant* p,
      *    * still leaves us with O(N^2) algorithm because
      *      preparation of function values is O(N^2) process
      */
-    if( p->n>1 )
-    {
+    if( p->n>1 ) {
         ae_vector_set_length(&tk, p->n, _state);
         ae_vector_set_length(&tk1, p->n, _state);
-        for(i=0; i<=p->n-1; i++)
-        {
+        for(i=0; i<=p->n-1; i++) {
             tk.ptr.p_double[i] = vx.ptr.p_double[i];
             tk1.ptr.p_double[i] = 1;
         }
-        for(k=1; k<=p->n-1; k++)
-        {
-            
+        for(k=1; k<=p->n-1; k++) {
+
             /*
              * calculate discrete product of function vector and TK
              */
             v = ae_v_dotproduct(&tk.ptr.p_double[0], 1, &vp.ptr.p_double[0], 1, ae_v_len(0,p->n-1));
             t->ptr.p_double[k] = v/(0.5*p->n);
-            
+
             /*
              * Update TK and TK1
              */
-            for(i=0; i<=p->n-1; i++)
-            {
+            for(i=0; i<=p->n-1; i++) {
                 v = 2*vx.ptr.p_double[i]*tk.ptr.p_double[i]-tk1.ptr.p_double[i];
                 tk1.ptr.p_double[i] = tk.ptr.p_double[i];
                 tk.ptr.p_double[i] = v;
@@ -10479,11 +9800,11 @@ OUTPUT PARAMETERS
      Copyright 30.09.2010 by Bochkanov Sergey
 *************************************************************************/
 void polynomialcheb2bar(/* Real    */ ae_vector* t,
-     ae_int_t n,
-     double a,
-     double b,
-     barycentricinterpolant* p,
-     ae_state *_state)
+                                      ae_int_t n,
+                                      double a,
+                                      double b,
+                                      barycentricinterpolant* p,
+                                      ae_state *_state)
 {
     ae_frame _frame_block;
     ae_int_t i;
@@ -10505,14 +9826,13 @@ void polynomialcheb2bar(/* Real    */ ae_vector* t,
     ae_assert(n>=1, "PolynomialBar2Cheb: N<1", _state);
     ae_assert(t->cnt>=n, "PolynomialBar2Cheb: Length(T)<N", _state);
     ae_assert(isfinitevector(t, n, _state), "PolynomialBar2Cheb: T[] contains INF or NAN", _state);
-    
+
     /*
      * Calculate function values on a Chebyshev grid spanning [-1,+1]
      */
     ae_vector_set_length(&y, n, _state);
-    for(i=0; i<=n-1; i++)
-    {
-        
+    for(i=0; i<=n-1; i++) {
+
         /*
          * Calculate value on a grid spanning [-1,+1]
          */
@@ -10520,8 +9840,7 @@ void polynomialcheb2bar(/* Real    */ ae_vector* t,
         vy = t->ptr.p_double[0];
         tk1 = 1;
         tk = vx;
-        for(k=1; k<=n-1; k++)
-        {
+        for(k=1; k<=n-1; k++) {
             vy = vy+t->ptr.p_double[k]*tk;
             v = 2*vx*tk-tk1;
             tk1 = tk;
@@ -10529,7 +9848,7 @@ void polynomialcheb2bar(/* Real    */ ae_vector* t,
         }
         y.ptr.p_double[i] = vy;
     }
-    
+
     /*
      * Build barycentric interpolant, map grid from [-1,+1] to [A,B]
      */
@@ -10568,7 +9887,7 @@ NOTES:
     this problem completely. This function  will  return  coefficients  in
     any  case,  but  for  N>8  they  will  become unreliable. However, N's
     less than 5 are pretty safe.
-    
+
 3.  barycentric interpolant passed as P may be either polynomial  obtained
     from  polynomial  interpolation/ fitting or rational function which is
     NOT polynomial. We can't distinguish between these two cases, and this
@@ -10579,10 +9898,10 @@ NOTES:
      Copyright 30.09.2010 by Bochkanov Sergey
 *************************************************************************/
 void polynomialbar2pow(barycentricinterpolant* p,
-     double c,
-     double s,
-     /* Real    */ ae_vector* a,
-     ae_state *_state)
+                       double c,
+                       double s,
+                       /* Real    */ ae_vector* a,
+                       ae_state *_state)
 {
     ae_frame _frame_block;
     ae_int_t i;
@@ -10608,29 +9927,27 @@ void polynomialbar2pow(barycentricinterpolant* p,
     ae_assert(ae_isfinite(s, _state), "PolynomialBar2Pow: S is not finite!", _state);
     ae_assert(ae_fp_neq(s,0), "PolynomialBar2Pow: S=0!", _state);
     ae_assert(p->n>0, "PolynomialBar2Pow: P is not correctly initialized barycentric interpolant!", _state);
-    
+
     /*
      * Calculate function values on a Chebyshev grid
      */
     ae_vector_set_length(&vp, p->n, _state);
     ae_vector_set_length(&vx, p->n, _state);
-    for(i=0; i<=p->n-1; i++)
-    {
+    for(i=0; i<=p->n-1; i++) {
         vx.ptr.p_double[i] = ae_cos(ae_pi*(i+0.5)/p->n, _state);
         vp.ptr.p_double[i] = barycentriccalc(p, s*vx.ptr.p_double[i]+c, _state);
     }
-    
+
     /*
      * T[0]
      */
     ae_vector_set_length(&t, p->n, _state);
     v = 0;
-    for(i=0; i<=p->n-1; i++)
-    {
+    for(i=0; i<=p->n-1; i++) {
         v = v+vp.ptr.p_double[i];
     }
     t.ptr.p_double[0] = v/p->n;
-    
+
     /*
      * other T's.
      *
@@ -10641,63 +9958,51 @@ void polynomialbar2pow(barycentricinterpolant* p,
      *    * still leaves us with O(N^2) algorithm because
      *      preparation of function values is O(N^2) process
      */
-    if( p->n>1 )
-    {
+    if( p->n>1 ) {
         ae_vector_set_length(&tk, p->n, _state);
         ae_vector_set_length(&tk1, p->n, _state);
-        for(i=0; i<=p->n-1; i++)
-        {
+        for(i=0; i<=p->n-1; i++) {
             tk.ptr.p_double[i] = vx.ptr.p_double[i];
             tk1.ptr.p_double[i] = 1;
         }
-        for(k=1; k<=p->n-1; k++)
-        {
-            
+        for(k=1; k<=p->n-1; k++) {
+
             /*
              * calculate discrete product of function vector and TK
              */
             v = ae_v_dotproduct(&tk.ptr.p_double[0], 1, &vp.ptr.p_double[0], 1, ae_v_len(0,p->n-1));
             t.ptr.p_double[k] = v/(0.5*p->n);
-            
+
             /*
              * Update TK and TK1
              */
-            for(i=0; i<=p->n-1; i++)
-            {
+            for(i=0; i<=p->n-1; i++) {
                 v = 2*vx.ptr.p_double[i]*tk.ptr.p_double[i]-tk1.ptr.p_double[i];
                 tk1.ptr.p_double[i] = tk.ptr.p_double[i];
                 tk.ptr.p_double[i] = v;
             }
         }
     }
-    
+
     /*
      * Convert from Chebyshev basis to power basis
      */
     ae_vector_set_length(a, p->n, _state);
-    for(i=0; i<=p->n-1; i++)
-    {
+    for(i=0; i<=p->n-1; i++) {
         a->ptr.p_double[i] = 0;
     }
     d = 0;
-    for(i=0; i<=p->n-1; i++)
-    {
-        for(k=i; k<=p->n-1; k++)
-        {
+    for(i=0; i<=p->n-1; i++) {
+        for(k=i; k<=p->n-1; k++) {
             e = a->ptr.p_double[k];
             a->ptr.p_double[k] = 0;
-            if( i<=1&&k==i )
-            {
+            if( i<=1&&k==i ) {
                 a->ptr.p_double[k] = 1;
-            }
-            else
-            {
-                if( i!=0 )
-                {
+            } else {
+                if( i!=0 ) {
                     a->ptr.p_double[k] = 2*d;
                 }
-                if( k>i+1 )
-                {
+                if( k>i+1 ) {
                     a->ptr.p_double[k] = a->ptr.p_double[k]-a->ptr.p_double[k-2];
                 }
             }
@@ -10706,8 +10011,7 @@ void polynomialbar2pow(barycentricinterpolant* p,
         d = a->ptr.p_double[i];
         e = 0;
         k = i;
-        while(k<=p->n-1)
-        {
+        while(k<=p->n-1) {
             e = e+a->ptr.p_double[k]*t.ptr.p_double[k];
             k = k+2;
         }
@@ -10754,11 +10058,11 @@ NOTES:
      Copyright 30.09.2010 by Bochkanov Sergey
 *************************************************************************/
 void polynomialpow2bar(/* Real    */ ae_vector* a,
-     ae_int_t n,
-     double c,
-     double s,
-     barycentricinterpolant* p,
-     ae_state *_state)
+                                     ae_int_t n,
+                                     double c,
+                                     double s,
+                                     barycentricinterpolant* p,
+                                     ae_state *_state)
 {
     ae_frame _frame_block;
     ae_int_t i;
@@ -10778,28 +10082,26 @@ void polynomialpow2bar(/* Real    */ ae_vector* a,
     ae_assert(n>=1, "PolynomialPow2Bar: N<1", _state);
     ae_assert(a->cnt>=n, "PolynomialPow2Bar: Length(A)<N", _state);
     ae_assert(isfinitevector(a, n, _state), "PolynomialPow2Bar: A[] contains INF or NAN", _state);
-    
+
     /*
      * Calculate function values on a Chebyshev grid spanning [-1,+1]
      */
     ae_vector_set_length(&y, n, _state);
-    for(i=0; i<=n-1; i++)
-    {
-        
+    for(i=0; i<=n-1; i++) {
+
         /*
          * Calculate value on a grid spanning [-1,+1]
          */
         vx = ae_cos(ae_pi*(i+0.5)/n, _state);
         vy = a->ptr.p_double[0];
         px = vx;
-        for(k=1; k<=n-1; k++)
-        {
+        for(k=1; k<=n-1; k++) {
             vy = vy+px*a->ptr.p_double[k];
             px = px*vx;
         }
         y.ptr.p_double[i] = vy;
     }
-    
+
     /*
      * Build barycentric interpolant, map grid from [-1,+1] to [A,B]
      */
@@ -10826,10 +10128,10 @@ OUTPUT PARAMETERS
      Copyright 02.12.2009 by Bochkanov Sergey
 *************************************************************************/
 void polynomialbuild(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     barycentricinterpolant* p,
-     ae_state *_state)
+                                   /* Real    */ ae_vector* y,
+                                   ae_int_t n,
+                                   barycentricinterpolant* p,
+                                   ae_state *_state)
 {
     ae_frame _frame_block;
     ae_vector _x;
@@ -10861,7 +10163,7 @@ void polynomialbuild(/* Real    */ ae_vector* x,
     ae_assert(isfinitevector(y, n, _state), "PolynomialBuild: Y contains infinite or NaN values!", _state);
     tagsortfastr(x, y, &sortrbuf, &sortrbuf2, n, _state);
     ae_assert(aredistinct(x, n, _state), "PolynomialBuild: at least two consequent points are too close!", _state);
-    
+
     /*
      * calculate W[j]
      * multi-pass algorithm is used to avoid overflow
@@ -10869,33 +10171,28 @@ void polynomialbuild(/* Real    */ ae_vector* x,
     ae_vector_set_length(&w, n, _state);
     a = x->ptr.p_double[0];
     b = x->ptr.p_double[0];
-    for(j=0; j<=n-1; j++)
-    {
+    for(j=0; j<=n-1; j++) {
         w.ptr.p_double[j] = 1;
         a = ae_minreal(a, x->ptr.p_double[j], _state);
         b = ae_maxreal(b, x->ptr.p_double[j], _state);
     }
-    for(k=0; k<=n-1; k++)
-    {
-        
+    for(k=0; k<=n-1; k++) {
+
         /*
          * W[K] is used instead of 0.0 because
          * cycle on J does not touch K-th element
          * and we MUST get maximum from ALL elements
          */
         mx = ae_fabs(w.ptr.p_double[k], _state);
-        for(j=0; j<=n-1; j++)
-        {
-            if( j!=k )
-            {
+        for(j=0; j<=n-1; j++) {
+            if( j!=k ) {
                 v = (b-a)/(x->ptr.p_double[j]-x->ptr.p_double[k]);
                 w.ptr.p_double[j] = w.ptr.p_double[j]*v;
                 mx = ae_maxreal(mx, ae_fabs(w.ptr.p_double[j], _state), _state);
             }
         }
-        if( k%5==0 )
-        {
-            
+        if( k%5==0 ) {
+
             /*
              * every 5-th run we renormalize W[]
              */
@@ -10928,11 +10225,11 @@ OUTPUT PARAMETERS
      Copyright 03.12.2009 by Bochkanov Sergey
 *************************************************************************/
 void polynomialbuildeqdist(double a,
-     double b,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     barycentricinterpolant* p,
-     ae_state *_state)
+                           double b,
+                           /* Real    */ ae_vector* y,
+                           ae_int_t n,
+                           barycentricinterpolant* p,
+                           ae_state *_state)
 {
     ae_frame _frame_block;
     ae_int_t i;
@@ -10952,12 +10249,11 @@ void polynomialbuildeqdist(double a,
     ae_assert(isfinitevector(y, n, _state), "PolynomialBuildEqDist: Y contains infinite or NaN values!", _state);
     ae_assert(ae_fp_neq(b,a), "PolynomialBuildEqDist: B=A!", _state);
     ae_assert(ae_fp_neq(a+(b-a)/n,a), "PolynomialBuildEqDist: B is too close to A!", _state);
-    
+
     /*
      * Special case: N=1
      */
-    if( n==1 )
-    {
+    if( n==1 ) {
         ae_vector_set_length(&x, 1, _state);
         ae_vector_set_length(&w, 1, _state);
         x.ptr.p_double[0] = 0.5*(b+a);
@@ -10966,15 +10262,14 @@ void polynomialbuildeqdist(double a,
         ae_frame_leave(_state);
         return;
     }
-    
+
     /*
      * general case
      */
     ae_vector_set_length(&x, n, _state);
     ae_vector_set_length(&w, n, _state);
     v = 1;
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         w.ptr.p_double[i] = v;
         x.ptr.p_double[i] = a+(b-a)*i/(n-1);
         v = -v*(n-1-i);
@@ -11006,11 +10301,11 @@ OUTPUT PARAMETERS
      Copyright 03.12.2009 by Bochkanov Sergey
 *************************************************************************/
 void polynomialbuildcheb1(double a,
-     double b,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     barycentricinterpolant* p,
-     ae_state *_state)
+                          double b,
+                          /* Real    */ ae_vector* y,
+                          ae_int_t n,
+                          barycentricinterpolant* p,
+                          ae_state *_state)
 {
     ae_frame _frame_block;
     ae_int_t i;
@@ -11030,12 +10325,11 @@ void polynomialbuildcheb1(double a,
     ae_assert(ae_isfinite(b, _state), "PolynomialBuildCheb1: B is infinite or NaN!", _state);
     ae_assert(isfinitevector(y, n, _state), "PolynomialBuildCheb1: Y contains infinite or NaN values!", _state);
     ae_assert(ae_fp_neq(b,a), "PolynomialBuildCheb1: B=A!", _state);
-    
+
     /*
      * Special case: N=1
      */
-    if( n==1 )
-    {
+    if( n==1 ) {
         ae_vector_set_length(&x, 1, _state);
         ae_vector_set_length(&w, 1, _state);
         x.ptr.p_double[0] = 0.5*(b+a);
@@ -11044,15 +10338,14 @@ void polynomialbuildcheb1(double a,
         ae_frame_leave(_state);
         return;
     }
-    
+
     /*
      * general case
      */
     ae_vector_set_length(&x, n, _state);
     ae_vector_set_length(&w, n, _state);
     v = 1;
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         t = ae_tan(0.5*ae_pi*(2*i+1)/(2*n), _state);
         w.ptr.p_double[i] = 2*v*t/(1+ae_sqr(t, _state));
         x.ptr.p_double[i] = 0.5*(b+a)+0.5*(b-a)*(1-ae_sqr(t, _state))/(1+ae_sqr(t, _state));
@@ -11084,11 +10377,11 @@ OUTPUT PARAMETERS
      Copyright 03.12.2009 by Bochkanov Sergey
 *************************************************************************/
 void polynomialbuildcheb2(double a,
-     double b,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     barycentricinterpolant* p,
-     ae_state *_state)
+                          double b,
+                          /* Real    */ ae_vector* y,
+                          ae_int_t n,
+                          barycentricinterpolant* p,
+                          ae_state *_state)
 {
     ae_frame _frame_block;
     ae_int_t i;
@@ -11107,12 +10400,11 @@ void polynomialbuildcheb2(double a,
     ae_assert(ae_isfinite(b, _state), "PolynomialBuildCheb2: B is infinite or NaN!", _state);
     ae_assert(ae_fp_neq(b,a), "PolynomialBuildCheb2: B=A!", _state);
     ae_assert(isfinitevector(y, n, _state), "PolynomialBuildCheb2: Y contains infinite or NaN values!", _state);
-    
+
     /*
      * Special case: N=1
      */
-    if( n==1 )
-    {
+    if( n==1 ) {
         ae_vector_set_length(&x, 1, _state);
         ae_vector_set_length(&w, 1, _state);
         x.ptr.p_double[0] = 0.5*(b+a);
@@ -11121,21 +10413,17 @@ void polynomialbuildcheb2(double a,
         ae_frame_leave(_state);
         return;
     }
-    
+
     /*
      * general case
      */
     ae_vector_set_length(&x, n, _state);
     ae_vector_set_length(&w, n, _state);
     v = 1;
-    for(i=0; i<=n-1; i++)
-    {
-        if( i==0||i==n-1 )
-        {
+    for(i=0; i<=n-1; i++) {
+        if( i==0||i==n-1 ) {
             w.ptr.p_double[i] = v*0.5;
-        }
-        else
-        {
+        } else {
             w.ptr.p_double[i] = v;
         }
         x.ptr.p_double[i] = 0.5*(b+a)+0.5*(b-a)*ae_cos(ae_pi*i/(n-1), _state);
@@ -11159,7 +10447,7 @@ INPUT PARAMETERS:
 
 RESULT
     value of the Lagrange interpolant at T
-    
+
 IMPORTANT
     this function provides fast interface which is not overflow-safe
     nor it is very precise.
@@ -11171,11 +10459,11 @@ IMPORTANT
      Copyright 02.12.2009 by Bochkanov Sergey
 *************************************************************************/
 double polynomialcalceqdist(double a,
-     double b,
-     /* Real    */ ae_vector* f,
-     ae_int_t n,
-     double t,
-     ae_state *_state)
+                            double b,
+                            /* Real    */ ae_vector* f,
+                            ae_int_t n,
+                            double t,
+                            ae_state *_state)
 {
     double s1;
     double s2;
@@ -11197,25 +10485,23 @@ double polynomialcalceqdist(double a,
     ae_assert(isfinitevector(f, n, _state), "PolynomialCalcEqDist: F contains infinite or NaN values!", _state);
     ae_assert(ae_fp_neq(b,a), "PolynomialCalcEqDist: B=A!", _state);
     ae_assert(!ae_isinf(t, _state), "PolynomialCalcEqDist: T is infinite!", _state);
-    
+
     /*
      * Special case: T is NAN
      */
-    if( ae_isnan(t, _state) )
-    {
+    if( ae_isnan(t, _state) ) {
         result = _state->v_nan;
         return result;
     }
-    
+
     /*
      * Special case: N=1
      */
-    if( n==1 )
-    {
+    if( n==1 ) {
         result = f->ptr.p_double[0];
         return result;
     }
-    
+
     /*
      * First, decide: should we use "safe" formula (guarded
      * against overflow) or fast one?
@@ -11223,30 +10509,26 @@ double polynomialcalceqdist(double a,
     threshold = ae_sqrt(ae_minrealnumber, _state);
     j = 0;
     s = t-a;
-    for(i=1; i<=n-1; i++)
-    {
+    for(i=1; i<=n-1; i++) {
         x = a+(double)i/(double)(n-1)*(b-a);
-        if( ae_fp_less(ae_fabs(t-x, _state),ae_fabs(s, _state)) )
-        {
+        if( ae_fp_less(ae_fabs(t-x, _state),ae_fabs(s, _state)) ) {
             s = t-x;
             j = i;
         }
     }
-    if( ae_fp_eq(s,0) )
-    {
+    if( ae_fp_eq(s,0) ) {
         result = f->ptr.p_double[j];
         return result;
     }
-    if( ae_fp_greater(ae_fabs(s, _state),threshold) )
-    {
-        
+    if( ae_fp_greater(ae_fabs(s, _state),threshold) ) {
+
         /*
          * use fast formula
          */
         j = -1;
         s = 1.0;
     }
-    
+
     /*
      * Calculate using safe or fast barycentric formula
      */
@@ -11254,16 +10536,12 @@ double polynomialcalceqdist(double a,
     s2 = 0;
     w = 1.0;
     h = (b-a)/(n-1);
-    for(i=0; i<=n-1; i++)
-    {
-        if( i!=j )
-        {
+    for(i=0; i<=n-1; i++) {
+        if( i!=j ) {
             v = s*w/(t-(a+i*h));
             s1 = s1+v*f->ptr.p_double[i];
             s2 = s2+v;
-        }
-        else
-        {
+        } else {
             v = w;
             s1 = s1+v*f->ptr.p_double[i];
             s2 = s2+v;
@@ -11303,11 +10581,11 @@ IMPORTANT
      Copyright 02.12.2009 by Bochkanov Sergey
 *************************************************************************/
 double polynomialcalccheb1(double a,
-     double b,
-     /* Real    */ ae_vector* f,
-     ae_int_t n,
-     double t,
-     ae_state *_state)
+                           double b,
+                           /* Real    */ ae_vector* f,
+                           ae_int_t n,
+                           double t,
+                           ae_state *_state)
 {
     double s1;
     double s2;
@@ -11337,25 +10615,23 @@ double polynomialcalccheb1(double a,
     ae_assert(isfinitevector(f, n, _state), "PolynomialCalcCheb1: F contains infinite or NaN values!", _state);
     ae_assert(ae_fp_neq(b,a), "PolynomialCalcCheb1: B=A!", _state);
     ae_assert(!ae_isinf(t, _state), "PolynomialCalcCheb1: T is infinite!", _state);
-    
+
     /*
      * Special case: T is NAN
      */
-    if( ae_isnan(t, _state) )
-    {
+    if( ae_isnan(t, _state) ) {
         result = _state->v_nan;
         return result;
     }
-    
+
     /*
      * Special case: N=1
      */
-    if( n==1 )
-    {
+    if( n==1 ) {
         result = f->ptr.p_double[0];
         return result;
     }
-    
+
     /*
      * Prepare information for the recurrence formula
      * used to calculate sin(pi*(2j+1)/(2n+2)) and
@@ -11380,7 +10656,7 @@ double polynomialcalccheb1(double a,
     delta = 2*ae_pi/(2*(n-1)+2);
     alpha = 2*ae_sqr(ae_sin(delta/2, _state), _state);
     beta = ae_sin(delta, _state);
-    
+
     /*
      * First, decide: should we use "safe" formula (guarded
      * against overflow) or fast one?
@@ -11390,9 +10666,8 @@ double polynomialcalccheb1(double a,
     j = 0;
     x = ca;
     s = t-x;
-    for(i=1; i<=n-1; i++)
-    {
-        
+    for(i=1; i<=n-1; i++) {
+
         /*
          * Next X[i]
          */
@@ -11401,31 +10676,28 @@ double polynomialcalccheb1(double a,
         sa = temps;
         ca = tempc;
         x = ca;
-        
+
         /*
          * Use X[i]
          */
-        if( ae_fp_less(ae_fabs(t-x, _state),ae_fabs(s, _state)) )
-        {
+        if( ae_fp_less(ae_fabs(t-x, _state),ae_fabs(s, _state)) ) {
             s = t-x;
             j = i;
         }
     }
-    if( ae_fp_eq(s,0) )
-    {
+    if( ae_fp_eq(s,0) ) {
         result = f->ptr.p_double[j];
         return result;
     }
-    if( ae_fp_greater(ae_fabs(s, _state),threshold) )
-    {
-        
+    if( ae_fp_greater(ae_fabs(s, _state),threshold) ) {
+
         /*
          * use fast formula
          */
         j = -1;
         s = 1.0;
     }
-    
+
     /*
      * Calculate using safe or fast barycentric formula
      */
@@ -11434,31 +10706,27 @@ double polynomialcalccheb1(double a,
     ca = ae_cos(a0, _state);
     sa = ae_sin(a0, _state);
     p1 = 1.0;
-    for(i=0; i<=n-1; i++)
-    {
-        
+    for(i=0; i<=n-1; i++) {
+
         /*
          * Calculate X[i], W[i]
          */
         x = ca;
         w = p1*sa;
-        
+
         /*
          * Proceed
          */
-        if( i!=j )
-        {
+        if( i!=j ) {
             v = s*w/(t-x);
             s1 = s1+v*f->ptr.p_double[i];
             s2 = s2+v;
-        }
-        else
-        {
+        } else {
             v = w;
             s1 = s1+v*f->ptr.p_double[i];
             s2 = s2+v;
         }
-        
+
         /*
          * Next CA, SA, P1
          */
@@ -11500,11 +10768,11 @@ IMPORTANT
      Copyright 02.12.2009 by Bochkanov Sergey
 *************************************************************************/
 double polynomialcalccheb2(double a,
-     double b,
-     /* Real    */ ae_vector* f,
-     ae_int_t n,
-     double t,
-     ae_state *_state)
+                           double b,
+                           /* Real    */ ae_vector* f,
+                           ae_int_t n,
+                           double t,
+                           ae_state *_state)
 {
     double s1;
     double s2;
@@ -11534,25 +10802,23 @@ double polynomialcalccheb2(double a,
     ae_assert(ae_fp_neq(b,a), "PolynomialCalcCheb2: B=A!", _state);
     ae_assert(isfinitevector(f, n, _state), "PolynomialCalcCheb2: F contains infinite or NaN values!", _state);
     ae_assert(!ae_isinf(t, _state), "PolynomialCalcEqDist: T is infinite!", _state);
-    
+
     /*
      * Special case: T is NAN
      */
-    if( ae_isnan(t, _state) )
-    {
+    if( ae_isnan(t, _state) ) {
         result = _state->v_nan;
         return result;
     }
-    
+
     /*
      * Special case: N=1
      */
-    if( n==1 )
-    {
+    if( n==1 ) {
         result = f->ptr.p_double[0];
         return result;
     }
-    
+
     /*
      * Prepare information for the recurrence formula
      * used to calculate sin(pi*i/n) and
@@ -11577,7 +10843,7 @@ double polynomialcalccheb2(double a,
     delta = ae_pi/(n-1);
     alpha = 2*ae_sqr(ae_sin(delta/2, _state), _state);
     beta = ae_sin(delta, _state);
-    
+
     /*
      * First, decide: should we use "safe" formula (guarded
      * against overflow) or fast one?
@@ -11587,9 +10853,8 @@ double polynomialcalccheb2(double a,
     j = 0;
     x = ca;
     s = t-x;
-    for(i=1; i<=n-1; i++)
-    {
-        
+    for(i=1; i<=n-1; i++) {
+
         /*
          * Next X[i]
          */
@@ -11598,31 +10863,28 @@ double polynomialcalccheb2(double a,
         sa = temps;
         ca = tempc;
         x = ca;
-        
+
         /*
          * Use X[i]
          */
-        if( ae_fp_less(ae_fabs(t-x, _state),ae_fabs(s, _state)) )
-        {
+        if( ae_fp_less(ae_fabs(t-x, _state),ae_fabs(s, _state)) ) {
             s = t-x;
             j = i;
         }
     }
-    if( ae_fp_eq(s,0) )
-    {
+    if( ae_fp_eq(s,0) ) {
         result = f->ptr.p_double[j];
         return result;
     }
-    if( ae_fp_greater(ae_fabs(s, _state),threshold) )
-    {
-        
+    if( ae_fp_greater(ae_fabs(s, _state),threshold) ) {
+
         /*
          * use fast formula
          */
         j = -1;
         s = 1.0;
     }
-    
+
     /*
      * Calculate using safe or fast barycentric formula
      */
@@ -11631,38 +10893,31 @@ double polynomialcalccheb2(double a,
     ca = ae_cos(a0, _state);
     sa = ae_sin(a0, _state);
     p1 = 1.0;
-    for(i=0; i<=n-1; i++)
-    {
-        
+    for(i=0; i<=n-1; i++) {
+
         /*
          * Calculate X[i], W[i]
          */
         x = ca;
-        if( i==0||i==n-1 )
-        {
+        if( i==0||i==n-1 ) {
             w = 0.5*p1;
-        }
-        else
-        {
+        } else {
             w = 1.0*p1;
         }
-        
+
         /*
          * Proceed
          */
-        if( i!=j )
-        {
+        if( i!=j ) {
             v = s*w/(t-x);
             s1 = s1+v*f->ptr.p_double[i];
             s2 = s2+v;
-        }
-        else
-        {
+        } else {
             v = w;
             s1 = s1+v*f->ptr.p_double[i];
             s2 = s2+v;
         }
-        
+
         /*
          * Next CA, SA, P1
          */
@@ -11690,7 +10945,7 @@ INPUT PARAMETERS:
             * if given, only first N points are used to build spline
             * if not given, automatically detected from X/Y sizes
               (len(X) must be equal to len(Y))
-    
+
 OUTPUT PARAMETERS:
     C   -   spline interpolant
 
@@ -11703,10 +10958,10 @@ Subroutine automatically sorts points, so caller may pass unsorted array.
      Copyright 24.06.2007 by Bochkanov Sergey
 *************************************************************************/
 void spline1dbuildlinear(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     spline1dinterpolant* c,
-     ae_state *_state)
+                                       /* Real    */ ae_vector* y,
+                                       ae_int_t n,
+                                       spline1dinterpolant* c,
+                                       ae_state *_state)
 {
     ae_frame _frame_block;
     ae_vector _x;
@@ -11723,7 +10978,7 @@ void spline1dbuildlinear(/* Real    */ ae_vector* x,
     ae_assert(n>1, "Spline1DBuildLinear: N<2!", _state);
     ae_assert(x->cnt>=n, "Spline1DBuildLinear: Length(X)<N!", _state);
     ae_assert(y->cnt>=n, "Spline1DBuildLinear: Length(Y)<N!", _state);
-    
+
     /*
      * check and sort points
      */
@@ -11731,7 +10986,7 @@ void spline1dbuildlinear(/* Real    */ ae_vector* x,
     ae_assert(isfinitevector(y, n, _state), "Spline1DBuildLinear: Y contains infinite or NAN values!", _state);
     spline1d_heapsortpoints(x, y, n, _state);
     ae_assert(aredistinct(x, n, _state), "Spline1DBuildLinear: at least two consequent points are too close!", _state);
-    
+
     /*
      * Build
      */
@@ -11740,12 +10995,10 @@ void spline1dbuildlinear(/* Real    */ ae_vector* x,
     c->k = 3;
     ae_vector_set_length(&c->x, n, _state);
     ae_vector_set_length(&c->c, 4*(n-1), _state);
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         c->x.ptr.p_double[i] = x->ptr.p_double[i];
     }
-    for(i=0; i<=n-2; i++)
-    {
+    for(i=0; i<=n-2; i++) {
         c->c.ptr.p_double[4*i+0] = y->ptr.p_double[i];
         c->c.ptr.p_double[4*i+1] = (y->ptr.p_double[i+1]-y->ptr.p_double[i])/(x->ptr.p_double[i+1]-x->ptr.p_double[i]);
         c->c.ptr.p_double[4*i+2] = 0;
@@ -11761,7 +11014,7 @@ This subroutine builds cubic spline interpolant.
 INPUT PARAMETERS:
     X           -   spline nodes, array[0..N-1].
     Y           -   function values, array[0..N-1].
-    
+
 OPTIONAL PARAMETERS:
     N           -   points count:
                     * N>=2
@@ -11809,14 +11062,14 @@ i.e. to make Y[first_point]=Y[last_point].
      Copyright 23.06.2007 by Bochkanov Sergey
 *************************************************************************/
 void spline1dbuildcubic(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_int_t boundltype,
-     double boundl,
-     ae_int_t boundrtype,
-     double boundr,
-     spline1dinterpolant* c,
-     ae_state *_state)
+                                      /* Real    */ ae_vector* y,
+                                      ae_int_t n,
+                                      ae_int_t boundltype,
+                                      double boundl,
+                                      ae_int_t boundrtype,
+                                      double boundr,
+                                      spline1dinterpolant* c,
+                                      ae_state *_state)
 {
     ae_frame _frame_block;
     ae_vector _x;
@@ -11844,42 +11097,39 @@ void spline1dbuildcubic(/* Real    */ ae_vector* x,
     ae_vector_init(&d, 0, DT_REAL, _state, ae_true);
     ae_vector_init(&p, 0, DT_INT, _state, ae_true);
 
-    
+
     /*
      * check correctness of boundary conditions
      */
     ae_assert(((boundltype==-1||boundltype==0)||boundltype==1)||boundltype==2, "Spline1DBuildCubic: incorrect BoundLType!", _state);
     ae_assert(((boundrtype==-1||boundrtype==0)||boundrtype==1)||boundrtype==2, "Spline1DBuildCubic: incorrect BoundRType!", _state);
     ae_assert((boundrtype==-1&&boundltype==-1)||(boundrtype!=-1&&boundltype!=-1), "Spline1DBuildCubic: incorrect BoundLType/BoundRType!", _state);
-    if( boundltype==1||boundltype==2 )
-    {
+    if( boundltype==1||boundltype==2 ) {
         ae_assert(ae_isfinite(boundl, _state), "Spline1DBuildCubic: BoundL is infinite or NAN!", _state);
     }
-    if( boundrtype==1||boundrtype==2 )
-    {
+    if( boundrtype==1||boundrtype==2 ) {
         ae_assert(ae_isfinite(boundr, _state), "Spline1DBuildCubic: BoundR is infinite or NAN!", _state);
     }
-    
+
     /*
      * check lengths of arguments
      */
     ae_assert(n>=2, "Spline1DBuildCubic: N<2!", _state);
     ae_assert(x->cnt>=n, "Spline1DBuildCubic: Length(X)<N!", _state);
     ae_assert(y->cnt>=n, "Spline1DBuildCubic: Length(Y)<N!", _state);
-    
+
     /*
      * check and sort points
      */
     ylen = n;
-    if( boundltype==-1 )
-    {
+    if( boundltype==-1 ) {
         ylen = n-1;
     }
     ae_assert(isfinitevector(x, n, _state), "Spline1DBuildCubic: X contains infinite or NAN values!", _state);
     ae_assert(isfinitevector(y, ylen, _state), "Spline1DBuildCubic: Y contains infinite or NAN values!", _state);
     spline1d_heapsortppoints(x, y, &p, n, _state);
     ae_assert(aredistinct(x, n, _state), "Spline1DBuildCubic: at least two consequent points are too close!", _state);
-    
+
     /*
      * Now we've checked and preordered everything,
      * so we can call internal function to calculate derivatives,
@@ -11954,14 +11204,14 @@ i.e. to make Y[first_point]=Y[last_point].
      Copyright 03.09.2010 by Bochkanov Sergey
 *************************************************************************/
 void spline1dgriddiffcubic(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_int_t boundltype,
-     double boundl,
-     ae_int_t boundrtype,
-     double boundr,
-     /* Real    */ ae_vector* d,
-     ae_state *_state)
+        /* Real    */ ae_vector* y,
+        ae_int_t n,
+        ae_int_t boundltype,
+        double boundl,
+        ae_int_t boundrtype,
+        double boundr,
+        /* Real    */ ae_vector* d,
+        ae_state *_state)
 {
     ae_frame _frame_block;
     ae_vector _x;
@@ -11988,58 +11238,53 @@ void spline1dgriddiffcubic(/* Real    */ ae_vector* x,
     ae_vector_init(&dt, 0, DT_REAL, _state, ae_true);
     ae_vector_init(&p, 0, DT_INT, _state, ae_true);
 
-    
+
     /*
      * check correctness of boundary conditions
      */
     ae_assert(((boundltype==-1||boundltype==0)||boundltype==1)||boundltype==2, "Spline1DGridDiffCubic: incorrect BoundLType!", _state);
     ae_assert(((boundrtype==-1||boundrtype==0)||boundrtype==1)||boundrtype==2, "Spline1DGridDiffCubic: incorrect BoundRType!", _state);
     ae_assert((boundrtype==-1&&boundltype==-1)||(boundrtype!=-1&&boundltype!=-1), "Spline1DGridDiffCubic: incorrect BoundLType/BoundRType!", _state);
-    if( boundltype==1||boundltype==2 )
-    {
+    if( boundltype==1||boundltype==2 ) {
         ae_assert(ae_isfinite(boundl, _state), "Spline1DGridDiffCubic: BoundL is infinite or NAN!", _state);
     }
-    if( boundrtype==1||boundrtype==2 )
-    {
+    if( boundrtype==1||boundrtype==2 ) {
         ae_assert(ae_isfinite(boundr, _state), "Spline1DGridDiffCubic: BoundR is infinite or NAN!", _state);
     }
-    
+
     /*
      * check lengths of arguments
      */
     ae_assert(n>=2, "Spline1DGridDiffCubic: N<2!", _state);
     ae_assert(x->cnt>=n, "Spline1DGridDiffCubic: Length(X)<N!", _state);
     ae_assert(y->cnt>=n, "Spline1DGridDiffCubic: Length(Y)<N!", _state);
-    
+
     /*
      * check and sort points
      */
     ylen = n;
-    if( boundltype==-1 )
-    {
+    if( boundltype==-1 ) {
         ylen = n-1;
     }
     ae_assert(isfinitevector(x, n, _state), "Spline1DGridDiffCubic: X contains infinite or NAN values!", _state);
     ae_assert(isfinitevector(y, ylen, _state), "Spline1DGridDiffCubic: Y contains infinite or NAN values!", _state);
     spline1d_heapsortppoints(x, y, &p, n, _state);
     ae_assert(aredistinct(x, n, _state), "Spline1DGridDiffCubic: at least two consequent points are too close!", _state);
-    
+
     /*
      * Now we've checked and preordered everything,
      * so we can call internal function.
      */
     spline1d_spline1dgriddiffcubicinternal(x, y, n, boundltype, boundl, boundrtype, boundr, d, &a1, &a2, &a3, &b, &dt, _state);
-    
+
     /*
      * Remember that HeapSortPPoints() call?
      * Now we have to reorder them back.
      */
-    if( dt.cnt<n )
-    {
+    if( dt.cnt<n ) {
         ae_vector_set_length(&dt, n, _state);
     }
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         dt.ptr.p_double[p.ptr.p_int[i]] = d->ptr.p_double[i];
     }
     ae_v_move(&d->ptr.p_double[0], 1, &dt.ptr.p_double[0], 1, ae_v_len(0,n-1));
@@ -12110,15 +11355,15 @@ i.e. to make Y[first_point]=Y[last_point].
      Copyright 03.09.2010 by Bochkanov Sergey
 *************************************************************************/
 void spline1dgriddiff2cubic(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_int_t boundltype,
-     double boundl,
-     ae_int_t boundrtype,
-     double boundr,
-     /* Real    */ ae_vector* d1,
-     /* Real    */ ae_vector* d2,
-     ae_state *_state)
+        /* Real    */ ae_vector* y,
+        ae_int_t n,
+        ae_int_t boundltype,
+        double boundl,
+        ae_int_t boundrtype,
+        double boundr,
+        /* Real    */ ae_vector* d1,
+        /* Real    */ ae_vector* d2,
+        ae_state *_state)
 {
     ae_frame _frame_block;
     ae_vector _x;
@@ -12153,42 +11398,39 @@ void spline1dgriddiff2cubic(/* Real    */ ae_vector* x,
     ae_vector_init(&dt, 0, DT_REAL, _state, ae_true);
     ae_vector_init(&p, 0, DT_INT, _state, ae_true);
 
-    
+
     /*
      * check correctness of boundary conditions
      */
     ae_assert(((boundltype==-1||boundltype==0)||boundltype==1)||boundltype==2, "Spline1DGridDiff2Cubic: incorrect BoundLType!", _state);
     ae_assert(((boundrtype==-1||boundrtype==0)||boundrtype==1)||boundrtype==2, "Spline1DGridDiff2Cubic: incorrect BoundRType!", _state);
     ae_assert((boundrtype==-1&&boundltype==-1)||(boundrtype!=-1&&boundltype!=-1), "Spline1DGridDiff2Cubic: incorrect BoundLType/BoundRType!", _state);
-    if( boundltype==1||boundltype==2 )
-    {
+    if( boundltype==1||boundltype==2 ) {
         ae_assert(ae_isfinite(boundl, _state), "Spline1DGridDiff2Cubic: BoundL is infinite or NAN!", _state);
     }
-    if( boundrtype==1||boundrtype==2 )
-    {
+    if( boundrtype==1||boundrtype==2 ) {
         ae_assert(ae_isfinite(boundr, _state), "Spline1DGridDiff2Cubic: BoundR is infinite or NAN!", _state);
     }
-    
+
     /*
      * check lengths of arguments
      */
     ae_assert(n>=2, "Spline1DGridDiff2Cubic: N<2!", _state);
     ae_assert(x->cnt>=n, "Spline1DGridDiff2Cubic: Length(X)<N!", _state);
     ae_assert(y->cnt>=n, "Spline1DGridDiff2Cubic: Length(Y)<N!", _state);
-    
+
     /*
      * check and sort points
      */
     ylen = n;
-    if( boundltype==-1 )
-    {
+    if( boundltype==-1 ) {
         ylen = n-1;
     }
     ae_assert(isfinitevector(x, n, _state), "Spline1DGridDiff2Cubic: X contains infinite or NAN values!", _state);
     ae_assert(isfinitevector(y, ylen, _state), "Spline1DGridDiff2Cubic: Y contains infinite or NAN values!", _state);
     spline1d_heapsortppoints(x, y, &p, n, _state);
     ae_assert(aredistinct(x, n, _state), "Spline1DGridDiff2Cubic: at least two consequent points are too close!", _state);
-    
+
     /*
      * Now we've checked and preordered everything,
      * so we can call internal function.
@@ -12201,9 +11443,8 @@ void spline1dgriddiff2cubic(/* Real    */ ae_vector* x,
     delta = 0;
     s2 = 0;
     s3 = 0;
-    for(i=0; i<=n-2; i++)
-    {
-        
+    for(i=0; i<=n-2; i++) {
+
         /*
          * We convert from Hermite basis to the power basis.
          * Si is coefficient before x^i.
@@ -12224,22 +11465,19 @@ void spline1dgriddiff2cubic(/* Real    */ ae_vector* x,
         d2->ptr.p_double[i] = 2*s2;
     }
     d2->ptr.p_double[n-1] = 2*s2+6*s3*delta;
-    
+
     /*
      * Remember that HeapSortPPoints() call?
      * Now we have to reorder them back.
      */
-    if( dt.cnt<n )
-    {
+    if( dt.cnt<n ) {
         ae_vector_set_length(&dt, n, _state);
     }
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         dt.ptr.p_double[p.ptr.p_int[i]] = d1->ptr.p_double[i];
     }
     ae_v_move(&d1->ptr.p_double[0], 1, &dt.ptr.p_double[0], 1, ae_v_len(0,n-1));
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         dt.ptr.p_double[p.ptr.p_int[i]] = d2->ptr.p_double[i];
     }
     ae_v_move(&d2->ptr.p_double[0], 1, &dt.ptr.p_double[0], 1, ae_v_len(0,n-1));
@@ -12314,16 +11552,16 @@ i.e. to make Y[first_point]=Y[last_point].
      Copyright 03.09.2010 by Bochkanov Sergey
 *************************************************************************/
 void spline1dconvcubic(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_int_t boundltype,
-     double boundl,
-     ae_int_t boundrtype,
-     double boundr,
-     /* Real    */ ae_vector* x2,
-     ae_int_t n2,
-     /* Real    */ ae_vector* y2,
-     ae_state *_state)
+                                     /* Real    */ ae_vector* y,
+                                     ae_int_t n,
+                                     ae_int_t boundltype,
+                                     double boundl,
+                                     ae_int_t boundrtype,
+                                     double boundr,
+                                     /* Real    */ ae_vector* x2,
+                                     ae_int_t n2,
+                                     /* Real    */ ae_vector* y2,
+                                     ae_state *_state)
 {
     ae_frame _frame_block;
     ae_vector _x;
@@ -12363,22 +11601,20 @@ void spline1dconvcubic(/* Real    */ ae_vector* x,
     ae_vector_init(&p, 0, DT_INT, _state, ae_true);
     ae_vector_init(&p2, 0, DT_INT, _state, ae_true);
 
-    
+
     /*
      * check correctness of boundary conditions
      */
     ae_assert(((boundltype==-1||boundltype==0)||boundltype==1)||boundltype==2, "Spline1DConvCubic: incorrect BoundLType!", _state);
     ae_assert(((boundrtype==-1||boundrtype==0)||boundrtype==1)||boundrtype==2, "Spline1DConvCubic: incorrect BoundRType!", _state);
     ae_assert((boundrtype==-1&&boundltype==-1)||(boundrtype!=-1&&boundltype!=-1), "Spline1DConvCubic: incorrect BoundLType/BoundRType!", _state);
-    if( boundltype==1||boundltype==2 )
-    {
+    if( boundltype==1||boundltype==2 ) {
         ae_assert(ae_isfinite(boundl, _state), "Spline1DConvCubic: BoundL is infinite or NAN!", _state);
     }
-    if( boundrtype==1||boundrtype==2 )
-    {
+    if( boundrtype==1||boundrtype==2 ) {
         ae_assert(ae_isfinite(boundr, _state), "Spline1DConvCubic: BoundR is infinite or NAN!", _state);
     }
-    
+
     /*
      * check lengths of arguments
      */
@@ -12387,13 +11623,12 @@ void spline1dconvcubic(/* Real    */ ae_vector* x,
     ae_assert(y->cnt>=n, "Spline1DConvCubic: Length(Y)<N!", _state);
     ae_assert(n2>=2, "Spline1DConvCubic: N2<2!", _state);
     ae_assert(x2->cnt>=n2, "Spline1DConvCubic: Length(X2)<N2!", _state);
-    
+
     /*
      * check and sort X/Y
      */
     ylen = n;
-    if( boundltype==-1 )
-    {
+    if( boundltype==-1 ) {
         ylen = n-1;
     }
     ae_assert(isfinitevector(x, n, _state), "Spline1DConvCubic: X contains infinite or NAN values!", _state);
@@ -12401,29 +11636,27 @@ void spline1dconvcubic(/* Real    */ ae_vector* x,
     ae_assert(isfinitevector(x2, n2, _state), "Spline1DConvCubic: X2 contains infinite or NAN values!", _state);
     spline1d_heapsortppoints(x, y, &p, n, _state);
     ae_assert(aredistinct(x, n, _state), "Spline1DConvCubic: at least two consequent points are too close!", _state);
-    
+
     /*
      * set up DT (we will need it below)
      */
     ae_vector_set_length(&dt, ae_maxint(n, n2, _state), _state);
-    
+
     /*
      * sort X2:
      * * use fake array DT because HeapSortPPoints() needs both integer AND real arrays
      * * if we have periodic problem, wrap points
      * * sort them, store permutation at P2
      */
-    if( boundrtype==-1&&boundltype==-1 )
-    {
-        for(i=0; i<=n2-1; i++)
-        {
+    if( boundrtype==-1&&boundltype==-1 ) {
+        for(i=0; i<=n2-1; i++) {
             t = x2->ptr.p_double[i];
             apperiodicmap(&t, x->ptr.p_double[0], x->ptr.p_double[n-1], &t2, _state);
             x2->ptr.p_double[i] = t;
         }
     }
     spline1d_heapsortppoints(x2, &dt, &p2, n2, _state);
-    
+
     /*
      * Now we've checked and preordered everything, so we:
      * * call internal GridDiff() function to get Hermite form of spline
@@ -12433,8 +11666,7 @@ void spline1dconvcubic(/* Real    */ ae_vector* x,
     spline1d_spline1dgriddiffcubicinternal(x, y, n, boundltype, boundl, boundrtype, boundr, &d, &a1, &a2, &a3, &b, &dt, _state);
     spline1dconvdiffinternal(x, y, &d, n, x2, n2, y2, ae_true, &d1, ae_false, &d2, ae_false, _state);
     ae_assert(dt.cnt>=n2, "Spline1DConvCubic: internal error!", _state);
-    for(i=0; i<=n2-1; i++)
-    {
+    for(i=0; i<=n2-1; i++) {
         dt.ptr.p_double[p2.ptr.p_int[i]] = y2->ptr.p_double[i];
     }
     ae_v_move(&y2->ptr.p_double[0], 1, &dt.ptr.p_double[0], 1, ae_v_len(0,n2-1));
@@ -12510,17 +11742,17 @@ i.e. to make Y[first_point]=Y[last_point].
      Copyright 03.09.2010 by Bochkanov Sergey
 *************************************************************************/
 void spline1dconvdiffcubic(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_int_t boundltype,
-     double boundl,
-     ae_int_t boundrtype,
-     double boundr,
-     /* Real    */ ae_vector* x2,
-     ae_int_t n2,
-     /* Real    */ ae_vector* y2,
-     /* Real    */ ae_vector* d2,
-     ae_state *_state)
+        /* Real    */ ae_vector* y,
+        ae_int_t n,
+        ae_int_t boundltype,
+        double boundl,
+        ae_int_t boundrtype,
+        double boundr,
+        /* Real    */ ae_vector* x2,
+        ae_int_t n2,
+        /* Real    */ ae_vector* y2,
+        /* Real    */ ae_vector* d2,
+        ae_state *_state)
 {
     ae_frame _frame_block;
     ae_vector _x;
@@ -12559,22 +11791,20 @@ void spline1dconvdiffcubic(/* Real    */ ae_vector* x,
     ae_vector_init(&p, 0, DT_INT, _state, ae_true);
     ae_vector_init(&p2, 0, DT_INT, _state, ae_true);
 
-    
+
     /*
      * check correctness of boundary conditions
      */
     ae_assert(((boundltype==-1||boundltype==0)||boundltype==1)||boundltype==2, "Spline1DConvDiffCubic: incorrect BoundLType!", _state);
     ae_assert(((boundrtype==-1||boundrtype==0)||boundrtype==1)||boundrtype==2, "Spline1DConvDiffCubic: incorrect BoundRType!", _state);
     ae_assert((boundrtype==-1&&boundltype==-1)||(boundrtype!=-1&&boundltype!=-1), "Spline1DConvDiffCubic: incorrect BoundLType/BoundRType!", _state);
-    if( boundltype==1||boundltype==2 )
-    {
+    if( boundltype==1||boundltype==2 ) {
         ae_assert(ae_isfinite(boundl, _state), "Spline1DConvDiffCubic: BoundL is infinite or NAN!", _state);
     }
-    if( boundrtype==1||boundrtype==2 )
-    {
+    if( boundrtype==1||boundrtype==2 ) {
         ae_assert(ae_isfinite(boundr, _state), "Spline1DConvDiffCubic: BoundR is infinite or NAN!", _state);
     }
-    
+
     /*
      * check lengths of arguments
      */
@@ -12583,13 +11813,12 @@ void spline1dconvdiffcubic(/* Real    */ ae_vector* x,
     ae_assert(y->cnt>=n, "Spline1DConvDiffCubic: Length(Y)<N!", _state);
     ae_assert(n2>=2, "Spline1DConvDiffCubic: N2<2!", _state);
     ae_assert(x2->cnt>=n2, "Spline1DConvDiffCubic: Length(X2)<N2!", _state);
-    
+
     /*
      * check and sort X/Y
      */
     ylen = n;
-    if( boundltype==-1 )
-    {
+    if( boundltype==-1 ) {
         ylen = n-1;
     }
     ae_assert(isfinitevector(x, n, _state), "Spline1DConvDiffCubic: X contains infinite or NAN values!", _state);
@@ -12597,29 +11826,27 @@ void spline1dconvdiffcubic(/* Real    */ ae_vector* x,
     ae_assert(isfinitevector(x2, n2, _state), "Spline1DConvDiffCubic: X2 contains infinite or NAN values!", _state);
     spline1d_heapsortppoints(x, y, &p, n, _state);
     ae_assert(aredistinct(x, n, _state), "Spline1DConvDiffCubic: at least two consequent points are too close!", _state);
-    
+
     /*
      * set up DT (we will need it below)
      */
     ae_vector_set_length(&dt, ae_maxint(n, n2, _state), _state);
-    
+
     /*
      * sort X2:
      * * use fake array DT because HeapSortPPoints() needs both integer AND real arrays
      * * if we have periodic problem, wrap points
      * * sort them, store permutation at P2
      */
-    if( boundrtype==-1&&boundltype==-1 )
-    {
-        for(i=0; i<=n2-1; i++)
-        {
+    if( boundrtype==-1&&boundltype==-1 ) {
+        for(i=0; i<=n2-1; i++) {
             t = x2->ptr.p_double[i];
             apperiodicmap(&t, x->ptr.p_double[0], x->ptr.p_double[n-1], &t2, _state);
             x2->ptr.p_double[i] = t;
         }
     }
     spline1d_heapsortppoints(x2, &dt, &p2, n2, _state);
-    
+
     /*
      * Now we've checked and preordered everything, so we:
      * * call internal GridDiff() function to get Hermite form of spline
@@ -12629,13 +11856,11 @@ void spline1dconvdiffcubic(/* Real    */ ae_vector* x,
     spline1d_spline1dgriddiffcubicinternal(x, y, n, boundltype, boundl, boundrtype, boundr, &d, &a1, &a2, &a3, &b, &dt, _state);
     spline1dconvdiffinternal(x, y, &d, n, x2, n2, y2, ae_true, d2, ae_true, &rt1, ae_false, _state);
     ae_assert(dt.cnt>=n2, "Spline1DConvDiffCubic: internal error!", _state);
-    for(i=0; i<=n2-1; i++)
-    {
+    for(i=0; i<=n2-1; i++) {
         dt.ptr.p_double[p2.ptr.p_int[i]] = y2->ptr.p_double[i];
     }
     ae_v_move(&y2->ptr.p_double[0], 1, &dt.ptr.p_double[0], 1, ae_v_len(0,n2-1));
-    for(i=0; i<=n2-1; i++)
-    {
+    for(i=0; i<=n2-1; i++) {
         dt.ptr.p_double[p2.ptr.p_int[i]] = d2->ptr.p_double[i];
     }
     ae_v_move(&d2->ptr.p_double[0], 1, &dt.ptr.p_double[0], 1, ae_v_len(0,n2-1));
@@ -12713,18 +11938,18 @@ i.e. to make Y[first_point]=Y[last_point].
      Copyright 03.09.2010 by Bochkanov Sergey
 *************************************************************************/
 void spline1dconvdiff2cubic(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_int_t boundltype,
-     double boundl,
-     ae_int_t boundrtype,
-     double boundr,
-     /* Real    */ ae_vector* x2,
-     ae_int_t n2,
-     /* Real    */ ae_vector* y2,
-     /* Real    */ ae_vector* d2,
-     /* Real    */ ae_vector* dd2,
-     ae_state *_state)
+        /* Real    */ ae_vector* y,
+        ae_int_t n,
+        ae_int_t boundltype,
+        double boundl,
+        ae_int_t boundrtype,
+        double boundr,
+        /* Real    */ ae_vector* x2,
+        ae_int_t n2,
+        /* Real    */ ae_vector* y2,
+        /* Real    */ ae_vector* d2,
+        /* Real    */ ae_vector* dd2,
+        ae_state *_state)
 {
     ae_frame _frame_block;
     ae_vector _x;
@@ -12762,22 +11987,20 @@ void spline1dconvdiff2cubic(/* Real    */ ae_vector* x,
     ae_vector_init(&p, 0, DT_INT, _state, ae_true);
     ae_vector_init(&p2, 0, DT_INT, _state, ae_true);
 
-    
+
     /*
      * check correctness of boundary conditions
      */
     ae_assert(((boundltype==-1||boundltype==0)||boundltype==1)||boundltype==2, "Spline1DConvDiff2Cubic: incorrect BoundLType!", _state);
     ae_assert(((boundrtype==-1||boundrtype==0)||boundrtype==1)||boundrtype==2, "Spline1DConvDiff2Cubic: incorrect BoundRType!", _state);
     ae_assert((boundrtype==-1&&boundltype==-1)||(boundrtype!=-1&&boundltype!=-1), "Spline1DConvDiff2Cubic: incorrect BoundLType/BoundRType!", _state);
-    if( boundltype==1||boundltype==2 )
-    {
+    if( boundltype==1||boundltype==2 ) {
         ae_assert(ae_isfinite(boundl, _state), "Spline1DConvDiff2Cubic: BoundL is infinite or NAN!", _state);
     }
-    if( boundrtype==1||boundrtype==2 )
-    {
+    if( boundrtype==1||boundrtype==2 ) {
         ae_assert(ae_isfinite(boundr, _state), "Spline1DConvDiff2Cubic: BoundR is infinite or NAN!", _state);
     }
-    
+
     /*
      * check lengths of arguments
      */
@@ -12786,13 +12009,12 @@ void spline1dconvdiff2cubic(/* Real    */ ae_vector* x,
     ae_assert(y->cnt>=n, "Spline1DConvDiff2Cubic: Length(Y)<N!", _state);
     ae_assert(n2>=2, "Spline1DConvDiff2Cubic: N2<2!", _state);
     ae_assert(x2->cnt>=n2, "Spline1DConvDiff2Cubic: Length(X2)<N2!", _state);
-    
+
     /*
      * check and sort X/Y
      */
     ylen = n;
-    if( boundltype==-1 )
-    {
+    if( boundltype==-1 ) {
         ylen = n-1;
     }
     ae_assert(isfinitevector(x, n, _state), "Spline1DConvDiff2Cubic: X contains infinite or NAN values!", _state);
@@ -12800,29 +12022,27 @@ void spline1dconvdiff2cubic(/* Real    */ ae_vector* x,
     ae_assert(isfinitevector(x2, n2, _state), "Spline1DConvDiff2Cubic: X2 contains infinite or NAN values!", _state);
     spline1d_heapsortppoints(x, y, &p, n, _state);
     ae_assert(aredistinct(x, n, _state), "Spline1DConvDiff2Cubic: at least two consequent points are too close!", _state);
-    
+
     /*
      * set up DT (we will need it below)
      */
     ae_vector_set_length(&dt, ae_maxint(n, n2, _state), _state);
-    
+
     /*
      * sort X2:
      * * use fake array DT because HeapSortPPoints() needs both integer AND real arrays
      * * if we have periodic problem, wrap points
      * * sort them, store permutation at P2
      */
-    if( boundrtype==-1&&boundltype==-1 )
-    {
-        for(i=0; i<=n2-1; i++)
-        {
+    if( boundrtype==-1&&boundltype==-1 ) {
+        for(i=0; i<=n2-1; i++) {
             t = x2->ptr.p_double[i];
             apperiodicmap(&t, x->ptr.p_double[0], x->ptr.p_double[n-1], &t2, _state);
             x2->ptr.p_double[i] = t;
         }
     }
     spline1d_heapsortppoints(x2, &dt, &p2, n2, _state);
-    
+
     /*
      * Now we've checked and preordered everything, so we:
      * * call internal GridDiff() function to get Hermite form of spline
@@ -12832,18 +12052,15 @@ void spline1dconvdiff2cubic(/* Real    */ ae_vector* x,
     spline1d_spline1dgriddiffcubicinternal(x, y, n, boundltype, boundl, boundrtype, boundr, &d, &a1, &a2, &a3, &b, &dt, _state);
     spline1dconvdiffinternal(x, y, &d, n, x2, n2, y2, ae_true, d2, ae_true, dd2, ae_true, _state);
     ae_assert(dt.cnt>=n2, "Spline1DConvDiff2Cubic: internal error!", _state);
-    for(i=0; i<=n2-1; i++)
-    {
+    for(i=0; i<=n2-1; i++) {
         dt.ptr.p_double[p2.ptr.p_int[i]] = y2->ptr.p_double[i];
     }
     ae_v_move(&y2->ptr.p_double[0], 1, &dt.ptr.p_double[0], 1, ae_v_len(0,n2-1));
-    for(i=0; i<=n2-1; i++)
-    {
+    for(i=0; i<=n2-1; i++) {
         dt.ptr.p_double[p2.ptr.p_int[i]] = d2->ptr.p_double[i];
     }
     ae_v_move(&d2->ptr.p_double[0], 1, &dt.ptr.p_double[0], 1, ae_v_len(0,n2-1));
-    for(i=0; i<=n2-1; i++)
-    {
+    for(i=0; i<=n2-1; i++) {
         dt.ptr.p_double[p2.ptr.p_int[i]] = dd2->ptr.p_double[i];
     }
     ae_v_move(&dd2->ptr.p_double[0], 1, &dt.ptr.p_double[0], 1, ae_v_len(0,n2-1));
@@ -12857,7 +12074,7 @@ This subroutine builds Catmull-Rom spline interpolant.
 INPUT PARAMETERS:
     X           -   spline nodes, array[0..N-1].
     Y           -   function values, array[0..N-1].
-    
+
 OPTIONAL PARAMETERS:
     N           -   points count:
                     * N>=2
@@ -12892,12 +12109,12 @@ i.e. to make Y[first_point]=Y[last_point].
      Copyright 23.06.2007 by Bochkanov Sergey
 *************************************************************************/
 void spline1dbuildcatmullrom(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_int_t boundtype,
-     double tension,
-     spline1dinterpolant* c,
-     ae_state *_state)
+        /* Real    */ ae_vector* y,
+        ae_int_t n,
+        ae_int_t boundtype,
+        double tension,
+        spline1dinterpolant* c,
+        ae_state *_state)
 {
     ae_frame _frame_block;
     ae_vector _x;
@@ -12919,7 +12136,7 @@ void spline1dbuildcatmullrom(/* Real    */ ae_vector* x,
     ae_assert(ae_fp_less_eq(tension,1), "Spline1DBuildCatmullRom: Tension>1!", _state);
     ae_assert(x->cnt>=n, "Spline1DBuildCatmullRom: Length(X)<N!", _state);
     ae_assert(y->cnt>=n, "Spline1DBuildCatmullRom: Length(Y)<N!", _state);
-    
+
     /*
      * check and sort points
      */
@@ -12927,15 +12144,14 @@ void spline1dbuildcatmullrom(/* Real    */ ae_vector* x,
     ae_assert(isfinitevector(y, n, _state), "Spline1DBuildCatmullRom: Y contains infinite or NAN values!", _state);
     spline1d_heapsortpoints(x, y, n, _state);
     ae_assert(aredistinct(x, n, _state), "Spline1DBuildCatmullRom: at least two consequent points are too close!", _state);
-    
+
     /*
      * Special cases:
      * * N=2, parabolic terminated boundary condition on both ends
      * * N=2, periodic boundary condition
      */
-    if( n==2&&boundtype==0 )
-    {
-        
+    if( n==2&&boundtype==0 ) {
+
         /*
          * Just linear spline
          */
@@ -12943,9 +12159,8 @@ void spline1dbuildcatmullrom(/* Real    */ ae_vector* x,
         ae_frame_leave(_state);
         return;
     }
-    if( n==2&&boundtype==-1 )
-    {
-        
+    if( n==2&&boundtype==-1 ) {
+
         /*
          * Same as cubic spline with periodic conditions
          */
@@ -12953,45 +12168,40 @@ void spline1dbuildcatmullrom(/* Real    */ ae_vector* x,
         ae_frame_leave(_state);
         return;
     }
-    
+
     /*
      * Periodic or non-periodic boundary conditions
      */
-    if( boundtype==-1 )
-    {
-        
+    if( boundtype==-1 ) {
+
         /*
          * Periodic boundary conditions
          */
         y->ptr.p_double[n-1] = y->ptr.p_double[0];
         ae_vector_set_length(&d, n, _state);
         d.ptr.p_double[0] = (y->ptr.p_double[1]-y->ptr.p_double[n-2])/(2*(x->ptr.p_double[1]-x->ptr.p_double[0]+x->ptr.p_double[n-1]-x->ptr.p_double[n-2]));
-        for(i=1; i<=n-2; i++)
-        {
+        for(i=1; i<=n-2; i++) {
             d.ptr.p_double[i] = (1-tension)*(y->ptr.p_double[i+1]-y->ptr.p_double[i-1])/(x->ptr.p_double[i+1]-x->ptr.p_double[i-1]);
         }
         d.ptr.p_double[n-1] = d.ptr.p_double[0];
-        
+
         /*
          * Now problem is reduced to the cubic Hermite spline
          */
         spline1dbuildhermite(x, y, &d, n, c, _state);
         c->periodic = ae_true;
-    }
-    else
-    {
-        
+    } else {
+
         /*
          * Non-periodic boundary conditions
          */
         ae_vector_set_length(&d, n, _state);
-        for(i=1; i<=n-2; i++)
-        {
+        for(i=1; i<=n-2; i++) {
             d.ptr.p_double[i] = (1-tension)*(y->ptr.p_double[i+1]-y->ptr.p_double[i-1])/(x->ptr.p_double[i+1]-x->ptr.p_double[i-1]);
         }
         d.ptr.p_double[0] = 2*(y->ptr.p_double[1]-y->ptr.p_double[0])/(x->ptr.p_double[1]-x->ptr.p_double[0])-d.ptr.p_double[1];
         d.ptr.p_double[n-1] = 2*(y->ptr.p_double[n-1]-y->ptr.p_double[n-2])/(x->ptr.p_double[n-1]-x->ptr.p_double[n-2])-d.ptr.p_double[n-2];
-        
+
         /*
          * Now problem is reduced to the cubic Hermite spline
          */
@@ -13026,11 +12236,11 @@ Subroutine automatically sorts points, so caller may pass unsorted array.
      Copyright 23.06.2007 by Bochkanov Sergey
 *************************************************************************/
 void spline1dbuildhermite(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* d,
-     ae_int_t n,
-     spline1dinterpolant* c,
-     ae_state *_state)
+                                        /* Real    */ ae_vector* y,
+                                        /* Real    */ ae_vector* d,
+                                        ae_int_t n,
+                                        spline1dinterpolant* c,
+                                        ae_state *_state)
 {
     ae_frame _frame_block;
     ae_vector _x;
@@ -13054,7 +12264,7 @@ void spline1dbuildhermite(/* Real    */ ae_vector* x,
     ae_assert(x->cnt>=n, "Spline1DBuildHermite: Length(X)<N!", _state);
     ae_assert(y->cnt>=n, "Spline1DBuildHermite: Length(Y)<N!", _state);
     ae_assert(d->cnt>=n, "Spline1DBuildHermite: Length(D)<N!", _state);
-    
+
     /*
      * check and sort points
      */
@@ -13063,7 +12273,7 @@ void spline1dbuildhermite(/* Real    */ ae_vector* x,
     ae_assert(isfinitevector(d, n, _state), "Spline1DBuildHermite: D contains infinite or NAN values!", _state);
     heapsortdpoints(x, y, d, n, _state);
     ae_assert(aredistinct(x, n, _state), "Spline1DBuildHermite: at least two consequent points are too close!", _state);
-    
+
     /*
      * Build
      */
@@ -13072,12 +12282,10 @@ void spline1dbuildhermite(/* Real    */ ae_vector* x,
     c->periodic = ae_false;
     c->k = 3;
     c->n = n;
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         c->x.ptr.p_double[i] = x->ptr.p_double[i];
     }
-    for(i=0; i<=n-2; i++)
-    {
+    for(i=0; i<=n-2; i++) {
         delta = x->ptr.p_double[i+1]-x->ptr.p_double[i];
         delta2 = ae_sqr(delta, _state);
         delta3 = delta*delta2;
@@ -13114,10 +12322,10 @@ Subroutine automatically sorts points, so caller may pass unsorted array.
      Copyright 24.06.2007 by Bochkanov Sergey
 *************************************************************************/
 void spline1dbuildakima(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     spline1dinterpolant* c,
-     ae_state *_state)
+                                      /* Real    */ ae_vector* y,
+                                      ae_int_t n,
+                                      spline1dinterpolant* c,
+                                      ae_state *_state)
 {
     ae_frame _frame_block;
     ae_vector _x;
@@ -13140,7 +12348,7 @@ void spline1dbuildakima(/* Real    */ ae_vector* x,
     ae_assert(n>=5, "Spline1DBuildAkima: N<5!", _state);
     ae_assert(x->cnt>=n, "Spline1DBuildAkima: Length(X)<N!", _state);
     ae_assert(y->cnt>=n, "Spline1DBuildAkima: Length(Y)<N!", _state);
-    
+
     /*
      * check and sort points
      */
@@ -13148,33 +12356,27 @@ void spline1dbuildakima(/* Real    */ ae_vector* x,
     ae_assert(isfinitevector(y, n, _state), "Spline1DBuildAkima: Y contains infinite or NAN values!", _state);
     spline1d_heapsortpoints(x, y, n, _state);
     ae_assert(aredistinct(x, n, _state), "Spline1DBuildAkima: at least two consequent points are too close!", _state);
-    
+
     /*
      * Prepare W (weights), Diff (divided differences)
      */
     ae_vector_set_length(&w, n-1, _state);
     ae_vector_set_length(&diff, n-1, _state);
-    for(i=0; i<=n-2; i++)
-    {
+    for(i=0; i<=n-2; i++) {
         diff.ptr.p_double[i] = (y->ptr.p_double[i+1]-y->ptr.p_double[i])/(x->ptr.p_double[i+1]-x->ptr.p_double[i]);
     }
-    for(i=1; i<=n-2; i++)
-    {
+    for(i=1; i<=n-2; i++) {
         w.ptr.p_double[i] = ae_fabs(diff.ptr.p_double[i]-diff.ptr.p_double[i-1], _state);
     }
-    
+
     /*
      * Prepare Hermite interpolation scheme
      */
     ae_vector_set_length(&d, n, _state);
-    for(i=2; i<=n-3; i++)
-    {
-        if( ae_fp_neq(ae_fabs(w.ptr.p_double[i-1], _state)+ae_fabs(w.ptr.p_double[i+1], _state),0) )
-        {
+    for(i=2; i<=n-3; i++) {
+        if( ae_fp_neq(ae_fabs(w.ptr.p_double[i-1], _state)+ae_fabs(w.ptr.p_double[i+1], _state),0) ) {
             d.ptr.p_double[i] = (w.ptr.p_double[i+1]*diff.ptr.p_double[i-1]+w.ptr.p_double[i-1]*diff.ptr.p_double[i])/(w.ptr.p_double[i+1]+w.ptr.p_double[i-1]);
-        }
-        else
-        {
+        } else {
             d.ptr.p_double[i] = ((x->ptr.p_double[i+1]-x->ptr.p_double[i])*diff.ptr.p_double[i-1]+(x->ptr.p_double[i]-x->ptr.p_double[i-1])*diff.ptr.p_double[i])/(x->ptr.p_double[i+1]-x->ptr.p_double[i-1]);
         }
     }
@@ -13182,7 +12384,7 @@ void spline1dbuildakima(/* Real    */ ae_vector* x,
     d.ptr.p_double[1] = spline1d_diffthreepoint(x->ptr.p_double[1], x->ptr.p_double[0], y->ptr.p_double[0], x->ptr.p_double[1], y->ptr.p_double[1], x->ptr.p_double[2], y->ptr.p_double[2], _state);
     d.ptr.p_double[n-2] = spline1d_diffthreepoint(x->ptr.p_double[n-2], x->ptr.p_double[n-3], y->ptr.p_double[n-3], x->ptr.p_double[n-2], y->ptr.p_double[n-2], x->ptr.p_double[n-1], y->ptr.p_double[n-1], _state);
     d.ptr.p_double[n-1] = spline1d_diffthreepoint(x->ptr.p_double[n-1], x->ptr.p_double[n-3], y->ptr.p_double[n-3], x->ptr.p_double[n-2], y->ptr.p_double[n-2], x->ptr.p_double[n-1], y->ptr.p_double[n-1], _state);
-    
+
     /*
      * Build Akima spline using Hermite interpolation scheme
      */
@@ -13215,42 +12417,36 @@ double spline1dcalc(spline1dinterpolant* c, double x, ae_state *_state)
 
     ae_assert(c->k==3, "Spline1DCalc: internal error", _state);
     ae_assert(!ae_isinf(x, _state), "Spline1DCalc: infinite X!", _state);
-    
+
     /*
      * special case: NaN
      */
-    if( ae_isnan(x, _state) )
-    {
+    if( ae_isnan(x, _state) ) {
         result = _state->v_nan;
         return result;
     }
-    
+
     /*
      * correct if periodic
      */
-    if( c->periodic )
-    {
+    if( c->periodic ) {
         apperiodicmap(&x, c->x.ptr.p_double[0], c->x.ptr.p_double[c->n-1], &t, _state);
     }
-    
+
     /*
      * Binary search in the [ x[0], ..., x[n-2] ] (x[n-1] is not included)
      */
     l = 0;
     r = c->n-2+1;
-    while(l!=r-1)
-    {
+    while(l!=r-1) {
         m = (l+r)/2;
-        if( c->x.ptr.p_double[m]>=x )
-        {
+        if( c->x.ptr.p_double[m]>=x ) {
             r = m;
-        }
-        else
-        {
+        } else {
             l = m;
         }
     }
-    
+
     /*
      * Interpolation
      */
@@ -13277,11 +12473,11 @@ Result:
      Copyright 24.06.2007 by Bochkanov Sergey
 *************************************************************************/
 void spline1ddiff(spline1dinterpolant* c,
-     double x,
-     double* s,
-     double* ds,
-     double* d2s,
-     ae_state *_state)
+                  double x,
+                  double* s,
+                  double* ds,
+                  double* d2s,
+                  ae_state *_state)
 {
     ae_int_t l;
     ae_int_t r;
@@ -13294,44 +12490,38 @@ void spline1ddiff(spline1dinterpolant* c,
 
     ae_assert(c->k==3, "Spline1DDiff: internal error", _state);
     ae_assert(!ae_isinf(x, _state), "Spline1DDiff: infinite X!", _state);
-    
+
     /*
      * special case: NaN
      */
-    if( ae_isnan(x, _state) )
-    {
+    if( ae_isnan(x, _state) ) {
         *s = _state->v_nan;
         *ds = _state->v_nan;
         *d2s = _state->v_nan;
         return;
     }
-    
+
     /*
      * correct if periodic
      */
-    if( c->periodic )
-    {
+    if( c->periodic ) {
         apperiodicmap(&x, c->x.ptr.p_double[0], c->x.ptr.p_double[c->n-1], &t, _state);
     }
-    
+
     /*
      * Binary search
      */
     l = 0;
     r = c->n-2+1;
-    while(l!=r-1)
-    {
+    while(l!=r-1) {
         m = (l+r)/2;
-        if( c->x.ptr.p_double[m]>=x )
-        {
+        if( c->x.ptr.p_double[m]>=x ) {
             r = m;
-        }
-        else
-        {
+        } else {
             l = m;
         }
     }
-    
+
     /*
      * Differentiation
      */
@@ -13356,8 +12546,8 @@ Result:
      Copyright 29.06.2007 by Bochkanov Sergey
 *************************************************************************/
 void spline1dcopy(spline1dinterpolant* c,
-     spline1dinterpolant* cc,
-     ae_state *_state)
+                  spline1dinterpolant* cc,
+                  ae_state *_state)
 {
 
     _spline1dinterpolant_clear(cc);
@@ -13396,9 +12586,9 @@ Result:
      Copyright 29.06.2007 by Bochkanov Sergey
 *************************************************************************/
 void spline1dunpack(spline1dinterpolant* c,
-     ae_int_t* n,
-     /* Real    */ ae_matrix* tbl,
-     ae_state *_state)
+                    ae_int_t* n,
+                    /* Real    */ ae_matrix* tbl,
+                    ae_state *_state)
 {
     ae_int_t i;
     ae_int_t j;
@@ -13408,16 +12598,14 @@ void spline1dunpack(spline1dinterpolant* c,
 
     ae_matrix_set_length(tbl, c->n-2+1, 2+c->k+1, _state);
     *n = c->n;
-    
+
     /*
      * Fill
      */
-    for(i=0; i<=*n-2; i++)
-    {
+    for(i=0; i<=*n-2; i++) {
         tbl->ptr.pp_double[i][0] = c->x.ptr.p_double[i];
         tbl->ptr.pp_double[i][1] = c->x.ptr.p_double[i+1];
-        for(j=0; j<=c->k; j++)
-        {
+        for(j=0; j<=c->k; j++) {
             tbl->ptr.pp_double[i][2+j] = c->c.ptr.p_double[(c->k+1)*i+j];
         }
     }
@@ -13437,9 +12625,9 @@ Result:
      Copyright 30.06.2007 by Bochkanov Sergey
 *************************************************************************/
 void spline1dlintransx(spline1dinterpolant* c,
-     double a,
-     double b,
-     ae_state *_state)
+                       double a,
+                       double b,
+                       ae_state *_state)
 {
     ae_frame _frame_block;
     ae_int_t i;
@@ -13458,25 +12646,22 @@ void spline1dlintransx(spline1dinterpolant* c,
     ae_vector_init(&d, 0, DT_REAL, _state, ae_true);
 
     n = c->n;
-    
+
     /*
      * Special case: A=0
      */
-    if( ae_fp_eq(a,0) )
-    {
+    if( ae_fp_eq(a,0) ) {
         v = spline1dcalc(c, b, _state);
-        for(i=0; i<=n-2; i++)
-        {
+        for(i=0; i<=n-2; i++) {
             c->c.ptr.p_double[(c->k+1)*i] = v;
-            for(j=1; j<=c->k; j++)
-            {
+            for(j=1; j<=c->k; j++) {
                 c->c.ptr.p_double[(c->k+1)*i+j] = 0;
             }
         }
         ae_frame_leave(_state);
         return;
     }
-    
+
     /*
      * General case: A<>0.
      * Unpack, X, Y, dY/dX.
@@ -13486,8 +12671,7 @@ void spline1dlintransx(spline1dinterpolant* c,
     ae_vector_set_length(&x, n-1+1, _state);
     ae_vector_set_length(&y, n-1+1, _state);
     ae_vector_set_length(&d, n-1+1, _state);
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         x.ptr.p_double[i] = c->x.ptr.p_double[i];
         spline1ddiff(c, x.ptr.p_double[i], &v, &dv, &d2v, _state);
         x.ptr.p_double[i] = (x.ptr.p_double[i]-b)/a;
@@ -13512,9 +12696,9 @@ Result:
      Copyright 30.06.2007 by Bochkanov Sergey
 *************************************************************************/
 void spline1dlintransy(spline1dinterpolant* c,
-     double a,
-     double b,
-     ae_state *_state)
+                       double a,
+                       double b,
+                       ae_state *_state)
 {
     ae_int_t i;
     ae_int_t j;
@@ -13522,11 +12706,9 @@ void spline1dlintransy(spline1dinterpolant* c,
 
 
     n = c->n;
-    for(i=0; i<=n-2; i++)
-    {
+    for(i=0; i<=n-2; i++) {
         c->c.ptr.p_double[(c->k+1)*i] = a*c->c.ptr.p_double[(c->k+1)*i]+b;
-        for(j=1; j<=c->k; j++)
-        {
+        for(j=1; j<=c->k; j++) {
             c->c.ptr.p_double[(c->k+1)*i+j] = a*c->c.ptr.p_double[(c->k+1)*i+j];
         }
     }
@@ -13547,8 +12729,8 @@ Result:
      Copyright 23.06.2007 by Bochkanov Sergey
 *************************************************************************/
 double spline1dintegrate(spline1dinterpolant* c,
-     double x,
-     ae_state *_state)
+                         double x,
+                         ae_state *_state)
 {
     ae_int_t n;
     ae_int_t i;
@@ -13565,7 +12747,7 @@ double spline1dintegrate(spline1dinterpolant* c,
 
 
     n = c->n;
-    
+
     /*
      * Periodic splines require special treatment. We make
      * following transformation:
@@ -13576,67 +12758,56 @@ double spline1dintegrate(spline1dinterpolant* c,
      * AdditionalTerm is equals to integral(S(t)dt,A,B) times some
      * integer number (may be zero).
      */
-    if( c->periodic&&(ae_fp_less(x,c->x.ptr.p_double[0])||ae_fp_greater(x,c->x.ptr.p_double[c->n-1])) )
-    {
-        
+    if( c->periodic&&(ae_fp_less(x,c->x.ptr.p_double[0])||ae_fp_greater(x,c->x.ptr.p_double[c->n-1])) ) {
+
         /*
          * compute integral(S(x)dx,A,B)
          */
         intab = 0;
-        for(i=0; i<=c->n-2; i++)
-        {
+        for(i=0; i<=c->n-2; i++) {
             w = c->x.ptr.p_double[i+1]-c->x.ptr.p_double[i];
             m = (c->k+1)*i;
             intab = intab+c->c.ptr.p_double[m]*w;
             v = w;
-            for(j=1; j<=c->k; j++)
-            {
+            for(j=1; j<=c->k; j++) {
                 v = v*w;
                 intab = intab+c->c.ptr.p_double[m+j]*v/(j+1);
             }
         }
-        
+
         /*
          * map X into [A,B]
          */
         apperiodicmap(&x, c->x.ptr.p_double[0], c->x.ptr.p_double[c->n-1], &t, _state);
         additionalterm = t*intab;
-    }
-    else
-    {
+    } else {
         additionalterm = 0;
     }
-    
+
     /*
      * Binary search in the [ x[0], ..., x[n-2] ] (x[n-1] is not included)
      */
     l = 0;
     r = n-2+1;
-    while(l!=r-1)
-    {
+    while(l!=r-1) {
         m = (l+r)/2;
-        if( ae_fp_greater_eq(c->x.ptr.p_double[m],x) )
-        {
+        if( ae_fp_greater_eq(c->x.ptr.p_double[m],x) ) {
             r = m;
-        }
-        else
-        {
+        } else {
             l = m;
         }
     }
-    
+
     /*
      * Integration
      */
     result = 0;
-    for(i=0; i<=l-1; i++)
-    {
+    for(i=0; i<=l-1; i++) {
         w = c->x.ptr.p_double[i+1]-c->x.ptr.p_double[i];
         m = (c->k+1)*i;
         result = result+c->c.ptr.p_double[m]*w;
         v = w;
-        for(j=1; j<=c->k; j++)
-        {
+        for(j=1; j<=c->k; j++) {
             v = v*w;
             result = result+c->c.ptr.p_double[m+j]*v/(j+1);
         }
@@ -13645,8 +12816,7 @@ double spline1dintegrate(spline1dinterpolant* c,
     m = (c->k+1)*l;
     v = w;
     result = result+c->c.ptr.p_double[m]*w;
-    for(j=1; j<=c->k; j++)
-    {
+    for(j=1; j<=c->k; j++) {
         v = v*w;
         result = result+c->c.ptr.p_double[m+j]*v/(j+1);
     }
@@ -13686,18 +12856,18 @@ OUTPUT ARRAYS:
      Copyright 03.09.2010 by Bochkanov Sergey
 *************************************************************************/
 void spline1dconvdiffinternal(/* Real    */ ae_vector* xold,
-     /* Real    */ ae_vector* yold,
-     /* Real    */ ae_vector* dold,
-     ae_int_t n,
-     /* Real    */ ae_vector* x2,
-     ae_int_t n2,
-     /* Real    */ ae_vector* y,
-     ae_bool needy,
-     /* Real    */ ae_vector* d1,
-     ae_bool needd1,
-     /* Real    */ ae_vector* d2,
-     ae_bool needd2,
-     ae_state *_state)
+        /* Real    */ ae_vector* yold,
+        /* Real    */ ae_vector* dold,
+        ae_int_t n,
+        /* Real    */ ae_vector* x2,
+        ae_int_t n2,
+        /* Real    */ ae_vector* y,
+        ae_bool needy,
+        /* Real    */ ae_vector* d1,
+        ae_bool needd1,
+        /* Real    */ ae_vector* d2,
+        ae_bool needd2,
+        ae_state *_state)
 {
     ae_int_t intervalindex;
     ae_int_t pointindex;
@@ -13718,23 +12888,20 @@ void spline1dconvdiffinternal(/* Real    */ ae_vector* xold,
     double t;
 
 
-    
+
     /*
      * Prepare space
      */
-    if( needy&&y->cnt<n2 )
-    {
+    if( needy&&y->cnt<n2 ) {
         ae_vector_set_length(y, n2, _state);
     }
-    if( needd1&&d1->cnt<n2 )
-    {
+    if( needd1&&d1->cnt<n2 ) {
         ae_vector_set_length(d1, n2, _state);
     }
-    if( needd2&&d2->cnt<n2 )
-    {
+    if( needd2&&d2->cnt<n2 ) {
         ae_vector_set_length(d2, n2, _state);
     }
-    
+
     /*
      * These assignments aren't actually needed
      * (variables are initialized in the loop below),
@@ -13746,41 +12913,34 @@ void spline1dconvdiffinternal(/* Real    */ ae_vector* xold,
     c3 = 0;
     a = 0;
     b = 0;
-    
+
     /*
      * Cycle
      */
     intervalindex = -1;
     pointindex = 0;
-    for(;;)
-    {
-        
+    for(;;) {
+
         /*
          * are we ready to exit?
          */
-        if( pointindex>=n2 )
-        {
+        if( pointindex>=n2 ) {
             break;
         }
         t = x2->ptr.p_double[pointindex];
-        
+
         /*
          * do we need to advance interval?
          */
         havetoadvance = ae_false;
-        if( intervalindex==-1 )
-        {
+        if( intervalindex==-1 ) {
             havetoadvance = ae_true;
-        }
-        else
-        {
-            if( intervalindex<n-2 )
-            {
+        } else {
+            if( intervalindex<n-2 ) {
                 havetoadvance = ae_fp_greater_eq(t,b);
             }
         }
-        if( havetoadvance )
-        {
+        if( havetoadvance ) {
             intervalindex = intervalindex+1;
             a = xold->ptr.p_double[intervalindex];
             b = xold->ptr.p_double[intervalindex+1];
@@ -13797,21 +12957,18 @@ void spline1dconvdiffinternal(/* Real    */ ae_vector* xold,
             c3 = (2*(fa-fb)+da*w+db*w)/w3;
             continue;
         }
-        
+
         /*
          * Calculate spline and its derivatives using power basis
          */
         t = t-a;
-        if( needy )
-        {
+        if( needy ) {
             y->ptr.p_double[pointindex] = c0+t*(c1+t*(c2+t*c3));
         }
-        if( needd1 )
-        {
+        if( needd1 ) {
             d1->ptr.p_double[pointindex] = c1+2*t*c2+3*t*t*c3;
         }
-        if( needd2 )
-        {
+        if( needd2 ) {
             d2->ptr.p_double[pointindex] = 2*c2+6*t*c3;
         }
         pointindex = pointindex+1;
@@ -13823,10 +12980,10 @@ void spline1dconvdiffinternal(/* Real    */ ae_vector* xold,
 Internal subroutine. Heap sort.
 *************************************************************************/
 void heapsortdpoints(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* d,
-     ae_int_t n,
-     ae_state *_state)
+                                   /* Real    */ ae_vector* y,
+                                   /* Real    */ ae_vector* d,
+                                   ae_int_t n,
+                                   ae_state *_state)
 {
     ae_frame _frame_block;
     ae_vector rbuf;
@@ -13843,18 +13000,15 @@ void heapsortdpoints(/* Real    */ ae_vector* x,
 
     ae_vector_set_length(&ibuf, n, _state);
     ae_vector_set_length(&rbuf, n, _state);
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         ibuf.ptr.p_int[i] = i;
     }
     tagsortfasti(x, &ibuf, &rbuf2, &ibuf2, n, _state);
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         rbuf.ptr.p_double[i] = y->ptr.p_double[ibuf.ptr.p_int[i]];
     }
     ae_v_move(&y->ptr.p_double[0], 1, &rbuf.ptr.p_double[0], 1, ae_v_len(0,n-1));
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         rbuf.ptr.p_double[i] = d->ptr.p_double[ibuf.ptr.p_int[i]];
     }
     ae_v_move(&d->ptr.p_double[0], 1, &rbuf.ptr.p_double[0], 1, ae_v_len(0,n-1));
@@ -13876,82 +13030,73 @@ be equal to the first one (if periodic boundary conditions are specified).
      Copyright 03.09.2010 by Bochkanov Sergey
 *************************************************************************/
 static void spline1d_spline1dgriddiffcubicinternal(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_int_t boundltype,
-     double boundl,
-     ae_int_t boundrtype,
-     double boundr,
-     /* Real    */ ae_vector* d,
-     /* Real    */ ae_vector* a1,
-     /* Real    */ ae_vector* a2,
-     /* Real    */ ae_vector* a3,
-     /* Real    */ ae_vector* b,
-     /* Real    */ ae_vector* dt,
-     ae_state *_state)
+        /* Real    */ ae_vector* y,
+        ae_int_t n,
+        ae_int_t boundltype,
+        double boundl,
+        ae_int_t boundrtype,
+        double boundr,
+        /* Real    */ ae_vector* d,
+        /* Real    */ ae_vector* a1,
+        /* Real    */ ae_vector* a2,
+        /* Real    */ ae_vector* a3,
+        /* Real    */ ae_vector* b,
+        /* Real    */ ae_vector* dt,
+        ae_state *_state)
 {
     ae_int_t i;
 
 
-    
+
     /*
      * allocate arrays
      */
-    if( d->cnt<n )
-    {
+    if( d->cnt<n ) {
         ae_vector_set_length(d, n, _state);
     }
-    if( a1->cnt<n )
-    {
+    if( a1->cnt<n ) {
         ae_vector_set_length(a1, n, _state);
     }
-    if( a2->cnt<n )
-    {
+    if( a2->cnt<n ) {
         ae_vector_set_length(a2, n, _state);
     }
-    if( a3->cnt<n )
-    {
+    if( a3->cnt<n ) {
         ae_vector_set_length(a3, n, _state);
     }
-    if( b->cnt<n )
-    {
+    if( b->cnt<n ) {
         ae_vector_set_length(b, n, _state);
     }
-    if( dt->cnt<n )
-    {
+    if( dt->cnt<n ) {
         ae_vector_set_length(dt, n, _state);
     }
-    
+
     /*
      * Special cases:
      * * N=2, parabolic terminated boundary condition on both ends
      * * N=2, periodic boundary condition
      */
-    if( (n==2&&boundltype==0)&&boundrtype==0 )
-    {
+    if( (n==2&&boundltype==0)&&boundrtype==0 ) {
         d->ptr.p_double[0] = (y->ptr.p_double[1]-y->ptr.p_double[0])/(x->ptr.p_double[1]-x->ptr.p_double[0]);
         d->ptr.p_double[1] = d->ptr.p_double[0];
         return;
     }
-    if( (n==2&&boundltype==-1)&&boundrtype==-1 )
-    {
+    if( (n==2&&boundltype==-1)&&boundrtype==-1 ) {
         d->ptr.p_double[0] = 0;
         d->ptr.p_double[1] = 0;
         return;
     }
-    
+
     /*
      * Periodic and non-periodic boundary conditions are
      * two separate classes
      */
-    if( boundrtype==-1&&boundltype==-1 )
-    {
-        
+    if( boundrtype==-1&&boundltype==-1 ) {
+
         /*
          * Periodic boundary conditions
          */
         y->ptr.p_double[n-1] = y->ptr.p_double[0];
-        
+
         /*
          * Boundary conditions at N-1 points
          * (one point less because last point is the same as first point).
@@ -13960,9 +13105,8 @@ static void spline1d_spline1dgriddiffcubicinternal(/* Real    */ ae_vector* x,
         a2->ptr.p_double[0] = 2*(x->ptr.p_double[1]-x->ptr.p_double[0]+x->ptr.p_double[n-1]-x->ptr.p_double[n-2]);
         a3->ptr.p_double[0] = x->ptr.p_double[n-1]-x->ptr.p_double[n-2];
         b->ptr.p_double[0] = 3*(y->ptr.p_double[n-1]-y->ptr.p_double[n-2])/(x->ptr.p_double[n-1]-x->ptr.p_double[n-2])*(x->ptr.p_double[1]-x->ptr.p_double[0])+3*(y->ptr.p_double[1]-y->ptr.p_double[0])/(x->ptr.p_double[1]-x->ptr.p_double[0])*(x->ptr.p_double[n-1]-x->ptr.p_double[n-2]);
-        for(i=1; i<=n-2; i++)
-        {
-            
+        for(i=1; i<=n-2; i++) {
+
             /*
              * Altough last point is [N-2], we use X[N-1] and Y[N-1]
              * (because of periodicity)
@@ -13972,79 +13116,70 @@ static void spline1d_spline1dgriddiffcubicinternal(/* Real    */ ae_vector* x,
             a3->ptr.p_double[i] = x->ptr.p_double[i]-x->ptr.p_double[i-1];
             b->ptr.p_double[i] = 3*(y->ptr.p_double[i]-y->ptr.p_double[i-1])/(x->ptr.p_double[i]-x->ptr.p_double[i-1])*(x->ptr.p_double[i+1]-x->ptr.p_double[i])+3*(y->ptr.p_double[i+1]-y->ptr.p_double[i])/(x->ptr.p_double[i+1]-x->ptr.p_double[i])*(x->ptr.p_double[i]-x->ptr.p_double[i-1]);
         }
-        
+
         /*
          * Solve, add last point (with index N-1)
          */
         spline1d_solvecyclictridiagonal(a1, a2, a3, b, n-1, dt, _state);
         ae_v_move(&d->ptr.p_double[0], 1, &dt->ptr.p_double[0], 1, ae_v_len(0,n-2));
         d->ptr.p_double[n-1] = d->ptr.p_double[0];
-    }
-    else
-    {
-        
+    } else {
+
         /*
          * Non-periodic boundary condition.
          * Left boundary conditions.
          */
-        if( boundltype==0 )
-        {
+        if( boundltype==0 ) {
             a1->ptr.p_double[0] = 0;
             a2->ptr.p_double[0] = 1;
             a3->ptr.p_double[0] = 1;
             b->ptr.p_double[0] = 2*(y->ptr.p_double[1]-y->ptr.p_double[0])/(x->ptr.p_double[1]-x->ptr.p_double[0]);
         }
-        if( boundltype==1 )
-        {
+        if( boundltype==1 ) {
             a1->ptr.p_double[0] = 0;
             a2->ptr.p_double[0] = 1;
             a3->ptr.p_double[0] = 0;
             b->ptr.p_double[0] = boundl;
         }
-        if( boundltype==2 )
-        {
+        if( boundltype==2 ) {
             a1->ptr.p_double[0] = 0;
             a2->ptr.p_double[0] = 2;
             a3->ptr.p_double[0] = 1;
             b->ptr.p_double[0] = 3*(y->ptr.p_double[1]-y->ptr.p_double[0])/(x->ptr.p_double[1]-x->ptr.p_double[0])-0.5*boundl*(x->ptr.p_double[1]-x->ptr.p_double[0]);
         }
-        
+
         /*
          * Central conditions
          */
-        for(i=1; i<=n-2; i++)
-        {
+        for(i=1; i<=n-2; i++) {
             a1->ptr.p_double[i] = x->ptr.p_double[i+1]-x->ptr.p_double[i];
             a2->ptr.p_double[i] = 2*(x->ptr.p_double[i+1]-x->ptr.p_double[i-1]);
             a3->ptr.p_double[i] = x->ptr.p_double[i]-x->ptr.p_double[i-1];
             b->ptr.p_double[i] = 3*(y->ptr.p_double[i]-y->ptr.p_double[i-1])/(x->ptr.p_double[i]-x->ptr.p_double[i-1])*(x->ptr.p_double[i+1]-x->ptr.p_double[i])+3*(y->ptr.p_double[i+1]-y->ptr.p_double[i])/(x->ptr.p_double[i+1]-x->ptr.p_double[i])*(x->ptr.p_double[i]-x->ptr.p_double[i-1]);
         }
-        
+
         /*
          * Right boundary conditions
          */
-        if( boundrtype==0 )
-        {
+        if( boundrtype==0 ) {
             a1->ptr.p_double[n-1] = 1;
             a2->ptr.p_double[n-1] = 1;
             a3->ptr.p_double[n-1] = 0;
             b->ptr.p_double[n-1] = 2*(y->ptr.p_double[n-1]-y->ptr.p_double[n-2])/(x->ptr.p_double[n-1]-x->ptr.p_double[n-2]);
         }
-        if( boundrtype==1 )
-        {
+        if( boundrtype==1 ) {
             a1->ptr.p_double[n-1] = 0;
             a2->ptr.p_double[n-1] = 1;
             a3->ptr.p_double[n-1] = 0;
             b->ptr.p_double[n-1] = boundr;
         }
-        if( boundrtype==2 )
-        {
+        if( boundrtype==2 ) {
             a1->ptr.p_double[n-1] = 1;
             a2->ptr.p_double[n-1] = 2;
             a3->ptr.p_double[n-1] = 0;
             b->ptr.p_double[n-1] = 3*(y->ptr.p_double[n-1]-y->ptr.p_double[n-2])/(x->ptr.p_double[n-1]-x->ptr.p_double[n-2])+0.5*boundr*(x->ptr.p_double[n-1]-x->ptr.p_double[n-2]);
         }
-        
+
         /*
          * Solve
          */
@@ -14057,9 +13192,9 @@ static void spline1d_spline1dgriddiffcubicinternal(/* Real    */ ae_vector* x,
 Internal subroutine. Heap sort.
 *************************************************************************/
 static void spline1d_heapsortpoints(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_state *_state)
+        /* Real    */ ae_vector* y,
+        ae_int_t n,
+        ae_state *_state)
 {
     ae_frame _frame_block;
     ae_vector bufx;
@@ -14080,17 +13215,17 @@ Internal subroutine. Heap sort.
 Accepts:
     X, Y    -   points
     P       -   empty or preallocated array
-    
+
 Returns:
     X, Y    -   sorted by X
     P       -   array of permutations; I-th position of output
                 arrays X/Y contains (X[P[I]],Y[P[I]])
 *************************************************************************/
 static void spline1d_heapsortppoints(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Integer */ ae_vector* p,
-     ae_int_t n,
-     ae_state *_state)
+        /* Real    */ ae_vector* y,
+        /* Integer */ ae_vector* p,
+        ae_int_t n,
+        ae_state *_state)
 {
     ae_frame _frame_block;
     ae_vector rbuf;
@@ -14101,18 +13236,15 @@ static void spline1d_heapsortppoints(/* Real    */ ae_vector* x,
     ae_vector_init(&rbuf, 0, DT_REAL, _state, ae_true);
     ae_vector_init(&ibuf, 0, DT_INT, _state, ae_true);
 
-    if( p->cnt<n )
-    {
+    if( p->cnt<n ) {
         ae_vector_set_length(p, n, _state);
     }
     ae_vector_set_length(&rbuf, n, _state);
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         p->ptr.p_int[i] = i;
     }
     tagsortfasti(x, p, &rbuf, &ibuf, n, _state);
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         rbuf.ptr.p_double[i] = y->ptr.p_double[p->ptr.p_int[i]];
     }
     ae_v_move(&y->ptr.p_double[0], 1, &rbuf.ptr.p_double[0], 1, ae_v_len(0,n-1));
@@ -14133,12 +13265,12 @@ Internal subroutine. Tridiagonal solver. Solves
 
 *************************************************************************/
 static void spline1d_solvetridiagonal(/* Real    */ ae_vector* a,
-     /* Real    */ ae_vector* b,
-     /* Real    */ ae_vector* c,
-     /* Real    */ ae_vector* d,
-     ae_int_t n,
-     /* Real    */ ae_vector* x,
-     ae_state *_state)
+        /* Real    */ ae_vector* b,
+        /* Real    */ ae_vector* c,
+        /* Real    */ ae_vector* d,
+        ae_int_t n,
+        /* Real    */ ae_vector* x,
+        ae_state *_state)
 {
     ae_frame _frame_block;
     ae_vector _b;
@@ -14152,19 +13284,16 @@ static void spline1d_solvetridiagonal(/* Real    */ ae_vector* a,
     ae_vector_init_copy(&_d, d, _state, ae_true);
     d = &_d;
 
-    if( x->cnt<n )
-    {
+    if( x->cnt<n ) {
         ae_vector_set_length(x, n, _state);
     }
-    for(k=1; k<=n-1; k++)
-    {
+    for(k=1; k<=n-1; k++) {
         t = a->ptr.p_double[k]/b->ptr.p_double[k-1];
         b->ptr.p_double[k] = b->ptr.p_double[k]-t*c->ptr.p_double[k-1];
         d->ptr.p_double[k] = d->ptr.p_double[k]-t*d->ptr.p_double[k-1];
     }
     x->ptr.p_double[n-1] = d->ptr.p_double[n-1]/b->ptr.p_double[n-1];
-    for(k=n-2; k>=0; k--)
-    {
+    for(k=n-2; k>=0; k--) {
         x->ptr.p_double[k] = (d->ptr.p_double[k]-c->ptr.p_double[k]*x->ptr.p_double[k+1])/b->ptr.p_double[k];
     }
     ae_frame_leave(_state);
@@ -14183,12 +13312,12 @@ Internal subroutine. Cyclic tridiagonal solver. Solves
 ( C[N-1]           A[N-1] B[N-1] )
 *************************************************************************/
 static void spline1d_solvecyclictridiagonal(/* Real    */ ae_vector* a,
-     /* Real    */ ae_vector* b,
-     /* Real    */ ae_vector* c,
-     /* Real    */ ae_vector* d,
-     ae_int_t n,
-     /* Real    */ ae_vector* x,
-     ae_state *_state)
+        /* Real    */ ae_vector* b,
+        /* Real    */ ae_vector* c,
+        /* Real    */ ae_vector* d,
+        ae_int_t n,
+        /* Real    */ ae_vector* x,
+        ae_state *_state)
 {
     ae_frame _frame_block;
     ae_vector _b;
@@ -14207,8 +13336,7 @@ static void spline1d_solvecyclictridiagonal(/* Real    */ ae_vector* a,
     ae_vector_init(&z, 0, DT_REAL, _state, ae_true);
     ae_vector_init(&u, 0, DT_REAL, _state, ae_true);
 
-    if( x->cnt<n )
-    {
+    if( x->cnt<n ) {
         ae_vector_set_length(x, n, _state);
     }
     beta = a->ptr.p_double[0];
@@ -14217,16 +13345,14 @@ static void spline1d_solvecyclictridiagonal(/* Real    */ ae_vector* a,
     b->ptr.p_double[0] = 2*b->ptr.p_double[0];
     b->ptr.p_double[n-1] = b->ptr.p_double[n-1]-alpha*beta/gamma;
     ae_vector_set_length(&u, n, _state);
-    for(k=0; k<=n-1; k++)
-    {
+    for(k=0; k<=n-1; k++) {
         u.ptr.p_double[k] = 0;
     }
     u.ptr.p_double[0] = gamma;
     u.ptr.p_double[n-1] = alpha;
     spline1d_solvetridiagonal(a, b, c, d, n, &y, _state);
     spline1d_solvetridiagonal(a, b, c, &u, n, &z, _state);
-    for(k=0; k<=n-1; k++)
-    {
+    for(k=0; k<=n-1; k++) {
         x->ptr.p_double[k] = y.ptr.p_double[k]-(y.ptr.p_double[0]+beta/gamma*y.ptr.p_double[n-1])/(1+z.ptr.p_double[0]+beta/gamma*z.ptr.p_double[n-1])*z.ptr.p_double[k];
     }
     ae_frame_leave(_state);
@@ -14237,13 +13363,13 @@ static void spline1d_solvecyclictridiagonal(/* Real    */ ae_vector* a,
 Internal subroutine. Three-point differentiation
 *************************************************************************/
 static double spline1d_diffthreepoint(double t,
-     double x0,
-     double f0,
-     double x1,
-     double f1,
-     double x2,
-     double f2,
-     ae_state *_state)
+                                      double x0,
+                                      double f0,
+                                      double x1,
+                                      double f1,
+                                      double x2,
+                                      double f2,
+                                      ae_state *_state)
 {
     double a;
     double b;
@@ -14262,10 +13388,12 @@ static double spline1d_diffthreepoint(double t,
 
 ae_bool _spline1dinterpolant_init(spline1dinterpolant* p, ae_state *_state, ae_bool make_automatic)
 {
-    if( !ae_vector_init(&p->x, 0, DT_REAL, _state, make_automatic) )
+    if( !ae_vector_init(&p->x, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->c, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->c, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
+    }
     return ae_true;
 }
 
@@ -14275,10 +13403,12 @@ ae_bool _spline1dinterpolant_init_copy(spline1dinterpolant* dst, spline1dinterpo
     dst->periodic = src->periodic;
     dst->n = src->n;
     dst->k = src->k;
-    if( !ae_vector_init_copy(&dst->x, &src->x, _state, make_automatic) )
+    if( !ae_vector_init_copy(&dst->x, &src->x, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init_copy(&dst->c, &src->c, _state, make_automatic) )
+    }
+    if( !ae_vector_init_copy(&dst->c, &src->c, _state, make_automatic) ) {
         return ae_false;
+    }
     return ae_true;
 }
 
@@ -14334,13 +13464,13 @@ NOTES:
      Copyright 10.12.2009 by Bochkanov Sergey
 *************************************************************************/
 void polynomialfit(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t* info,
-     barycentricinterpolant* p,
-     polynomialfitreport* rep,
-     ae_state *_state)
+                                 /* Real    */ ae_vector* y,
+                                 ae_int_t n,
+                                 ae_int_t m,
+                                 ae_int_t* info,
+                                 barycentricinterpolant* p,
+                                 polynomialfitreport* rep,
+                                 ae_state *_state)
 {
     ae_frame _frame_block;
     ae_int_t i;
@@ -14365,8 +13495,7 @@ void polynomialfit(/* Real    */ ae_vector* x,
     ae_assert(isfinitevector(x, n, _state), "PolynomialFit: X contains infinite or NaN values!", _state);
     ae_assert(isfinitevector(y, n, _state), "PolynomialFit: Y contains infinite or NaN values!", _state);
     ae_vector_set_length(&w, n, _state);
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         w.ptr.p_double[i] = 1;
     }
     polynomialfitwc(x, y, &w, n, &xc, &yc, &dc, 0, m, info, p, rep, _state);
@@ -14454,18 +13583,18 @@ above is not guaranteed and may result in inconsistency.
      Copyright 10.12.2009 by Bochkanov Sergey
 *************************************************************************/
 void polynomialfitwc(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     ae_int_t n,
-     /* Real    */ ae_vector* xc,
-     /* Real    */ ae_vector* yc,
-     /* Integer */ ae_vector* dc,
-     ae_int_t k,
-     ae_int_t m,
-     ae_int_t* info,
-     barycentricinterpolant* p,
-     polynomialfitreport* rep,
-     ae_state *_state)
+                                   /* Real    */ ae_vector* y,
+                                   /* Real    */ ae_vector* w,
+                                   ae_int_t n,
+                                   /* Real    */ ae_vector* xc,
+                                   /* Real    */ ae_vector* yc,
+                                   /* Integer */ ae_vector* dc,
+                                   ae_int_t k,
+                                   ae_int_t m,
+                                   ae_int_t* info,
+                                   barycentricinterpolant* p,
+                                   polynomialfitreport* rep,
+                                   ae_state *_state)
 {
     ae_frame _frame_block;
     ae_vector _x;
@@ -14534,23 +13663,21 @@ void polynomialfitwc(/* Real    */ ae_vector* x,
     ae_assert(isfinitevector(w, n, _state), "PolynomialFitWC: X contains infinite or NaN values!", _state);
     ae_assert(isfinitevector(xc, k, _state), "PolynomialFitWC: XC contains infinite or NaN values!", _state);
     ae_assert(isfinitevector(yc, k, _state), "PolynomialFitWC: YC contains infinite or NaN values!", _state);
-    for(i=0; i<=k-1; i++)
-    {
+    for(i=0; i<=k-1; i++) {
         ae_assert(dc->ptr.p_int[i]==0||dc->ptr.p_int[i]==1, "PolynomialFitWC: one of DC[] is not 0 or 1!", _state);
     }
-    
+
     /*
      * Scale X, Y, XC, YC.
      * Solve scaled problem using internal Chebyshev fitting function.
      */
     lsfitscalexy(x, y, w, n, xc, yc, dc, k, &xa, &xb, &sa, &sb, &xoriginal, &yoriginal, _state);
     lsfit_internalchebyshevfit(x, y, w, n, xc, yc, dc, k, m, info, &tmp, &lrep, _state);
-    if( *info<0 )
-    {
+    if( *info<0 ) {
         ae_frame_leave(_state);
         return;
     }
-    
+
     /*
      * Generate barycentric model and scale it
      * * BX, BY store barycentric model nodes
@@ -14565,31 +13692,20 @@ void polynomialfitwc(/* Real    */ ae_vector* x,
     ae_vector_set_length(&bw, m, _state);
     ae_vector_set_length(&tmp2, m, _state);
     s = 1;
-    for(i=0; i<=m-1; i++)
-    {
-        if( m!=1 )
-        {
+    for(i=0; i<=m-1; i++) {
+        if( m!=1 ) {
             u = ae_cos(ae_pi*i/(m-1), _state);
-        }
-        else
-        {
+        } else {
             u = 0;
         }
         v = 0;
-        for(j=0; j<=m-1; j++)
-        {
-            if( j==0 )
-            {
+        for(j=0; j<=m-1; j++) {
+            if( j==0 ) {
                 tmp2.ptr.p_double[j] = 1;
-            }
-            else
-            {
-                if( j==1 )
-                {
+            } else {
+                if( j==1 ) {
                     tmp2.ptr.p_double[j] = u;
-                }
-                else
-                {
+                } else {
                     tmp2.ptr.p_double[j] = 2*u*tmp2.ptr.p_double[j-1]-tmp2.ptr.p_double[j-2];
                 }
             }
@@ -14598,8 +13714,7 @@ void polynomialfitwc(/* Real    */ ae_vector* x,
         bx.ptr.p_double[i] = u;
         by.ptr.p_double[i] = v;
         bw.ptr.p_double[i] = s;
-        if( i==0||i==m-1 )
-        {
+        if( i==0||i==m-1 ) {
             bw.ptr.p_double[i] = 0.5*bw.ptr.p_double[i];
         }
         s = -s;
@@ -14607,7 +13722,7 @@ void polynomialfitwc(/* Real    */ ae_vector* x,
     barycentricbuildxyw(&bx, &by, &bw, m, p, _state);
     barycentriclintransx(p, 2/(xb-xa), -(xa+xb)/(xb-xa), _state);
     barycentriclintransy(p, sb-sa, sa, _state);
-    
+
     /*
      * Scale absolute errors obtained from LSFitLinearW.
      * Relative error should be calculated separately
@@ -14619,16 +13734,13 @@ void polynomialfitwc(/* Real    */ ae_vector* x,
     rep->maxerror = lrep.maxerror*(sb-sa);
     rep->avgrelerror = 0;
     relcnt = 0;
-    for(i=0; i<=n-1; i++)
-    {
-        if( ae_fp_neq(yoriginal.ptr.p_double[i],0) )
-        {
+    for(i=0; i<=n-1; i++) {
+        if( ae_fp_neq(yoriginal.ptr.p_double[i],0) ) {
             rep->avgrelerror = rep->avgrelerror+ae_fabs(barycentriccalc(p, xoriginal.ptr.p_double[i], _state)-yoriginal.ptr.p_double[i], _state)/ae_fabs(yoriginal.ptr.p_double[i], _state);
             relcnt = relcnt+1;
         }
     }
-    if( relcnt!=0 )
-    {
+    if( relcnt!=0 ) {
         rep->avgrelerror = rep->avgrelerror/relcnt;
     }
     ae_frame_leave(_state);
@@ -14720,18 +13832,18 @@ above is not guaranteed and may result in inconsistency.
      Copyright 18.08.2009 by Bochkanov Sergey
 *************************************************************************/
 void barycentricfitfloaterhormannwc(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     ae_int_t n,
-     /* Real    */ ae_vector* xc,
-     /* Real    */ ae_vector* yc,
-     /* Integer */ ae_vector* dc,
-     ae_int_t k,
-     ae_int_t m,
-     ae_int_t* info,
-     barycentricinterpolant* b,
-     barycentricfitreport* rep,
-     ae_state *_state)
+        /* Real    */ ae_vector* y,
+        /* Real    */ ae_vector* w,
+        ae_int_t n,
+        /* Real    */ ae_vector* xc,
+        /* Real    */ ae_vector* yc,
+        /* Integer */ ae_vector* dc,
+        ae_int_t k,
+        ae_int_t m,
+        ae_int_t* info,
+        barycentricinterpolant* b,
+        barycentricfitreport* rep,
+        ae_state *_state)
 {
     ae_frame _frame_block;
     ae_int_t d;
@@ -14764,11 +13876,10 @@ void barycentricfitfloaterhormannwc(/* Real    */ ae_vector* x,
     ae_assert(isfinitevector(w, n, _state), "BarycentricFitFloaterHormannWC: X contains infinite or NaN values!", _state);
     ae_assert(isfinitevector(xc, k, _state), "BarycentricFitFloaterHormannWC: XC contains infinite or NaN values!", _state);
     ae_assert(isfinitevector(yc, k, _state), "BarycentricFitFloaterHormannWC: YC contains infinite or NaN values!", _state);
-    for(i=0; i<=k-1; i++)
-    {
+    for(i=0; i<=k-1; i++) {
         ae_assert(dc->ptr.p_int[i]==0||dc->ptr.p_int[i]==1, "BarycentricFitFloaterHormannWC: one of DC[] is not 0 or 1!", _state);
     }
-    
+
     /*
      * Find optimal D
      *
@@ -14779,24 +13890,20 @@ void barycentricfitfloaterhormannwc(/* Real    */ ae_vector* x,
     wrmsbest = ae_maxrealnumber;
     rep->dbest = -1;
     *info = -3;
-    for(d=0; d<=ae_minint(9, n-1, _state); d++)
-    {
+    for(d=0; d<=ae_minint(9, n-1, _state); d++) {
         lsfit_barycentricfitwcfixedd(x, y, w, n, xc, yc, dc, k, m, d, &locinfo, &locb, &locrep, _state);
         ae_assert((locinfo==-4||locinfo==-3)||locinfo>0, "BarycentricFitFloaterHormannWC: unexpected result from BarycentricFitWCFixedD!", _state);
-        if( locinfo>0 )
-        {
-            
+        if( locinfo>0 ) {
+
             /*
              * Calculate weghted RMS
              */
             wrmscur = 0;
-            for(i=0; i<=n-1; i++)
-            {
+            for(i=0; i<=n-1; i++) {
                 wrmscur = wrmscur+ae_sqr(w->ptr.p_double[i]*(y->ptr.p_double[i]-barycentriccalc(&locb, x->ptr.p_double[i], _state)), _state);
             }
             wrmscur = ae_sqrt(wrmscur/n, _state);
-            if( ae_fp_less(wrmscur,wrmsbest)||rep->dbest<0 )
-            {
+            if( ae_fp_less(wrmscur,wrmsbest)||rep->dbest<0 ) {
                 barycentriccopy(&locb, b, _state);
                 rep->dbest = d;
                 *info = 1;
@@ -14807,11 +13914,8 @@ void barycentricfitfloaterhormannwc(/* Real    */ ae_vector* x,
                 rep->taskrcond = locrep.taskrcond;
                 wrmsbest = wrmscur;
             }
-        }
-        else
-        {
-            if( locinfo!=-3&&*info<0 )
-            {
+        } else {
+            if( locinfo!=-3&&*info<0 ) {
                 *info = locinfo;
             }
         }
@@ -14856,13 +13960,13 @@ OUTPUT PARAMETERS:
      Copyright 18.08.2009 by Bochkanov Sergey
 *************************************************************************/
 void barycentricfitfloaterhormann(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t* info,
-     barycentricinterpolant* b,
-     barycentricfitreport* rep,
-     ae_state *_state)
+        /* Real    */ ae_vector* y,
+        ae_int_t n,
+        ae_int_t m,
+        ae_int_t* info,
+        barycentricinterpolant* b,
+        barycentricfitreport* rep,
+        ae_state *_state)
 {
     ae_frame _frame_block;
     ae_vector w;
@@ -14887,8 +13991,7 @@ void barycentricfitfloaterhormann(/* Real    */ ae_vector* x,
     ae_assert(isfinitevector(x, n, _state), "BarycentricFitFloaterHormann: X contains infinite or NaN values!", _state);
     ae_assert(isfinitevector(y, n, _state), "BarycentricFitFloaterHormann: Y contains infinite or NaN values!", _state);
     ae_vector_set_length(&w, n, _state);
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         w.ptr.p_double[i] = 1;
     }
     barycentricfitfloaterhormannwc(x, y, &w, n, &xc, &yc, &dc, 0, m, info, b, rep, _state);
@@ -14932,14 +14035,14 @@ OUTPUT PARAMETERS:
      Copyright 18.08.2009 by Bochkanov Sergey
 *************************************************************************/
 void spline1dfitpenalized(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_int_t m,
-     double rho,
-     ae_int_t* info,
-     spline1dinterpolant* s,
-     spline1dfitreport* rep,
-     ae_state *_state)
+                                        /* Real    */ ae_vector* y,
+                                        ae_int_t n,
+                                        ae_int_t m,
+                                        double rho,
+                                        ae_int_t* info,
+                                        spline1dinterpolant* s,
+                                        spline1dfitreport* rep,
+                                        ae_state *_state)
 {
     ae_frame _frame_block;
     ae_vector _x;
@@ -14965,8 +14068,7 @@ void spline1dfitpenalized(/* Real    */ ae_vector* x,
     ae_assert(isfinitevector(y, n, _state), "Spline1DFitPenalized: Y contains infinite or NAN values!", _state);
     ae_assert(ae_isfinite(rho, _state), "Spline1DFitPenalized: Rho is infinite!", _state);
     ae_vector_set_length(&w, n, _state);
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         w.ptr.p_double[i] = 1;
     }
     spline1dfitpenalizedw(x, y, &w, n, m, rho, info, s, rep, _state);
@@ -15041,15 +14143,15 @@ array.
      Copyright 19.10.2010 by Bochkanov Sergey
 *************************************************************************/
 void spline1dfitpenalizedw(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     ae_int_t n,
-     ae_int_t m,
-     double rho,
-     ae_int_t* info,
-     spline1dinterpolant* s,
-     spline1dfitreport* rep,
-     ae_state *_state)
+        /* Real    */ ae_vector* y,
+        /* Real    */ ae_vector* w,
+        ae_int_t n,
+        ae_int_t m,
+        double rho,
+        ae_int_t* info,
+        spline1dinterpolant* s,
+        spline1dfitreport* rep,
+        ae_state *_state)
 {
     ae_frame _frame_block;
     ae_vector _x;
@@ -15142,31 +14244,29 @@ void spline1dfitpenalizedw(/* Real    */ ae_vector* x,
     ae_assert(isfinitevector(y, n, _state), "Spline1DFitPenalizedW: Y contains infinite or NAN values!", _state);
     ae_assert(isfinitevector(w, n, _state), "Spline1DFitPenalizedW: Y contains infinite or NAN values!", _state);
     ae_assert(ae_isfinite(rho, _state), "Spline1DFitPenalizedW: Rho is infinite!", _state);
-    
+
     /*
      * Prepare LambdaV
      */
     v = -ae_log(ae_machineepsilon, _state)/ae_log(10, _state);
-    if( ae_fp_less(rho,-v) )
-    {
+    if( ae_fp_less(rho,-v) ) {
         rho = -v;
     }
-    if( ae_fp_greater(rho,v) )
-    {
+    if( ae_fp_greater(rho,v) ) {
         rho = v;
     }
     lambdav = ae_pow(10, rho, _state);
-    
+
     /*
      * Sort X, Y, W
      */
     heapsortdpoints(x, y, w, n, _state);
-    
+
     /*
      * Scale X, Y, XC, YC
      */
     lsfitscalexy(x, y, w, n, &xc, &yc, &dc, 0, &xa, &xb, &sa, &sb, &xoriginal, &yoriginal, _state);
-    
+
     /*
      * Allocate space
      */
@@ -15180,7 +14280,7 @@ void spline1dfitpenalizedw(/* Real    */ ae_vector* x,
     ae_vector_set_length(&rightpart, m, _state);
     ae_vector_set_length(&tmp0, ae_maxint(m, n, _state), _state);
     ae_vector_set_length(&c, m, _state);
-    
+
     /*
      * Fill:
      * * FMatrix by values of basis functions
@@ -15188,21 +14288,19 @@ void spline1dfitpenalizedw(/* Real    */ ae_vector* x,
      * * CMatrix by constraints
      */
     fdmax = 0;
-    for(b=0; b<=m-1; b++)
-    {
-        
+    for(b=0; b<=m-1; b++) {
+
         /*
          * Prepare I-th basis function
          */
-        for(j=0; j<=m-1; j++)
-        {
+        for(j=0; j<=m-1; j++) {
             bx.ptr.p_double[j] = (double)(2*j)/(double)(m-1)-1;
             by.ptr.p_double[j] = 0;
         }
         by.ptr.p_double[b] = 1;
         spline1dgriddiff2cubic(&bx, &by, m, 2, 0.0, 2, 0.0, &bd1, &bd2, _state);
         spline1dbuildcubic(&bx, &by, m, 2, 0.0, 2, 0.0, &bs, _state);
-        
+
         /*
          * Calculate B-th column of FMatrix
          * Update FDMax (maximum column norm)
@@ -15210,36 +14308,32 @@ void spline1dfitpenalizedw(/* Real    */ ae_vector* x,
         spline1dconvcubic(&bx, &by, m, 2, 0.0, 2, 0.0, x, n, &fcolumn, _state);
         ae_v_move(&fmatrix.ptr.pp_double[0][b], fmatrix.stride, &fcolumn.ptr.p_double[0], 1, ae_v_len(0,n-1));
         v = 0;
-        for(i=0; i<=n-1; i++)
-        {
+        for(i=0; i<=n-1; i++) {
             v = v+ae_sqr(w->ptr.p_double[i]*fcolumn.ptr.p_double[i], _state);
         }
         fdmax = ae_maxreal(fdmax, v, _state);
-        
+
         /*
          * Fill temporary with second derivatives of basis function
          */
         ae_v_move(&d2matrix.ptr.pp_double[b][0], 1, &bd2.ptr.p_double[0], 1, ae_v_len(0,m-1));
     }
-    
+
     /*
      * * calculate penalty matrix A
      * * calculate max of diagonal elements of A
      * * calculate PDecay - coefficient before penalty matrix
      */
-    for(i=0; i<=m-1; i++)
-    {
-        for(j=i; j<=m-1; j++)
-        {
-            
+    for(i=0; i<=m-1; i++) {
+        for(j=i; j<=m-1; j++) {
+
             /*
              * calculate integral(B_i''*B_j'') where B_i and B_j are
              * i-th and j-th basis splines.
              * B_i and B_j are piecewise linear functions.
              */
             v = 0;
-            for(b=0; b<=m-2; b++)
-            {
+            for(b=0; b<=m-2; b++) {
                 fa = d2matrix.ptr.pp_double[i][b];
                 fb = d2matrix.ptr.pp_double[i][b+1];
                 ga = d2matrix.ptr.pp_double[j][b];
@@ -15251,61 +14345,53 @@ void spline1dfitpenalizedw(/* Real    */ ae_vector* x,
         }
     }
     admax = 0;
-    for(i=0; i<=m-1; i++)
-    {
+    for(i=0; i<=m-1; i++) {
         admax = ae_maxreal(admax, ae_fabs(amatrix.ptr.pp_double[i][i], _state), _state);
     }
     pdecay = lambdav*fdmax/admax;
-    
+
     /*
      * Calculate TDecay for Tikhonov regularization
      */
     tdecay = fdmax*(1+pdecay)*10*ae_machineepsilon;
-    
+
     /*
      * Prepare system
      *
      * NOTE: FMatrix is spoiled during this process
      */
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         v = w->ptr.p_double[i];
         ae_v_muld(&fmatrix.ptr.pp_double[i][0], 1, ae_v_len(0,m-1), v);
     }
     rmatrixgemm(m, m, n, 1.0, &fmatrix, 0, 0, 1, &fmatrix, 0, 0, 0, 0.0, &nmatrix, 0, 0, _state);
-    for(i=0; i<=m-1; i++)
-    {
-        for(j=0; j<=m-1; j++)
-        {
+    for(i=0; i<=m-1; i++) {
+        for(j=0; j<=m-1; j++) {
             nmatrix.ptr.pp_double[i][j] = nmatrix.ptr.pp_double[i][j]+pdecay*amatrix.ptr.pp_double[i][j];
         }
     }
-    for(i=0; i<=m-1; i++)
-    {
+    for(i=0; i<=m-1; i++) {
         nmatrix.ptr.pp_double[i][i] = nmatrix.ptr.pp_double[i][i]+tdecay;
     }
-    for(i=0; i<=m-1; i++)
-    {
+    for(i=0; i<=m-1; i++) {
         rightpart.ptr.p_double[i] = 0;
     }
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         v = y->ptr.p_double[i]*w->ptr.p_double[i];
         ae_v_addd(&rightpart.ptr.p_double[0], 1, &fmatrix.ptr.pp_double[i][0], 1, ae_v_len(0,m-1), v);
     }
-    
+
     /*
      * Solve system
      */
-    if( !spdmatrixcholesky(&nmatrix, m, ae_true, _state) )
-    {
+    if( !spdmatrixcholesky(&nmatrix, m, ae_true, _state) ) {
         *info = -4;
         ae_frame_leave(_state);
         return;
     }
     fblscholeskysolve(&nmatrix, 1.0, m, ae_true, &rightpart, &tmp0, _state);
     ae_v_move(&c.ptr.p_double[0], 1, &rightpart.ptr.p_double[0], 1, ae_v_len(0,m-1));
-    
+
     /*
      * add nodes to force linearity outside of the fitting interval
      */
@@ -15326,7 +14412,7 @@ void spline1dfitpenalizedw(/* Real    */ ae_vector* x,
     spline1dlintransx(s, 2/(xb-xa), -(xa+xb)/(xb-xa), _state);
     spline1dlintransy(s, sb-sa, sa, _state);
     *info = 1;
-    
+
     /*
      * Fill report
      */
@@ -15336,13 +14422,11 @@ void spline1dfitpenalizedw(/* Real    */ ae_vector* x,
     rep->maxerror = 0;
     relcnt = 0;
     spline1dconvcubic(&bx, &rightpart, m, 2, 0.0, 2, 0.0, x, n, &fcolumn, _state);
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         v = (sb-sa)*fcolumn.ptr.p_double[i]+sa;
         rep->rmserror = rep->rmserror+ae_sqr(v-yoriginal.ptr.p_double[i], _state);
         rep->avgerror = rep->avgerror+ae_fabs(v-yoriginal.ptr.p_double[i], _state);
-        if( ae_fp_neq(yoriginal.ptr.p_double[i],0) )
-        {
+        if( ae_fp_neq(yoriginal.ptr.p_double[i],0) ) {
             rep->avgrelerror = rep->avgrelerror+ae_fabs(v-yoriginal.ptr.p_double[i], _state)/ae_fabs(yoriginal.ptr.p_double[i], _state);
             relcnt = relcnt+1;
         }
@@ -15350,8 +14434,7 @@ void spline1dfitpenalizedw(/* Real    */ ae_vector* x,
     }
     rep->rmserror = ae_sqrt(rep->rmserror/n, _state);
     rep->avgerror = rep->avgerror/n;
-    if( ae_fp_neq(relcnt,0) )
-    {
+    if( ae_fp_neq(relcnt,0) ) {
         rep->avgrelerror = rep->avgrelerror/relcnt;
     }
     ae_frame_leave(_state);
@@ -15458,18 +14541,18 @@ above is not guaranteed and may result in inconsistency.
      Copyright 18.08.2009 by Bochkanov Sergey
 *************************************************************************/
 void spline1dfitcubicwc(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     ae_int_t n,
-     /* Real    */ ae_vector* xc,
-     /* Real    */ ae_vector* yc,
-     /* Integer */ ae_vector* dc,
-     ae_int_t k,
-     ae_int_t m,
-     ae_int_t* info,
-     spline1dinterpolant* s,
-     spline1dfitreport* rep,
-     ae_state *_state)
+                                      /* Real    */ ae_vector* y,
+                                      /* Real    */ ae_vector* w,
+                                      ae_int_t n,
+                                      /* Real    */ ae_vector* xc,
+                                      /* Real    */ ae_vector* yc,
+                                      /* Integer */ ae_vector* dc,
+                                      ae_int_t k,
+                                      ae_int_t m,
+                                      ae_int_t* info,
+                                      spline1dinterpolant* s,
+                                      spline1dfitreport* rep,
+                                      ae_state *_state)
 {
     ae_int_t i;
 
@@ -15492,8 +14575,7 @@ void spline1dfitcubicwc(/* Real    */ ae_vector* x,
     ae_assert(isfinitevector(w, n, _state), "Spline1DFitCubicWC: Y contains infinite or NAN values!", _state);
     ae_assert(isfinitevector(xc, k, _state), "Spline1DFitCubicWC: X contains infinite or NAN values!", _state);
     ae_assert(isfinitevector(yc, k, _state), "Spline1DFitCubicWC: Y contains infinite or NAN values!", _state);
-    for(i=0; i<=k-1; i++)
-    {
+    for(i=0; i<=k-1; i++) {
         ae_assert(dc->ptr.p_int[i]==0||dc->ptr.p_int[i]==1, "Spline1DFitCubicWC: DC[i] is neither 0 or 1!", _state);
     }
     lsfit_spline1dfitinternal(0, x, y, w, n, xc, yc, dc, k, m, info, s, rep, _state);
@@ -15605,18 +14687,18 @@ above is not guaranteed and may result in inconsistency.
      Copyright 18.08.2009 by Bochkanov Sergey
 *************************************************************************/
 void spline1dfithermitewc(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     ae_int_t n,
-     /* Real    */ ae_vector* xc,
-     /* Real    */ ae_vector* yc,
-     /* Integer */ ae_vector* dc,
-     ae_int_t k,
-     ae_int_t m,
-     ae_int_t* info,
-     spline1dinterpolant* s,
-     spline1dfitreport* rep,
-     ae_state *_state)
+                                        /* Real    */ ae_vector* y,
+                                        /* Real    */ ae_vector* w,
+                                        ae_int_t n,
+                                        /* Real    */ ae_vector* xc,
+                                        /* Real    */ ae_vector* yc,
+                                        /* Integer */ ae_vector* dc,
+                                        ae_int_t k,
+                                        ae_int_t m,
+                                        ae_int_t* info,
+                                        spline1dinterpolant* s,
+                                        spline1dfitreport* rep,
+                                        ae_state *_state)
 {
     ae_int_t i;
 
@@ -15640,8 +14722,7 @@ void spline1dfithermitewc(/* Real    */ ae_vector* x,
     ae_assert(isfinitevector(w, n, _state), "Spline1DFitHermiteWC: Y contains infinite or NAN values!", _state);
     ae_assert(isfinitevector(xc, k, _state), "Spline1DFitHermiteWC: X contains infinite or NAN values!", _state);
     ae_assert(isfinitevector(yc, k, _state), "Spline1DFitHermiteWC: Y contains infinite or NAN values!", _state);
-    for(i=0; i<=k-1; i++)
-    {
+    for(i=0; i<=k-1; i++) {
         ae_assert(dc->ptr.p_int[i]==0||dc->ptr.p_int[i]==1, "Spline1DFitHermiteWC: DC[i] is neither 0 or 1!", _state);
     }
     lsfit_spline1dfitinternal(1, x, y, w, n, xc, yc, dc, k, m, info, s, rep, _state);
@@ -15659,13 +14740,13 @@ about subroutine parameters (we don't duplicate it here because of length)
      Copyright 18.08.2009 by Bochkanov Sergey
 *************************************************************************/
 void spline1dfitcubic(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t* info,
-     spline1dinterpolant* s,
-     spline1dfitreport* rep,
-     ae_state *_state)
+                                    /* Real    */ ae_vector* y,
+                                    ae_int_t n,
+                                    ae_int_t m,
+                                    ae_int_t* info,
+                                    spline1dinterpolant* s,
+                                    spline1dfitreport* rep,
+                                    ae_state *_state)
 {
     ae_frame _frame_block;
     ae_int_t i;
@@ -15690,8 +14771,7 @@ void spline1dfitcubic(/* Real    */ ae_vector* x,
     ae_assert(isfinitevector(x, n, _state), "Spline1DFitCubic: X contains infinite or NAN values!", _state);
     ae_assert(isfinitevector(y, n, _state), "Spline1DFitCubic: Y contains infinite or NAN values!", _state);
     ae_vector_set_length(&w, n, _state);
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         w.ptr.p_double[i] = 1;
     }
     spline1dfitcubicwc(x, y, &w, n, &xc, &yc, &dc, 0, m, info, s, rep, _state);
@@ -15711,13 +14791,13 @@ because of length).
      Copyright 18.08.2009 by Bochkanov Sergey
 *************************************************************************/
 void spline1dfithermite(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t* info,
-     spline1dinterpolant* s,
-     spline1dfitreport* rep,
-     ae_state *_state)
+                                      /* Real    */ ae_vector* y,
+                                      ae_int_t n,
+                                      ae_int_t m,
+                                      ae_int_t* info,
+                                      spline1dinterpolant* s,
+                                      spline1dfitreport* rep,
+                                      ae_state *_state)
 {
     ae_frame _frame_block;
     ae_int_t i;
@@ -15743,8 +14823,7 @@ void spline1dfithermite(/* Real    */ ae_vector* x,
     ae_assert(isfinitevector(x, n, _state), "Spline1DFitHermite: X contains infinite or NAN values!", _state);
     ae_assert(isfinitevector(y, n, _state), "Spline1DFitHermite: Y contains infinite or NAN values!", _state);
     ae_vector_set_length(&w, n, _state);
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         w.ptr.p_double[i] = 1;
     }
     spline1dfithermitewc(x, y, &w, n, &xc, &yc, &dc, 0, m, info, s, rep, _state);
@@ -15789,14 +14868,14 @@ OUTPUT PARAMETERS:
      Copyright 17.08.2009 by Bochkanov Sergey
 *************************************************************************/
 void lsfitlinearw(/* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     /* Real    */ ae_matrix* fmatrix,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t* info,
-     /* Real    */ ae_vector* c,
-     lsfitreport* rep,
-     ae_state *_state)
+                                /* Real    */ ae_vector* w,
+                                /* Real    */ ae_matrix* fmatrix,
+                                ae_int_t n,
+                                ae_int_t m,
+                                ae_int_t* info,
+                                /* Real    */ ae_vector* c,
+                                lsfitreport* rep,
+                                ae_state *_state)
 {
 
     *info = 0;
@@ -15864,16 +14943,16 @@ IMPORTANT:
      Copyright 07.09.2009 by Bochkanov Sergey
 *************************************************************************/
 void lsfitlinearwc(/* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     /* Real    */ ae_matrix* fmatrix,
-     /* Real    */ ae_matrix* cmatrix,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t k,
-     ae_int_t* info,
-     /* Real    */ ae_vector* c,
-     lsfitreport* rep,
-     ae_state *_state)
+                                 /* Real    */ ae_vector* w,
+                                 /* Real    */ ae_matrix* fmatrix,
+                                 /* Real    */ ae_matrix* cmatrix,
+                                 ae_int_t n,
+                                 ae_int_t m,
+                                 ae_int_t k,
+                                 ae_int_t* info,
+                                 /* Real    */ ae_vector* c,
+                                 lsfitreport* rep,
+                                 ae_state *_state)
 {
     ae_frame _frame_block;
     ae_vector _y;
@@ -15914,27 +14993,23 @@ void lsfitlinearwc(/* Real    */ ae_vector* y,
     ae_assert(cmatrix->rows>=k, "LSFitLinearWC: rows(CMatrix)<K!", _state);
     ae_assert(cmatrix->cols>=m+1||k==0, "LSFitLinearWC: cols(CMatrix)<M+1!", _state);
     ae_assert(apservisfinitematrix(cmatrix, k, m+1, _state), "LSFitLinearWC: CMatrix contains infinite or NaN values!", _state);
-    if( k>=m )
-    {
+    if( k>=m ) {
         *info = -3;
         ae_frame_leave(_state);
         return;
     }
-    
+
     /*
      * Solve
      */
-    if( k==0 )
-    {
-        
+    if( k==0 ) {
+
         /*
          * no constraints
          */
         lsfit_lsfitlinearinternal(y, w, fmatrix, n, m, info, c, rep, _state);
-    }
-    else
-    {
-        
+    } else {
+
         /*
          * First, find general form solution of constraints system:
          * * factorize C = L*Q
@@ -15945,43 +15020,34 @@ void lsfitlinearwc(/* Real    */ ae_vector* y,
          */
         rmatrixlq(cmatrix, k, m, &tau, _state);
         rmatrixlqunpackq(cmatrix, k, m, &tau, m, &q, _state);
-        for(i=0; i<=k-1; i++)
-        {
-            for(j=i+1; j<=m-1; j++)
-            {
+        for(i=0; i<=k-1; i++) {
+            for(j=i+1; j<=m-1; j++) {
                 cmatrix->ptr.pp_double[i][j] = 0.0;
             }
         }
-        if( ae_fp_less(rmatrixlurcondinf(cmatrix, k, _state),1000*ae_machineepsilon) )
-        {
+        if( ae_fp_less(rmatrixlurcondinf(cmatrix, k, _state),1000*ae_machineepsilon) ) {
             *info = -3;
             ae_frame_leave(_state);
             return;
         }
         ae_vector_set_length(&tmp, k, _state);
-        for(i=0; i<=k-1; i++)
-        {
-            if( i>0 )
-            {
+        for(i=0; i<=k-1; i++) {
+            if( i>0 ) {
                 v = ae_v_dotproduct(&cmatrix->ptr.pp_double[i][0], 1, &tmp.ptr.p_double[0], 1, ae_v_len(0,i-1));
-            }
-            else
-            {
+            } else {
                 v = 0;
             }
             tmp.ptr.p_double[i] = (cmatrix->ptr.pp_double[i][m]-v)/cmatrix->ptr.pp_double[i][i];
         }
         ae_vector_set_length(&c0, m, _state);
-        for(i=0; i<=m-1; i++)
-        {
+        for(i=0; i<=m-1; i++) {
             c0.ptr.p_double[i] = 0;
         }
-        for(i=0; i<=k-1; i++)
-        {
+        for(i=0; i<=k-1; i++) {
             v = tmp.ptr.p_double[i];
             ae_v_addd(&c0.ptr.p_double[0], 1, &q.ptr.pp_double[i][0], 1, ae_v_len(0,m-1), v);
         }
-        
+
         /*
          * Second, prepare modified matrix F2 = F*Q2' and solve modified task
          */
@@ -15991,12 +15057,11 @@ void lsfitlinearwc(/* Real    */ ae_vector* y,
         matrixmatrixmultiply(fmatrix, 0, n-1, 0, m-1, ae_false, &q, k, m-1, 0, m-1, ae_true, 1.0, &f2, 0, n-1, 0, m-k-1, 0.0, &tmp, _state);
         lsfit_lsfitlinearinternal(y, w, &f2, n, m-k, info, &tmp, rep, _state);
         rep->taskrcond = -1;
-        if( *info<=0 )
-        {
+        if( *info<=0 ) {
             ae_frame_leave(_state);
             return;
         }
-        
+
         /*
          * then, convert back to original answer: C = C0 + Q2'*Y0
          */
@@ -16040,13 +15105,13 @@ OUTPUT PARAMETERS:
      Copyright 17.08.2009 by Bochkanov Sergey
 *************************************************************************/
 void lsfitlinear(/* Real    */ ae_vector* y,
-     /* Real    */ ae_matrix* fmatrix,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t* info,
-     /* Real    */ ae_vector* c,
-     lsfitreport* rep,
-     ae_state *_state)
+                               /* Real    */ ae_matrix* fmatrix,
+                               ae_int_t n,
+                               ae_int_t m,
+                               ae_int_t* info,
+                               /* Real    */ ae_vector* c,
+                               lsfitreport* rep,
+                               ae_state *_state)
 {
     ae_frame _frame_block;
     ae_vector w;
@@ -16066,8 +15131,7 @@ void lsfitlinear(/* Real    */ ae_vector* y,
     ae_assert(fmatrix->cols>=m, "LSFitLinear: cols(FMatrix)<M!", _state);
     ae_assert(apservisfinitematrix(fmatrix, n, m, _state), "LSFitLinear: FMatrix contains infinite or NaN values!", _state);
     ae_vector_set_length(&w, n, _state);
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         w.ptr.p_double[i] = 1;
     }
     lsfit_lsfitlinearinternal(y, &w, fmatrix, n, m, info, c, rep, _state);
@@ -16119,15 +15183,15 @@ IMPORTANT:
      Copyright 07.09.2009 by Bochkanov Sergey
 *************************************************************************/
 void lsfitlinearc(/* Real    */ ae_vector* y,
-     /* Real    */ ae_matrix* fmatrix,
-     /* Real    */ ae_matrix* cmatrix,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t k,
-     ae_int_t* info,
-     /* Real    */ ae_vector* c,
-     lsfitreport* rep,
-     ae_state *_state)
+                                /* Real    */ ae_matrix* fmatrix,
+                                /* Real    */ ae_matrix* cmatrix,
+                                ae_int_t n,
+                                ae_int_t m,
+                                ae_int_t k,
+                                ae_int_t* info,
+                                /* Real    */ ae_vector* c,
+                                lsfitreport* rep,
+                                ae_state *_state)
 {
     ae_frame _frame_block;
     ae_vector _y;
@@ -16154,8 +15218,7 @@ void lsfitlinearc(/* Real    */ ae_vector* y,
     ae_assert(cmatrix->cols>=m+1||k==0, "LSFitLinearC: cols(CMatrix)<M+1!", _state);
     ae_assert(apservisfinitematrix(cmatrix, k, m+1, _state), "LSFitLinearC: CMatrix contains infinite or NaN values!", _state);
     ae_vector_set_length(&w, n, _state);
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         w.ptr.p_double[i] = 1;
     }
     lsfitlinearwc(y, &w, fmatrix, cmatrix, n, m, k, info, c, rep, _state);
@@ -16202,15 +15265,15 @@ OUTPUT PARAMETERS:
      Copyright 18.10.2008 by Bochkanov Sergey
 *************************************************************************/
 void lsfitcreatewf(/* Real    */ ae_matrix* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     /* Real    */ ae_vector* c,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t k,
-     double diffstep,
-     lsfitstate* state,
-     ae_state *_state)
+                                 /* Real    */ ae_vector* y,
+                                 /* Real    */ ae_vector* w,
+                                 /* Real    */ ae_vector* c,
+                                 ae_int_t n,
+                                 ae_int_t m,
+                                 ae_int_t k,
+                                 double diffstep,
+                                 lsfitstate* state,
+                                 ae_state *_state)
 {
     ae_int_t i;
 
@@ -16245,16 +15308,14 @@ void lsfitcreatewf(/* Real    */ ae_matrix* x,
     ae_vector_set_length(&state->x, m, _state);
     ae_v_move(&state->c.ptr.p_double[0], 1, &c->ptr.p_double[0], 1, ae_v_len(0,k-1));
     ae_v_move(&state->w.ptr.p_double[0], 1, &w->ptr.p_double[0], 1, ae_v_len(0,n-1));
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         ae_v_move(&state->taskx.ptr.pp_double[i][0], 1, &x->ptr.pp_double[i][0], 1, ae_v_len(0,m-1));
         state->tasky.ptr.p_double[i] = y->ptr.p_double[i];
     }
     ae_vector_set_length(&state->s, k, _state);
     ae_vector_set_length(&state->bndl, k, _state);
     ae_vector_set_length(&state->bndu, k, _state);
-    for(i=0; i<=k-1; i++)
-    {
+    for(i=0; i<=k-1; i++) {
         state->s.ptr.p_double[i] = 1.0;
         state->bndl.ptr.p_double[i] = _state->v_neginf;
         state->bndu.ptr.p_double[i] = _state->v_posinf;
@@ -16308,14 +15369,14 @@ OUTPUT PARAMETERS:
      Copyright 18.10.2008 by Bochkanov Sergey
 *************************************************************************/
 void lsfitcreatef(/* Real    */ ae_matrix* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* c,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t k,
-     double diffstep,
-     lsfitstate* state,
-     ae_state *_state)
+                                /* Real    */ ae_vector* y,
+                                /* Real    */ ae_vector* c,
+                                ae_int_t n,
+                                ae_int_t m,
+                                ae_int_t k,
+                                double diffstep,
+                                lsfitstate* state,
+                                ae_state *_state)
 {
     ae_int_t i;
 
@@ -16348,16 +15409,14 @@ void lsfitcreatef(/* Real    */ ae_matrix* x,
     ae_vector_set_length(&state->c, k, _state);
     ae_vector_set_length(&state->x, m, _state);
     ae_v_move(&state->c.ptr.p_double[0], 1, &c->ptr.p_double[0], 1, ae_v_len(0,k-1));
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         ae_v_move(&state->taskx.ptr.pp_double[i][0], 1, &x->ptr.pp_double[i][0], 1, ae_v_len(0,m-1));
         state->tasky.ptr.p_double[i] = y->ptr.p_double[i];
     }
     ae_vector_set_length(&state->s, k, _state);
     ae_vector_set_length(&state->bndl, k, _state);
     ae_vector_set_length(&state->bndu, k, _state);
-    for(i=0; i<=k-1; i++)
-    {
+    for(i=0; i<=k-1; i++) {
         state->s.ptr.p_double[i] = 1.0;
         state->bndl.ptr.p_double[i] = _state->v_neginf;
         state->bndu.ptr.p_double[i] = _state->v_posinf;
@@ -16379,16 +15438,16 @@ Weighted nonlinear least squares fitting using gradient only.
 Nonlinear task min(F(c)) is solved, where
 
     F(c) = (w[0]*(f(c,x[0])-y[0]))^2 + ... + (w[n-1]*(f(c,x[n-1])-y[n-1]))^2,
-    
+
     * N is a number of points,
     * M is a dimension of a space points belong to,
     * K is a dimension of a space of parameters being fitted,
     * w is an N-dimensional vector of weight coefficients,
     * x is a set of N points, each of them is an M-dimensional vector,
     * c is a K-dimensional vector of parameters being fitted
-    
+
 This subroutine uses only f(c,x[i]) and its gradient.
-    
+
 INPUT PARAMETERS:
     X       -   array[0..N-1,0..M-1], points (one row = one point)
     Y       -   array[0..N-1], function values.
@@ -16419,15 +15478,15 @@ See also:
      Copyright 17.08.2009 by Bochkanov Sergey
 *************************************************************************/
 void lsfitcreatewfg(/* Real    */ ae_matrix* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     /* Real    */ ae_vector* c,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t k,
-     ae_bool cheapfg,
-     lsfitstate* state,
-     ae_state *_state)
+                                  /* Real    */ ae_vector* y,
+                                  /* Real    */ ae_vector* w,
+                                  /* Real    */ ae_vector* c,
+                                  ae_int_t n,
+                                  ae_int_t m,
+                                  ae_int_t k,
+                                  ae_bool cheapfg,
+                                  lsfitstate* state,
+                                  ae_state *_state)
 {
     ae_int_t i;
 
@@ -16461,16 +15520,14 @@ void lsfitcreatewfg(/* Real    */ ae_matrix* x,
     ae_vector_set_length(&state->g, k, _state);
     ae_v_move(&state->c.ptr.p_double[0], 1, &c->ptr.p_double[0], 1, ae_v_len(0,k-1));
     ae_v_move(&state->w.ptr.p_double[0], 1, &w->ptr.p_double[0], 1, ae_v_len(0,n-1));
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         ae_v_move(&state->taskx.ptr.pp_double[i][0], 1, &x->ptr.pp_double[i][0], 1, ae_v_len(0,m-1));
         state->tasky.ptr.p_double[i] = y->ptr.p_double[i];
     }
     ae_vector_set_length(&state->s, k, _state);
     ae_vector_set_length(&state->bndl, k, _state);
     ae_vector_set_length(&state->bndu, k, _state);
-    for(i=0; i<=k-1; i++)
-    {
+    for(i=0; i<=k-1; i++) {
         state->s.ptr.p_double[i] = 1.0;
         state->bndl.ptr.p_double[i] = _state->v_neginf;
         state->bndu.ptr.p_double[i] = _state->v_posinf;
@@ -16478,12 +15535,9 @@ void lsfitcreatewfg(/* Real    */ ae_matrix* x,
     state->optalgo = 1;
     state->prevnpt = -1;
     state->prevalgo = -1;
-    if( cheapfg )
-    {
+    if( cheapfg ) {
         minlmcreatevgj(k, n, &state->c, &state->optstate, _state);
-    }
-    else
-    {
+    } else {
         minlmcreatevj(k, n, &state->c, &state->optstate, _state);
     }
     lsfit_lsfitclearrequestfields(state, _state);
@@ -16532,14 +15586,14 @@ OUTPUT PARAMETERS:
      Copyright 17.08.2009 by Bochkanov Sergey
 *************************************************************************/
 void lsfitcreatefg(/* Real    */ ae_matrix* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* c,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t k,
-     ae_bool cheapfg,
-     lsfitstate* state,
-     ae_state *_state)
+                                 /* Real    */ ae_vector* y,
+                                 /* Real    */ ae_vector* c,
+                                 ae_int_t n,
+                                 ae_int_t m,
+                                 ae_int_t k,
+                                 ae_bool cheapfg,
+                                 lsfitstate* state,
+                                 ae_state *_state)
 {
     ae_int_t i;
 
@@ -16571,16 +15625,14 @@ void lsfitcreatefg(/* Real    */ ae_matrix* x,
     ae_vector_set_length(&state->x, m, _state);
     ae_vector_set_length(&state->g, k, _state);
     ae_v_move(&state->c.ptr.p_double[0], 1, &c->ptr.p_double[0], 1, ae_v_len(0,k-1));
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         ae_v_move(&state->taskx.ptr.pp_double[i][0], 1, &x->ptr.pp_double[i][0], 1, ae_v_len(0,m-1));
         state->tasky.ptr.p_double[i] = y->ptr.p_double[i];
     }
     ae_vector_set_length(&state->s, k, _state);
     ae_vector_set_length(&state->bndl, k, _state);
     ae_vector_set_length(&state->bndu, k, _state);
-    for(i=0; i<=k-1; i++)
-    {
+    for(i=0; i<=k-1; i++) {
         state->s.ptr.p_double[i] = 1.0;
         state->bndl.ptr.p_double[i] = _state->v_neginf;
         state->bndu.ptr.p_double[i] = _state->v_posinf;
@@ -16588,12 +15640,9 @@ void lsfitcreatefg(/* Real    */ ae_matrix* x,
     state->optalgo = 1;
     state->prevnpt = -1;
     state->prevalgo = -1;
-    if( cheapfg )
-    {
+    if( cheapfg ) {
         minlmcreatevgj(k, n, &state->c, &state->optstate, _state);
-    }
-    else
-    {
+    } else {
         minlmcreatevj(k, n, &state->c, &state->optstate, _state);
     }
     lsfit_lsfitclearrequestfields(state, _state);
@@ -16635,14 +15684,14 @@ OUTPUT PARAMETERS:
      Copyright 17.08.2009 by Bochkanov Sergey
 *************************************************************************/
 void lsfitcreatewfgh(/* Real    */ ae_matrix* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     /* Real    */ ae_vector* c,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t k,
-     lsfitstate* state,
-     ae_state *_state)
+                                   /* Real    */ ae_vector* y,
+                                   /* Real    */ ae_vector* w,
+                                   /* Real    */ ae_vector* c,
+                                   ae_int_t n,
+                                   ae_int_t m,
+                                   ae_int_t k,
+                                   lsfitstate* state,
+                                   ae_state *_state)
 {
     ae_int_t i;
 
@@ -16677,16 +15726,14 @@ void lsfitcreatewfgh(/* Real    */ ae_matrix* x,
     ae_vector_set_length(&state->g, k, _state);
     ae_v_move(&state->c.ptr.p_double[0], 1, &c->ptr.p_double[0], 1, ae_v_len(0,k-1));
     ae_v_move(&state->w.ptr.p_double[0], 1, &w->ptr.p_double[0], 1, ae_v_len(0,n-1));
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         ae_v_move(&state->taskx.ptr.pp_double[i][0], 1, &x->ptr.pp_double[i][0], 1, ae_v_len(0,m-1));
         state->tasky.ptr.p_double[i] = y->ptr.p_double[i];
     }
     ae_vector_set_length(&state->s, k, _state);
     ae_vector_set_length(&state->bndl, k, _state);
     ae_vector_set_length(&state->bndu, k, _state);
-    for(i=0; i<=k-1; i++)
-    {
+    for(i=0; i<=k-1; i++) {
         state->s.ptr.p_double[i] = 1.0;
         state->bndl.ptr.p_double[i] = _state->v_neginf;
         state->bndu.ptr.p_double[i] = _state->v_posinf;
@@ -16734,13 +15781,13 @@ OUTPUT PARAMETERS:
      Copyright 17.08.2009 by Bochkanov Sergey
 *************************************************************************/
 void lsfitcreatefgh(/* Real    */ ae_matrix* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* c,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t k,
-     lsfitstate* state,
-     ae_state *_state)
+                                  /* Real    */ ae_vector* y,
+                                  /* Real    */ ae_vector* c,
+                                  ae_int_t n,
+                                  ae_int_t m,
+                                  ae_int_t k,
+                                  lsfitstate* state,
+                                  ae_state *_state)
 {
     ae_int_t i;
 
@@ -16770,16 +15817,14 @@ void lsfitcreatefgh(/* Real    */ ae_matrix* x,
     ae_vector_set_length(&state->x, m, _state);
     ae_vector_set_length(&state->g, k, _state);
     ae_v_move(&state->c.ptr.p_double[0], 1, &c->ptr.p_double[0], 1, ae_v_len(0,k-1));
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         ae_v_move(&state->taskx.ptr.pp_double[i][0], 1, &x->ptr.pp_double[i][0], 1, ae_v_len(0,m-1));
         state->tasky.ptr.p_double[i] = y->ptr.p_double[i];
     }
     ae_vector_set_length(&state->s, k, _state);
     ae_vector_set_length(&state->bndl, k, _state);
     ae_vector_set_length(&state->bndu, k, _state);
-    for(i=0; i<=k-1; i++)
-    {
+    for(i=0; i<=k-1; i++) {
         state->s.ptr.p_double[i] = 1.0;
         state->bndl.ptr.p_double[i] = _state->v_neginf;
         state->bndu.ptr.p_double[i] = _state->v_posinf;
@@ -16825,10 +15870,10 @@ stopping criterion selection (according to the scheme used by MINLM unit).
      Copyright 17.08.2009 by Bochkanov Sergey
 *************************************************************************/
 void lsfitsetcond(lsfitstate* state,
-     double epsf,
-     double epsx,
-     ae_int_t maxits,
-     ae_state *_state)
+                  double epsf,
+                  double epsx,
+                  ae_int_t maxits,
+                  ae_state *_state)
 {
 
 
@@ -16879,7 +15924,7 @@ This function turns on/off reporting.
 INPUT PARAMETERS:
     State   -   structure which stores algorithm state
     NeedXRep-   whether iteration reports are needed or not
-    
+
 When reports are needed, State.C (current parameters) and State.F (current
 value of fitting function) are reported.
 
@@ -16923,15 +15968,14 @@ INPUT PARAMETERS:
      Copyright 14.01.2011 by Bochkanov Sergey
 *************************************************************************/
 void lsfitsetscale(lsfitstate* state,
-     /* Real    */ ae_vector* s,
-     ae_state *_state)
+                   /* Real    */ ae_vector* s,
+                   ae_state *_state)
 {
     ae_int_t i;
 
 
     ae_assert(s->cnt>=state->k, "LSFitSetScale: Length(S)<K", _state);
-    for(i=0; i<=state->k-1; i++)
-    {
+    for(i=0; i<=state->k-1; i++) {
         ae_assert(ae_isfinite(s->ptr.p_double[i], _state), "LSFitSetScale: S contains infinite or NAN elements", _state);
         ae_assert(ae_fp_neq(s->ptr.p_double[i],0), "LSFitSetScale: S contains infinite or NAN elements", _state);
         state->s.ptr.p_double[i] = s->ptr.p_double[i];
@@ -16968,9 +16012,9 @@ following useful properties:
      Copyright 14.01.2011 by Bochkanov Sergey
 *************************************************************************/
 void lsfitsetbc(lsfitstate* state,
-     /* Real    */ ae_vector* bndl,
-     /* Real    */ ae_vector* bndu,
-     ae_state *_state)
+                /* Real    */ ae_vector* bndl,
+                /* Real    */ ae_vector* bndu,
+                ae_state *_state)
 {
     ae_int_t i;
     ae_int_t k;
@@ -16979,12 +16023,10 @@ void lsfitsetbc(lsfitstate* state,
     k = state->k;
     ae_assert(bndl->cnt>=k, "LSFitSetBC: Length(BndL)<K", _state);
     ae_assert(bndu->cnt>=k, "LSFitSetBC: Length(BndU)<K", _state);
-    for(i=0; i<=k-1; i++)
-    {
+    for(i=0; i<=k-1; i++) {
         ae_assert(ae_isfinite(bndl->ptr.p_double[i], _state)||ae_isneginf(bndl->ptr.p_double[i], _state), "LSFitSetBC: BndL contains NAN or +INF", _state);
         ae_assert(ae_isfinite(bndu->ptr.p_double[i], _state)||ae_isposinf(bndu->ptr.p_double[i], _state), "LSFitSetBC: BndU contains NAN or -INF", _state);
-        if( ae_isfinite(bndl->ptr.p_double[i], _state)&&ae_isfinite(bndu->ptr.p_double[i], _state) )
-        {
+        if( ae_isfinite(bndl->ptr.p_double[i], _state)&&ae_isfinite(bndu->ptr.p_double[i], _state) ) {
             ae_assert(ae_fp_less_eq(bndl->ptr.p_double[i],bndu->ptr.p_double[i]), "LSFitSetBC: BndL[i]>BndU[i]", _state);
         }
         state->bndl.ptr.p_double[i] = bndl->ptr.p_double[i];
@@ -17003,11 +16045,11 @@ NOTES:
 
    For example, if we want to do linear fit by f(c0,c1,x) = c0*x+c1,  then
    x will be argument, and {c0,c1} will be parameters.
-   
+
    It is important to understand that this algorithm finds minimum in  the
    space of function PARAMETERS (not arguments), so it  needs  derivatives
    of f() with respect to C, not X.
-   
+
    In the example above it will need f=c0*x+c1 and {df/dc0,df/dc1} = {x,1}
    instead of {df/dx} = {c0}.
 
@@ -17016,15 +16058,15 @@ NOTES:
 3. If  state  was  created  with  LSFitCreateFG(),  algorithm  needs  just
    function   and   its   gradient,   but   if   state   was  created with
    LSFitCreateFGH(), algorithm will need function, gradient and Hessian.
-   
+
    According  to  the  said  above,  there  ase  several  versions of this
    function, which accept different sets of callbacks.
-   
+
    This flexibility opens way to subtle errors - you may create state with
    LSFitCreateFGH() (optimization using Hessian), but call function  which
    does not accept Hessian. So when algorithm will request Hessian,  there
    will be no callback to call. In this case exception will be thrown.
-   
+
    Be careful to avoid such errors because there is no way to find them at
    compile time - you can see them at runtime only.
 
@@ -17044,7 +16086,7 @@ ae_bool lsfititeration(lsfitstate* state, ae_state *_state)
     ae_bool result;
 
 
-    
+
     /*
      * Reverse communication preparations
      * I know it looks ugly, but it works the same way
@@ -17055,8 +16097,7 @@ ae_bool lsfititeration(lsfitstate* state, ae_state *_state)
      *   generation - on first subroutine call
      * * values from previous call - on subsequent calls
      */
-    if( state->rstate.stage>=0 )
-    {
+    if( state->rstate.stage>=0 ) {
         n = state->rstate.ia.ptr.p_int[0];
         m = state->rstate.ia.ptr.p_int[1];
         k = state->rstate.ia.ptr.p_int[2];
@@ -17065,9 +16106,7 @@ ae_bool lsfititeration(lsfitstate* state, ae_state *_state)
         v = state->rstate.ra.ptr.p_double[0];
         vv = state->rstate.ra.ptr.p_double[1];
         relcnt = state->rstate.ra.ptr.p_double[2];
-    }
-    else
-    {
+    } else {
         n = -983;
         m = -989;
         k = -834;
@@ -17077,44 +16116,36 @@ ae_bool lsfititeration(lsfitstate* state, ae_state *_state)
         vv = 214;
         relcnt = -338;
     }
-    if( state->rstate.stage==0 )
-    {
+    if( state->rstate.stage==0 ) {
         goto lbl_0;
     }
-    if( state->rstate.stage==1 )
-    {
+    if( state->rstate.stage==1 ) {
         goto lbl_1;
     }
-    if( state->rstate.stage==2 )
-    {
+    if( state->rstate.stage==2 ) {
         goto lbl_2;
     }
-    if( state->rstate.stage==3 )
-    {
+    if( state->rstate.stage==3 ) {
         goto lbl_3;
     }
-    if( state->rstate.stage==4 )
-    {
+    if( state->rstate.stage==4 ) {
         goto lbl_4;
     }
-    if( state->rstate.stage==5 )
-    {
+    if( state->rstate.stage==5 ) {
         goto lbl_5;
     }
-    if( state->rstate.stage==6 )
-    {
+    if( state->rstate.stage==6 ) {
         goto lbl_6;
     }
-    
+
     /*
      * Routine body
      */
-    
+
     /*
      * init
      */
-    if( state->wkind==1 )
-    {
+    if( state->wkind==1 ) {
         ae_assert(state->npoints==state->nweights, "LSFitFit: number of points is not equal to the number of weights", _state);
     }
     n = state->npoints;
@@ -17125,27 +16156,24 @@ ae_bool lsfititeration(lsfitstate* state, ae_state *_state)
     minlmsetxrep(&state->optstate, state->xrep, _state);
     minlmsetscale(&state->optstate, &state->s, _state);
     minlmsetbc(&state->optstate, &state->bndl, &state->bndu, _state);
-    
+
     /*
      * Optimize
      */
 lbl_7:
-    if( !minlmiteration(&state->optstate, _state) )
-    {
+    if( !minlmiteration(&state->optstate, _state) ) {
         goto lbl_8;
     }
-    if( !state->optstate.needfi )
-    {
+    if( !state->optstate.needfi ) {
         goto lbl_9;
     }
-    
+
     /*
      * calculate f[] = wi*(f(xi,c)-yi)
      */
     i = 0;
 lbl_11:
-    if( i>n-1 )
-    {
+    if( i>n-1 ) {
         goto lbl_13;
     }
     ae_v_move(&state->c.ptr.p_double[0], 1, &state->optstate.x.ptr.p_double[0], 1, ae_v_len(0,k-1));
@@ -17157,12 +16185,9 @@ lbl_11:
     goto lbl_rcomm;
 lbl_0:
     state->needf = ae_false;
-    if( state->wkind==1 )
-    {
+    if( state->wkind==1 ) {
         vv = state->w.ptr.p_double[i];
-    }
-    else
-    {
+    } else {
         vv = 1.0;
     }
     state->optstate.fi.ptr.p_double[i] = vv*(state->f-state->tasky.ptr.p_double[i]);
@@ -17171,19 +16196,17 @@ lbl_0:
 lbl_13:
     goto lbl_7;
 lbl_9:
-    if( !state->optstate.needf )
-    {
+    if( !state->optstate.needf ) {
         goto lbl_14;
     }
-    
+
     /*
      * calculate F = sum (wi*(f(xi,c)-yi))^2
      */
     state->optstate.f = 0;
     i = 0;
 lbl_16:
-    if( i>n-1 )
-    {
+    if( i>n-1 ) {
         goto lbl_18;
     }
     ae_v_move(&state->c.ptr.p_double[0], 1, &state->optstate.x.ptr.p_double[0], 1, ae_v_len(0,k-1));
@@ -17195,12 +16218,9 @@ lbl_16:
     goto lbl_rcomm;
 lbl_1:
     state->needf = ae_false;
-    if( state->wkind==1 )
-    {
+    if( state->wkind==1 ) {
         vv = state->w.ptr.p_double[i];
-    }
-    else
-    {
+    } else {
         vv = 1.0;
     }
     state->optstate.f = state->optstate.f+ae_sqr(vv*(state->f-state->tasky.ptr.p_double[i]), _state);
@@ -17209,23 +16229,20 @@ lbl_1:
 lbl_18:
     goto lbl_7;
 lbl_14:
-    if( !state->optstate.needfg )
-    {
+    if( !state->optstate.needfg ) {
         goto lbl_19;
     }
-    
+
     /*
      * calculate F/gradF
      */
     state->optstate.f = 0;
-    for(i=0; i<=k-1; i++)
-    {
+    for(i=0; i<=k-1; i++) {
         state->optstate.g.ptr.p_double[i] = 0;
     }
     i = 0;
 lbl_21:
-    if( i>n-1 )
-    {
+    if( i>n-1 ) {
         goto lbl_23;
     }
     ae_v_move(&state->c.ptr.p_double[0], 1, &state->optstate.x.ptr.p_double[0], 1, ae_v_len(0,k-1));
@@ -17237,12 +16254,9 @@ lbl_21:
     goto lbl_rcomm;
 lbl_2:
     state->needfg = ae_false;
-    if( state->wkind==1 )
-    {
+    if( state->wkind==1 ) {
         vv = state->w.ptr.p_double[i];
-    }
-    else
-    {
+    } else {
         vv = 1.0;
     }
     state->optstate.f = state->optstate.f+ae_sqr(vv*(state->f-state->tasky.ptr.p_double[i]), _state);
@@ -17253,18 +16267,16 @@ lbl_2:
 lbl_23:
     goto lbl_7;
 lbl_19:
-    if( !state->optstate.needfij )
-    {
+    if( !state->optstate.needfij ) {
         goto lbl_24;
     }
-    
+
     /*
      * calculate Fi/jac(Fi)
      */
     i = 0;
 lbl_26:
-    if( i>n-1 )
-    {
+    if( i>n-1 ) {
         goto lbl_28;
     }
     ae_v_move(&state->c.ptr.p_double[0], 1, &state->optstate.x.ptr.p_double[0], 1, ae_v_len(0,k-1));
@@ -17276,12 +16288,9 @@ lbl_26:
     goto lbl_rcomm;
 lbl_3:
     state->needfg = ae_false;
-    if( state->wkind==1 )
-    {
+    if( state->wkind==1 ) {
         vv = state->w.ptr.p_double[i];
-    }
-    else
-    {
+    } else {
         vv = 1.0;
     }
     state->optstate.fi.ptr.p_double[i] = vv*(state->f-state->tasky.ptr.p_double[i]);
@@ -17291,30 +16300,25 @@ lbl_3:
 lbl_28:
     goto lbl_7;
 lbl_24:
-    if( !state->optstate.needfgh )
-    {
+    if( !state->optstate.needfgh ) {
         goto lbl_29;
     }
-    
+
     /*
      * calculate F/grad(F)/hess(F)
      */
     state->optstate.f = 0;
-    for(i=0; i<=k-1; i++)
-    {
+    for(i=0; i<=k-1; i++) {
         state->optstate.g.ptr.p_double[i] = 0;
     }
-    for(i=0; i<=k-1; i++)
-    {
-        for(j=0; j<=k-1; j++)
-        {
+    for(i=0; i<=k-1; i++) {
+        for(j=0; j<=k-1; j++) {
             state->optstate.h.ptr.pp_double[i][j] = 0;
         }
     }
     i = 0;
 lbl_31:
-    if( i>n-1 )
-    {
+    if( i>n-1 ) {
         goto lbl_33;
     }
     ae_v_move(&state->c.ptr.p_double[0], 1, &state->optstate.x.ptr.p_double[0], 1, ae_v_len(0,k-1));
@@ -17326,19 +16330,15 @@ lbl_31:
     goto lbl_rcomm;
 lbl_4:
     state->needfgh = ae_false;
-    if( state->wkind==1 )
-    {
+    if( state->wkind==1 ) {
         vv = state->w.ptr.p_double[i];
-    }
-    else
-    {
+    } else {
         vv = 1.0;
     }
     state->optstate.f = state->optstate.f+ae_sqr(vv*(state->f-state->tasky.ptr.p_double[i]), _state);
     v = ae_sqr(vv, _state)*2*(state->f-state->tasky.ptr.p_double[i]);
     ae_v_addd(&state->optstate.g.ptr.p_double[0], 1, &state->g.ptr.p_double[0], 1, ae_v_len(0,k-1), v);
-    for(j=0; j<=k-1; j++)
-    {
+    for(j=0; j<=k-1; j++) {
         v = 2*ae_sqr(vv, _state)*state->g.ptr.p_double[j];
         ae_v_addd(&state->optstate.h.ptr.pp_double[j][0], 1, &state->g.ptr.p_double[0], 1, ae_v_len(0,k-1), v);
         v = 2*ae_sqr(vv, _state)*(state->f-state->tasky.ptr.p_double[i]);
@@ -17349,11 +16349,10 @@ lbl_4:
 lbl_33:
     goto lbl_7;
 lbl_29:
-    if( !state->optstate.xupdated )
-    {
+    if( !state->optstate.xupdated ) {
         goto lbl_34;
     }
-    
+
     /*
      * Report new iteration
      */
@@ -17372,12 +16371,11 @@ lbl_8:
     minlmresults(&state->optstate, &state->c, &state->optrep, _state);
     state->repterminationtype = state->optrep.terminationtype;
     state->repiterationscount = state->optrep.iterationscount;
-    
+
     /*
      * calculate errors
      */
-    if( state->repterminationtype<=0 )
-    {
+    if( state->repterminationtype<=0 ) {
         goto lbl_36;
     }
     state->reprmserror = 0;
@@ -17388,8 +16386,7 @@ lbl_8:
     relcnt = 0;
     i = 0;
 lbl_38:
-    if( i>n-1 )
-    {
+    if( i>n-1 ) {
         goto lbl_40;
     }
     ae_v_move(&state->c.ptr.p_double[0], 1, &state->c.ptr.p_double[0], 1, ae_v_len(0,k-1));
@@ -17402,19 +16399,15 @@ lbl_38:
 lbl_6:
     state->needf = ae_false;
     v = state->f;
-    if( state->wkind==1 )
-    {
+    if( state->wkind==1 ) {
         vv = state->w.ptr.p_double[i];
-    }
-    else
-    {
+    } else {
         vv = 1.0;
     }
     state->reprmserror = state->reprmserror+ae_sqr(v-state->tasky.ptr.p_double[i], _state);
     state->repwrmserror = state->repwrmserror+ae_sqr(vv*(v-state->tasky.ptr.p_double[i]), _state);
     state->repavgerror = state->repavgerror+ae_fabs(v-state->tasky.ptr.p_double[i], _state);
-    if( ae_fp_neq(state->tasky.ptr.p_double[i],0) )
-    {
+    if( ae_fp_neq(state->tasky.ptr.p_double[i],0) ) {
         state->repavgrelerror = state->repavgrelerror+ae_fabs(v-state->tasky.ptr.p_double[i], _state)/ae_fabs(state->tasky.ptr.p_double[i], _state);
         relcnt = relcnt+1;
     }
@@ -17425,14 +16418,13 @@ lbl_40:
     state->reprmserror = ae_sqrt(state->reprmserror/n, _state);
     state->repwrmserror = ae_sqrt(state->repwrmserror/n, _state);
     state->repavgerror = state->repavgerror/n;
-    if( ae_fp_neq(relcnt,0) )
-    {
+    if( ae_fp_neq(relcnt,0) ) {
         state->repavgrelerror = state->repavgrelerror/relcnt;
     }
 lbl_36:
     result = ae_false;
     return result;
-    
+
     /*
      * Saving state
      */
@@ -17482,10 +16474,10 @@ OUTPUT PARAMETERS:
      Copyright 17.08.2009 by Bochkanov Sergey
 *************************************************************************/
 void lsfitresults(lsfitstate* state,
-     ae_int_t* info,
-     /* Real    */ ae_vector* c,
-     lsfitreport* rep,
-     ae_state *_state)
+                  ae_int_t* info,
+                  /* Real    */ ae_vector* c,
+                  lsfitreport* rep,
+                  ae_state *_state)
 {
 
     *info = 0;
@@ -17493,8 +16485,7 @@ void lsfitresults(lsfitstate* state,
     _lsfitreport_clear(rep);
 
     *info = state->repterminationtype;
-    if( *info>0 )
-    {
+    if( *info>0 ) {
         ae_vector_set_length(c, state->k, _state);
         ae_v_move(&c->ptr.p_double[0], 1, &state->c.ptr.p_double[0], 1, ae_v_len(0,state->k-1));
         rep->rmserror = state->reprmserror;
@@ -17520,27 +16511,27 @@ Transformations performed:
 
 * Y             [SA,SB] => [0,1]
                 transformation makes mean(Y)=0, stddev(Y)=1
-                
+
 * YC            transformed accordingly to SA, SB, DC[I]
 
   -- ALGLIB PROJECT --
      Copyright 08.09.2009 by Bochkanov Sergey
 *************************************************************************/
 void lsfitscalexy(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     ae_int_t n,
-     /* Real    */ ae_vector* xc,
-     /* Real    */ ae_vector* yc,
-     /* Integer */ ae_vector* dc,
-     ae_int_t k,
-     double* xa,
-     double* xb,
-     double* sa,
-     double* sb,
-     /* Real    */ ae_vector* xoriginal,
-     /* Real    */ ae_vector* yoriginal,
-     ae_state *_state)
+                                /* Real    */ ae_vector* y,
+                                /* Real    */ ae_vector* w,
+                                ae_int_t n,
+                                /* Real    */ ae_vector* xc,
+                                /* Real    */ ae_vector* yc,
+                                /* Integer */ ae_vector* dc,
+                                ae_int_t k,
+                                double* xa,
+                                double* xb,
+                                double* sa,
+                                double* sb,
+                                /* Real    */ ae_vector* xoriginal,
+                                /* Real    */ ae_vector* yoriginal,
+                                ae_state *_state)
 {
     double xmin;
     double xmax;
@@ -17556,43 +16547,34 @@ void lsfitscalexy(/* Real    */ ae_vector* x,
 
     ae_assert(n>=1, "LSFitScaleXY: incorrect N", _state);
     ae_assert(k>=0, "LSFitScaleXY: incorrect K", _state);
-    
+
     /*
      * Calculate xmin/xmax.
      * Force xmin<>xmax.
      */
     xmin = x->ptr.p_double[0];
     xmax = x->ptr.p_double[0];
-    for(i=1; i<=n-1; i++)
-    {
+    for(i=1; i<=n-1; i++) {
         xmin = ae_minreal(xmin, x->ptr.p_double[i], _state);
         xmax = ae_maxreal(xmax, x->ptr.p_double[i], _state);
     }
-    for(i=0; i<=k-1; i++)
-    {
+    for(i=0; i<=k-1; i++) {
         xmin = ae_minreal(xmin, xc->ptr.p_double[i], _state);
         xmax = ae_maxreal(xmax, xc->ptr.p_double[i], _state);
     }
-    if( ae_fp_eq(xmin,xmax) )
-    {
-        if( ae_fp_eq(xmin,0) )
-        {
+    if( ae_fp_eq(xmin,xmax) ) {
+        if( ae_fp_eq(xmin,0) ) {
             xmin = -1;
             xmax = 1;
-        }
-        else
-        {
-            if( ae_fp_greater(xmin,0) )
-            {
+        } else {
+            if( ae_fp_greater(xmin,0) ) {
                 xmin = 0.5*xmin;
-            }
-            else
-            {
+            } else {
                 xmax = 0.5*xmax;
             }
         }
     }
-    
+
     /*
      * Transform abscissas: map [XA,XB] to [0,1]
      *
@@ -17603,17 +16585,15 @@ void lsfitscalexy(/* Real    */ ae_vector* x,
     ae_v_move(&xoriginal->ptr.p_double[0], 1, &x->ptr.p_double[0], 1, ae_v_len(0,n-1));
     *xa = xmin;
     *xb = xmax;
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         x->ptr.p_double[i] = 2*(x->ptr.p_double[i]-0.5*(*xa+(*xb)))/(*xb-(*xa));
     }
-    for(i=0; i<=k-1; i++)
-    {
+    for(i=0; i<=k-1; i++) {
         ae_assert(dc->ptr.p_int[i]>=0, "LSFitScaleXY: internal error!", _state);
         xc->ptr.p_double[i] = 2*(xc->ptr.p_double[i]-0.5*(*xa+(*xb)))/(*xb-(*xa));
         yc->ptr.p_double[i] = yc->ptr.p_double[i]*ae_pow(0.5*(*xb-(*xa)), dc->ptr.p_int[i], _state);
     }
-    
+
     /*
      * Transform function values: map [SA,SB] to [0,1]
      * SA = mean(Y),
@@ -17625,53 +16605,41 @@ void lsfitscalexy(/* Real    */ ae_vector* x,
     ae_vector_set_length(yoriginal, n, _state);
     ae_v_move(&yoriginal->ptr.p_double[0], 1, &y->ptr.p_double[0], 1, ae_v_len(0,n-1));
     *sa = 0;
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         *sa = *sa+y->ptr.p_double[i];
     }
     *sa = *sa/n;
     *sb = 0;
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         *sb = *sb+ae_sqr(y->ptr.p_double[i]-(*sa), _state);
     }
     *sb = ae_sqrt(*sb/n, _state)+(*sa);
-    if( ae_fp_eq(*sb,*sa) )
-    {
+    if( ae_fp_eq(*sb,*sa) ) {
         *sb = 2*(*sa);
     }
-    if( ae_fp_eq(*sb,*sa) )
-    {
+    if( ae_fp_eq(*sb,*sa) ) {
         *sb = *sa+1;
     }
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         y->ptr.p_double[i] = (y->ptr.p_double[i]-(*sa))/(*sb-(*sa));
     }
-    for(i=0; i<=k-1; i++)
-    {
-        if( dc->ptr.p_int[i]==0 )
-        {
+    for(i=0; i<=k-1; i++) {
+        if( dc->ptr.p_int[i]==0 ) {
             yc->ptr.p_double[i] = (yc->ptr.p_double[i]-(*sa))/(*sb-(*sa));
-        }
-        else
-        {
+        } else {
             yc->ptr.p_double[i] = yc->ptr.p_double[i]/(*sb-(*sa));
         }
     }
-    
+
     /*
      * Scale weights
      */
     mx = 0;
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         mx = ae_maxreal(mx, ae_fabs(w->ptr.p_double[i], _state), _state);
     }
-    if( ae_fp_neq(mx,0) )
-    {
-        for(i=0; i<=n-1; i++)
-        {
+    if( ae_fp_neq(mx,0) ) {
+        for(i=0; i<=n-1; i++) {
             w->ptr.p_double[i] = w->ptr.p_double[i]/mx;
         }
     }
@@ -17685,19 +16653,19 @@ Internal spline fitting subroutine
      Copyright 08.09.2009 by Bochkanov Sergey
 *************************************************************************/
 static void lsfit_spline1dfitinternal(ae_int_t st,
-     /* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     ae_int_t n,
-     /* Real    */ ae_vector* xc,
-     /* Real    */ ae_vector* yc,
-     /* Integer */ ae_vector* dc,
-     ae_int_t k,
-     ae_int_t m,
-     ae_int_t* info,
-     spline1dinterpolant* s,
-     spline1dfitreport* rep,
-     ae_state *_state)
+                                      /* Real    */ ae_vector* x,
+                                      /* Real    */ ae_vector* y,
+                                      /* Real    */ ae_vector* w,
+                                      ae_int_t n,
+                                      /* Real    */ ae_vector* xc,
+                                      /* Real    */ ae_vector* yc,
+                                      /* Integer */ ae_vector* dc,
+                                      ae_int_t k,
+                                      ae_int_t m,
+                                      ae_int_t* info,
+                                      spline1dinterpolant* s,
+                                      spline1dfitreport* rep,
+                                      ae_state *_state)
 {
     ae_frame _frame_block;
     ae_vector _x;
@@ -17760,44 +16728,36 @@ static void lsfit_spline1dfitinternal(ae_int_t st,
     _spline1dinterpolant_init(&s2, _state, ae_true);
 
     ae_assert(st==0||st==1, "Spline1DFit: internal error!", _state);
-    if( st==0&&m<4 )
-    {
+    if( st==0&&m<4 ) {
         *info = -1;
         ae_frame_leave(_state);
         return;
     }
-    if( st==1&&m<4 )
-    {
+    if( st==1&&m<4 ) {
         *info = -1;
         ae_frame_leave(_state);
         return;
     }
-    if( (n<1||k<0)||k>=m )
-    {
+    if( (n<1||k<0)||k>=m ) {
         *info = -1;
         ae_frame_leave(_state);
         return;
     }
-    for(i=0; i<=k-1; i++)
-    {
+    for(i=0; i<=k-1; i++) {
         *info = 0;
-        if( dc->ptr.p_int[i]<0 )
-        {
+        if( dc->ptr.p_int[i]<0 ) {
             *info = -1;
         }
-        if( dc->ptr.p_int[i]>1 )
-        {
+        if( dc->ptr.p_int[i]>1 ) {
             *info = -1;
         }
-        if( *info<0 )
-        {
+        if( *info<0 ) {
             ae_frame_leave(_state);
             return;
         }
     }
-    if( st==1&&m%2!=0 )
-    {
-        
+    if( st==1&&m%2!=0 ) {
+
         /*
          * Hermite fitter must have even number of basis functions
          */
@@ -17805,18 +16765,18 @@ static void lsfit_spline1dfitinternal(ae_int_t st,
         ae_frame_leave(_state);
         return;
     }
-    
+
     /*
      * weight decay for correct handling of task which becomes
      * degenerate after constraints are applied
      */
     decay = 10000*ae_machineepsilon;
-    
+
     /*
      * Scale X, Y, XC, YC
      */
     lsfitscalexy(x, y, w, n, xc, yc, dc, k, &xa, &xb, &sa, &sb, &xoriginal, &yoriginal, _state);
-    
+
     /*
      * allocate space, initialize:
      * * SX     -   grid for basis functions
@@ -17827,38 +16787,33 @@ static void lsfit_spline1dfitinternal(ae_int_t st,
     ae_vector_set_length(&y2, n+m, _state);
     ae_vector_set_length(&w2, n+m, _state);
     ae_matrix_set_length(&fmatrix, n+m, m, _state);
-    if( k>0 )
-    {
+    if( k>0 ) {
         ae_matrix_set_length(&cmatrix, k, m+1, _state);
     }
-    if( st==0 )
-    {
-        
+    if( st==0 ) {
+
         /*
          * allocate space for cubic spline
          */
         ae_vector_set_length(&sx, m-2, _state);
         ae_vector_set_length(&sy, m-2, _state);
-        for(j=0; j<=m-2-1; j++)
-        {
+        for(j=0; j<=m-2-1; j++) {
             sx.ptr.p_double[j] = (double)(2*j)/(double)(m-2-1)-1;
         }
     }
-    if( st==1 )
-    {
-        
+    if( st==1 ) {
+
         /*
          * allocate space for Hermite spline
          */
         ae_vector_set_length(&sx, m/2, _state);
         ae_vector_set_length(&sy, m/2, _state);
         ae_vector_set_length(&sd, m/2, _state);
-        for(j=0; j<=m/2-1; j++)
-        {
+        for(j=0; j<=m/2-1; j++) {
             sx.ptr.p_double[j] = (double)(2*j)/(double)(m/2-1)-1;
         }
     }
-    
+
     /*
      * Prepare design and constraints matrices:
      * * fill constraints matrix
@@ -17867,99 +16822,77 @@ static void lsfit_spline1dfitinternal(ae_int_t st,
      * * append M zeros to Y
      * * append M elements, mean(abs(W)) each, to W
      */
-    for(j=0; j<=m-1; j++)
-    {
-        
+    for(j=0; j<=m-1; j++) {
+
         /*
          * prepare Jth basis function
          */
-        if( st==0 )
-        {
-            
+        if( st==0 ) {
+
             /*
              * cubic spline basis
              */
-            for(i=0; i<=m-2-1; i++)
-            {
+            for(i=0; i<=m-2-1; i++) {
                 sy.ptr.p_double[i] = 0;
             }
             bl = 0;
             br = 0;
-            if( j<m-2 )
-            {
+            if( j<m-2 ) {
                 sy.ptr.p_double[j] = 1;
             }
-            if( j==m-2 )
-            {
+            if( j==m-2 ) {
                 bl = 1;
             }
-            if( j==m-1 )
-            {
+            if( j==m-1 ) {
                 br = 1;
             }
             spline1dbuildcubic(&sx, &sy, m-2, 1, bl, 1, br, &s2, _state);
         }
-        if( st==1 )
-        {
-            
+        if( st==1 ) {
+
             /*
              * Hermite basis
              */
-            for(i=0; i<=m/2-1; i++)
-            {
+            for(i=0; i<=m/2-1; i++) {
                 sy.ptr.p_double[i] = 0;
                 sd.ptr.p_double[i] = 0;
             }
-            if( j%2==0 )
-            {
+            if( j%2==0 ) {
                 sy.ptr.p_double[j/2] = 1;
-            }
-            else
-            {
+            } else {
                 sd.ptr.p_double[j/2] = 1;
             }
             spline1dbuildhermite(&sx, &sy, &sd, m/2, &s2, _state);
         }
-        
+
         /*
          * values at X[], XC[]
          */
-        for(i=0; i<=n-1; i++)
-        {
+        for(i=0; i<=n-1; i++) {
             fmatrix.ptr.pp_double[i][j] = spline1dcalc(&s2, x->ptr.p_double[i], _state);
         }
-        for(i=0; i<=k-1; i++)
-        {
+        for(i=0; i<=k-1; i++) {
             ae_assert(dc->ptr.p_int[i]>=0&&dc->ptr.p_int[i]<=2, "Spline1DFit: internal error!", _state);
             spline1ddiff(&s2, xc->ptr.p_double[i], &v0, &v1, &v2, _state);
-            if( dc->ptr.p_int[i]==0 )
-            {
+            if( dc->ptr.p_int[i]==0 ) {
                 cmatrix.ptr.pp_double[i][j] = v0;
             }
-            if( dc->ptr.p_int[i]==1 )
-            {
+            if( dc->ptr.p_int[i]==1 ) {
                 cmatrix.ptr.pp_double[i][j] = v1;
             }
-            if( dc->ptr.p_int[i]==2 )
-            {
+            if( dc->ptr.p_int[i]==2 ) {
                 cmatrix.ptr.pp_double[i][j] = v2;
             }
         }
     }
-    for(i=0; i<=k-1; i++)
-    {
+    for(i=0; i<=k-1; i++) {
         cmatrix.ptr.pp_double[i][m] = yc->ptr.p_double[i];
     }
-    for(i=0; i<=m-1; i++)
-    {
-        for(j=0; j<=m-1; j++)
-        {
-            if( i==j )
-            {
+    for(i=0; i<=m-1; i++) {
+        for(j=0; j<=m-1; j++) {
+            if( i==j ) {
                 fmatrix.ptr.pp_double[n+i][j] = decay;
-            }
-            else
-            {
+            } else {
                 fmatrix.ptr.pp_double[n+i][j] = 0;
             }
         }
@@ -17969,62 +16902,53 @@ static void lsfit_spline1dfitinternal(ae_int_t st,
     ae_v_move(&y2.ptr.p_double[0], 1, &y->ptr.p_double[0], 1, ae_v_len(0,n-1));
     ae_v_move(&w2.ptr.p_double[0], 1, &w->ptr.p_double[0], 1, ae_v_len(0,n-1));
     mx = 0;
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         mx = mx+ae_fabs(w->ptr.p_double[i], _state);
     }
     mx = mx/n;
-    for(i=0; i<=m-1; i++)
-    {
+    for(i=0; i<=m-1; i++) {
         y2.ptr.p_double[n+i] = 0;
         w2.ptr.p_double[n+i] = mx;
     }
-    
+
     /*
      * Solve constrained task
      */
-    if( k>0 )
-    {
-        
+    if( k>0 ) {
+
         /*
          * solve using regularization
          */
         lsfitlinearwc(&y2, &w2, &fmatrix, &cmatrix, n+m, m, k, info, &tmp, &lrep, _state);
-    }
-    else
-    {
-        
+    } else {
+
         /*
          * no constraints, no regularization needed
          */
         lsfitlinearwc(y, w, &fmatrix, &cmatrix, n, m, k, info, &tmp, &lrep, _state);
     }
-    if( *info<0 )
-    {
+    if( *info<0 ) {
         ae_frame_leave(_state);
         return;
     }
-    
+
     /*
      * Generate spline and scale it
      */
-    if( st==0 )
-    {
-        
+    if( st==0 ) {
+
         /*
          * cubic spline basis
          */
         ae_v_move(&sy.ptr.p_double[0], 1, &tmp.ptr.p_double[0], 1, ae_v_len(0,m-2-1));
         spline1dbuildcubic(&sx, &sy, m-2, 1, tmp.ptr.p_double[m-2], 1, tmp.ptr.p_double[m-1], s, _state);
     }
-    if( st==1 )
-    {
-        
+    if( st==1 ) {
+
         /*
          * Hermite basis
          */
-        for(i=0; i<=m/2-1; i++)
-        {
+        for(i=0; i<=m/2-1; i++) {
             sy.ptr.p_double[i] = tmp.ptr.p_double[2*i];
             sd.ptr.p_double[i] = tmp.ptr.p_double[2*i+1];
         }
@@ -18032,7 +16956,7 @@ static void lsfit_spline1dfitinternal(ae_int_t st,
     }
     spline1dlintransx(s, 2/(xb-xa), -(xa+xb)/(xb-xa), _state);
     spline1dlintransy(s, sb-sa, sa, _state);
-    
+
     /*
      * Scale absolute errors obtained from LSFitLinearW.
      * Relative error should be calculated separately
@@ -18044,16 +16968,13 @@ static void lsfit_spline1dfitinternal(ae_int_t st,
     rep->maxerror = lrep.maxerror*(sb-sa);
     rep->avgrelerror = 0;
     relcnt = 0;
-    for(i=0; i<=n-1; i++)
-    {
-        if( ae_fp_neq(yoriginal.ptr.p_double[i],0) )
-        {
+    for(i=0; i<=n-1; i++) {
+        if( ae_fp_neq(yoriginal.ptr.p_double[i],0) ) {
             rep->avgrelerror = rep->avgrelerror+ae_fabs(spline1dcalc(s, xoriginal.ptr.p_double[i], _state)-yoriginal.ptr.p_double[i], _state)/ae_fabs(yoriginal.ptr.p_double[i], _state);
             relcnt = relcnt+1;
         }
     }
-    if( relcnt!=0 )
-    {
+    if( relcnt!=0 ) {
         rep->avgrelerror = rep->avgrelerror/relcnt;
     }
     ae_frame_leave(_state);
@@ -18064,14 +16985,14 @@ static void lsfit_spline1dfitinternal(ae_int_t st,
 Internal fitting subroutine
 *************************************************************************/
 static void lsfit_lsfitlinearinternal(/* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     /* Real    */ ae_matrix* fmatrix,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t* info,
-     /* Real    */ ae_vector* c,
-     lsfitreport* rep,
-     ae_state *_state)
+        /* Real    */ ae_vector* w,
+        /* Real    */ ae_matrix* fmatrix,
+        ae_int_t n,
+        ae_int_t m,
+        ae_int_t* info,
+        /* Real    */ ae_vector* c,
+        lsfitreport* rep,
+        ae_state *_state)
 {
     ae_frame _frame_block;
     double threshold;
@@ -18111,41 +17032,37 @@ static void lsfit_lsfitlinearinternal(/* Real    */ ae_vector* y,
     ae_vector_init(&utb, 0, DT_REAL, _state, ae_true);
     ae_vector_init(&sutb, 0, DT_REAL, _state, ae_true);
 
-    if( n<1||m<1 )
-    {
+    if( n<1||m<1 ) {
         *info = -1;
         ae_frame_leave(_state);
         return;
     }
     *info = 1;
     threshold = ae_sqrt(ae_machineepsilon, _state);
-    
+
     /*
      * Degenerate case, needs special handling
      */
-    if( n<m )
-    {
-        
+    if( n<m ) {
+
         /*
          * Create design matrix.
          */
         ae_matrix_set_length(&ft, n, m, _state);
         ae_vector_set_length(&b, n, _state);
         ae_vector_set_length(&wmod, n, _state);
-        for(j=0; j<=n-1; j++)
-        {
+        for(j=0; j<=n-1; j++) {
             v = w->ptr.p_double[j];
             ae_v_moved(&ft.ptr.pp_double[j][0], 1, &fmatrix->ptr.pp_double[j][0], 1, ae_v_len(0,m-1), v);
             b.ptr.p_double[j] = w->ptr.p_double[j]*y->ptr.p_double[j];
             wmod.ptr.p_double[j] = 1;
         }
-        
+
         /*
          * LQ decomposition and reduction to M=N
          */
         ae_vector_set_length(c, m, _state);
-        for(i=0; i<=m-1; i++)
-        {
+        for(i=0; i<=m-1; i++) {
             c->ptr.p_double[i] = 0;
         }
         rep->taskrcond = 0;
@@ -18153,28 +17070,25 @@ static void lsfit_lsfitlinearinternal(/* Real    */ ae_vector* y,
         rmatrixlqunpackq(&ft, n, m, &tau, n, &q, _state);
         rmatrixlqunpackl(&ft, n, m, &l, _state);
         lsfit_lsfitlinearinternal(&b, &wmod, &l, n, n, info, &tmp, rep, _state);
-        if( *info<=0 )
-        {
+        if( *info<=0 ) {
             ae_frame_leave(_state);
             return;
         }
-        for(i=0; i<=n-1; i++)
-        {
+        for(i=0; i<=n-1; i++) {
             v = tmp.ptr.p_double[i];
             ae_v_addd(&c->ptr.p_double[0], 1, &q.ptr.pp_double[i][0], 1, ae_v_len(0,m-1), v);
         }
         ae_frame_leave(_state);
         return;
     }
-    
+
     /*
      * N>=M. Generate design matrix and reduce to N=M using
      * QR decomposition.
      */
     ae_matrix_set_length(&ft, n, m, _state);
     ae_vector_set_length(&b, n, _state);
-    for(j=0; j<=n-1; j++)
-    {
+    for(j=0; j<=n-1; j++) {
         v = w->ptr.p_double[j];
         ae_v_moved(&ft.ptr.pp_double[j][0], 1, &fmatrix->ptr.pp_double[j][0], 1, ae_v_len(0,m-1), v);
         b.ptr.p_double[j] = w->ptr.p_double[j]*y->ptr.p_double[j];
@@ -18183,18 +17097,16 @@ static void lsfit_lsfitlinearinternal(/* Real    */ ae_vector* y,
     rmatrixqrunpackq(&ft, n, m, &tau, m, &q, _state);
     rmatrixqrunpackr(&ft, n, m, &r, _state);
     ae_vector_set_length(&tmp, m, _state);
-    for(i=0; i<=m-1; i++)
-    {
+    for(i=0; i<=m-1; i++) {
         tmp.ptr.p_double[i] = 0;
     }
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         v = b.ptr.p_double[i];
         ae_v_addd(&tmp.ptr.p_double[0], 1, &q.ptr.pp_double[i][0], 1, ae_v_len(0,m-1), v);
     }
     ae_vector_set_length(&b, m, _state);
     ae_v_move(&b.ptr.p_double[0], 1, &tmp.ptr.p_double[0], 1, ae_v_len(0,m-1));
-    
+
     /*
      * R contains reduced MxM design upper triangular matrix,
      * B contains reduced Mx1 right part.
@@ -18206,78 +17118,61 @@ static void lsfit_lsfitlinearinternal(/* Real    */ ae_vector* y,
      * We can use LU-based RCond estimator for this task.
      */
     rep->taskrcond = rmatrixlurcondinf(&r, m, _state);
-    if( ae_fp_greater(rep->taskrcond,threshold) )
-    {
-        
+    if( ae_fp_greater(rep->taskrcond,threshold) ) {
+
         /*
          * use QR-based solver
          */
         ae_vector_set_length(c, m, _state);
         c->ptr.p_double[m-1] = b.ptr.p_double[m-1]/r.ptr.pp_double[m-1][m-1];
-        for(i=m-2; i>=0; i--)
-        {
+        for(i=m-2; i>=0; i--) {
             v = ae_v_dotproduct(&r.ptr.pp_double[i][i+1], 1, &c->ptr.p_double[i+1], 1, ae_v_len(i+1,m-1));
             c->ptr.p_double[i] = (b.ptr.p_double[i]-v)/r.ptr.pp_double[i][i];
         }
-    }
-    else
-    {
-        
+    } else {
+
         /*
          * use SVD-based solver
          */
-        if( !rmatrixsvd(&r, m, m, 1, 1, 2, &sv, &u, &vt, _state) )
-        {
+        if( !rmatrixsvd(&r, m, m, 1, 1, 2, &sv, &u, &vt, _state) ) {
             *info = -4;
             ae_frame_leave(_state);
             return;
         }
         ae_vector_set_length(&utb, m, _state);
         ae_vector_set_length(&sutb, m, _state);
-        for(i=0; i<=m-1; i++)
-        {
+        for(i=0; i<=m-1; i++) {
             utb.ptr.p_double[i] = 0;
         }
-        for(i=0; i<=m-1; i++)
-        {
+        for(i=0; i<=m-1; i++) {
             v = b.ptr.p_double[i];
             ae_v_addd(&utb.ptr.p_double[0], 1, &u.ptr.pp_double[i][0], 1, ae_v_len(0,m-1), v);
         }
-        if( ae_fp_greater(sv.ptr.p_double[0],0) )
-        {
+        if( ae_fp_greater(sv.ptr.p_double[0],0) ) {
             rep->taskrcond = sv.ptr.p_double[m-1]/sv.ptr.p_double[0];
-            for(i=0; i<=m-1; i++)
-            {
-                if( ae_fp_greater(sv.ptr.p_double[i],threshold*sv.ptr.p_double[0]) )
-                {
+            for(i=0; i<=m-1; i++) {
+                if( ae_fp_greater(sv.ptr.p_double[i],threshold*sv.ptr.p_double[0]) ) {
                     sutb.ptr.p_double[i] = utb.ptr.p_double[i]/sv.ptr.p_double[i];
-                }
-                else
-                {
+                } else {
                     sutb.ptr.p_double[i] = 0;
                 }
             }
-        }
-        else
-        {
+        } else {
             rep->taskrcond = 0;
-            for(i=0; i<=m-1; i++)
-            {
+            for(i=0; i<=m-1; i++) {
                 sutb.ptr.p_double[i] = 0;
             }
         }
         ae_vector_set_length(c, m, _state);
-        for(i=0; i<=m-1; i++)
-        {
+        for(i=0; i<=m-1; i++) {
             c->ptr.p_double[i] = 0;
         }
-        for(i=0; i<=m-1; i++)
-        {
+        for(i=0; i<=m-1; i++) {
             v = sutb.ptr.p_double[i];
             ae_v_addd(&c->ptr.p_double[0], 1, &vt.ptr.pp_double[i][0], 1, ae_v_len(0,m-1), v);
         }
     }
-    
+
     /*
      * calculate errors
      */
@@ -18286,13 +17181,11 @@ static void lsfit_lsfitlinearinternal(/* Real    */ ae_vector* y,
     rep->avgrelerror = 0;
     rep->maxerror = 0;
     relcnt = 0;
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         v = ae_v_dotproduct(&fmatrix->ptr.pp_double[i][0], 1, &c->ptr.p_double[0], 1, ae_v_len(0,m-1));
         rep->rmserror = rep->rmserror+ae_sqr(v-y->ptr.p_double[i], _state);
         rep->avgerror = rep->avgerror+ae_fabs(v-y->ptr.p_double[i], _state);
-        if( ae_fp_neq(y->ptr.p_double[i],0) )
-        {
+        if( ae_fp_neq(y->ptr.p_double[i],0) ) {
             rep->avgrelerror = rep->avgrelerror+ae_fabs(v-y->ptr.p_double[i], _state)/ae_fabs(y->ptr.p_double[i], _state);
             relcnt = relcnt+1;
         }
@@ -18300,8 +17193,7 @@ static void lsfit_lsfitlinearinternal(/* Real    */ ae_vector* y,
     }
     rep->rmserror = ae_sqrt(rep->rmserror/n, _state);
     rep->avgerror = rep->avgerror/n;
-    if( relcnt!=0 )
-    {
+    if( relcnt!=0 ) {
         rep->avgrelerror = rep->avgrelerror/relcnt;
     }
     ae_frame_leave(_state);
@@ -18312,7 +17204,7 @@ static void lsfit_lsfitlinearinternal(/* Real    */ ae_vector* y,
 Internal subroutine
 *************************************************************************/
 static void lsfit_lsfitclearrequestfields(lsfitstate* state,
-     ae_state *_state)
+        ae_state *_state)
 {
 
 
@@ -18331,9 +17223,9 @@ Used for efficient simultaneous calculation of N basis functions.
      Copyright 17.08.2009 by Bochkanov Sergey
 *************************************************************************/
 static void lsfit_barycentriccalcbasis(barycentricinterpolant* b,
-     double t,
-     /* Real    */ ae_vector* y,
-     ae_state *_state)
+                                       double t,
+                                       /* Real    */ ae_vector* y,
+                                       ae_state *_state)
 {
     double s2;
     double s;
@@ -18342,16 +17234,15 @@ static void lsfit_barycentriccalcbasis(barycentricinterpolant* b,
     ae_int_t j;
 
 
-    
+
     /*
      * special case: N=1
      */
-    if( b->n==1 )
-    {
+    if( b->n==1 ) {
         y->ptr.p_double[0] = 1;
         return;
     }
-    
+
     /*
      * Here we assume that task is normalized, i.e.:
      * 1. abs(Y[i])<=1
@@ -18362,27 +17253,22 @@ static void lsfit_barycentriccalcbasis(barycentricinterpolant* b,
      * against overflow) or fast one?
      */
     s = ae_fabs(t-b->x.ptr.p_double[0], _state);
-    for(i=0; i<=b->n-1; i++)
-    {
+    for(i=0; i<=b->n-1; i++) {
         v = b->x.ptr.p_double[i];
-        if( ae_fp_eq(v,t) )
-        {
-            for(j=0; j<=b->n-1; j++)
-            {
+        if( ae_fp_eq(v,t) ) {
+            for(j=0; j<=b->n-1; j++) {
                 y->ptr.p_double[j] = 0;
             }
             y->ptr.p_double[i] = 1;
             return;
         }
         v = ae_fabs(t-v, _state);
-        if( ae_fp_less(v,s) )
-        {
+        if( ae_fp_less(v,s) ) {
             s = v;
         }
     }
     s2 = 0;
-    for(i=0; i<=b->n-1; i++)
-    {
+    for(i=0; i<=b->n-1; i++) {
         v = s/(t-b->x.ptr.p_double[i]);
         v = v*b->w.ptr.p_double[i];
         y->ptr.p_double[i] = v;
@@ -18442,18 +17328,18 @@ IMPORTANT:
      Copyright 10.12.2009 by Bochkanov Sergey
 *************************************************************************/
 static void lsfit_internalchebyshevfit(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     ae_int_t n,
-     /* Real    */ ae_vector* xc,
-     /* Real    */ ae_vector* yc,
-     /* Integer */ ae_vector* dc,
-     ae_int_t k,
-     ae_int_t m,
-     ae_int_t* info,
-     /* Real    */ ae_vector* c,
-     lsfitreport* rep,
-     ae_state *_state)
+        /* Real    */ ae_vector* y,
+        /* Real    */ ae_vector* w,
+        ae_int_t n,
+        /* Real    */ ae_vector* xc,
+        /* Real    */ ae_vector* yc,
+        /* Integer */ ae_vector* dc,
+        ae_int_t k,
+        ae_int_t m,
+        ae_int_t* info,
+        /* Real    */ ae_vector* c,
+        lsfitreport* rep,
+        ae_state *_state)
 {
     ae_frame _frame_block;
     ae_vector _xc;
@@ -18492,13 +17378,13 @@ static void lsfit_internalchebyshevfit(/* Real    */ ae_vector* x,
     ae_matrix_init(&fmatrix, 0, 0, DT_REAL, _state, ae_true);
     ae_matrix_init(&cmatrix, 0, 0, DT_REAL, _state, ae_true);
 
-    
+
     /*
      * weight decay for correct handling of task which becomes
      * degenerate after constraints are applied
      */
     decay = 10000*ae_machineepsilon;
-    
+
     /*
      * allocate space, initialize/fill:
      * * FMatrix-   values of basis functions at X[]
@@ -18514,53 +17400,39 @@ static void lsfit_internalchebyshevfit(/* Real    */ ae_vector* x,
     ae_vector_set_length(&tmp, m, _state);
     ae_vector_set_length(&tmpdiff, m, _state);
     ae_matrix_set_length(&fmatrix, n+m, m, _state);
-    if( k>0 )
-    {
+    if( k>0 ) {
         ae_matrix_set_length(&cmatrix, k, m+1, _state);
     }
-    
+
     /*
      * Fill design matrix, Y2, W2:
      * * first N rows with basis functions for original points
      * * next M rows with decay terms
      */
-    for(i=0; i<=n-1; i++)
-    {
-        
+    for(i=0; i<=n-1; i++) {
+
         /*
          * prepare Ith row
          * use Tmp for calculations to avoid multidimensional arrays overhead
          */
-        for(j=0; j<=m-1; j++)
-        {
-            if( j==0 )
-            {
+        for(j=0; j<=m-1; j++) {
+            if( j==0 ) {
                 tmp.ptr.p_double[j] = 1;
-            }
-            else
-            {
-                if( j==1 )
-                {
+            } else {
+                if( j==1 ) {
                     tmp.ptr.p_double[j] = x->ptr.p_double[i];
-                }
-                else
-                {
+                } else {
                     tmp.ptr.p_double[j] = 2*x->ptr.p_double[i]*tmp.ptr.p_double[j-1]-tmp.ptr.p_double[j-2];
                 }
             }
         }
         ae_v_move(&fmatrix.ptr.pp_double[i][0], 1, &tmp.ptr.p_double[0], 1, ae_v_len(0,m-1));
     }
-    for(i=0; i<=m-1; i++)
-    {
-        for(j=0; j<=m-1; j++)
-        {
-            if( i==j )
-            {
+    for(i=0; i<=m-1; i++) {
+        for(j=0; j<=m-1; j++) {
+            if( i==j ) {
                 fmatrix.ptr.pp_double[n+i][j] = decay;
-            }
-            else
-            {
+            } else {
                 fmatrix.ptr.pp_double[n+i][j] = 0;
             }
         }
@@ -18568,81 +17440,65 @@ static void lsfit_internalchebyshevfit(/* Real    */ ae_vector* x,
     ae_v_move(&y2.ptr.p_double[0], 1, &y->ptr.p_double[0], 1, ae_v_len(0,n-1));
     ae_v_move(&w2.ptr.p_double[0], 1, &w->ptr.p_double[0], 1, ae_v_len(0,n-1));
     mx = 0;
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         mx = mx+ae_fabs(w->ptr.p_double[i], _state);
     }
     mx = mx/n;
-    for(i=0; i<=m-1; i++)
-    {
+    for(i=0; i<=m-1; i++) {
         y2.ptr.p_double[n+i] = 0;
         w2.ptr.p_double[n+i] = mx;
     }
-    
+
     /*
      * fill constraints matrix
      */
-    for(i=0; i<=k-1; i++)
-    {
-        
+    for(i=0; i<=k-1; i++) {
+
         /*
          * prepare Ith row
          * use Tmp for basis function values,
          * TmpDiff for basos function derivatives
          */
-        for(j=0; j<=m-1; j++)
-        {
-            if( j==0 )
-            {
+        for(j=0; j<=m-1; j++) {
+            if( j==0 ) {
                 tmp.ptr.p_double[j] = 1;
                 tmpdiff.ptr.p_double[j] = 0;
-            }
-            else
-            {
-                if( j==1 )
-                {
+            } else {
+                if( j==1 ) {
                     tmp.ptr.p_double[j] = xc->ptr.p_double[i];
                     tmpdiff.ptr.p_double[j] = 1;
-                }
-                else
-                {
+                } else {
                     tmp.ptr.p_double[j] = 2*xc->ptr.p_double[i]*tmp.ptr.p_double[j-1]-tmp.ptr.p_double[j-2];
                     tmpdiff.ptr.p_double[j] = 2*(tmp.ptr.p_double[j-1]+xc->ptr.p_double[i]*tmpdiff.ptr.p_double[j-1])-tmpdiff.ptr.p_double[j-2];
                 }
             }
         }
-        if( dc->ptr.p_int[i]==0 )
-        {
+        if( dc->ptr.p_int[i]==0 ) {
             ae_v_move(&cmatrix.ptr.pp_double[i][0], 1, &tmp.ptr.p_double[0], 1, ae_v_len(0,m-1));
         }
-        if( dc->ptr.p_int[i]==1 )
-        {
+        if( dc->ptr.p_int[i]==1 ) {
             ae_v_move(&cmatrix.ptr.pp_double[i][0], 1, &tmpdiff.ptr.p_double[0], 1, ae_v_len(0,m-1));
         }
         cmatrix.ptr.pp_double[i][m] = yc->ptr.p_double[i];
     }
-    
+
     /*
      * Solve constrained task
      */
-    if( k>0 )
-    {
-        
+    if( k>0 ) {
+
         /*
          * solve using regularization
          */
         lsfitlinearwc(&y2, &w2, &fmatrix, &cmatrix, n+m, m, k, info, c, rep, _state);
-    }
-    else
-    {
-        
+    } else {
+
         /*
          * no constraints, no regularization needed
          */
         lsfitlinearwc(y, w, &fmatrix, &cmatrix, n, m, 0, info, c, rep, _state);
     }
-    if( *info<0 )
-    {
+    if( *info<0 ) {
         ae_frame_leave(_state);
         return;
     }
@@ -18654,19 +17510,19 @@ static void lsfit_internalchebyshevfit(/* Real    */ ae_vector* x,
 Internal Floater-Hormann fitting subroutine for fixed D
 *************************************************************************/
 static void lsfit_barycentricfitwcfixedd(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     ae_int_t n,
-     /* Real    */ ae_vector* xc,
-     /* Real    */ ae_vector* yc,
-     /* Integer */ ae_vector* dc,
-     ae_int_t k,
-     ae_int_t m,
-     ae_int_t d,
-     ae_int_t* info,
-     barycentricinterpolant* b,
-     barycentricfitreport* rep,
-     ae_state *_state)
+        /* Real    */ ae_vector* y,
+        /* Real    */ ae_vector* w,
+        ae_int_t n,
+        /* Real    */ ae_vector* xc,
+        /* Real    */ ae_vector* yc,
+        /* Integer */ ae_vector* dc,
+        ae_int_t k,
+        ae_int_t m,
+        ae_int_t d,
+        ae_int_t* info,
+        barycentricinterpolant* b,
+        barycentricfitreport* rep,
+        ae_state *_state)
 {
     ae_frame _frame_block;
     ae_vector _x;
@@ -18725,41 +17581,36 @@ static void lsfit_barycentricfitwcfixedd(/* Real    */ ae_vector* x,
     _lsfitreport_init(&lrep, _state, ae_true);
     _barycentricinterpolant_init(&b2, _state, ae_true);
 
-    if( ((n<1||m<2)||k<0)||k>=m )
-    {
+    if( ((n<1||m<2)||k<0)||k>=m ) {
         *info = -1;
         ae_frame_leave(_state);
         return;
     }
-    for(i=0; i<=k-1; i++)
-    {
+    for(i=0; i<=k-1; i++) {
         *info = 0;
-        if( dc->ptr.p_int[i]<0 )
-        {
+        if( dc->ptr.p_int[i]<0 ) {
             *info = -1;
         }
-        if( dc->ptr.p_int[i]>1 )
-        {
+        if( dc->ptr.p_int[i]>1 ) {
             *info = -1;
         }
-        if( *info<0 )
-        {
+        if( *info<0 ) {
             ae_frame_leave(_state);
             return;
         }
     }
-    
+
     /*
      * weight decay for correct handling of task which becomes
      * degenerate after constraints are applied
      */
     decay = 10000*ae_machineepsilon;
-    
+
     /*
      * Scale X, Y, XC, YC
      */
     lsfitscalexy(x, y, w, n, xc, yc, dc, k, &xa, &xb, &sa, &sb, &xoriginal, &yoriginal, _state);
-    
+
     /*
      * allocate space, initialize:
      * * FMatrix-   values of basis functions at X[]
@@ -18768,13 +17619,12 @@ static void lsfit_barycentricfitwcfixedd(/* Real    */ ae_vector* x,
     ae_vector_set_length(&y2, n+m, _state);
     ae_vector_set_length(&w2, n+m, _state);
     ae_matrix_set_length(&fmatrix, n+m, m, _state);
-    if( k>0 )
-    {
+    if( k>0 ) {
         ae_matrix_set_length(&cmatrix, k, m+1, _state);
     }
     ae_vector_set_length(&y2, n+m, _state);
     ae_vector_set_length(&w2, n+m, _state);
-    
+
     /*
      * Prepare design and constraints matrices:
      * * fill constraints matrix
@@ -18786,95 +17636,76 @@ static void lsfit_barycentricfitwcfixedd(/* Real    */ ae_vector* x,
     ae_vector_set_length(&sx, m, _state);
     ae_vector_set_length(&sy, m, _state);
     ae_vector_set_length(&sbf, m, _state);
-    for(j=0; j<=m-1; j++)
-    {
+    for(j=0; j<=m-1; j++) {
         sx.ptr.p_double[j] = (double)(2*j)/(double)(m-1)-1;
     }
-    for(i=0; i<=m-1; i++)
-    {
+    for(i=0; i<=m-1; i++) {
         sy.ptr.p_double[i] = 1;
     }
     barycentricbuildfloaterhormann(&sx, &sy, m, d, &b2, _state);
     mx = 0;
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         lsfit_barycentriccalcbasis(&b2, x->ptr.p_double[i], &sbf, _state);
         ae_v_move(&fmatrix.ptr.pp_double[i][0], 1, &sbf.ptr.p_double[0], 1, ae_v_len(0,m-1));
         y2.ptr.p_double[i] = y->ptr.p_double[i];
         w2.ptr.p_double[i] = w->ptr.p_double[i];
         mx = mx+ae_fabs(w->ptr.p_double[i], _state)/n;
     }
-    for(i=0; i<=m-1; i++)
-    {
-        for(j=0; j<=m-1; j++)
-        {
-            if( i==j )
-            {
+    for(i=0; i<=m-1; i++) {
+        for(j=0; j<=m-1; j++) {
+            if( i==j ) {
                 fmatrix.ptr.pp_double[n+i][j] = decay;
-            }
-            else
-            {
+            } else {
                 fmatrix.ptr.pp_double[n+i][j] = 0;
             }
         }
         y2.ptr.p_double[n+i] = 0;
         w2.ptr.p_double[n+i] = mx;
     }
-    if( k>0 )
-    {
-        for(j=0; j<=m-1; j++)
-        {
-            for(i=0; i<=m-1; i++)
-            {
+    if( k>0 ) {
+        for(j=0; j<=m-1; j++) {
+            for(i=0; i<=m-1; i++) {
                 sy.ptr.p_double[i] = 0;
             }
             sy.ptr.p_double[j] = 1;
             barycentricbuildfloaterhormann(&sx, &sy, m, d, &b2, _state);
-            for(i=0; i<=k-1; i++)
-            {
+            for(i=0; i<=k-1; i++) {
                 ae_assert(dc->ptr.p_int[i]>=0&&dc->ptr.p_int[i]<=1, "BarycentricFit: internal error!", _state);
                 barycentricdiff1(&b2, xc->ptr.p_double[i], &v0, &v1, _state);
-                if( dc->ptr.p_int[i]==0 )
-                {
+                if( dc->ptr.p_int[i]==0 ) {
                     cmatrix.ptr.pp_double[i][j] = v0;
                 }
-                if( dc->ptr.p_int[i]==1 )
-                {
+                if( dc->ptr.p_int[i]==1 ) {
                     cmatrix.ptr.pp_double[i][j] = v1;
                 }
             }
         }
-        for(i=0; i<=k-1; i++)
-        {
+        for(i=0; i<=k-1; i++) {
             cmatrix.ptr.pp_double[i][m] = yc->ptr.p_double[i];
         }
     }
-    
+
     /*
      * Solve constrained task
      */
-    if( k>0 )
-    {
-        
+    if( k>0 ) {
+
         /*
          * solve using regularization
          */
         lsfitlinearwc(&y2, &w2, &fmatrix, &cmatrix, n+m, m, k, info, &tmp, &lrep, _state);
-    }
-    else
-    {
-        
+    } else {
+
         /*
          * no constraints, no regularization needed
          */
         lsfitlinearwc(y, w, &fmatrix, &cmatrix, n, m, k, info, &tmp, &lrep, _state);
     }
-    if( *info<0 )
-    {
+    if( *info<0 ) {
         ae_frame_leave(_state);
         return;
     }
-    
+
     /*
      * Generate interpolant and scale it
      */
@@ -18882,7 +17713,7 @@ static void lsfit_barycentricfitwcfixedd(/* Real    */ ae_vector* x,
     barycentricbuildfloaterhormann(&sx, &sy, m, d, b, _state);
     barycentriclintransx(b, 2/(xb-xa), -(xa+xb)/(xb-xa), _state);
     barycentriclintransy(b, sb-sa, sa, _state);
-    
+
     /*
      * Scale absolute errors obtained from LSFitLinearW.
      * Relative error should be calculated separately
@@ -18894,16 +17725,13 @@ static void lsfit_barycentricfitwcfixedd(/* Real    */ ae_vector* x,
     rep->maxerror = lrep.maxerror*(sb-sa);
     rep->avgrelerror = 0;
     relcnt = 0;
-    for(i=0; i<=n-1; i++)
-    {
-        if( ae_fp_neq(yoriginal.ptr.p_double[i],0) )
-        {
+    for(i=0; i<=n-1; i++) {
+        if( ae_fp_neq(yoriginal.ptr.p_double[i],0) ) {
             rep->avgrelerror = rep->avgrelerror+ae_fabs(barycentriccalc(b, xoriginal.ptr.p_double[i], _state)-yoriginal.ptr.p_double[i], _state)/ae_fabs(yoriginal.ptr.p_double[i], _state);
             relcnt = relcnt+1;
         }
     }
-    if( relcnt!=0 )
-    {
+    if( relcnt!=0 ) {
         rep->avgrelerror = rep->avgrelerror/relcnt;
     }
     ae_frame_leave(_state);
@@ -19003,32 +17831,45 @@ void _lsfitreport_clear(lsfitreport* p)
 
 ae_bool _lsfitstate_init(lsfitstate* p, ae_state *_state, ae_bool make_automatic)
 {
-    if( !ae_vector_init(&p->s, 0, DT_REAL, _state, make_automatic) )
+    if( !ae_vector_init(&p->s, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->bndl, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->bndl, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->bndu, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->bndu, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_matrix_init(&p->taskx, 0, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_matrix_init(&p->taskx, 0, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->tasky, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->tasky, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->w, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->w, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->x, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->x, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->c, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->c, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->g, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->g, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_matrix_init(&p->h, 0, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_matrix_init(&p->h, 0, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !_minlmstate_init(&p->optstate, _state, make_automatic) )
+    }
+    if( !_minlmstate_init(&p->optstate, _state, make_automatic) ) {
         return ae_false;
-    if( !_minlmreport_init(&p->optrep, _state, make_automatic) )
+    }
+    if( !_minlmreport_init(&p->optrep, _state, make_automatic) ) {
         return ae_false;
-    if( !_rcommstate_init(&p->rstate, _state, make_automatic) )
+    }
+    if( !_rcommstate_init(&p->rstate, _state, make_automatic) ) {
         return ae_false;
+    }
     return ae_true;
 }
 
@@ -19043,19 +17884,25 @@ ae_bool _lsfitstate_init_copy(lsfitstate* dst, lsfitstate* src, ae_state *_state
     dst->maxits = src->maxits;
     dst->stpmax = src->stpmax;
     dst->xrep = src->xrep;
-    if( !ae_vector_init_copy(&dst->s, &src->s, _state, make_automatic) )
+    if( !ae_vector_init_copy(&dst->s, &src->s, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init_copy(&dst->bndl, &src->bndl, _state, make_automatic) )
+    }
+    if( !ae_vector_init_copy(&dst->bndl, &src->bndl, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init_copy(&dst->bndu, &src->bndu, _state, make_automatic) )
+    }
+    if( !ae_vector_init_copy(&dst->bndu, &src->bndu, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_matrix_init_copy(&dst->taskx, &src->taskx, _state, make_automatic) )
+    }
+    if( !ae_matrix_init_copy(&dst->taskx, &src->taskx, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init_copy(&dst->tasky, &src->tasky, _state, make_automatic) )
+    }
+    if( !ae_vector_init_copy(&dst->tasky, &src->tasky, _state, make_automatic) ) {
         return ae_false;
+    }
     dst->npoints = src->npoints;
-    if( !ae_vector_init_copy(&dst->w, &src->w, _state, make_automatic) )
+    if( !ae_vector_init_copy(&dst->w, &src->w, _state, make_automatic) ) {
         return ae_false;
+    }
     dst->nweights = src->nweights;
     dst->wkind = src->wkind;
     dst->wits = src->wits;
@@ -19064,15 +17911,19 @@ ae_bool _lsfitstate_init_copy(lsfitstate* dst, lsfitstate* src, ae_state *_state
     dst->needfg = src->needfg;
     dst->needfgh = src->needfgh;
     dst->pointindex = src->pointindex;
-    if( !ae_vector_init_copy(&dst->x, &src->x, _state, make_automatic) )
+    if( !ae_vector_init_copy(&dst->x, &src->x, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init_copy(&dst->c, &src->c, _state, make_automatic) )
+    }
+    if( !ae_vector_init_copy(&dst->c, &src->c, _state, make_automatic) ) {
         return ae_false;
+    }
     dst->f = src->f;
-    if( !ae_vector_init_copy(&dst->g, &src->g, _state, make_automatic) )
+    if( !ae_vector_init_copy(&dst->g, &src->g, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_matrix_init_copy(&dst->h, &src->h, _state, make_automatic) )
+    }
+    if( !ae_matrix_init_copy(&dst->h, &src->h, _state, make_automatic) ) {
         return ae_false;
+    }
     dst->repiterationscount = src->repiterationscount;
     dst->repterminationtype = src->repterminationtype;
     dst->reprmserror = src->reprmserror;
@@ -19080,14 +17931,17 @@ ae_bool _lsfitstate_init_copy(lsfitstate* dst, lsfitstate* src, ae_state *_state
     dst->repavgrelerror = src->repavgrelerror;
     dst->repmaxerror = src->repmaxerror;
     dst->repwrmserror = src->repwrmserror;
-    if( !_minlmstate_init_copy(&dst->optstate, &src->optstate, _state, make_automatic) )
+    if( !_minlmstate_init_copy(&dst->optstate, &src->optstate, _state, make_automatic) ) {
         return ae_false;
-    if( !_minlmreport_init_copy(&dst->optrep, &src->optrep, _state, make_automatic) )
+    }
+    if( !_minlmreport_init_copy(&dst->optrep, &src->optrep, _state, make_automatic) ) {
         return ae_false;
+    }
     dst->prevnpt = src->prevnpt;
     dst->prevalgo = src->prevalgo;
-    if( !_rcommstate_init_copy(&dst->rstate, &src->rstate, _state, make_automatic) )
+    if( !_rcommstate_init_copy(&dst->rstate, &src->rstate, _state, make_automatic) ) {
         return ae_false;
+    }
     return ae_true;
 }
 
@@ -19145,11 +17999,11 @@ NOTES:
      Copyright 28.05.2010 by Bochkanov Sergey
 *************************************************************************/
 void pspline2build(/* Real    */ ae_matrix* xy,
-     ae_int_t n,
-     ae_int_t st,
-     ae_int_t pt,
-     pspline2interpolant* p,
-     ae_state *_state)
+                                 ae_int_t n,
+                                 ae_int_t st,
+                                 ae_int_t pt,
+                                 pspline2interpolant* p,
+                                 ae_state *_state)
 {
     ae_frame _frame_block;
     ae_matrix _xy;
@@ -19163,47 +18017,41 @@ void pspline2build(/* Real    */ ae_matrix* xy,
 
     ae_assert(st>=0&&st<=2, "PSpline2Build: incorrect spline type!", _state);
     ae_assert(pt>=0&&pt<=2, "PSpline2Build: incorrect parameterization type!", _state);
-    if( st==0 )
-    {
+    if( st==0 ) {
         ae_assert(n>=5, "PSpline2Build: N<5 (minimum value for Akima splines)!", _state);
-    }
-    else
-    {
+    } else {
         ae_assert(n>=2, "PSpline2Build: N<2!", _state);
     }
-    
+
     /*
      * Prepare
      */
     p->n = n;
     p->periodic = ae_false;
     ae_vector_set_length(&tmp, n, _state);
-    
+
     /*
      * Build parameterization, check that all parameters are distinct
      */
     pspline_pspline2par(xy, n, pt, &p->p, _state);
     ae_assert(aredistinct(&p->p, n, _state), "PSpline2Build: consequent points are too close!", _state);
-    
+
     /*
      * Build splines
      */
-    if( st==0 )
-    {
+    if( st==0 ) {
         ae_v_move(&tmp.ptr.p_double[0], 1, &xy->ptr.pp_double[0][0], xy->stride, ae_v_len(0,n-1));
         spline1dbuildakima(&p->p, &tmp, n, &p->x, _state);
         ae_v_move(&tmp.ptr.p_double[0], 1, &xy->ptr.pp_double[0][1], xy->stride, ae_v_len(0,n-1));
         spline1dbuildakima(&p->p, &tmp, n, &p->y, _state);
     }
-    if( st==1 )
-    {
+    if( st==1 ) {
         ae_v_move(&tmp.ptr.p_double[0], 1, &xy->ptr.pp_double[0][0], xy->stride, ae_v_len(0,n-1));
         spline1dbuildcatmullrom(&p->p, &tmp, n, 0, 0.0, &p->x, _state);
         ae_v_move(&tmp.ptr.p_double[0], 1, &xy->ptr.pp_double[0][1], xy->stride, ae_v_len(0,n-1));
         spline1dbuildcatmullrom(&p->p, &tmp, n, 0, 0.0, &p->y, _state);
     }
-    if( st==2 )
-    {
+    if( st==2 ) {
         ae_v_move(&tmp.ptr.p_double[0], 1, &xy->ptr.pp_double[0][0], xy->stride, ae_v_len(0,n-1));
         spline1dbuildcubic(&p->p, &tmp, n, 0, 0.0, 0, 0.0, &p->x, _state);
         ae_v_move(&tmp.ptr.p_double[0], 1, &xy->ptr.pp_double[0][1], xy->stride, ae_v_len(0,n-1));
@@ -19224,11 +18072,11 @@ description here.
      Copyright 28.05.2010 by Bochkanov Sergey
 *************************************************************************/
 void pspline3build(/* Real    */ ae_matrix* xy,
-     ae_int_t n,
-     ae_int_t st,
-     ae_int_t pt,
-     pspline3interpolant* p,
-     ae_state *_state)
+                                 ae_int_t n,
+                                 ae_int_t st,
+                                 ae_int_t pt,
+                                 pspline3interpolant* p,
+                                 ae_state *_state)
 {
     ae_frame _frame_block;
     ae_matrix _xy;
@@ -19242,33 +18090,29 @@ void pspline3build(/* Real    */ ae_matrix* xy,
 
     ae_assert(st>=0&&st<=2, "PSpline3Build: incorrect spline type!", _state);
     ae_assert(pt>=0&&pt<=2, "PSpline3Build: incorrect parameterization type!", _state);
-    if( st==0 )
-    {
+    if( st==0 ) {
         ae_assert(n>=5, "PSpline3Build: N<5 (minimum value for Akima splines)!", _state);
-    }
-    else
-    {
+    } else {
         ae_assert(n>=2, "PSpline3Build: N<2!", _state);
     }
-    
+
     /*
      * Prepare
      */
     p->n = n;
     p->periodic = ae_false;
     ae_vector_set_length(&tmp, n, _state);
-    
+
     /*
      * Build parameterization, check that all parameters are distinct
      */
     pspline_pspline3par(xy, n, pt, &p->p, _state);
     ae_assert(aredistinct(&p->p, n, _state), "PSpline3Build: consequent points are too close!", _state);
-    
+
     /*
      * Build splines
      */
-    if( st==0 )
-    {
+    if( st==0 ) {
         ae_v_move(&tmp.ptr.p_double[0], 1, &xy->ptr.pp_double[0][0], xy->stride, ae_v_len(0,n-1));
         spline1dbuildakima(&p->p, &tmp, n, &p->x, _state);
         ae_v_move(&tmp.ptr.p_double[0], 1, &xy->ptr.pp_double[0][1], xy->stride, ae_v_len(0,n-1));
@@ -19276,8 +18120,7 @@ void pspline3build(/* Real    */ ae_matrix* xy,
         ae_v_move(&tmp.ptr.p_double[0], 1, &xy->ptr.pp_double[0][2], xy->stride, ae_v_len(0,n-1));
         spline1dbuildakima(&p->p, &tmp, n, &p->z, _state);
     }
-    if( st==1 )
-    {
+    if( st==1 ) {
         ae_v_move(&tmp.ptr.p_double[0], 1, &xy->ptr.pp_double[0][0], xy->stride, ae_v_len(0,n-1));
         spline1dbuildcatmullrom(&p->p, &tmp, n, 0, 0.0, &p->x, _state);
         ae_v_move(&tmp.ptr.p_double[0], 1, &xy->ptr.pp_double[0][1], xy->stride, ae_v_len(0,n-1));
@@ -19285,8 +18128,7 @@ void pspline3build(/* Real    */ ae_matrix* xy,
         ae_v_move(&tmp.ptr.p_double[0], 1, &xy->ptr.pp_double[0][2], xy->stride, ae_v_len(0,n-1));
         spline1dbuildcatmullrom(&p->p, &tmp, n, 0, 0.0, &p->z, _state);
     }
-    if( st==2 )
-    {
+    if( st==2 ) {
         ae_v_move(&tmp.ptr.p_double[0], 1, &xy->ptr.pp_double[0][0], xy->stride, ae_v_len(0,n-1));
         spline1dbuildcubic(&p->p, &tmp, n, 0, 0.0, 0, 0.0, &p->x, _state);
         ae_v_move(&tmp.ptr.p_double[0], 1, &xy->ptr.pp_double[0][1], xy->stride, ae_v_len(0,n-1));
@@ -19333,11 +18175,11 @@ NOTES:
      Copyright 28.05.2010 by Bochkanov Sergey
 *************************************************************************/
 void pspline2buildperiodic(/* Real    */ ae_matrix* xy,
-     ae_int_t n,
-     ae_int_t st,
-     ae_int_t pt,
-     pspline2interpolant* p,
-     ae_state *_state)
+        ae_int_t n,
+        ae_int_t st,
+        ae_int_t pt,
+        pspline2interpolant* p,
+        ae_state *_state)
 {
     ae_frame _frame_block;
     ae_matrix _xy;
@@ -19354,7 +18196,7 @@ void pspline2buildperiodic(/* Real    */ ae_matrix* xy,
     ae_assert(st>=1&&st<=2, "PSpline2BuildPeriodic: incorrect spline type!", _state);
     ae_assert(pt>=0&&pt<=2, "PSpline2BuildPeriodic: incorrect parameterization type!", _state);
     ae_assert(n>=3, "PSpline2BuildPeriodic: N<3!", _state);
-    
+
     /*
      * Prepare
      */
@@ -19365,25 +18207,23 @@ void pspline2buildperiodic(/* Real    */ ae_matrix* xy,
     ae_v_move(&xyp.ptr.pp_double[0][0], xyp.stride, &xy->ptr.pp_double[0][0], xy->stride, ae_v_len(0,n-1));
     ae_v_move(&xyp.ptr.pp_double[0][1], xyp.stride, &xy->ptr.pp_double[0][1], xy->stride, ae_v_len(0,n-1));
     ae_v_move(&xyp.ptr.pp_double[n][0], 1, &xy->ptr.pp_double[0][0], 1, ae_v_len(0,1));
-    
+
     /*
      * Build parameterization, check that all parameters are distinct
      */
     pspline_pspline2par(&xyp, n+1, pt, &p->p, _state);
     ae_assert(aredistinct(&p->p, n+1, _state), "PSpline2BuildPeriodic: consequent (or first and last) points are too close!", _state);
-    
+
     /*
      * Build splines
      */
-    if( st==1 )
-    {
+    if( st==1 ) {
         ae_v_move(&tmp.ptr.p_double[0], 1, &xyp.ptr.pp_double[0][0], xyp.stride, ae_v_len(0,n));
         spline1dbuildcatmullrom(&p->p, &tmp, n+1, -1, 0.0, &p->x, _state);
         ae_v_move(&tmp.ptr.p_double[0], 1, &xyp.ptr.pp_double[0][1], xyp.stride, ae_v_len(0,n));
         spline1dbuildcatmullrom(&p->p, &tmp, n+1, -1, 0.0, &p->y, _state);
     }
-    if( st==2 )
-    {
+    if( st==2 ) {
         ae_v_move(&tmp.ptr.p_double[0], 1, &xyp.ptr.pp_double[0][0], xyp.stride, ae_v_len(0,n));
         spline1dbuildcubic(&p->p, &tmp, n+1, -1, 0.0, -1, 0.0, &p->x, _state);
         ae_v_move(&tmp.ptr.p_double[0], 1, &xyp.ptr.pp_double[0][1], xyp.stride, ae_v_len(0,n));
@@ -19405,11 +18245,11 @@ description here.
      Copyright 28.05.2010 by Bochkanov Sergey
 *************************************************************************/
 void pspline3buildperiodic(/* Real    */ ae_matrix* xy,
-     ae_int_t n,
-     ae_int_t st,
-     ae_int_t pt,
-     pspline3interpolant* p,
-     ae_state *_state)
+        ae_int_t n,
+        ae_int_t st,
+        ae_int_t pt,
+        pspline3interpolant* p,
+        ae_state *_state)
 {
     ae_frame _frame_block;
     ae_matrix _xy;
@@ -19426,7 +18266,7 @@ void pspline3buildperiodic(/* Real    */ ae_matrix* xy,
     ae_assert(st>=1&&st<=2, "PSpline3BuildPeriodic: incorrect spline type!", _state);
     ae_assert(pt>=0&&pt<=2, "PSpline3BuildPeriodic: incorrect parameterization type!", _state);
     ae_assert(n>=3, "PSpline3BuildPeriodic: N<3!", _state);
-    
+
     /*
      * Prepare
      */
@@ -19438,18 +18278,17 @@ void pspline3buildperiodic(/* Real    */ ae_matrix* xy,
     ae_v_move(&xyp.ptr.pp_double[0][1], xyp.stride, &xy->ptr.pp_double[0][1], xy->stride, ae_v_len(0,n-1));
     ae_v_move(&xyp.ptr.pp_double[0][2], xyp.stride, &xy->ptr.pp_double[0][2], xy->stride, ae_v_len(0,n-1));
     ae_v_move(&xyp.ptr.pp_double[n][0], 1, &xy->ptr.pp_double[0][0], 1, ae_v_len(0,2));
-    
+
     /*
      * Build parameterization, check that all parameters are distinct
      */
     pspline_pspline3par(&xyp, n+1, pt, &p->p, _state);
     ae_assert(aredistinct(&p->p, n+1, _state), "PSplineBuild2Periodic: consequent (or first and last) points are too close!", _state);
-    
+
     /*
      * Build splines
      */
-    if( st==1 )
-    {
+    if( st==1 ) {
         ae_v_move(&tmp.ptr.p_double[0], 1, &xyp.ptr.pp_double[0][0], xyp.stride, ae_v_len(0,n));
         spline1dbuildcatmullrom(&p->p, &tmp, n+1, -1, 0.0, &p->x, _state);
         ae_v_move(&tmp.ptr.p_double[0], 1, &xyp.ptr.pp_double[0][1], xyp.stride, ae_v_len(0,n));
@@ -19457,8 +18296,7 @@ void pspline3buildperiodic(/* Real    */ ae_matrix* xy,
         ae_v_move(&tmp.ptr.p_double[0], 1, &xyp.ptr.pp_double[0][2], xyp.stride, ae_v_len(0,n));
         spline1dbuildcatmullrom(&p->p, &tmp, n+1, -1, 0.0, &p->z, _state);
     }
-    if( st==2 )
-    {
+    if( st==2 ) {
         ae_v_move(&tmp.ptr.p_double[0], 1, &xyp.ptr.pp_double[0][0], xyp.stride, ae_v_len(0,n));
         spline1dbuildcubic(&p->p, &tmp, n+1, -1, 0.0, -1, 0.0, &p->x, _state);
         ae_v_move(&tmp.ptr.p_double[0], 1, &xyp.ptr.pp_double[0][1], xyp.stride, ae_v_len(0,n));
@@ -19496,9 +18334,9 @@ NOTES:
      Copyright 28.05.2010 by Bochkanov Sergey
 *************************************************************************/
 void pspline2parametervalues(pspline2interpolant* p,
-     ae_int_t* n,
-     /* Real    */ ae_vector* t,
-     ae_state *_state)
+                             ae_int_t* n,
+                             /* Real    */ ae_vector* t,
+                             ae_state *_state)
 {
 
     *n = 0;
@@ -19509,8 +18347,7 @@ void pspline2parametervalues(pspline2interpolant* p,
     ae_vector_set_length(t, *n, _state);
     ae_v_move(&t->ptr.p_double[0], 1, &p->p.ptr.p_double[0], 1, ae_v_len(0,*n-1));
     t->ptr.p_double[0] = 0;
-    if( !p->periodic )
-    {
+    if( !p->periodic ) {
         t->ptr.p_double[*n-1] = 1;
     }
 }
@@ -19525,9 +18362,9 @@ Same as PSpline2ParameterValues(), but for 3D.
      Copyright 28.05.2010 by Bochkanov Sergey
 *************************************************************************/
 void pspline3parametervalues(pspline3interpolant* p,
-     ae_int_t* n,
-     /* Real    */ ae_vector* t,
-     ae_state *_state)
+                             ae_int_t* n,
+                             /* Real    */ ae_vector* t,
+                             ae_state *_state)
 {
 
     *n = 0;
@@ -19538,8 +18375,7 @@ void pspline3parametervalues(pspline3interpolant* p,
     ae_vector_set_length(t, *n, _state);
     ae_v_move(&t->ptr.p_double[0], 1, &p->p.ptr.p_double[0], 1, ae_v_len(0,*n-1));
     t->ptr.p_double[0] = 0;
-    if( !p->periodic )
-    {
+    if( !p->periodic ) {
         t->ptr.p_double[*n-1] = 1;
     }
 }
@@ -19567,17 +18403,16 @@ OUTPUT PARAMETERS:
      Copyright 28.05.2010 by Bochkanov Sergey
 *************************************************************************/
 void pspline2calc(pspline2interpolant* p,
-     double t,
-     double* x,
-     double* y,
-     ae_state *_state)
+                  double t,
+                  double* x,
+                  double* y,
+                  ae_state *_state)
 {
 
     *x = 0;
     *y = 0;
 
-    if( p->periodic )
-    {
+    if( p->periodic ) {
         t = t-ae_ifloor(t, _state);
     }
     *x = spline1dcalc(&p->x, t, _state);
@@ -19608,19 +18443,18 @@ OUTPUT PARAMETERS:
      Copyright 28.05.2010 by Bochkanov Sergey
 *************************************************************************/
 void pspline3calc(pspline3interpolant* p,
-     double t,
-     double* x,
-     double* y,
-     double* z,
-     ae_state *_state)
+                  double t,
+                  double* x,
+                  double* y,
+                  double* z,
+                  ae_state *_state)
 {
 
     *x = 0;
     *y = 0;
     *z = 0;
 
-    if( p->periodic )
-    {
+    if( p->periodic ) {
         t = t-ae_ifloor(t, _state);
     }
     *x = spline1dcalc(&p->x, t, _state);
@@ -19644,7 +18478,7 @@ INPUT PARAMETERS:
 OUTPUT PARAMETERS:
     X    -   X-component of tangent vector (normalized)
     Y    -   Y-component of tangent vector (normalized)
-    
+
 NOTE:
     X^2+Y^2 is either 1 (for non-zero tangent vector) or 0.
 
@@ -19653,10 +18487,10 @@ NOTE:
      Copyright 28.05.2010 by Bochkanov Sergey
 *************************************************************************/
 void pspline2tangent(pspline2interpolant* p,
-     double t,
-     double* x,
-     double* y,
-     ae_state *_state)
+                     double t,
+                     double* x,
+                     double* y,
+                     ae_state *_state)
 {
     double v;
     double v0;
@@ -19665,14 +18499,12 @@ void pspline2tangent(pspline2interpolant* p,
     *x = 0;
     *y = 0;
 
-    if( p->periodic )
-    {
+    if( p->periodic ) {
         t = t-ae_ifloor(t, _state);
     }
     pspline2diff(p, t, &v0, x, &v1, y, _state);
-    if( ae_fp_neq(*x,0)||ae_fp_neq(*y,0) )
-    {
-        
+    if( ae_fp_neq(*x,0)||ae_fp_neq(*y,0) ) {
+
         /*
          * this code is a bit more complex than X^2+Y^2 to avoid
          * overflow for large values of X and Y.
@@ -19709,11 +18541,11 @@ NOTE:
      Copyright 28.05.2010 by Bochkanov Sergey
 *************************************************************************/
 void pspline3tangent(pspline3interpolant* p,
-     double t,
-     double* x,
-     double* y,
-     double* z,
-     ae_state *_state)
+                     double t,
+                     double* x,
+                     double* y,
+                     double* z,
+                     ae_state *_state)
 {
     double v;
     double v0;
@@ -19724,13 +18556,11 @@ void pspline3tangent(pspline3interpolant* p,
     *y = 0;
     *z = 0;
 
-    if( p->periodic )
-    {
+    if( p->periodic ) {
         t = t-ae_ifloor(t, _state);
     }
     pspline3diff(p, t, &v0, x, &v1, y, &v2, z, _state);
-    if( (ae_fp_neq(*x,0)||ae_fp_neq(*y,0))||ae_fp_neq(*z,0) )
-    {
+    if( (ae_fp_neq(*x,0)||ae_fp_neq(*y,0))||ae_fp_neq(*z,0) ) {
         v = safepythag3(*x, *y, *z, _state);
         *x = *x/v;
         *y = *y/v;
@@ -19762,12 +18592,12 @@ OUTPUT PARAMETERS:
      Copyright 28.05.2010 by Bochkanov Sergey
 *************************************************************************/
 void pspline2diff(pspline2interpolant* p,
-     double t,
-     double* x,
-     double* dx,
-     double* y,
-     double* dy,
-     ae_state *_state)
+                  double t,
+                  double* x,
+                  double* dx,
+                  double* y,
+                  double* dy,
+                  ae_state *_state)
 {
     double d2s;
 
@@ -19776,8 +18606,7 @@ void pspline2diff(pspline2interpolant* p,
     *y = 0;
     *dy = 0;
 
-    if( p->periodic )
-    {
+    if( p->periodic ) {
         t = t-ae_ifloor(t, _state);
     }
     spline1ddiff(&p->x, t, x, dx, &d2s, _state);
@@ -19810,14 +18639,14 @@ OUTPUT PARAMETERS:
      Copyright 28.05.2010 by Bochkanov Sergey
 *************************************************************************/
 void pspline3diff(pspline3interpolant* p,
-     double t,
-     double* x,
-     double* dx,
-     double* y,
-     double* dy,
-     double* z,
-     double* dz,
-     ae_state *_state)
+                  double t,
+                  double* x,
+                  double* dx,
+                  double* y,
+                  double* dy,
+                  double* z,
+                  double* dz,
+                  ae_state *_state)
 {
     double d2s;
 
@@ -19828,8 +18657,7 @@ void pspline3diff(pspline3interpolant* p,
     *z = 0;
     *dz = 0;
 
-    if( p->periodic )
-    {
+    if( p->periodic ) {
         t = t-ae_ifloor(t, _state);
     }
     spline1ddiff(&p->x, t, x, dx, &d2s, _state);
@@ -19863,14 +18691,14 @@ OUTPUT PARAMETERS:
      Copyright 28.05.2010 by Bochkanov Sergey
 *************************************************************************/
 void pspline2diff2(pspline2interpolant* p,
-     double t,
-     double* x,
-     double* dx,
-     double* d2x,
-     double* y,
-     double* dy,
-     double* d2y,
-     ae_state *_state)
+                   double t,
+                   double* x,
+                   double* dx,
+                   double* d2x,
+                   double* y,
+                   double* dy,
+                   double* d2y,
+                   ae_state *_state)
 {
 
     *x = 0;
@@ -19880,8 +18708,7 @@ void pspline2diff2(pspline2interpolant* p,
     *dy = 0;
     *d2y = 0;
 
-    if( p->periodic )
-    {
+    if( p->periodic ) {
         t = t-ae_ifloor(t, _state);
     }
     spline1ddiff(&p->x, t, x, dx, d2x, _state);
@@ -19917,17 +18744,17 @@ OUTPUT PARAMETERS:
      Copyright 28.05.2010 by Bochkanov Sergey
 *************************************************************************/
 void pspline3diff2(pspline3interpolant* p,
-     double t,
-     double* x,
-     double* dx,
-     double* d2x,
-     double* y,
-     double* dy,
-     double* d2y,
-     double* z,
-     double* dz,
-     double* d2z,
-     ae_state *_state)
+                   double t,
+                   double* x,
+                   double* dx,
+                   double* d2x,
+                   double* y,
+                   double* dy,
+                   double* d2y,
+                   double* z,
+                   double* dz,
+                   double* d2z,
+                   ae_state *_state)
 {
 
     *x = 0;
@@ -19940,8 +18767,7 @@ void pspline3diff2(pspline3interpolant* p,
     *dz = 0;
     *d2z = 0;
 
-    if( p->periodic )
-    {
+    if( p->periodic ) {
         t = t-ae_ifloor(t, _state);
     }
     spline1ddiff(&p->x, t, x, dx, d2x, _state);
@@ -19968,9 +18794,9 @@ RESULT:
      Copyright 30.05.2010 by Bochkanov Sergey
 *************************************************************************/
 double pspline2arclength(pspline2interpolant* p,
-     double a,
-     double b,
-     ae_state *_state)
+                         double a,
+                         double b,
+                         ae_state *_state)
 {
     ae_frame _frame_block;
     autogkstate state;
@@ -19988,8 +18814,7 @@ double pspline2arclength(pspline2interpolant* p,
     _autogkreport_init(&rep, _state, ae_true);
 
     autogksmooth(a, b, &state, _state);
-    while(autogkiteration(&state, _state))
-    {
+    while(autogkiteration(&state, _state)) {
         spline1ddiff(&p->x, state.x, &sx, &dsx, &d2sx, _state);
         spline1ddiff(&p->y, state.x, &sy, &dsy, &d2sy, _state);
         state.f = safepythag2(dsx, dsy, _state);
@@ -20019,9 +18844,9 @@ RESULT:
      Copyright 30.05.2010 by Bochkanov Sergey
 *************************************************************************/
 double pspline3arclength(pspline3interpolant* p,
-     double a,
-     double b,
-     ae_state *_state)
+                         double a,
+                         double b,
+                         ae_state *_state)
 {
     ae_frame _frame_block;
     autogkstate state;
@@ -20042,8 +18867,7 @@ double pspline3arclength(pspline3interpolant* p,
     _autogkreport_init(&rep, _state, ae_true);
 
     autogksmooth(a, b, &state, _state);
-    while(autogkiteration(&state, _state))
-    {
+    while(autogkiteration(&state, _state)) {
         spline1ddiff(&p->x, state.x, &sx, &dsx, &d2sx, _state);
         spline1ddiff(&p->y, state.x, &sy, &dsy, &d2sy, _state);
         spline1ddiff(&p->z, state.x, &sz, &dsz, &d2sz, _state);
@@ -20060,10 +18884,10 @@ double pspline3arclength(pspline3interpolant* p,
 Builds non-periodic parameterization for 2-dimensional spline
 *************************************************************************/
 static void pspline_pspline2par(/* Real    */ ae_matrix* xy,
-     ae_int_t n,
-     ae_int_t pt,
-     /* Real    */ ae_vector* p,
-     ae_state *_state)
+        ae_int_t n,
+        ae_int_t pt,
+        /* Real    */ ae_vector* p,
+        ae_state *_state)
 {
     double v;
     ae_int_t i;
@@ -20071,33 +18895,27 @@ static void pspline_pspline2par(/* Real    */ ae_matrix* xy,
     ae_vector_clear(p);
 
     ae_assert(pt>=0&&pt<=2, "PSpline2Par: internal error!", _state);
-    
+
     /*
      * Build parameterization:
      * * fill by non-normalized values
      * * normalize them so we have P[0]=0, P[N-1]=1.
      */
     ae_vector_set_length(p, n, _state);
-    if( pt==0 )
-    {
-        for(i=0; i<=n-1; i++)
-        {
+    if( pt==0 ) {
+        for(i=0; i<=n-1; i++) {
             p->ptr.p_double[i] = i;
         }
     }
-    if( pt==1 )
-    {
+    if( pt==1 ) {
         p->ptr.p_double[0] = 0;
-        for(i=1; i<=n-1; i++)
-        {
+        for(i=1; i<=n-1; i++) {
             p->ptr.p_double[i] = p->ptr.p_double[i-1]+safepythag2(xy->ptr.pp_double[i][0]-xy->ptr.pp_double[i-1][0], xy->ptr.pp_double[i][1]-xy->ptr.pp_double[i-1][1], _state);
         }
     }
-    if( pt==2 )
-    {
+    if( pt==2 ) {
         p->ptr.p_double[0] = 0;
-        for(i=1; i<=n-1; i++)
-        {
+        for(i=1; i<=n-1; i++) {
             p->ptr.p_double[i] = p->ptr.p_double[i-1]+ae_sqrt(safepythag2(xy->ptr.pp_double[i][0]-xy->ptr.pp_double[i-1][0], xy->ptr.pp_double[i][1]-xy->ptr.pp_double[i-1][1], _state), _state);
         }
     }
@@ -20110,10 +18928,10 @@ static void pspline_pspline2par(/* Real    */ ae_matrix* xy,
 Builds non-periodic parameterization for 3-dimensional spline
 *************************************************************************/
 static void pspline_pspline3par(/* Real    */ ae_matrix* xy,
-     ae_int_t n,
-     ae_int_t pt,
-     /* Real    */ ae_vector* p,
-     ae_state *_state)
+        ae_int_t n,
+        ae_int_t pt,
+        /* Real    */ ae_vector* p,
+        ae_state *_state)
 {
     double v;
     ae_int_t i;
@@ -20121,33 +18939,27 @@ static void pspline_pspline3par(/* Real    */ ae_matrix* xy,
     ae_vector_clear(p);
 
     ae_assert(pt>=0&&pt<=2, "PSpline3Par: internal error!", _state);
-    
+
     /*
      * Build parameterization:
      * * fill by non-normalized values
      * * normalize them so we have P[0]=0, P[N-1]=1.
      */
     ae_vector_set_length(p, n, _state);
-    if( pt==0 )
-    {
-        for(i=0; i<=n-1; i++)
-        {
+    if( pt==0 ) {
+        for(i=0; i<=n-1; i++) {
             p->ptr.p_double[i] = i;
         }
     }
-    if( pt==1 )
-    {
+    if( pt==1 ) {
         p->ptr.p_double[0] = 0;
-        for(i=1; i<=n-1; i++)
-        {
+        for(i=1; i<=n-1; i++) {
             p->ptr.p_double[i] = p->ptr.p_double[i-1]+safepythag3(xy->ptr.pp_double[i][0]-xy->ptr.pp_double[i-1][0], xy->ptr.pp_double[i][1]-xy->ptr.pp_double[i-1][1], xy->ptr.pp_double[i][2]-xy->ptr.pp_double[i-1][2], _state);
         }
     }
-    if( pt==2 )
-    {
+    if( pt==2 ) {
         p->ptr.p_double[0] = 0;
-        for(i=1; i<=n-1; i++)
-        {
+        for(i=1; i<=n-1; i++) {
             p->ptr.p_double[i] = p->ptr.p_double[i-1]+ae_sqrt(safepythag3(xy->ptr.pp_double[i][0]-xy->ptr.pp_double[i-1][0], xy->ptr.pp_double[i][1]-xy->ptr.pp_double[i-1][1], xy->ptr.pp_double[i][2]-xy->ptr.pp_double[i-1][2], _state), _state);
         }
     }
@@ -20158,12 +18970,15 @@ static void pspline_pspline3par(/* Real    */ ae_matrix* xy,
 
 ae_bool _pspline2interpolant_init(pspline2interpolant* p, ae_state *_state, ae_bool make_automatic)
 {
-    if( !ae_vector_init(&p->p, 0, DT_REAL, _state, make_automatic) )
+    if( !ae_vector_init(&p->p, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !_spline1dinterpolant_init(&p->x, _state, make_automatic) )
+    }
+    if( !_spline1dinterpolant_init(&p->x, _state, make_automatic) ) {
         return ae_false;
-    if( !_spline1dinterpolant_init(&p->y, _state, make_automatic) )
+    }
+    if( !_spline1dinterpolant_init(&p->y, _state, make_automatic) ) {
         return ae_false;
+    }
     return ae_true;
 }
 
@@ -20172,12 +18987,15 @@ ae_bool _pspline2interpolant_init_copy(pspline2interpolant* dst, pspline2interpo
 {
     dst->n = src->n;
     dst->periodic = src->periodic;
-    if( !ae_vector_init_copy(&dst->p, &src->p, _state, make_automatic) )
+    if( !ae_vector_init_copy(&dst->p, &src->p, _state, make_automatic) ) {
         return ae_false;
-    if( !_spline1dinterpolant_init_copy(&dst->x, &src->x, _state, make_automatic) )
+    }
+    if( !_spline1dinterpolant_init_copy(&dst->x, &src->x, _state, make_automatic) ) {
         return ae_false;
-    if( !_spline1dinterpolant_init_copy(&dst->y, &src->y, _state, make_automatic) )
+    }
+    if( !_spline1dinterpolant_init_copy(&dst->y, &src->y, _state, make_automatic) ) {
         return ae_false;
+    }
     return ae_true;
 }
 
@@ -20192,14 +19010,18 @@ void _pspline2interpolant_clear(pspline2interpolant* p)
 
 ae_bool _pspline3interpolant_init(pspline3interpolant* p, ae_state *_state, ae_bool make_automatic)
 {
-    if( !ae_vector_init(&p->p, 0, DT_REAL, _state, make_automatic) )
+    if( !ae_vector_init(&p->p, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !_spline1dinterpolant_init(&p->x, _state, make_automatic) )
+    }
+    if( !_spline1dinterpolant_init(&p->x, _state, make_automatic) ) {
         return ae_false;
-    if( !_spline1dinterpolant_init(&p->y, _state, make_automatic) )
+    }
+    if( !_spline1dinterpolant_init(&p->y, _state, make_automatic) ) {
         return ae_false;
-    if( !_spline1dinterpolant_init(&p->z, _state, make_automatic) )
+    }
+    if( !_spline1dinterpolant_init(&p->z, _state, make_automatic) ) {
         return ae_false;
+    }
     return ae_true;
 }
 
@@ -20208,14 +19030,18 @@ ae_bool _pspline3interpolant_init_copy(pspline3interpolant* dst, pspline3interpo
 {
     dst->n = src->n;
     dst->periodic = src->periodic;
-    if( !ae_vector_init_copy(&dst->p, &src->p, _state, make_automatic) )
+    if( !ae_vector_init_copy(&dst->p, &src->p, _state, make_automatic) ) {
         return ae_false;
-    if( !_spline1dinterpolant_init_copy(&dst->x, &src->x, _state, make_automatic) )
+    }
+    if( !_spline1dinterpolant_init_copy(&dst->x, &src->x, _state, make_automatic) ) {
         return ae_false;
-    if( !_spline1dinterpolant_init_copy(&dst->y, &src->y, _state, make_automatic) )
+    }
+    if( !_spline1dinterpolant_init_copy(&dst->y, &src->y, _state, make_automatic) ) {
         return ae_false;
-    if( !_spline1dinterpolant_init_copy(&dst->z, &src->z, _state, make_automatic) )
+    }
+    if( !_spline1dinterpolant_init_copy(&dst->z, &src->z, _state, make_automatic) ) {
         return ae_false;
+    }
     return ae_true;
 }
 
@@ -20247,12 +19073,12 @@ Output parameters:
      Copyright 05.07.2007 by Bochkanov Sergey
 *************************************************************************/
 void spline2dbuildbilinear(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_matrix* f,
-     ae_int_t m,
-     ae_int_t n,
-     spline2dinterpolant* c,
-     ae_state *_state)
+        /* Real    */ ae_vector* y,
+        /* Real    */ ae_matrix* f,
+        ae_int_t m,
+        ae_int_t n,
+        spline2dinterpolant* c,
+        ae_state *_state)
 {
     ae_frame _frame_block;
     ae_vector _x;
@@ -20281,24 +19107,19 @@ void spline2dbuildbilinear(/* Real    */ ae_vector* x,
     ae_matrix_init(&dxy, 0, 0, DT_REAL, _state, ae_true);
 
     ae_assert(n>=2&&m>=2, "Spline2DBuildBilinear: N<2 or M<2!", _state);
-    
+
     /*
      * Sort points
      */
-    for(j=0; j<=n-1; j++)
-    {
+    for(j=0; j<=n-1; j++) {
         k = j;
-        for(i=j+1; i<=n-1; i++)
-        {
-            if( ae_fp_less(x->ptr.p_double[i],x->ptr.p_double[k]) )
-            {
+        for(i=j+1; i<=n-1; i++) {
+            if( ae_fp_less(x->ptr.p_double[i],x->ptr.p_double[k]) ) {
                 k = i;
             }
         }
-        if( k!=j )
-        {
-            for(i=0; i<=m-1; i++)
-            {
+        if( k!=j ) {
+            for(i=0; i<=m-1; i++) {
                 t = f->ptr.pp_double[i][j];
                 f->ptr.pp_double[i][j] = f->ptr.pp_double[i][k];
                 f->ptr.pp_double[i][k] = t;
@@ -20308,20 +19129,15 @@ void spline2dbuildbilinear(/* Real    */ ae_vector* x,
             x->ptr.p_double[k] = t;
         }
     }
-    for(i=0; i<=m-1; i++)
-    {
+    for(i=0; i<=m-1; i++) {
         k = i;
-        for(j=i+1; j<=m-1; j++)
-        {
-            if( ae_fp_less(y->ptr.p_double[j],y->ptr.p_double[k]) )
-            {
+        for(j=i+1; j<=m-1; j++) {
+            if( ae_fp_less(y->ptr.p_double[j],y->ptr.p_double[k]) ) {
                 k = j;
             }
         }
-        if( k!=i )
-        {
-            for(j=0; j<=n-1; j++)
-            {
+        if( k!=i ) {
+            for(j=0; j<=n-1; j++) {
                 t = f->ptr.pp_double[i][j];
                 f->ptr.pp_double[i][j] = f->ptr.pp_double[k][j];
                 f->ptr.pp_double[k][j] = t;
@@ -20331,7 +19147,7 @@ void spline2dbuildbilinear(/* Real    */ ae_vector* x,
             y->ptr.p_double[k] = t;
         }
     }
-    
+
     /*
      * Fill C:
      *  C[0]            -   length(C)
@@ -20357,18 +19173,14 @@ void spline2dbuildbilinear(/* Real    */ ae_vector* x,
     c->c.ptr.p_double[1] = -1;
     c->c.ptr.p_double[2] = n;
     c->c.ptr.p_double[3] = m;
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         c->c.ptr.p_double[4+i] = x->ptr.p_double[i];
     }
-    for(i=0; i<=m-1; i++)
-    {
+    for(i=0; i<=m-1; i++) {
         c->c.ptr.p_double[4+n+i] = y->ptr.p_double[i];
     }
-    for(i=0; i<=m-1; i++)
-    {
-        for(j=0; j<=n-1; j++)
-        {
+    for(i=0; i<=m-1; i++) {
+        for(j=0; j<=n-1; j++) {
             shift = i*n+j;
             c->c.ptr.p_double[4+n+m+shift] = f->ptr.pp_double[i][j];
         }
@@ -20393,12 +19205,12 @@ Output parameters:
      Copyright 05.07.2007 by Bochkanov Sergey
 *************************************************************************/
 void spline2dbuildbicubic(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_matrix* f,
-     ae_int_t m,
-     ae_int_t n,
-     spline2dinterpolant* c,
-     ae_state *_state)
+                                        /* Real    */ ae_vector* y,
+                                        /* Real    */ ae_matrix* f,
+                                        ae_int_t m,
+                                        ae_int_t n,
+                                        spline2dinterpolant* c,
+                                        ae_state *_state)
 {
     ae_frame _frame_block;
     ae_vector _x;
@@ -20427,24 +19239,19 @@ void spline2dbuildbicubic(/* Real    */ ae_vector* x,
     ae_matrix_init(&dxy, 0, 0, DT_REAL, _state, ae_true);
 
     ae_assert(n>=2&&m>=2, "BuildBicubicSpline: N<2 or M<2!", _state);
-    
+
     /*
      * Sort points
      */
-    for(j=0; j<=n-1; j++)
-    {
+    for(j=0; j<=n-1; j++) {
         k = j;
-        for(i=j+1; i<=n-1; i++)
-        {
-            if( ae_fp_less(x->ptr.p_double[i],x->ptr.p_double[k]) )
-            {
+        for(i=j+1; i<=n-1; i++) {
+            if( ae_fp_less(x->ptr.p_double[i],x->ptr.p_double[k]) ) {
                 k = i;
             }
         }
-        if( k!=j )
-        {
-            for(i=0; i<=m-1; i++)
-            {
+        if( k!=j ) {
+            for(i=0; i<=m-1; i++) {
                 t = f->ptr.pp_double[i][j];
                 f->ptr.pp_double[i][j] = f->ptr.pp_double[i][k];
                 f->ptr.pp_double[i][k] = t;
@@ -20454,20 +19261,15 @@ void spline2dbuildbicubic(/* Real    */ ae_vector* x,
             x->ptr.p_double[k] = t;
         }
     }
-    for(i=0; i<=m-1; i++)
-    {
+    for(i=0; i<=m-1; i++) {
         k = i;
-        for(j=i+1; j<=m-1; j++)
-        {
-            if( ae_fp_less(y->ptr.p_double[j],y->ptr.p_double[k]) )
-            {
+        for(j=i+1; j<=m-1; j++) {
+            if( ae_fp_less(y->ptr.p_double[j],y->ptr.p_double[k]) ) {
                 k = j;
             }
         }
-        if( k!=i )
-        {
-            for(j=0; j<=n-1; j++)
-            {
+        if( k!=i ) {
+            for(j=0; j<=n-1; j++) {
                 t = f->ptr.pp_double[i][j];
                 f->ptr.pp_double[i][j] = f->ptr.pp_double[k][j];
                 f->ptr.pp_double[k][j] = t;
@@ -20477,7 +19279,7 @@ void spline2dbuildbicubic(/* Real    */ ae_vector* x,
             y->ptr.p_double[k] = t;
         }
     }
-    
+
     /*
      * Fill C:
      *  C[0]            -   length(C)
@@ -20509,19 +19311,15 @@ void spline2dbuildbicubic(/* Real    */ ae_vector* x,
     c->c.ptr.p_double[1] = -3;
     c->c.ptr.p_double[2] = n;
     c->c.ptr.p_double[3] = m;
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         c->c.ptr.p_double[4+i] = x->ptr.p_double[i];
     }
-    for(i=0; i<=m-1; i++)
-    {
+    for(i=0; i<=m-1; i++) {
         c->c.ptr.p_double[4+n+i] = y->ptr.p_double[i];
     }
     spline2d_bicubiccalcderivatives(f, x, y, m, n, &dx, &dy, &dxy, _state);
-    for(i=0; i<=m-1; i++)
-    {
-        for(j=0; j<=n-1; j++)
-        {
+    for(i=0; i<=m-1; i++) {
+        for(j=0; j<=n-1; j++) {
             shift = i*n+j;
             c->c.ptr.p_double[4+n+m+shift] = f->ptr.pp_double[i][j];
             c->c.ptr.p_double[4+n+m+n*m+shift] = dx.ptr.pp_double[i][j];
@@ -20549,9 +19347,9 @@ Result:
      Copyright 05.07.2007 by Bochkanov Sergey
 *************************************************************************/
 double spline2dcalc(spline2dinterpolant* c,
-     double x,
-     double y,
-     ae_state *_state)
+                    double x,
+                    double y,
+                    ae_state *_state)
 {
     double v;
     double vx;
@@ -20584,13 +19382,13 @@ Output parameters:
      Copyright 05.07.2007 by Bochkanov Sergey
 *************************************************************************/
 void spline2ddiff(spline2dinterpolant* c,
-     double x,
-     double y,
-     double* f,
-     double* fx,
-     double* fy,
-     double* fxy,
-     ae_state *_state)
+                  double x,
+                  double y,
+                  double* f,
+                  double* fx,
+                  double* fy,
+                  double* fxy,
+                  ae_state *_state)
 {
     ae_int_t n;
     ae_int_t m;
@@ -20634,49 +19432,41 @@ void spline2ddiff(spline2dinterpolant* c,
     ae_assert(ae_round(c->c.ptr.p_double[1], _state)==-1||ae_round(c->c.ptr.p_double[1], _state)==-3, "Spline2DDiff: incorrect C!", _state);
     n = ae_round(c->c.ptr.p_double[2], _state);
     m = ae_round(c->c.ptr.p_double[3], _state);
-    
+
     /*
      * Binary search in the [ x[0], ..., x[n-2] ] (x[n-1] is not included)
      */
     l = 4;
     r = 4+n-2+1;
-    while(l!=r-1)
-    {
+    while(l!=r-1) {
         h = (l+r)/2;
-        if( ae_fp_greater_eq(c->c.ptr.p_double[h],x) )
-        {
+        if( ae_fp_greater_eq(c->c.ptr.p_double[h],x) ) {
             r = h;
-        }
-        else
-        {
+        } else {
             l = h;
         }
     }
     t = (x-c->c.ptr.p_double[l])/(c->c.ptr.p_double[l+1]-c->c.ptr.p_double[l]);
     dt = 1.0/(c->c.ptr.p_double[l+1]-c->c.ptr.p_double[l]);
     ix = l-4;
-    
+
     /*
      * Binary search in the [ y[0], ..., y[m-2] ] (y[m-1] is not included)
      */
     l = 4+n;
     r = 4+n+(m-2)+1;
-    while(l!=r-1)
-    {
+    while(l!=r-1) {
         h = (l+r)/2;
-        if( ae_fp_greater_eq(c->c.ptr.p_double[h],y) )
-        {
+        if( ae_fp_greater_eq(c->c.ptr.p_double[h],y) ) {
             r = h;
-        }
-        else
-        {
+        } else {
             l = h;
         }
     }
     u = (y-c->c.ptr.p_double[l])/(c->c.ptr.p_double[l+1]-c->c.ptr.p_double[l]);
     du = 1.0/(c->c.ptr.p_double[l+1]-c->c.ptr.p_double[l]);
     iy = l-(4+n);
-    
+
     /*
      * Prepare F, dF/dX, dF/dY, d2F/dXdY
      */
@@ -20684,12 +19474,11 @@ void spline2ddiff(spline2dinterpolant* c,
     *fx = 0;
     *fy = 0;
     *fxy = 0;
-    
+
     /*
      * Bilinear interpolation
      */
-    if( ae_round(c->c.ptr.p_double[1], _state)==-1 )
-    {
+    if( ae_round(c->c.ptr.p_double[1], _state)==-1 ) {
         shift1 = 4+n+m;
         y1 = c->c.ptr.p_double[shift1+n*iy+ix];
         y2 = c->c.ptr.p_double[shift1+n*iy+(ix+1)];
@@ -20701,13 +19490,12 @@ void spline2ddiff(spline2dinterpolant* c,
         *fxy = (y1-y2+y3-y4)*du*dt;
         return;
     }
-    
+
     /*
      * Bicubic interpolation
      */
-    if( ae_round(c->c.ptr.p_double[1], _state)==-3 )
-    {
-        
+    if( ae_round(c->c.ptr.p_double[1], _state)==-3 ) {
+
         /*
          * Prepare info
          */
@@ -20727,7 +19515,7 @@ void spline2ddiff(spline2dinterpolant* c,
         s2 = n*iy+(ix+1);
         s3 = n*(iy+1)+(ix+1);
         s4 = n*(iy+1)+ix;
-        
+
         /*
          * Calculate
          */
@@ -20834,10 +19622,10 @@ Result:
      Copyright 29.06.2007 by Bochkanov Sergey
 *************************************************************************/
 void spline2dunpack(spline2dinterpolant* c,
-     ae_int_t* m,
-     ae_int_t* n,
-     /* Real    */ ae_matrix* tbl,
-     ae_state *_state)
+                    ae_int_t* m,
+                    ae_int_t* n,
+                    /* Real    */ ae_matrix* tbl,
+                    ae_state *_state)
 {
     ae_int_t i;
     ae_int_t j;
@@ -20869,14 +19657,12 @@ void spline2dunpack(spline2dinterpolant* c,
     *n = ae_round(c->c.ptr.p_double[2], _state);
     *m = ae_round(c->c.ptr.p_double[3], _state);
     ae_matrix_set_length(tbl, (*n-1)*(*m-1)-1+1, 19+1, _state);
-    
+
     /*
      * Fill
      */
-    for(i=0; i<=*m-2; i++)
-    {
-        for(j=0; j<=*n-2; j++)
-        {
+    for(i=0; i<=*m-2; i++) {
+        for(j=0; j<=*n-2; j++) {
             p = i*(*n-1)+j;
             tbl->ptr.pp_double[p][0] = c->c.ptr.p_double[4+j];
             tbl->ptr.pp_double[p][1] = c->c.ptr.p_double[4+j+1];
@@ -20884,14 +19670,12 @@ void spline2dunpack(spline2dinterpolant* c,
             tbl->ptr.pp_double[p][3] = c->c.ptr.p_double[4+(*n)+i+1];
             dt = 1/(tbl->ptr.pp_double[p][1]-tbl->ptr.pp_double[p][0]);
             du = 1/(tbl->ptr.pp_double[p][3]-tbl->ptr.pp_double[p][2]);
-            
+
             /*
              * Bilinear interpolation
              */
-            if( ae_round(c->c.ptr.p_double[1], _state)==-1 )
-            {
-                for(k=4; k<=19; k++)
-                {
+            if( ae_round(c->c.ptr.p_double[1], _state)==-1 ) {
+                for(k=4; k<=19; k++) {
                     tbl->ptr.pp_double[p][k] = 0;
                 }
                 shift = 4+(*n)+(*m);
@@ -20904,12 +19688,11 @@ void spline2dunpack(spline2dinterpolant* c,
                 tbl->ptr.pp_double[p][4+0*4+1] = y4-y1;
                 tbl->ptr.pp_double[p][4+1*4+1] = y3-y2-y4+y1;
             }
-            
+
             /*
              * Bicubic interpolation
              */
-            if( ae_round(c->c.ptr.p_double[1], _state)==-3 )
-            {
+            if( ae_round(c->c.ptr.p_double[1], _state)==-3 ) {
                 sf = 4+(*n)+(*m);
                 sfx = 4+(*n)+(*m)+*n*(*m);
                 sfy = 4+(*n)+(*m)+2*(*n)*(*m);
@@ -20935,14 +19718,12 @@ void spline2dunpack(spline2dinterpolant* c,
                 tbl->ptr.pp_double[p][4+3*4+2] = -6*c->c.ptr.p_double[sf+s1]+6*c->c.ptr.p_double[sf+s2]-6*c->c.ptr.p_double[sf+s3]+6*c->c.ptr.p_double[sf+s4]-3*c->c.ptr.p_double[sfx+s1]/dt-3*c->c.ptr.p_double[sfx+s2]/dt+3*c->c.ptr.p_double[sfx+s3]/dt+3*c->c.ptr.p_double[sfx+s4]/dt-4*c->c.ptr.p_double[sfy+s1]/du+4*c->c.ptr.p_double[sfy+s2]/du+2*c->c.ptr.p_double[sfy+s3]/du-2*c->c.ptr.p_double[sfy+s4]/du-2*c->c.ptr.p_double[sfxy+s1]/(dt*du)-2*c->c.ptr.p_double[sfxy+s2]/(dt*du)-1*c->c.ptr.p_double[sfxy+s3]/(dt*du)-1*c->c.ptr.p_double[sfxy+s4]/(dt*du);
                 tbl->ptr.pp_double[p][4+3*4+3] = 4*c->c.ptr.p_double[sf+s1]-4*c->c.ptr.p_double[sf+s2]+4*c->c.ptr.p_double[sf+s3]-4*c->c.ptr.p_double[sf+s4]+2*c->c.ptr.p_double[sfx+s1]/dt+2*c->c.ptr.p_double[sfx+s2]/dt-2*c->c.ptr.p_double[sfx+s3]/dt-2*c->c.ptr.p_double[sfx+s4]/dt+2*c->c.ptr.p_double[sfy+s1]/du-2*c->c.ptr.p_double[sfy+s2]/du-2*c->c.ptr.p_double[sfy+s3]/du+2*c->c.ptr.p_double[sfy+s4]/du+1*c->c.ptr.p_double[sfxy+s1]/(dt*du)+1*c->c.ptr.p_double[sfxy+s2]/(dt*du)+1*c->c.ptr.p_double[sfxy+s3]/(dt*du)+1*c->c.ptr.p_double[sfxy+s4]/(dt*du);
             }
-            
+
             /*
              * Rescale Cij
              */
-            for(ci=0; ci<=3; ci++)
-            {
-                for(cj=0; cj<=3; cj++)
-                {
+            for(ci=0; ci<=3; ci++) {
+                for(cj=0; cj<=3; cj++) {
                     tbl->ptr.pp_double[p][4+ci*4+cj] = tbl->ptr.pp_double[p][4+ci*4+cj]*ae_pow(dt, ci, _state)*ae_pow(du, cj, _state);
                 }
             }
@@ -20965,11 +19746,11 @@ Result:
      Copyright 30.06.2007 by Bochkanov Sergey
 *************************************************************************/
 void spline2dlintransxy(spline2dinterpolant* c,
-     double ax,
-     double bx,
-     double ay,
-     double by,
-     ae_state *_state)
+                        double ax,
+                        double bx,
+                        double ay,
+                        double by,
+                        ae_state *_state)
 {
     ae_frame _frame_block;
     ae_int_t i;
@@ -20994,86 +19775,68 @@ void spline2dlintransxy(spline2dinterpolant* c,
     ae_vector_set_length(&x, n-1+1, _state);
     ae_vector_set_length(&y, m-1+1, _state);
     ae_matrix_set_length(&f, m-1+1, n-1+1, _state);
-    for(j=0; j<=n-1; j++)
-    {
+    for(j=0; j<=n-1; j++) {
         x.ptr.p_double[j] = c->c.ptr.p_double[4+j];
     }
-    for(i=0; i<=m-1; i++)
-    {
+    for(i=0; i<=m-1; i++) {
         y.ptr.p_double[i] = c->c.ptr.p_double[4+n+i];
     }
-    for(i=0; i<=m-1; i++)
-    {
-        for(j=0; j<=n-1; j++)
-        {
+    for(i=0; i<=m-1; i++) {
+        for(j=0; j<=n-1; j++) {
             f.ptr.pp_double[i][j] = c->c.ptr.p_double[4+n+m+i*n+j];
         }
     }
-    
+
     /*
      * Special case: AX=0 or AY=0
      */
-    if( ae_fp_eq(ax,0) )
-    {
-        for(i=0; i<=m-1; i++)
-        {
+    if( ae_fp_eq(ax,0) ) {
+        for(i=0; i<=m-1; i++) {
             v = spline2dcalc(c, bx, y.ptr.p_double[i], _state);
-            for(j=0; j<=n-1; j++)
-            {
+            for(j=0; j<=n-1; j++) {
                 f.ptr.pp_double[i][j] = v;
             }
         }
-        if( typec==-3 )
-        {
+        if( typec==-3 ) {
             spline2dbuildbicubic(&x, &y, &f, m, n, c, _state);
         }
-        if( typec==-1 )
-        {
+        if( typec==-1 ) {
             spline2dbuildbilinear(&x, &y, &f, m, n, c, _state);
         }
         ax = 1;
         bx = 0;
     }
-    if( ae_fp_eq(ay,0) )
-    {
-        for(j=0; j<=n-1; j++)
-        {
+    if( ae_fp_eq(ay,0) ) {
+        for(j=0; j<=n-1; j++) {
             v = spline2dcalc(c, x.ptr.p_double[j], by, _state);
-            for(i=0; i<=m-1; i++)
-            {
+            for(i=0; i<=m-1; i++) {
                 f.ptr.pp_double[i][j] = v;
             }
         }
-        if( typec==-3 )
-        {
+        if( typec==-3 ) {
             spline2dbuildbicubic(&x, &y, &f, m, n, c, _state);
         }
-        if( typec==-1 )
-        {
+        if( typec==-1 ) {
             spline2dbuildbilinear(&x, &y, &f, m, n, c, _state);
         }
         ay = 1;
         by = 0;
     }
-    
+
     /*
      * General case: AX<>0, AY<>0
      * Unpack, scale and pack again.
      */
-    for(j=0; j<=n-1; j++)
-    {
+    for(j=0; j<=n-1; j++) {
         x.ptr.p_double[j] = (x.ptr.p_double[j]-bx)/ax;
     }
-    for(i=0; i<=m-1; i++)
-    {
+    for(i=0; i<=m-1; i++) {
         y.ptr.p_double[i] = (y.ptr.p_double[i]-by)/ay;
     }
-    if( typec==-3 )
-    {
+    if( typec==-3 ) {
         spline2dbuildbicubic(&x, &y, &f, m, n, c, _state);
     }
-    if( typec==-1 )
-    {
+    if( typec==-1 ) {
         spline2dbuildbilinear(&x, &y, &f, m, n, c, _state);
     }
     ae_frame_leave(_state);
@@ -21086,7 +19849,7 @@ This subroutine performs linear transformation of the spline.
 Input parameters:
     C   -   spline interpolant.
     A, B-   transformation coefficients: S2(x,y) = A*S(x,y) + B
-    
+
 Output parameters:
     C   -   transformed spline
 
@@ -21094,9 +19857,9 @@ Output parameters:
      Copyright 30.06.2007 by Bochkanov Sergey
 *************************************************************************/
 void spline2dlintransf(spline2dinterpolant* c,
-     double a,
-     double b,
-     ae_state *_state)
+                       double a,
+                       double b,
+                       ae_state *_state)
 {
     ae_frame _frame_block;
     ae_int_t i;
@@ -21120,27 +19883,21 @@ void spline2dlintransf(spline2dinterpolant* c,
     ae_vector_set_length(&x, n-1+1, _state);
     ae_vector_set_length(&y, m-1+1, _state);
     ae_matrix_set_length(&f, m-1+1, n-1+1, _state);
-    for(j=0; j<=n-1; j++)
-    {
+    for(j=0; j<=n-1; j++) {
         x.ptr.p_double[j] = c->c.ptr.p_double[4+j];
     }
-    for(i=0; i<=m-1; i++)
-    {
+    for(i=0; i<=m-1; i++) {
         y.ptr.p_double[i] = c->c.ptr.p_double[4+n+i];
     }
-    for(i=0; i<=m-1; i++)
-    {
-        for(j=0; j<=n-1; j++)
-        {
+    for(i=0; i<=m-1; i++) {
+        for(j=0; j<=n-1; j++) {
             f.ptr.pp_double[i][j] = a*c->c.ptr.p_double[4+n+m+i*n+j]+b;
         }
     }
-    if( typec==-3 )
-    {
+    if( typec==-3 ) {
         spline2dbuildbicubic(&x, &y, &f, m, n, c, _state);
     }
-    if( typec==-1 )
-    {
+    if( typec==-1 ) {
         spline2dbuildbilinear(&x, &y, &f, m, n, c, _state);
     }
     ae_frame_leave(_state);
@@ -21160,8 +19917,8 @@ Output parameters:
      Copyright 29.06.2007 by Bochkanov Sergey
 *************************************************************************/
 void spline2dcopy(spline2dinterpolant* c,
-     spline2dinterpolant* cc,
-     ae_state *_state)
+                  spline2dinterpolant* cc,
+                  ae_state *_state)
 {
     ae_int_t n;
 
@@ -21185,7 +19942,7 @@ Input parameters:
     OldWidth    -   old grid width, OldWidth>1
     NewHeight   -   new grid height, NewHeight>1
     NewWidth    -   new grid width, NewWidth>1
-    
+
 Output parameters:
     B           -   function values at the new grid,
                     array[0..NewHeight-1, 0..NewWidth-1]
@@ -21195,12 +19952,12 @@ Output parameters:
      Copyright by Bochkanov Sergey
 *************************************************************************/
 void spline2dresamplebicubic(/* Real    */ ae_matrix* a,
-     ae_int_t oldheight,
-     ae_int_t oldwidth,
-     /* Real    */ ae_matrix* b,
-     ae_int_t newheight,
-     ae_int_t newwidth,
-     ae_state *_state)
+        ae_int_t oldheight,
+        ae_int_t oldwidth,
+        /* Real    */ ae_matrix* b,
+        ae_int_t newheight,
+        ae_int_t newwidth,
+        ae_state *_state)
 {
     ae_frame _frame_block;
     ae_matrix buf;
@@ -21221,7 +19978,7 @@ void spline2dresamplebicubic(/* Real    */ ae_matrix* a,
 
     ae_assert(oldwidth>1&&oldheight>1, "Spline2DResampleBicubic: width/height less than 1", _state);
     ae_assert(newwidth>1&&newheight>1, "Spline2DResampleBicubic: width/height less than 1", _state);
-    
+
     /*
      * Prepare
      */
@@ -21231,53 +19988,47 @@ void spline2dresamplebicubic(/* Real    */ ae_matrix* a,
     ae_matrix_set_length(&buf, oldheight-1+1, newwidth-1+1, _state);
     ae_vector_set_length(&x, ae_maxint(mw, mh, _state)-1+1, _state);
     ae_vector_set_length(&y, ae_maxint(mw, mh, _state)-1+1, _state);
-    
+
     /*
      * Horizontal interpolation
      */
-    for(i=0; i<=oldheight-1; i++)
-    {
-        
+    for(i=0; i<=oldheight-1; i++) {
+
         /*
          * Fill X, Y
          */
-        for(j=0; j<=oldwidth-1; j++)
-        {
+        for(j=0; j<=oldwidth-1; j++) {
             x.ptr.p_double[j] = (double)j/(double)(oldwidth-1);
             y.ptr.p_double[j] = a->ptr.pp_double[i][j];
         }
-        
+
         /*
          * Interpolate and place result into temporary matrix
          */
         spline1dbuildcubic(&x, &y, oldwidth, 0, 0.0, 0, 0.0, &c, _state);
-        for(j=0; j<=newwidth-1; j++)
-        {
+        for(j=0; j<=newwidth-1; j++) {
             buf.ptr.pp_double[i][j] = spline1dcalc(&c, (double)j/(double)(newwidth-1), _state);
         }
     }
-    
+
     /*
      * Vertical interpolation
      */
-    for(j=0; j<=newwidth-1; j++)
-    {
-        
+    for(j=0; j<=newwidth-1; j++) {
+
         /*
          * Fill X, Y
          */
-        for(i=0; i<=oldheight-1; i++)
-        {
+        for(i=0; i<=oldheight-1; i++) {
             x.ptr.p_double[i] = (double)i/(double)(oldheight-1);
             y.ptr.p_double[i] = buf.ptr.pp_double[i][j];
         }
-        
+
         /*
          * Interpolate and place result into B
          */
         spline1dbuildcubic(&x, &y, oldheight, 0, 0.0, 0, 0.0, &c, _state);
-        for(i=0; i<=newheight-1; i++)
-        {
+        for(i=0; i<=newheight-1; i++) {
             b->ptr.pp_double[i][j] = spline1dcalc(&c, (double)i/(double)(newheight-1), _state);
         }
     }
@@ -21305,12 +20056,12 @@ Output parameters:
      Copyright by Bochkanov Sergey
 *************************************************************************/
 void spline2dresamplebilinear(/* Real    */ ae_matrix* a,
-     ae_int_t oldheight,
-     ae_int_t oldwidth,
-     /* Real    */ ae_matrix* b,
-     ae_int_t newheight,
-     ae_int_t newwidth,
-     ae_state *_state)
+        ae_int_t oldheight,
+        ae_int_t oldwidth,
+        /* Real    */ ae_matrix* b,
+        ae_int_t newheight,
+        ae_int_t newwidth,
+        ae_state *_state)
 {
     ae_int_t i;
     ae_int_t j;
@@ -21322,19 +20073,15 @@ void spline2dresamplebilinear(/* Real    */ ae_matrix* a,
     ae_matrix_clear(b);
 
     ae_matrix_set_length(b, newheight-1+1, newwidth-1+1, _state);
-    for(i=0; i<=newheight-1; i++)
-    {
-        for(j=0; j<=newwidth-1; j++)
-        {
+    for(i=0; i<=newheight-1; i++) {
+        for(j=0; j<=newwidth-1; j++) {
             l = i*(oldheight-1)/(newheight-1);
-            if( l==oldheight-1 )
-            {
+            if( l==oldheight-1 ) {
                 l = oldheight-2;
             }
             u = (double)i/(double)(newheight-1)*(oldheight-1)-l;
             c = j*(oldwidth-1)/(newwidth-1);
-            if( c==oldwidth-1 )
-            {
+            if( c==oldwidth-1 ) {
                 c = oldwidth-2;
             }
             t = (double)(j*(oldwidth-1))/(double)(newwidth-1)-c;
@@ -21349,14 +20096,14 @@ Internal subroutine.
 Calculation of the first derivatives and the cross-derivative.
 *************************************************************************/
 static void spline2d_bicubiccalcderivatives(/* Real    */ ae_matrix* a,
-     /* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t m,
-     ae_int_t n,
-     /* Real    */ ae_matrix* dx,
-     /* Real    */ ae_matrix* dy,
-     /* Real    */ ae_matrix* dxy,
-     ae_state *_state)
+        /* Real    */ ae_vector* x,
+        /* Real    */ ae_vector* y,
+        ae_int_t m,
+        ae_int_t n,
+        /* Real    */ ae_matrix* dx,
+        /* Real    */ ae_matrix* dy,
+        /* Real    */ ae_matrix* dxy,
+        ae_state *_state)
 {
     ae_frame _frame_block;
     ae_int_t i;
@@ -21379,62 +20126,53 @@ static void spline2d_bicubiccalcderivatives(/* Real    */ ae_matrix* a,
     ae_matrix_set_length(dx, m, n, _state);
     ae_matrix_set_length(dy, m, n, _state);
     ae_matrix_set_length(dxy, m, n, _state);
-    
+
     /*
      * dF/dX
      */
     ae_vector_set_length(&xt, n, _state);
     ae_vector_set_length(&ft, n, _state);
-    for(i=0; i<=m-1; i++)
-    {
-        for(j=0; j<=n-1; j++)
-        {
+    for(i=0; i<=m-1; i++) {
+        for(j=0; j<=n-1; j++) {
             xt.ptr.p_double[j] = x->ptr.p_double[j];
             ft.ptr.p_double[j] = a->ptr.pp_double[i][j];
         }
         spline1dbuildcubic(&xt, &ft, n, 0, 0.0, 0, 0.0, &c, _state);
-        for(j=0; j<=n-1; j++)
-        {
+        for(j=0; j<=n-1; j++) {
             spline1ddiff(&c, x->ptr.p_double[j], &s, &ds, &d2s, _state);
             dx->ptr.pp_double[i][j] = ds;
         }
     }
-    
+
     /*
      * dF/dY
      */
     ae_vector_set_length(&xt, m, _state);
     ae_vector_set_length(&ft, m, _state);
-    for(j=0; j<=n-1; j++)
-    {
-        for(i=0; i<=m-1; i++)
-        {
+    for(j=0; j<=n-1; j++) {
+        for(i=0; i<=m-1; i++) {
             xt.ptr.p_double[i] = y->ptr.p_double[i];
             ft.ptr.p_double[i] = a->ptr.pp_double[i][j];
         }
         spline1dbuildcubic(&xt, &ft, m, 0, 0.0, 0, 0.0, &c, _state);
-        for(i=0; i<=m-1; i++)
-        {
+        for(i=0; i<=m-1; i++) {
             spline1ddiff(&c, y->ptr.p_double[i], &s, &ds, &d2s, _state);
             dy->ptr.pp_double[i][j] = ds;
         }
     }
-    
+
     /*
      * d2F/dXdY
      */
     ae_vector_set_length(&xt, n, _state);
     ae_vector_set_length(&ft, n, _state);
-    for(i=0; i<=m-1; i++)
-    {
-        for(j=0; j<=n-1; j++)
-        {
+    for(i=0; i<=m-1; i++) {
+        for(j=0; j<=n-1; j++) {
             xt.ptr.p_double[j] = x->ptr.p_double[j];
             ft.ptr.p_double[j] = dy->ptr.pp_double[i][j];
         }
         spline1dbuildcubic(&xt, &ft, n, 0, 0.0, 0, 0.0, &c, _state);
-        for(j=0; j<=n-1; j++)
-        {
+        for(j=0; j<=n-1; j++) {
             spline1ddiff(&c, x->ptr.p_double[j], &s, &ds, &d2s, _state);
             dxy->ptr.pp_double[i][j] = ds;
         }
@@ -21445,8 +20183,9 @@ static void spline2d_bicubiccalcderivatives(/* Real    */ ae_matrix* a,
 
 ae_bool _spline2dinterpolant_init(spline2dinterpolant* p, ae_state *_state, ae_bool make_automatic)
 {
-    if( !ae_vector_init(&p->c, 0, DT_REAL, _state, make_automatic) )
+    if( !ae_vector_init(&p->c, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
+    }
     return ae_true;
 }
 
@@ -21454,8 +20193,9 @@ ae_bool _spline2dinterpolant_init(spline2dinterpolant* p, ae_state *_state, ae_b
 ae_bool _spline2dinterpolant_init_copy(spline2dinterpolant* dst, spline2dinterpolant* src, ae_state *_state, ae_bool make_automatic)
 {
     dst->k = src->k;
-    if( !ae_vector_init_copy(&dst->c, &src->c, _state, make_automatic) )
+    if( !ae_vector_init_copy(&dst->c, &src->c, _state, make_automatic) ) {
         return ae_false;
+    }
     return ae_true;
 }
 

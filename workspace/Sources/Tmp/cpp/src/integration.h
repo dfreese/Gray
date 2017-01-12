@@ -30,14 +30,12 @@ http://www.fsf.org/licensing/licenses
 /////////////////////////////////////////////////////////////////////////
 namespace alglib_impl
 {
-typedef struct
-{
+typedef struct {
     ae_int_t terminationtype;
     ae_int_t nfev;
     ae_int_t nintervals;
 } autogkreport;
-typedef struct
-{
+typedef struct {
     double a;
     double b;
     double eps;
@@ -59,8 +57,7 @@ typedef struct
     ae_int_t n;
     rcommstate rstate;
 } autogkinternalstate;
-typedef struct
-{
+typedef struct {
     double a;
     double b;
     double alpha;
@@ -685,8 +682,8 @@ It accepts following parameters:
 
 *************************************************************************/
 void autogkintegrate(autogkstate &state,
-    void (*func)(double x, double xminusa, double bminusx, double &y, void *ptr),
-    void *ptr = NULL);
+                     void (*func)(double x, double xminusa, double bminusx, double &y, void *ptr),
+                     void *ptr = NULL);
 
 
 /*************************************************************************
@@ -715,110 +712,110 @@ void autogkresults(const autogkstate &state, double &v, autogkreport &rep);
 namespace alglib_impl
 {
 void gqgeneraterec(/* Real    */ ae_vector* alpha,
-     /* Real    */ ae_vector* beta,
-     double mu0,
-     ae_int_t n,
-     ae_int_t* info,
-     /* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* w,
-     ae_state *_state);
+                                 /* Real    */ ae_vector* beta,
+                                 double mu0,
+                                 ae_int_t n,
+                                 ae_int_t* info,
+                                 /* Real    */ ae_vector* x,
+                                 /* Real    */ ae_vector* w,
+                                 ae_state *_state);
 void gqgenerategausslobattorec(/* Real    */ ae_vector* alpha,
-     /* Real    */ ae_vector* beta,
-     double mu0,
-     double a,
-     double b,
-     ae_int_t n,
-     ae_int_t* info,
-     /* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* w,
-     ae_state *_state);
+        /* Real    */ ae_vector* beta,
+        double mu0,
+        double a,
+        double b,
+        ae_int_t n,
+        ae_int_t* info,
+        /* Real    */ ae_vector* x,
+        /* Real    */ ae_vector* w,
+        ae_state *_state);
 void gqgenerategaussradaurec(/* Real    */ ae_vector* alpha,
-     /* Real    */ ae_vector* beta,
-     double mu0,
-     double a,
-     ae_int_t n,
-     ae_int_t* info,
-     /* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* w,
-     ae_state *_state);
+        /* Real    */ ae_vector* beta,
+        double mu0,
+        double a,
+        ae_int_t n,
+        ae_int_t* info,
+        /* Real    */ ae_vector* x,
+        /* Real    */ ae_vector* w,
+        ae_state *_state);
 void gqgenerategausslegendre(ae_int_t n,
-     ae_int_t* info,
-     /* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* w,
-     ae_state *_state);
+                             ae_int_t* info,
+                             /* Real    */ ae_vector* x,
+                             /* Real    */ ae_vector* w,
+                             ae_state *_state);
 void gqgenerategaussjacobi(ae_int_t n,
-     double alpha,
-     double beta,
-     ae_int_t* info,
-     /* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* w,
-     ae_state *_state);
+                           double alpha,
+                           double beta,
+                           ae_int_t* info,
+                           /* Real    */ ae_vector* x,
+                           /* Real    */ ae_vector* w,
+                           ae_state *_state);
 void gqgenerategausslaguerre(ae_int_t n,
-     double alpha,
-     ae_int_t* info,
-     /* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* w,
-     ae_state *_state);
+                             double alpha,
+                             ae_int_t* info,
+                             /* Real    */ ae_vector* x,
+                             /* Real    */ ae_vector* w,
+                             ae_state *_state);
 void gqgenerategausshermite(ae_int_t n,
-     ae_int_t* info,
-     /* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* w,
-     ae_state *_state);
+                            ae_int_t* info,
+                            /* Real    */ ae_vector* x,
+                            /* Real    */ ae_vector* w,
+                            ae_state *_state);
 void gkqgeneraterec(/* Real    */ ae_vector* alpha,
-     /* Real    */ ae_vector* beta,
-     double mu0,
-     ae_int_t n,
-     ae_int_t* info,
-     /* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* wkronrod,
-     /* Real    */ ae_vector* wgauss,
-     ae_state *_state);
+                                  /* Real    */ ae_vector* beta,
+                                  double mu0,
+                                  ae_int_t n,
+                                  ae_int_t* info,
+                                  /* Real    */ ae_vector* x,
+                                  /* Real    */ ae_vector* wkronrod,
+                                  /* Real    */ ae_vector* wgauss,
+                                  ae_state *_state);
 void gkqgenerategausslegendre(ae_int_t n,
-     ae_int_t* info,
-     /* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* wkronrod,
-     /* Real    */ ae_vector* wgauss,
-     ae_state *_state);
+                              ae_int_t* info,
+                              /* Real    */ ae_vector* x,
+                              /* Real    */ ae_vector* wkronrod,
+                              /* Real    */ ae_vector* wgauss,
+                              ae_state *_state);
 void gkqgenerategaussjacobi(ae_int_t n,
-     double alpha,
-     double beta,
-     ae_int_t* info,
-     /* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* wkronrod,
-     /* Real    */ ae_vector* wgauss,
-     ae_state *_state);
+                            double alpha,
+                            double beta,
+                            ae_int_t* info,
+                            /* Real    */ ae_vector* x,
+                            /* Real    */ ae_vector* wkronrod,
+                            /* Real    */ ae_vector* wgauss,
+                            ae_state *_state);
 void gkqlegendrecalc(ae_int_t n,
-     ae_int_t* info,
-     /* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* wkronrod,
-     /* Real    */ ae_vector* wgauss,
-     ae_state *_state);
+                     ae_int_t* info,
+                     /* Real    */ ae_vector* x,
+                     /* Real    */ ae_vector* wkronrod,
+                     /* Real    */ ae_vector* wgauss,
+                     ae_state *_state);
 void gkqlegendretbl(ae_int_t n,
-     /* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* wkronrod,
-     /* Real    */ ae_vector* wgauss,
-     double* eps,
-     ae_state *_state);
+                    /* Real    */ ae_vector* x,
+                    /* Real    */ ae_vector* wkronrod,
+                    /* Real    */ ae_vector* wgauss,
+                    double* eps,
+                    ae_state *_state);
 void autogksmooth(double a,
-     double b,
-     autogkstate* state,
-     ae_state *_state);
+                  double b,
+                  autogkstate* state,
+                  ae_state *_state);
 void autogksmoothw(double a,
-     double b,
-     double xwidth,
-     autogkstate* state,
-     ae_state *_state);
+                   double b,
+                   double xwidth,
+                   autogkstate* state,
+                   ae_state *_state);
 void autogksingular(double a,
-     double b,
-     double alpha,
-     double beta,
-     autogkstate* state,
-     ae_state *_state);
+                    double b,
+                    double alpha,
+                    double beta,
+                    autogkstate* state,
+                    ae_state *_state);
 ae_bool autogkiteration(autogkstate* state, ae_state *_state);
 void autogkresults(autogkstate* state,
-     double* v,
-     autogkreport* rep,
-     ae_state *_state);
+                   double* v,
+                   autogkreport* rep,
+                   ae_state *_state);
 ae_bool _autogkreport_init(autogkreport* p, ae_state *_state, ae_bool make_automatic);
 ae_bool _autogkreport_init_copy(autogkreport* dst, autogkreport* src, ae_state *_state, ae_bool make_automatic);
 void _autogkreport_clear(autogkreport* p);

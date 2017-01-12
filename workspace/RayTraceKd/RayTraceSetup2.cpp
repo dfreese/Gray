@@ -160,123 +160,127 @@ float tri3verts[3][3] = { {8.0f,0.0f,-5.0f}, {8.0f,0.0f,10.0f}, {8.0f,10.0f,-5.0
 
 void SetUpScene2()
 {
-	SetUpMainView();
-	SetUpMaterials();
-	SetUpLights( TheScene2 );
-	SetUpViewableObjects();
-}
- 
-void SetUpMainView() {
-	// Set Up Camera Information
-	TheScene2.GetCameraView().SetPosition( Cpos );
-	TheScene2.GetCameraView().SetDirection( Cdir );
-	TheScene2.GetCameraView().SetScreenDistance( Cdist );
-	TheScene2.GetCameraView().SetScreenDimensions( Cdims[0], Cdims[1] );
+    SetUpMainView();
+    SetUpMaterials();
+    SetUpLights( TheScene2 );
+    SetUpViewableObjects();
 }
 
-void SetUpMaterials() {
-	// Initialize Array of Materials
-	Material* mat0 = new Material;
-	TheScene2.AddMaterial( mat0 );
-	mat0->SetColorAmbientDiffuse( Mat0nonspec );
-	mat0->SetColorSpecular( Mat0spec );
-	mat0->SetShininess( Mat0shiny );
-	mat0->SetColorReflective( Mat0reflect );
-
-	Material* mat1 = new Material;
-	TheScene2.AddMaterial(mat1);
-	mat1->SetColorAmbientDiffuse( Mat1nonspec );
-	mat1->SetColorSpecular( Mat1spec );
-	mat1->SetShininess( Mat1shiny );
-
-	Material* mat2 = new Material;
-	TheScene2.AddMaterial(mat2);
-	mat2->SetColorAmbientDiffuse( Mat2nonspec );
-	mat2->SetColorSpecular( Mat2spec );
-	mat2->SetColorReflective( Mat2reflect );
-	mat2->SetShininess( Mat2shiny );
-
-	Material* mat3 = new Material;
-	TheScene2.AddMaterial(mat3);
-	mat3->SetColorAmbientDiffuse( Mat3nonspec );
-	mat3->SetColorSpecular( Mat3spec );
-	mat3->SetColorReflective( Mat3reflect );
-	mat3->SetShininess( Mat3shiny );
-
-	Material* mat4 = new Material;
-	TheScene2.AddMaterial(mat4);
-	mat4->SetColorAmbientDiffuse( Mat4nonspec );
-	mat4->SetColorSpecular( Mat4spec );
-	mat4->SetColorReflective( Mat4reflect );
-	mat4->SetShininess( Mat4shiny );
-
-	Material* mat5 = new Material;
-	TheScene2.AddMaterial(mat5);
-	mat5->SetColorAmbientDiffuse( Mat5nonspec );
-	mat5->SetColorSpecular( Mat5spec );
-	mat5->SetColorReflective( Mat5reflect );
-	mat5->SetColorTransmissive( Mat5trans );
-	mat5->SetShininess( Mat5shiny );
-	mat5->SetIndexOfRefraction(1.5);	// Glass!
-
-	Material* mat6 = new Material;
-	TheScene2.AddMaterial(mat6);
-	mat6->SetColorAmbientDiffuse( Mat6nonspec );
-	mat6->SetColorSpecular( Mat6spec );
-	mat6->SetColorReflective( Mat6reflect );
-	mat6->SetShininess( Mat6shiny );
-
-	Material* mat7 = new Material;
-	TheScene2.AddMaterial(mat7);
-	mat7->SetColorAmbientDiffuse( Mat7nonspec );
-	mat7->SetColorSpecular( Mat7spec );
-	mat7->SetColorReflective( Mat7reflect );
-	mat7->SetShininess( Mat7shiny );
-
-	// Perfectly invisible with index of
-	//		refraction = 0, reflection = 0, transmission = 1.
-	//	Use for two facing pieces of glass.
-	Material* mat8 = new Material;
-	TheScene2.AddMaterial(mat8);
-	mat8->SetColorAmbientDiffuse(Mat8nonspec);
-	mat8->SetColorSpecular(Mat8spec);
-	mat8->SetColorReflective( Mat8reflect );
-	mat8->SetColorTransmissive( Mat8trans );
-
-	// A near perfect mirror surface
-	Material* mat9 = new Material;
-	TheScene2.AddMaterial(mat9);
-	mat9->SetColorAmbientDiffuse(Mat9nonspec);
-	mat9->SetColorSpecular(Mat9spec);
-	mat9->SetColorReflective( Mat9reflect );
-	mat9->SetShininess( Mat9shiny );
-
+void SetUpMainView()
+{
+    // Set Up Camera Information
+    TheScene2.GetCameraView().SetPosition( Cpos );
+    TheScene2.GetCameraView().SetDirection( Cdir );
+    TheScene2.GetCameraView().SetScreenDistance( Cdist );
+    TheScene2.GetCameraView().SetScreenDimensions( Cdims[0], Cdims[1] );
 }
 
-void SetUpLights( SceneDescription& scene ) {
-	// Global ambient light and the background color are set above.
-	
-	// Initialize Array of Lights
-	Light* myLight0 = new Light();
-	scene.AddLight( myLight0 );
-	myLight0->SetColorAmbient( Lt0amb );
-	myLight0->SetColorDiffuse( Lt0diff );
-	myLight0->SetColorSpecular( Lt0spec );
-	myLight0->SetPosition( Lt0pos );
+void SetUpMaterials()
+{
+    // Initialize Array of Materials
+    Material* mat0 = new Material;
+    TheScene2.AddMaterial( mat0 );
+    mat0->SetColorAmbientDiffuse( Mat0nonspec );
+    mat0->SetColorSpecular( Mat0spec );
+    mat0->SetShininess( Mat0shiny );
+    mat0->SetColorReflective( Mat0reflect );
 
-	Light* myLight1 = new Light();
-	scene.AddLight( myLight1 );
-	myLight1->SetColorAmbient( Lt1amb );
-	myLight1->SetColorDiffuse( Lt1diff );
-	myLight1->SetColorSpecular( Lt1spec );
-	myLight1->SetPosition( Lt1pos );
+    Material* mat1 = new Material;
+    TheScene2.AddMaterial(mat1);
+    mat1->SetColorAmbientDiffuse( Mat1nonspec );
+    mat1->SetColorSpecular( Mat1spec );
+    mat1->SetShininess( Mat1shiny );
+
+    Material* mat2 = new Material;
+    TheScene2.AddMaterial(mat2);
+    mat2->SetColorAmbientDiffuse( Mat2nonspec );
+    mat2->SetColorSpecular( Mat2spec );
+    mat2->SetColorReflective( Mat2reflect );
+    mat2->SetShininess( Mat2shiny );
+
+    Material* mat3 = new Material;
+    TheScene2.AddMaterial(mat3);
+    mat3->SetColorAmbientDiffuse( Mat3nonspec );
+    mat3->SetColorSpecular( Mat3spec );
+    mat3->SetColorReflective( Mat3reflect );
+    mat3->SetShininess( Mat3shiny );
+
+    Material* mat4 = new Material;
+    TheScene2.AddMaterial(mat4);
+    mat4->SetColorAmbientDiffuse( Mat4nonspec );
+    mat4->SetColorSpecular( Mat4spec );
+    mat4->SetColorReflective( Mat4reflect );
+    mat4->SetShininess( Mat4shiny );
+
+    Material* mat5 = new Material;
+    TheScene2.AddMaterial(mat5);
+    mat5->SetColorAmbientDiffuse( Mat5nonspec );
+    mat5->SetColorSpecular( Mat5spec );
+    mat5->SetColorReflective( Mat5reflect );
+    mat5->SetColorTransmissive( Mat5trans );
+    mat5->SetShininess( Mat5shiny );
+    mat5->SetIndexOfRefraction(1.5);	// Glass!
+
+    Material* mat6 = new Material;
+    TheScene2.AddMaterial(mat6);
+    mat6->SetColorAmbientDiffuse( Mat6nonspec );
+    mat6->SetColorSpecular( Mat6spec );
+    mat6->SetColorReflective( Mat6reflect );
+    mat6->SetShininess( Mat6shiny );
+
+    Material* mat7 = new Material;
+    TheScene2.AddMaterial(mat7);
+    mat7->SetColorAmbientDiffuse( Mat7nonspec );
+    mat7->SetColorSpecular( Mat7spec );
+    mat7->SetColorReflective( Mat7reflect );
+    mat7->SetShininess( Mat7shiny );
+
+    // Perfectly invisible with index of
+    //		refraction = 0, reflection = 0, transmission = 1.
+    //	Use for two facing pieces of glass.
+    Material* mat8 = new Material;
+    TheScene2.AddMaterial(mat8);
+    mat8->SetColorAmbientDiffuse(Mat8nonspec);
+    mat8->SetColorSpecular(Mat8spec);
+    mat8->SetColorReflective( Mat8reflect );
+    mat8->SetColorTransmissive( Mat8trans );
+
+    // A near perfect mirror surface
+    Material* mat9 = new Material;
+    TheScene2.AddMaterial(mat9);
+    mat9->SetColorAmbientDiffuse(Mat9nonspec);
+    mat9->SetColorSpecular(Mat9spec);
+    mat9->SetColorReflective( Mat9reflect );
+    mat9->SetShininess( Mat9shiny );
 
 }
 
+void SetUpLights( SceneDescription& scene )
+{
+    // Global ambient light and the background color are set above.
 
-void SetUpViewableObjects() {
+    // Initialize Array of Lights
+    Light* myLight0 = new Light();
+    scene.AddLight( myLight0 );
+    myLight0->SetColorAmbient( Lt0amb );
+    myLight0->SetColorDiffuse( Lt0diff );
+    myLight0->SetColorSpecular( Lt0spec );
+    myLight0->SetPosition( Lt0pos );
 
-	#ifdef GAMMA_PHYSICS
-	#endif
+    Light* myLight1 = new Light();
+    scene.AddLight( myLight1 );
+    myLight1->SetColorAmbient( Lt1amb );
+    myLight1->SetColorDiffuse( Lt1diff );
+    myLight1->SetColorSpecular( Lt1spec );
+    myLight1->SetPosition( Lt1pos );
+
+}
+
+
+void SetUpViewableObjects()
+{
+
+#ifdef GAMMA_PHYSICS
+#endif
 
 }

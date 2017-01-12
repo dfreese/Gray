@@ -28,25 +28,29 @@
 
 using namespace std;
 
-class InteractionList {
+class InteractionList
+{
 public:
-	InteractionList();
-	~InteractionList();
-	bool isEmpty() const { return hits.IsEmpty(); }
-	Deposit & NextHit();
-	void Reset();
-	void HitPositron(const Positron &p, double deposit);
-	void HitCompton(const Photon &p, double deposit, const MaterialBase & mat);
-	void HitPhotoelectric(const Photon &p, double deposit, const MaterialBase & mat);
-	void HitRayleigh(const Photon &p, const MaterialBase & mat) { };
-	Array<Deposit> hits;
-	friend ostream& operator<< (ostream &os, const InteractionList & l);
+    InteractionList();
+    ~InteractionList();
+    bool isEmpty() const
+    {
+        return hits.IsEmpty();
+    }
+    Deposit & NextHit();
+    void Reset();
+    void HitPositron(const Positron &p, double deposit);
+    void HitCompton(const Photon &p, double deposit, const MaterialBase & mat);
+    void HitPhotoelectric(const Photon &p, double deposit, const MaterialBase & mat);
+    void HitRayleigh(const Photon &p, const MaterialBase & mat) { };
+    Array<Deposit> hits;
+    friend ostream& operator<< (ostream &os, const InteractionList & l);
 protected:
-	void AddHit(Deposit & d);
-	Isotope * cur_Isotope;
-	Photon * cur_Photon;
-	Deposit EMPTY;
-	Deposit hit;
+    void AddHit(Deposit & d);
+    Isotope * cur_Isotope;
+    Photon * cur_Photon;
+    Deposit EMPTY;
+    Deposit hit;
 };
 
 #endif

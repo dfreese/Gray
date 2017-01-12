@@ -17,28 +17,29 @@ using namespace std;
 #define NUM_TABLE 100000
 #define M_PI 3.1415926535897932384626
 
-class AnnulusEllipticCylinderSource : public Source {
+class AnnulusEllipticCylinderSource : public Source
+{
 public:
-	~AnnulusEllipticCylinderSource();
-	AnnulusEllipticCylinderSource();
-	AnnulusEllipticCylinderSource(const VectorR3 &pos, double radius1, double radius2, VectorR3 &L, double act);
-	void virtual Decay(unsigned int photon_number);
-	bool virtual Inside(const VectorR3 & pos) const;
-	void SetRadius(double r1, double r2);
-	void SetAxis(VectorR3 &L);
-	double EllipticE(double m);
-	double InverseEllipticE(double arc_length);
-	double EllipticK(double m);
-	double IncompleteEllipticE(double phi, double m);
+    ~AnnulusEllipticCylinderSource();
+    AnnulusEllipticCylinderSource();
+    AnnulusEllipticCylinderSource(const VectorR3 &pos, double radius1, double radius2, VectorR3 &L, double act);
+    void virtual Decay(unsigned int photon_number);
+    bool virtual Inside(const VectorR3 & pos) const;
+    void SetRadius(double r1, double r2);
+    void SetAxis(VectorR3 &L);
+    double EllipticE(double m);
+    double InverseEllipticE(double arc_length);
+    double EllipticK(double m);
+    double IncompleteEllipticE(double phi, double m);
 
 private:
-	double radius1;
-	double radius2;
-	double length;
-	vector<double>circ;
-	VectorR3 axis;
-        Matrix3x3 RotMtrx;
-        Matrix3x3 RotMtrxInv;
+    double radius1;
+    double radius2;
+    double length;
+    vector<double>circ;
+    VectorR3 axis;
+    Matrix3x3 RotMtrx;
+    Matrix3x3 RotMtrxInv;
 };
 
 #endif /*ANNULUSELLIPTICCYLINDERSOURCE_H_*/

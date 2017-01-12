@@ -30,89 +30,122 @@
 
 using namespace std;
 
-class Source {
+class Source
+{
 public:
-	Source();
-	bool NextPhoton(Photon &p);
-	double GetActivity();
-	VectorR3 position;
-	void SetIsotope(Isotope * i) {isotope = i; };
-	void SetActivity(double act);
-	void SetMaterial(MaterialBase * mat);
-	void SetPosition(const VectorR3 & pos) { position = pos; }
-	void SetTime(double t);
-	void SetSourceNum(int i) { source_num = i; if (isotope != NULL) isotope->source_num = source_num; }
-	MaterialBase * GetMaterial();
-	bool isNegative();
-	Isotope * GetIsotope() { return isotope; }
-	const VectorR3 & GetDecayPosition() const { return isotope->GetPosition(); }
-	void Reset();
+    Source();
+    bool NextPhoton(Photon &p);
+    double GetActivity();
+    VectorR3 position;
+    void SetIsotope(Isotope * i)
+    {
+        isotope = i;
+    };
+    void SetActivity(double act);
+    void SetMaterial(MaterialBase * mat);
+    void SetPosition(const VectorR3 & pos)
+    {
+        position = pos;
+    }
+    void SetTime(double t);
+    void SetSourceNum(int i)
+    {
+        source_num = i;
+        if (isotope != NULL) {
+            isotope->source_num = source_num;
+        }
+    }
+    MaterialBase * GetMaterial();
+    bool isNegative();
+    Isotope * GetIsotope()
+    {
+        return isotope;
+    }
+    const VectorR3 & GetDecayPosition() const
+    {
+        return isotope->GetPosition();
+    }
+    void Reset();
 
-	virtual bool Inside(const VectorR3 &pos) const = 0;
-	virtual void Decay(unsigned int photon_number) = 0;
+    virtual bool Inside(const VectorR3 &pos) const = 0;
+    virtual void Decay(unsigned int photon_number) = 0;
 
 protected:
-	Isotope * isotope;
-	double Random();
-	double activity;
-	double time;
-	MaterialBase * material;
-	bool negative;
-	int source_num;
+    Isotope * isotope;
+    double Random();
+    double activity;
+    double time;
+    MaterialBase * material;
+    bool negative;
+    int source_num;
 
 };
 
-inline bool Source::isNegative() {
-	return negative;
+inline bool Source::isNegative()
+{
+    return negative;
 }
 
-inline Source::Source() {
-	material = NULL;
-	activity = 0.0;
-	negative = false;
-	isotope = NULL;
-	source_num = 0;
+inline Source::Source()
+{
+    material = NULL;
+    activity = 0.0;
+    negative = false;
+    isotope = NULL;
+    source_num = 0;
 }
 
-inline double Source::Random() {
-	return rand()/(double)RAND_MAX;
+inline double Source::Random()
+{
+    return rand()/(double)RAND_MAX;
 }
 
-inline double Source::GetActivity() {
-	return activity;
+inline double Source::GetActivity()
+{
+    return activity;
 }
 
-inline void Source::SetActivity(double act) {
-	activity = act;
-	if (act < 0.0) {
-		negative = true;
-        } else {
-		negative = false;
-        }
+inline void Source::SetActivity(double act)
+{
+    activity = act;
+    if (act < 0.0) {
+        negative = true;
+    } else {
+        negative = false;
+    }
 }
 
-inline void Source::SetMaterial(MaterialBase * mat) {
-	material = mat;
+inline void Source::SetMaterial(MaterialBase * mat)
+{
+    material = mat;
 }
 
-inline MaterialBase * Source::GetMaterial() {
-	return material;
+inline MaterialBase * Source::GetMaterial()
+{
+    return material;
 }
 
-inline bool Source::NextPhoton(Photon & p) {
-	p = isotope->NextPhoton();
+inline bool Source::NextPhoton(Photon & p)
+{
+    p = isotope->NextPhoton();
 }
 
-inline void Source::SetTime(double t) {
-	// FIXME: Time may be redudant in Source
-	time = t;
-	if (isotope != NULL) isotope->SetTime(t);
+inline void Source::SetTime(double t)
+{
+    // FIXME: Time may be redudant in Source
+    time = t;
+    if (isotope != NULL) {
+        isotope->SetTime(t);
+    }
 }
 
-inline void Source::Reset() {
-	//cout << "Reset\n";
-	if (isotope == NULL) return;
-	isotope->Reset();
+inline void Source::Reset()
+{
+    //cout << "Reset\n";
+    if (isotope == NULL) {
+        return;
+    }
+    isotope->Reset();
 }
 
 #endif

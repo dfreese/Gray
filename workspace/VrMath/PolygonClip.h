@@ -34,19 +34,19 @@ class VectorR3;
 // It is *always* assume that vertArray[] has enough room to
 //	add a new vertex if necessary.  Space must have been preallocated before
 //	the routine is called.
-// The planarity assumption is not used in any essential way.  
-//    The important thing is that the line loop of edge vectors can 
+// The planarity assumption is not used in any essential way.
+//    The important thing is that the line loop of edge vectors can
 //    cross (or touch) the plane at most once.
 bool ClipConvexPolygonAgainstPlane( int *numVerts, VectorR3 vertArray[],
-								   const VectorR3& PlaneNormal,
-								   double PlaneConstant );
+                                    const VectorR3& PlaneNormal,
+                                    double PlaneConstant );
 
 // This version is similar, but also returns the number of new verts (0, 1, or 2)
 //      except if entire polygon clipped in which case numNewVerts = -1.
 bool ClipConvexPolygonAgainstPlane( int *numVerts, VectorR3 vertArray[],
-								   const VectorR3& PlaneNormal,
-								   double PlaneConstant,
-								   int *numNewVerts);
+                                    const VectorR3& PlaneNormal,
+                                    double PlaneConstant,
+                                    int *numNewVerts);
 
 // Routine for clipping a convex polygon against a slab (an infinite
 //		region bounded by two parallel planes.
@@ -55,8 +55,8 @@ bool ClipConvexPolygonAgainstPlane( int *numVerts, VectorR3 vertArray[],
 // It is *always* assume that vertArray[] has enough room to
 //	add a new vertex if necessary.  Space must have been preallocated before
 //	the routine is called.
-// The planarity assumption is not used in any essential way.  
-//    The important thing is that the line loop of edge vectors can 
+// The planarity assumption is not used in any essential way.
+//    The important thing is that the line loop of edge vectors can
 //    enter and exit the slab more than twice.
 // Special handling: If the slab intersects with the polygon has area zero,
 //	   then the entire polygon is clipped away.  In particular, for zero thickness
@@ -64,8 +64,8 @@ bool ClipConvexPolygonAgainstPlane( int *numVerts, VectorR3 vertArray[],
 //	   And polygons that are touch only the surface of the slab are entirely
 //		clipped away.
 bool ClipConvexPolygonAgainstSlab( int *numVerts, VectorR3 vertArray[],
-								   const VectorR3& PlaneNormal,
-								   double planeConstantMin, double planeConstantMax );
+                                   const VectorR3& PlaneNormal,
+                                   double planeConstantMin, double planeConstantMax );
 
 
 // Clip the convex polygon against a bounding box.
@@ -77,22 +77,22 @@ bool ClipConvexPolygonAgainstSlab( int *numVerts, VectorR3 vertArray[],
 //		results in near-degenerate cases.
 
 int ClipConvexPolygonAgainstBoundingBox( int numVerts, VectorR3 vertArray[], const VectorR3& planeNormal,
-									 const VectorR3& boxMin, const VectorR3& boxMax );
+        const VectorR3& boxMin, const VectorR3& boxMax );
 
 int ClipConvexPolygonAgainstBoundingBox( int numVerts, VectorR3 vertArray[],
-									 const VectorR3& boxMin, const VectorR3& boxMax );
+        const VectorR3& boxMin, const VectorR3& boxMax );
 
 // **********************************************************
 // Inlined functions
 // **********************************************************
 
 inline bool ClipConvexPolygonAgainstPlane(
-					  int *numVerts, VectorR3 vertArray[],
-					  const VectorR3& PlaneNormal, double PlaneConstant )
+    int *numVerts, VectorR3 vertArray[],
+    const VectorR3& PlaneNormal, double PlaneConstant )
 {
-	int numNewVerts;
-	return ClipConvexPolygonAgainstPlane( numVerts, vertArray, PlaneNormal, PlaneConstant,
-										   &numNewVerts );
+    int numNewVerts;
+    return ClipConvexPolygonAgainstPlane( numVerts, vertArray, PlaneNormal, PlaneConstant,
+                                          &numNewVerts );
 }
 
 // RemoveIntervalFromListCircular:
@@ -111,13 +111,13 @@ inline bool ClipConvexPolygonAgainstPlane(
 //		"addAtLast".
 template <class T>
 long RemoveIntervalFromListCircular( T list[], long listLen, long firstRemove, long firstKeep,
-									 int addAtFirstFlag, const T& addAtFirst,
-									 int addAtLastFlag, const T& addAtLast );
+                                     int addAtFirstFlag, const T& addAtFirst,
+                                     int addAtLastFlag, const T& addAtLast );
 
 
 
 // *************************************************************
-// RemoveIntervalFromListCircular 
+// RemoveIntervalFromListCircular
 //     Removes all entries from list[i] to list[j-1], where the
 //		list is circular.   i = firstRemove,  j = firstKeep
 //	   It is permitted for firstRemove to equal firstKeep: in this
@@ -135,59 +135,57 @@ long RemoveIntervalFromListCircular( T list[], long listLen, long firstRemove, l
 // *************************************************************
 template <class T>
 long RemoveIntervalFromListCircular( T list[], long listLen, long firstRemove, long firstKeep,
-									 int addAtFirstFlag, const T& addAtFirst,
-									 int addAtLastFlag, const T& addAtLast )
-{	
-	assert (addAtFirstFlag==0 || addAtFirstFlag==1);
-	assert (addAtLastFlag==0 || addAtLastFlag==1);
+                                     int addAtFirstFlag, const T& addAtFirst,
+                                     int addAtLastFlag, const T& addAtLast )
+{
+    assert (addAtFirstFlag==0 || addAtFirstFlag==1);
+    assert (addAtLastFlag==0 || addAtLastFlag==1);
 
-	int numNew = addAtFirstFlag+addAtLastFlag;		// Number of new verts to add
-	int numLost = firstKeep-firstRemove;
+    int numNew = addAtFirstFlag+addAtLastFlag;		// Number of new verts to add
+    int numLost = firstKeep-firstRemove;
 
-	if ( numLost<0 ) {			// If the last entry in the list is among the removed
-		listLen = firstRemove;	// Automatically discard ends
-		firstRemove = 0;		
-		numLost = firstKeep;
-	}
-    		
-	long newItemIndex;	// Index to put the "new" items.
-	T* newItemPtr;		// Position to put the "new" items.
+    if ( numLost<0 ) {			// If the last entry in the list is among the removed
+        listLen = firstRemove;	// Automatically discard ends
+        firstRemove = 0;
+        numLost = firstKeep;
+    }
 
-	if ( firstKeep==0 ) {
-		newItemIndex = listLen;
-		newItemPtr = list+newItemIndex;		// Just put them at the end
-	}
-	else {
-		newItemIndex = firstRemove;
-		newItemPtr = list+newItemIndex;
-		int slideAmt = numNew-(firstKeep-firstRemove);
-		if ( slideAmt>0 ) {
-			// Need to slide up
-			T* fromPtr = list + (listLen-1);
-			T* toPtr = fromPtr + slideAmt;
-			for ( long i=listLen-firstKeep; i>0; i-- ) {
-				*(toPtr--) = *(fromPtr--);
-			}
-		}
-		else if ( slideAmt<0 ) {
-			// Need to slide down
-			T* toPtr = newItemPtr + numNew;
-			T* fromPtr = list + firstKeep;
-			for ( long i=listLen-firstKeep; i>0; i-- ) {
-				*(toPtr++) = *(fromPtr++);
-			}
-		}
-	}
+    long newItemIndex;	// Index to put the "new" items.
+    T* newItemPtr;		// Position to put the "new" items.
 
-	// Add 0, 1, or 2 new verts for exiting/entering
-	if ( addAtFirstFlag!=0 ) {
-		*(newItemPtr++) = addAtFirst;
-	}
-	if ( addAtLastFlag!=0 ) {
-		*(newItemPtr++) = addAtLast;
-	}
+    if ( firstKeep==0 ) {
+        newItemIndex = listLen;
+        newItemPtr = list+newItemIndex;		// Just put them at the end
+    } else {
+        newItemIndex = firstRemove;
+        newItemPtr = list+newItemIndex;
+        int slideAmt = numNew-(firstKeep-firstRemove);
+        if ( slideAmt>0 ) {
+            // Need to slide up
+            T* fromPtr = list + (listLen-1);
+            T* toPtr = fromPtr + slideAmt;
+            for ( long i=listLen-firstKeep; i>0; i-- ) {
+                *(toPtr--) = *(fromPtr--);
+            }
+        } else if ( slideAmt<0 ) {
+            // Need to slide down
+            T* toPtr = newItemPtr + numNew;
+            T* fromPtr = list + firstKeep;
+            for ( long i=listLen-firstKeep; i>0; i-- ) {
+                *(toPtr++) = *(fromPtr++);
+            }
+        }
+    }
 
-	return newItemIndex%(listLen+addAtLastFlag+addAtFirstFlag);
+    // Add 0, 1, or 2 new verts for exiting/entering
+    if ( addAtFirstFlag!=0 ) {
+        *(newItemPtr++) = addAtFirst;
+    }
+    if ( addAtLastFlag!=0 ) {
+        *(newItemPtr++) = addAtLast;
+    }
+
+    return newItemIndex%(listLen+addAtLastFlag+addAtFirstFlag);
 }
 
 

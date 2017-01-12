@@ -576,113 +576,113 @@ namespace alglib_impl
 void fftc1d(/* Complex */ ae_vector* a, ae_int_t n, ae_state *_state);
 void fftc1dinv(/* Complex */ ae_vector* a, ae_int_t n, ae_state *_state);
 void fftr1d(/* Real    */ ae_vector* a,
-     ae_int_t n,
-     /* Complex */ ae_vector* f,
-     ae_state *_state);
+                          ae_int_t n,
+                          /* Complex */ ae_vector* f,
+                          ae_state *_state);
 void fftr1dinv(/* Complex */ ae_vector* f,
-     ae_int_t n,
-     /* Real    */ ae_vector* a,
-     ae_state *_state);
+                             ae_int_t n,
+                             /* Real    */ ae_vector* a,
+                             ae_state *_state);
 void fftr1dinternaleven(/* Real    */ ae_vector* a,
-     ae_int_t n,
-     /* Real    */ ae_vector* buf,
-     ftplan* plan,
-     ae_state *_state);
+                                      ae_int_t n,
+                                      /* Real    */ ae_vector* buf,
+                                      ftplan* plan,
+                                      ae_state *_state);
 void fftr1dinvinternaleven(/* Real    */ ae_vector* a,
-     ae_int_t n,
-     /* Real    */ ae_vector* buf,
-     ftplan* plan,
-     ae_state *_state);
+        ae_int_t n,
+        /* Real    */ ae_vector* buf,
+        ftplan* plan,
+        ae_state *_state);
 void convc1d(/* Complex */ ae_vector* a,
-     ae_int_t m,
-     /* Complex */ ae_vector* b,
-     ae_int_t n,
-     /* Complex */ ae_vector* r,
-     ae_state *_state);
+                           ae_int_t m,
+                           /* Complex */ ae_vector* b,
+                           ae_int_t n,
+                           /* Complex */ ae_vector* r,
+                           ae_state *_state);
 void convc1dinv(/* Complex */ ae_vector* a,
-     ae_int_t m,
-     /* Complex */ ae_vector* b,
-     ae_int_t n,
-     /* Complex */ ae_vector* r,
-     ae_state *_state);
+                              ae_int_t m,
+                              /* Complex */ ae_vector* b,
+                              ae_int_t n,
+                              /* Complex */ ae_vector* r,
+                              ae_state *_state);
 void convc1dcircular(/* Complex */ ae_vector* s,
-     ae_int_t m,
-     /* Complex */ ae_vector* r,
-     ae_int_t n,
-     /* Complex */ ae_vector* c,
-     ae_state *_state);
+                                   ae_int_t m,
+                                   /* Complex */ ae_vector* r,
+                                   ae_int_t n,
+                                   /* Complex */ ae_vector* c,
+                                   ae_state *_state);
 void convc1dcircularinv(/* Complex */ ae_vector* a,
-     ae_int_t m,
-     /* Complex */ ae_vector* b,
-     ae_int_t n,
-     /* Complex */ ae_vector* r,
-     ae_state *_state);
+                                      ae_int_t m,
+                                      /* Complex */ ae_vector* b,
+                                      ae_int_t n,
+                                      /* Complex */ ae_vector* r,
+                                      ae_state *_state);
 void convr1d(/* Real    */ ae_vector* a,
-     ae_int_t m,
-     /* Real    */ ae_vector* b,
-     ae_int_t n,
-     /* Real    */ ae_vector* r,
-     ae_state *_state);
+                           ae_int_t m,
+                           /* Real    */ ae_vector* b,
+                           ae_int_t n,
+                           /* Real    */ ae_vector* r,
+                           ae_state *_state);
 void convr1dinv(/* Real    */ ae_vector* a,
-     ae_int_t m,
-     /* Real    */ ae_vector* b,
-     ae_int_t n,
-     /* Real    */ ae_vector* r,
-     ae_state *_state);
+                              ae_int_t m,
+                              /* Real    */ ae_vector* b,
+                              ae_int_t n,
+                              /* Real    */ ae_vector* r,
+                              ae_state *_state);
 void convr1dcircular(/* Real    */ ae_vector* s,
-     ae_int_t m,
-     /* Real    */ ae_vector* r,
-     ae_int_t n,
-     /* Real    */ ae_vector* c,
-     ae_state *_state);
+                                   ae_int_t m,
+                                   /* Real    */ ae_vector* r,
+                                   ae_int_t n,
+                                   /* Real    */ ae_vector* c,
+                                   ae_state *_state);
 void convr1dcircularinv(/* Real    */ ae_vector* a,
-     ae_int_t m,
-     /* Real    */ ae_vector* b,
-     ae_int_t n,
-     /* Real    */ ae_vector* r,
-     ae_state *_state);
+                                      ae_int_t m,
+                                      /* Real    */ ae_vector* b,
+                                      ae_int_t n,
+                                      /* Real    */ ae_vector* r,
+                                      ae_state *_state);
 void convc1dx(/* Complex */ ae_vector* a,
-     ae_int_t m,
-     /* Complex */ ae_vector* b,
-     ae_int_t n,
-     ae_bool circular,
-     ae_int_t alg,
-     ae_int_t q,
-     /* Complex */ ae_vector* r,
-     ae_state *_state);
+                            ae_int_t m,
+                            /* Complex */ ae_vector* b,
+                            ae_int_t n,
+                            ae_bool circular,
+                            ae_int_t alg,
+                            ae_int_t q,
+                            /* Complex */ ae_vector* r,
+                            ae_state *_state);
 void convr1dx(/* Real    */ ae_vector* a,
-     ae_int_t m,
-     /* Real    */ ae_vector* b,
-     ae_int_t n,
-     ae_bool circular,
-     ae_int_t alg,
-     ae_int_t q,
-     /* Real    */ ae_vector* r,
-     ae_state *_state);
+                            ae_int_t m,
+                            /* Real    */ ae_vector* b,
+                            ae_int_t n,
+                            ae_bool circular,
+                            ae_int_t alg,
+                            ae_int_t q,
+                            /* Real    */ ae_vector* r,
+                            ae_state *_state);
 void corrc1d(/* Complex */ ae_vector* signal,
-     ae_int_t n,
-     /* Complex */ ae_vector* pattern,
-     ae_int_t m,
-     /* Complex */ ae_vector* r,
-     ae_state *_state);
+                           ae_int_t n,
+                           /* Complex */ ae_vector* pattern,
+                           ae_int_t m,
+                           /* Complex */ ae_vector* r,
+                           ae_state *_state);
 void corrc1dcircular(/* Complex */ ae_vector* signal,
-     ae_int_t m,
-     /* Complex */ ae_vector* pattern,
-     ae_int_t n,
-     /* Complex */ ae_vector* c,
-     ae_state *_state);
+                                   ae_int_t m,
+                                   /* Complex */ ae_vector* pattern,
+                                   ae_int_t n,
+                                   /* Complex */ ae_vector* c,
+                                   ae_state *_state);
 void corrr1d(/* Real    */ ae_vector* signal,
-     ae_int_t n,
-     /* Real    */ ae_vector* pattern,
-     ae_int_t m,
-     /* Real    */ ae_vector* r,
-     ae_state *_state);
+                           ae_int_t n,
+                           /* Real    */ ae_vector* pattern,
+                           ae_int_t m,
+                           /* Real    */ ae_vector* r,
+                           ae_state *_state);
 void corrr1dcircular(/* Real    */ ae_vector* signal,
-     ae_int_t m,
-     /* Real    */ ae_vector* pattern,
-     ae_int_t n,
-     /* Real    */ ae_vector* c,
-     ae_state *_state);
+                                   ae_int_t m,
+                                   /* Real    */ ae_vector* pattern,
+                                   ae_int_t n,
+                                   /* Real    */ ae_vector* c,
+                                   ae_state *_state);
 void fhtr1d(/* Real    */ ae_vector* a, ae_int_t n, ae_state *_state);
 void fhtr1dinv(/* Real    */ ae_vector* a, ae_int_t n, ae_state *_state);
 

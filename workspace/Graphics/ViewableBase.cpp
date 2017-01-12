@@ -22,22 +22,22 @@
 
 void ViewableBase::CalcAABB( AABB& retAABB ) const
 {
-	VectorR3& theMin = retAABB.GetBoxMin();
-	VectorR3& theMax = retAABB.GetBoxMax();
+    VectorR3& theMin = retAABB.GetBoxMin();
+    VectorR3& theMax = retAABB.GetBoxMax();
 
-	VectorR3 dirVec;
-	dirVec.SetUnitX();
-	CalcBoundingPlanes( dirVec, &theMin.x, &theMax.x );
-	dirVec.SetUnitY();
-	CalcBoundingPlanes( dirVec, &theMin.y, &theMax.y );
-	dirVec.SetUnitZ();
-	CalcBoundingPlanes( dirVec, &theMin.z, &theMax.z );
+    VectorR3 dirVec;
+    dirVec.SetUnitX();
+    CalcBoundingPlanes( dirVec, &theMin.x, &theMax.x );
+    dirVec.SetUnitY();
+    CalcBoundingPlanes( dirVec, &theMin.y, &theMax.y );
+    dirVec.SetUnitZ();
+    CalcBoundingPlanes( dirVec, &theMin.z, &theMax.z );
 }
 
 bool ViewableBase::CalcExtentsInBox( const AABB& aabb, AABB& retAABB ) const
 {
-	CalcAABB( retAABB );
-	retAABB.IntersectAgainst( aabb );
-	return( !retAABB.IsEmpty() );
+    CalcAABB( retAABB );
+    retAABB.IntersectAgainst( aabb );
+    return( !retAABB.IsEmpty() );
 }
 

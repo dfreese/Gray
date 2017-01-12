@@ -88,12 +88,11 @@ ae_int64_t _alloc_counter = 0;
  */
 static char _ae_int32_t_must_be_32_bits_wide[1-2*((int)(sizeof(ae_int32_t))-4)*((int)(sizeof(ae_int32_t))-4)];
 static char _ae_int64_t_must_be_64_bits_wide[1-2*((int)(sizeof(ae_int64_t))-8)*((int)(sizeof(ae_int64_t))-8)];
-static char _ae_int_t_must_be_pointer_sized [1-2*((int)(sizeof(ae_int_t))-(int)sizeof(void*))*((int)(sizeof(ae_int_t))-(int)(sizeof(void*)))];  
+static char _ae_int_t_must_be_pointer_sized [1-2*((int)(sizeof(ae_int_t))-(int)sizeof(void*))*((int)(sizeof(ae_int_t))-(int)(sizeof(void*)))];
 
 ae_int_t ae_misalignment(const void *ptr, size_t alignment)
 {
-    union _u
-    {
+    union _u {
         const void *ptr;
         ae_int_t iptr;
     } u;
@@ -104,29 +103,29 @@ ae_int_t ae_misalignment(const void *ptr, size_t alignment)
 void* ae_align(void *ptr, size_t alignment)
 {
     char *result = (char*)ptr;
-    if( (result-(char*)0)%alignment!=0 )
+    if( (result-(char*)0)%alignment!=0 ) {
         result += alignment - (result-(char*)0)%alignment;
+    }
     return result;
 }
 
 void ae_break(ae_state *state, ae_error_type error_type, const char *msg)
 {
 #ifndef AE_USE_CPP_ERROR_HANDLING
-    if( state!=NULL )
-    {
+    if( state!=NULL ) {
         ae_state_clear(state);
         state->last_error = error_type;
         state->error_msg = msg;
-        if( state->break_jump!=NULL )
+        if( state->break_jump!=NULL ) {
             longjmp(*(state->break_jump), 1);
-        else
+        } else {
             abort();
-    }
-    else
+        }
+    } else {
         abort();
+    }
 #else
-    if( state!=NULL )
-    {
+    if( state!=NULL ) {
         ae_state_clear(state);
         state->last_error = error_type;
         state->error_msg = msg;
@@ -137,31 +136,31 @@ void ae_break(ae_state *state, ae_error_type error_type, const char *msg)
 
 void* aligned_malloc(size_t size, size_t alignment)
 {
-    if( size==0 )
+    if( size==0 ) {
         return NULL;
-    if( alignment<=1 )
-    {
+    }
+    if( alignment<=1 ) {
         /* no alignment, just call malloc */
         void *block;
         void **p; ;
         block = malloc(sizeof(void*)+size);
-        if( block==NULL )
+        if( block==NULL ) {
             return NULL;
+        }
         p = (void**)block;
         *p = block;
 #ifdef AE_USE_ALLOC_COUNTER
         _alloc_counter++;
 #endif
         return (void*)((char*)block+sizeof(void*));
-    }
-    else
-    {
+    } else {
         /* align */
         void *block;
         char *result;
         block = malloc(alignment-1+sizeof(void*)+size);
-        if( block==NULL )
+        if( block==NULL ) {
             return NULL;
+        }
         result = (char*)block+sizeof(void*);
         /*if( (result-(char*)0)%alignment!=0 )
             result += alignment - (result-(char*)0)%alignment;*/
@@ -177,8 +176,9 @@ void* aligned_malloc(size_t size, size_t alignment)
 void aligned_free(void *block)
 {
     void *p;
-    if( block==NULL )
+    if( block==NULL ) {
         return;
+    }
     p = *((void**)((char*)block-sizeof(void*)));
     free(p);
 #ifdef AE_USE_ALLOC_COUNTER
@@ -198,25 +198,28 @@ Error handling:
 void* ae_malloc(size_t size, ae_state *state)
 {
     void *result;
-    if( size==0 )
+    if( size==0 ) {
         return NULL;
+    }
     result = aligned_malloc(size,AE_DATA_ALIGN);
-    if( result==NULL && state!=NULL)
+    if( result==NULL && state!=NULL) {
         ae_break(state, ERR_OUT_OF_MEMORY, "ae_malloc(): out of memory");
+    }
     return result;
 }
 
 void ae_free(void *p)
 {
-    if( p!=NULL )
+    if( p!=NULL ) {
         aligned_free(p);
+    }
 }
 
 /************************************************************************
 Sets pointers to the matrix rows.
 
 * dst must be correctly initialized matrix
-* dst->data.ptr points to the beginning of memory block  allocated  for  
+* dst->data.ptr points to the beginning of memory block  allocated  for
   row pointers.
 * dst->ptr - undefined (initialized during algorithm processing)
 * storage parameter points to the beginning of actual storage
@@ -226,16 +229,16 @@ void ae_matrix_update_row_pointers(ae_matrix *dst, void *storage)
     char *p_base;
     void **pp_ptr;
     ae_int_t i;
-    if( dst->rows>0 && dst->cols>0 )
-    {
+    if( dst->rows>0 && dst->cols>0 ) {
         p_base = (char*)storage;
         pp_ptr = (void**)dst->data.ptr;
         dst->ptr.pp_void = pp_ptr;
-        for(i=0; i<dst->rows; i++, p_base+=dst->stride*ae_sizeof(dst->datatype))
+        for(i=0; i<dst->rows; i++, p_base+=dst->stride*ae_sizeof(dst->datatype)) {
             pp_ptr[i] = p_base;
-    }
-    else
+        }
+    } else {
         dst->ptr.pp_void = NULL;
+    }
 }
 
 /************************************************************************
@@ -244,13 +247,17 @@ Zero for dynamic types like strings or multiple precision types.
 ************************************************************************/
 ae_int_t ae_sizeof(ae_datatype datatype)
 {
-    switch(datatype)
-    {
-        case DT_BOOL:       return (ae_int_t)sizeof(ae_bool);
-        case DT_INT:        return (ae_int_t)sizeof(ae_int_t);
-        case DT_REAL:       return (ae_int_t)sizeof(double);
-        case DT_COMPLEX:    return 2*(ae_int_t)sizeof(double);
-        default:            return 0;
+    switch(datatype) {
+    case DT_BOOL:
+        return (ae_int_t)sizeof(ae_bool);
+    case DT_INT:
+        return (ae_int_t)sizeof(ae_int_t);
+    case DT_REAL:
+        return (ae_int_t)sizeof(double);
+    case DT_COMPLEX:
+        return 2*(ae_int_t)sizeof(double);
+    default:
+        return 0;
     }
 }
 
@@ -281,13 +288,12 @@ void ae_state_init(ae_state *state)
     state->break_jump = NULL;
 #endif
     state->error_msg = "";
-    
+
     /*
      * determine endianness and initialize precomputed IEEE special quantities.
      */
     state->endianness = ae_get_endianness();
-    if( state->endianness==AE_LITTLE_ENDIAN )
-    {
+    if( state->endianness==AE_LITTLE_ENDIAN ) {
         vp = (ae_int32_t*)(&state->v_nan);
         vp[0] = 0;
         vp[1] = (ae_int32_t)0x7FF80000;
@@ -297,9 +303,7 @@ void ae_state_init(ae_state *state)
         vp = (ae_int32_t*)(&state->v_neginf);
         vp[0] = 0;
         vp[1] = (ae_int32_t)0xFFF00000;
-    }
-    else if( state->endianness==AE_BIG_ENDIAN )
-    {
+    } else if( state->endianness==AE_BIG_ENDIAN ) {
         vp = (ae_int32_t*)(&state->v_nan);
         vp[1] = 0;
         vp[0] = (ae_int32_t)0x7FF80000;
@@ -309,9 +313,9 @@ void ae_state_init(ae_state *state)
         vp = (ae_int32_t*)(&state->v_neginf);
         vp[1] = 0;
         vp[0] = (ae_int32_t)0xFFF00000;
-    }
-    else
+    } else {
         abort();
+    }
 }
 
 
@@ -321,8 +325,9 @@ All dynamic data controlled by state are freed.
 ************************************************************************/
 void ae_state_clear(ae_state *state)
 {
-    while( state->p_top_block->ptr!=DYN_BOTTOM )
+    while( state->p_top_block->ptr!=DYN_BOTTOM ) {
         ae_frame_leave(state);
+    }
 }
 
 
@@ -363,10 +368,10 @@ dynamic blocks which were attached to this frame.
 ************************************************************************/
 void ae_frame_leave(ae_state *state)
 {
-    while( state->p_top_block->ptr!=DYN_FRAME && state->p_top_block->ptr!=DYN_BOTTOM)
-    {
-        if( state->p_top_block->ptr!=NULL && state->p_top_block->deallocator!=NULL)
+    while( state->p_top_block->ptr!=DYN_FRAME && state->p_top_block->ptr!=DYN_BOTTOM) {
+        if( state->p_top_block->ptr!=NULL && state->p_top_block->deallocator!=NULL) {
             ((ae_deallocator)(state->p_top_block->deallocator))(state->p_top_block->ptr);
+        }
         state->p_top_block = state->p_top_block->p_next;
     }
     state->p_top_block = state->p_top_block->p_next;
@@ -411,19 +416,23 @@ ae_bool ae_db_malloc(ae_dyn_block *block, ae_int_t size, ae_state *state, ae_boo
 {
     /* ensure that size is >=0
        two ways to exit: 1) through ae_assert, if we have non-NULL state, 2) by returning ae_false */
-    if( state!=NULL )
+    if( state!=NULL ) {
         ae_assert(size>=0, "ae_db_malloc(): negative size", state);
-    if( size<0 )
+    }
+    if( size<0 ) {
         return ae_false;
-    
+    }
+
     /* alloc */
     block->ptr = ae_malloc((size_t)size, state);
-    if( block->ptr==NULL && size!=0 )
+    if( block->ptr==NULL && size!=0 ) {
         return ae_false;
-    if( make_automatic && state!=NULL )
+    }
+    if( make_automatic && state!=NULL ) {
         ae_db_attach(block, state);
-    else
+    } else {
         block->p_next = NULL;
+    }
     block->deallocator = ae_free;
     return ae_true;
 }
@@ -454,17 +463,21 @@ ae_bool ae_db_realloc(ae_dyn_block *block, ae_int_t size, ae_state *state)
 {
     /* ensure that size is >=0
        two ways to exit: 1) through ae_assert, if we have non-NULL state, 2) by returning ae_false */
-    if( state!=NULL )
+    if( state!=NULL ) {
         ae_assert(size>=0, "ae_db_realloc(): negative size", state);
-    if( size<0 )
+    }
+    if( size<0 ) {
         return ae_false;
-    
+    }
+
     /* realloc */
-    if( block->ptr!=NULL )
+    if( block->ptr!=NULL ) {
         ((ae_deallocator)block->deallocator)(block->ptr);
+    }
     block->ptr = ae_malloc((size_t)size, state);
-    if( block->ptr==NULL && size!=0 )
+    if( block->ptr==NULL && size!=0 ) {
         return ae_false;
+    }
     block->deallocator = ae_free;
     return ae_true;
 }
@@ -482,15 +495,16 @@ NOTES:
 ************************************************************************/
 void ae_db_free(ae_dyn_block *block)
 {
-    if( block->ptr!=NULL )
+    if( block->ptr!=NULL ) {
         ((ae_deallocator)block->deallocator)(block->ptr);
+    }
     block->ptr = NULL;
     block->deallocator = ae_free;
 }
 
 /************************************************************************
-This function swaps contents of two dynamic blocks (pointers and 
-deallocators) leaving other parameters (automatic management settings, 
+This function swaps contents of two dynamic blocks (pointers and
+deallocators) leaving other parameters (automatic management settings,
 etc.) unchanged.
 
 NOTES:
@@ -530,16 +544,19 @@ ae_bool ae_vector_init(ae_vector *dst, ae_int_t size, ae_datatype datatype, ae_s
 {
     /* ensure that size is >=0
        two ways to exit: 1) through ae_assert, if we have non-NULL state, 2) by returning ae_false */
-    if( state!=NULL )
+    if( state!=NULL ) {
         ae_assert(size>=0, "ae_vector_init(): negative size", state);
-    if( size<0 )
+    }
+    if( size<0 ) {
         return ae_false;
+    }
 
     /* init */
     dst->cnt = size;
     dst->datatype = datatype;
-    if( !ae_db_malloc(&dst->data, size*ae_sizeof(datatype), state, make_automatic) )
+    if( !ae_db_malloc(&dst->data, size*ae_sizeof(datatype), state, make_automatic) ) {
         return ae_false;
+    }
     dst->ptr.p_ptr = dst->data.ptr;
     return ae_true;
 }
@@ -562,10 +579,12 @@ dst is assumed to be uninitialized, its fields are ignored.
 ************************************************************************/
 ae_bool ae_vector_init_copy(ae_vector *dst, ae_vector *src, ae_state *state, ae_bool make_automatic)
 {
-    if( !ae_vector_init(dst, src->cnt, src->datatype, state, make_automatic) )
+    if( !ae_vector_init(dst, src->cnt, src->datatype, state, make_automatic) ) {
         return ae_false;
-    if( src->cnt!=0 )
+    }
+    if( src->cnt!=0 ) {
         memcpy(dst->ptr.p_ptr, src->ptr.p_ptr, (size_t)(src->cnt*ae_sizeof(src->datatype)));
+    }
     return ae_true;
 }
 
@@ -582,8 +601,9 @@ dst is assumed to be uninitialized, its fields are ignored.
 void ae_vector_init_from_x(ae_vector *dst, x_vector *src, ae_state *state, ae_bool make_automatic)
 {
     ae_vector_init(dst, (ae_int_t)src->cnt, (ae_datatype)src->datatype, state, make_automatic);
-    if( src->cnt>0 )
+    if( src->cnt>0 ) {
         memcpy(dst->ptr.p_ptr, src->ptr, (size_t)(((ae_int_t)src->cnt)*ae_sizeof((ae_datatype)src->datatype)));
+    }
 }
 
 
@@ -608,17 +628,21 @@ ae_bool ae_vector_set_length(ae_vector *dst, ae_int_t newsize, ae_state *state)
 {
     /* ensure that size is >=0
        two ways to exit: 1) through ae_assert, if we have non-NULL state, 2) by returning ae_false */
-    if( state!=NULL )
+    if( state!=NULL ) {
         ae_assert(newsize>=0, "ae_vector_set_length(): negative size", state);
-    if( newsize<0 )
+    }
+    if( newsize<0 ) {
         return ae_false;
+    }
 
     /* set length */
-    if( dst->cnt==newsize )
+    if( dst->cnt==newsize ) {
         return ae_true;
+    }
     dst->cnt = newsize;
-    if( !ae_db_realloc(&dst->data, newsize*ae_sizeof(dst->datatype), state) )
+    if( !ae_db_realloc(&dst->data, newsize*ae_sizeof(dst->datatype), state) ) {
         return ae_false;
+    }
     dst->ptr.p_ptr = dst->data.ptr;
     return ae_true;
 }
@@ -652,9 +676,9 @@ void ae_swap_vectors(ae_vector *vec1, ae_vector *vec2)
     ae_int_t cnt;
     ae_datatype datatype;
     void *p_ptr;
-    
+
     ae_db_swap(&vec1->data, &vec2->data);
-    
+
     cnt = vec1->cnt;
     datatype = vec1->datatype;
     p_ptr = vec1->ptr.p_ptr;
@@ -690,14 +714,15 @@ ae_bool ae_matrix_init(ae_matrix *dst, ae_int_t rows, ae_int_t cols, ae_datatype
 {
     /* ensure that size is >=0
        two ways to exit: 1) through ae_assert, if we have non-NULL state, 2) by returning ae_false */
-    if( state!=NULL )
+    if( state!=NULL ) {
         ae_assert(rows>=0 && cols>=0, "ae_matrix_init(): negative length", state);
-    if( rows<0 || cols<0 )
+    }
+    if( rows<0 || cols<0 ) {
         return ae_false;
+    }
 
     /* if one of rows/cols is zero, another MUST be too */
-    if( rows==0 || cols==0 )
-    {
+    if( rows==0 || cols==0 ) {
         rows = 0;
         cols = 0;
     }
@@ -706,11 +731,13 @@ ae_bool ae_matrix_init(ae_matrix *dst, ae_int_t rows, ae_int_t cols, ae_datatype
     dst->rows = rows;
     dst->cols = cols;
     dst->stride = cols;
-    while( dst->stride*ae_sizeof(datatype)%AE_DATA_ALIGN!=0 )
+    while( dst->stride*ae_sizeof(datatype)%AE_DATA_ALIGN!=0 ) {
         dst->stride++;
+    }
     dst->datatype = datatype;
-    if( !ae_db_malloc(&dst->data, dst->rows*((ae_int_t)sizeof(void*)+dst->stride*ae_sizeof(datatype))+AE_DATA_ALIGN-1, state, make_automatic) )
+    if( !ae_db_malloc(&dst->data, dst->rows*((ae_int_t)sizeof(void*)+dst->stride*ae_sizeof(datatype))+AE_DATA_ALIGN-1, state, make_automatic) ) {
         return ae_false;
+    }
     ae_matrix_update_row_pointers(dst, ae_align((char*)dst->data.ptr+dst->rows*sizeof(void*),AE_DATA_ALIGN));
     return ae_true;
 }
@@ -734,15 +761,16 @@ dst is assumed to be uninitialized, its fields are ignored.
 ae_bool ae_matrix_init_copy(ae_matrix *dst, ae_matrix *src, ae_state *state, ae_bool make_automatic)
 {
     ae_int_t i;
-    if( !ae_matrix_init(dst, src->rows, src->cols, src->datatype, state, make_automatic) )
+    if( !ae_matrix_init(dst, src->rows, src->cols, src->datatype, state, make_automatic) ) {
         return ae_false;
-    if( src->rows!=0 && src->cols!=0 )
-    {
-        if( dst->stride==src->stride )
+    }
+    if( src->rows!=0 && src->cols!=0 ) {
+        if( dst->stride==src->stride ) {
             memcpy(dst->ptr.pp_void[0], src->ptr.pp_void[0], (size_t)(src->rows*src->stride*ae_sizeof(src->datatype)));
-        else
-            for(i=0; i<dst->rows; i++)
+        } else
+            for(i=0; i<dst->rows; i++) {
                 memcpy(dst->ptr.pp_void[i], src->ptr.pp_void[i], (size_t)(dst->cols*ae_sizeof(dst->datatype)));
+            }
     }
     return ae_true;
 }
@@ -755,13 +783,13 @@ void ae_matrix_init_from_x(ae_matrix *dst, x_matrix *src, ae_state *state, ae_bo
     ae_int_t row_size;
     ae_int_t i;
     ae_matrix_init(dst, (ae_int_t)src->rows, (ae_int_t)src->cols, (ae_datatype)src->datatype, state, make_automatic);
-    if( src->rows!=0 && src->cols!=0 )
-    {
+    if( src->rows!=0 && src->cols!=0 ) {
         p_src_row = (char*)src->ptr;
         p_dst_row = (char*)(dst->ptr.pp_void[0]);
         row_size = ae_sizeof((ae_datatype)src->datatype)*(ae_int_t)src->cols;
-        for(i=0; i<src->rows; i++, p_src_row+=src->stride*ae_sizeof((ae_datatype)src->datatype), p_dst_row+=dst->stride*ae_sizeof((ae_datatype)src->datatype))
+        for(i=0; i<src->rows; i++, p_src_row+=src->stride*ae_sizeof((ae_datatype)src->datatype), p_dst_row+=dst->stride*ae_sizeof((ae_datatype)src->datatype)) {
             memcpy(p_dst_row, p_src_row, (size_t)(row_size));
+        }
     }
 }
 
@@ -788,20 +816,25 @@ ae_bool ae_matrix_set_length(ae_matrix *dst, ae_int_t rows, ae_int_t cols, ae_st
 {
     /* ensure that size is >=0
        two ways to exit: 1) through ae_assert, if we have non-NULL state, 2) by returning ae_false */
-    if( state!=NULL )
+    if( state!=NULL ) {
         ae_assert(rows>=0 && cols>=0, "ae_matrix_set_length(): negative length", state);
-    if( rows<0 || cols<0 )
+    }
+    if( rows<0 || cols<0 ) {
         return ae_false;
+    }
 
-    if( dst->rows==rows && dst->cols==cols )
-        return ae_true;    
+    if( dst->rows==rows && dst->cols==cols ) {
+        return ae_true;
+    }
     dst->rows = rows;
     dst->cols = cols;
     dst->stride = cols;
-    while( dst->stride*ae_sizeof(dst->datatype)%AE_DATA_ALIGN!=0 )
+    while( dst->stride*ae_sizeof(dst->datatype)%AE_DATA_ALIGN!=0 ) {
         dst->stride++;
-    if( !ae_db_realloc(&dst->data, dst->rows*((ae_int_t)sizeof(void*)+dst->stride*ae_sizeof(dst->datatype))+AE_DATA_ALIGN-1, state) )
+    }
+    if( !ae_db_realloc(&dst->data, dst->rows*((ae_int_t)sizeof(void*)+dst->stride*ae_sizeof(dst->datatype))+AE_DATA_ALIGN-1, state) ) {
         return ae_false;
+    }
     ae_matrix_update_row_pointers(dst, ae_align((char*)dst->data.ptr+dst->rows*sizeof(void*),AE_DATA_ALIGN));
     return ae_true;
 }
@@ -839,9 +872,9 @@ void ae_swap_matrices(ae_matrix *mat1, ae_matrix *mat2)
     ae_int_t stride;
     ae_datatype datatype;
     void *p_ptr;
-    
+
     ae_db_swap(&mat1->data, &mat2->data);
-    
+
     rows = mat1->rows;
     cols = mat1->cols;
     stride = mat1->stride;
@@ -875,20 +908,21 @@ NOTES:
 ************************************************************************/
 void ae_x_set_vector(x_vector *dst, ae_vector *src, ae_state *state)
 {
-    if( dst->cnt!=src->cnt || dst->datatype!=src->datatype )
-    {
-        if( dst->owner==OWN_AE )
+    if( dst->cnt!=src->cnt || dst->datatype!=src->datatype ) {
+        if( dst->owner==OWN_AE ) {
             ae_free(dst->ptr);
+        }
         dst->ptr = ae_malloc((size_t)(src->cnt*ae_sizeof(src->datatype)), state);
         dst->last_action = ACT_NEW_LOCATION;
         dst->cnt = src->cnt;
         dst->datatype = src->datatype;
         dst->owner = OWN_AE;
-    }
-    else
+    } else {
         dst->last_action = ACT_SAME_LOCATION;
-    if( src->cnt )
+    }
+    if( src->cnt ) {
         memcpy(dst->ptr, src->ptr.p_ptr, (size_t)(src->cnt*ae_sizeof(src->datatype)));
+    }
 }
 
 /************************************************************************
@@ -909,10 +943,10 @@ void ae_x_set_matrix(x_matrix *dst, ae_matrix *src, ae_state *state)
     char *p_dst_row;
     ae_int_t i;
     ae_int_t row_size;
-    if( dst->rows!=src->rows || dst->cols!=src->cols || dst->datatype!=src->datatype )
-    {
-        if( dst->owner==OWN_AE )
+    if( dst->rows!=src->rows || dst->cols!=src->cols || dst->datatype!=src->datatype ) {
+        if( dst->owner==OWN_AE ) {
             ae_free(dst->ptr);
+        }
         dst->rows = src->rows;
         dst->cols = src->cols;
         dst->stride = src->cols;
@@ -920,16 +954,16 @@ void ae_x_set_matrix(x_matrix *dst, ae_matrix *src, ae_state *state)
         dst->ptr = ae_malloc((size_t)(dst->rows*((ae_int_t)dst->stride)*ae_sizeof(src->datatype)), state);
         dst->last_action = ACT_NEW_LOCATION;
         dst->owner = OWN_AE;
-    }
-    else
+    } else {
         dst->last_action = ACT_SAME_LOCATION;
-    if( src->rows!=0 && src->cols!=0 )
-    {
+    }
+    if( src->rows!=0 && src->cols!=0 ) {
         p_src_row = (char*)(src->ptr.pp_void[0]);
         p_dst_row = (char*)dst->ptr;
         row_size = ae_sizeof(src->datatype)*src->cols;
-        for(i=0; i<src->rows; i++, p_src_row+=src->stride*ae_sizeof(src->datatype), p_dst_row+=dst->stride*ae_sizeof(src->datatype))
+        for(i=0; i<src->rows; i++, p_src_row+=src->stride*ae_sizeof(src->datatype), p_dst_row+=dst->stride*ae_sizeof(src->datatype)) {
             memcpy(p_dst_row, p_src_row, (size_t)(row_size));
+        }
     }
 }
 
@@ -950,8 +984,9 @@ NOTES:
 ************************************************************************/
 void ae_x_attach_to_vector(x_vector *dst, ae_vector *src)
 {
-    if( dst->owner==OWN_AE )
+    if( dst->owner==OWN_AE ) {
         ae_free(dst->ptr);
+    }
     dst->ptr = src->ptr.p_ptr;
     dst->last_action = ACT_NEW_LOCATION;
     dst->cnt = src->cnt;
@@ -976,8 +1011,9 @@ NOTES:
 ************************************************************************/
 void ae_x_attach_to_matrix(x_matrix *dst, ae_matrix *src)
 {
-    if( dst->owner==OWN_AE )
-            ae_free(dst->ptr);
+    if( dst->owner==OWN_AE ) {
+        ae_free(dst->ptr);
+    }
     dst->rows = src->rows;
     dst->cols = src->cols;
     dst->stride = src->stride;
@@ -995,8 +1031,9 @@ dst                 vector
 ************************************************************************/
 void x_vector_clear(x_vector *dst)
 {
-    if( dst->owner==OWN_AE )
+    if( dst->owner==OWN_AE ) {
         aligned_free(dst->ptr);
+    }
     dst->ptr = NULL;
     dst->cnt = 0;
 }
@@ -1006,8 +1043,9 @@ Assertion
 ************************************************************************/
 void ae_assert(ae_bool cond, const char *msg, ae_state *state)
 {
-    if( !cond )
+    if( !cond ) {
         ae_break(state, ERR_ASSERTION_FAILED, msg);
+    }
 }
 
 /************************************************************************
@@ -1019,7 +1057,7 @@ You must tell ALGLIB what CPU family is used by defining AE_CPU symbol
 (without this hint zero will be returned).
 
 Note: results of this function depend on both CPU and compiler;
-if compiler doesn't support SSE intrinsics, function won't set 
+if compiler doesn't support SSE intrinsics, function won't set
 corresponding flag.
 ************************************************************************/
 static volatile ae_bool _ae_cpuid_initialized = ae_false;
@@ -1036,12 +1074,11 @@ ae_int_t ae_cpuid()
      *
      */
     ae_int_t result;
-    
+
     /*
      * if not initialized, determine system properties
      */
-    if( !_ae_cpuid_initialized )
-    {
+    if( !_ae_cpuid_initialized ) {
         /*
          * SSE2
          */
@@ -1052,21 +1089,27 @@ ae_int_t ae_cpuid()
             int CPUInfo[4];
             __cpuid(CPUInfo, 1);
             if( (CPUInfo[3]&0x04000000)!=0 )
+            {
                 _ae_cpuid_has_sse2 = ae_true;
+            }
         }
 #elif AE_COMPILER==AE_GNUC
         {
             ae_int_t a,b,c,d;
             __asm__ __volatile__ ("cpuid": "=a" (a), "=b" (b), "=c" (c), "=d" (d) : "a" (1));
             if( (d&0x04000000)!=0 )
+            {
                 _ae_cpuid_has_sse2 = ae_true;
+            }
         }
 #elif AE_COMPILER==AE_SUNC
         {
             ae_int_t a,b,c,d;
             __asm__ __volatile__ ("cpuid": "=a" (a), "=b" (b), "=c" (c), "=d" (d) : "a" (1));
             if( (d&0x04000000)!=0 )
+            {
                 _ae_cpuid_has_sse2 = ae_true;
+            }
         }
 #else
 #endif
@@ -1077,13 +1120,14 @@ ae_int_t ae_cpuid()
          */
         _ae_cpuid_initialized = ae_true;
     }
-    
+
     /*
      * return
      */
     result = 0;
-    if( _ae_cpuid_has_sse2 )
+    if( _ae_cpuid_has_sse2 ) {
         result = result|CPU_SSE2;
+    }
     return result;
 }
 
@@ -1138,36 +1182,32 @@ ae_bool ae_fp_greater_eq(double v1, double v2)
 
 ae_bool ae_isfinite_stateless(double x, ae_int_t endianness)
 {
-    union _u
-    {
+    union _u {
         double a;
         ae_int32_t p[2];
     } u;
     ae_int32_t high;
     u.a = x;
-    if( endianness==AE_LITTLE_ENDIAN )
+    if( endianness==AE_LITTLE_ENDIAN ) {
         high = u.p[1];
-    else
+    } else {
         high = u.p[0];
+    }
     return (high & (ae_int32_t)0x7FF00000)!=(ae_int32_t)0x7FF00000;
 }
 
 ae_bool ae_isnan_stateless(double x,    ae_int_t endianness)
 {
-    union _u
-    {
+    union _u {
         double a;
         ae_int32_t p[2];
     } u;
     ae_int32_t high, low;
     u.a = x;
-    if( endianness==AE_LITTLE_ENDIAN )
-    {
+    if( endianness==AE_LITTLE_ENDIAN ) {
         high = u.p[1];
         low =  u.p[0];
-    }
-    else
-    {
+    } else {
         high = u.p[0];
         low =  u.p[1];
     }
@@ -1176,99 +1216,88 @@ ae_bool ae_isnan_stateless(double x,    ae_int_t endianness)
 
 ae_bool ae_isinf_stateless(double x,    ae_int_t endianness)
 {
-    union _u
-    {
+    union _u {
         double a;
         ae_int32_t p[2];
     } u;
     ae_int32_t high, low;
     u.a = x;
-    if( endianness==AE_LITTLE_ENDIAN )
-    {
+    if( endianness==AE_LITTLE_ENDIAN ) {
         high = u.p[1];
         low  = u.p[0];
-    }
-    else
-    {
+    } else {
         high = u.p[0];
         low  = u.p[1];
     }
-    
+
     /* 31 least significant bits of high are compared */
-    return ((high&0x7FFFFFFF)==0x7FF00000) && (low==0); 
+    return ((high&0x7FFFFFFF)==0x7FF00000) && (low==0);
 }
 
 ae_bool ae_isposinf_stateless(double x, ae_int_t endianness)
 {
-    union _u
-    {
+    union _u {
         double a;
         ae_int32_t p[2];
     } u;
     ae_int32_t high, low;
     u.a = x;
-    if( endianness==AE_LITTLE_ENDIAN )
-    {
+    if( endianness==AE_LITTLE_ENDIAN ) {
         high = u.p[1];
         low  = u.p[0];
-    }
-    else
-    {
+    } else {
         high = u.p[0];
         low  = u.p[1];
     }
-    
+
     /* all 32 bits of high are compared */
-    return (high==(ae_int32_t)0x7FF00000) && (low==0); 
+    return (high==(ae_int32_t)0x7FF00000) && (low==0);
 }
 
 ae_bool ae_isneginf_stateless(double x, ae_int_t endianness)
 {
-    union _u
-    {
+    union _u {
         double a;
         ae_int32_t p[2];
     } u;
     ae_int32_t high, low;
     u.a = x;
-    if( endianness==AE_LITTLE_ENDIAN )
-    {
+    if( endianness==AE_LITTLE_ENDIAN ) {
         high = u.p[1];
         low  = u.p[0];
-    }
-    else
-    {
+    } else {
         high = u.p[0];
         low  = u.p[1];
     }
-    
+
     /* this code is a bit tricky to avoid comparison of high with 0xFFF00000, which may be unsafe with some buggy compilers */
     return ((high&0x7FFFFFFF)==0x7FF00000) && (high!=(ae_int32_t)0x7FF00000) && (low==0);
 }
 
 ae_int_t ae_get_endianness()
 {
-    union
-    {
+    union {
         double a;
         ae_int32_t p[2];
     } u;
-    
+
     /*
      * determine endianness
      * two types are supported: big-endian and little-endian.
      * mixed-endian hardware is NOT supported.
      *
-     * 1983 is used as magic number because its non-periodic double 
-     * representation allow us to easily distinguish between upper 
+     * 1983 is used as magic number because its non-periodic double
+     * representation allow us to easily distinguish between upper
      * and lower halfs and to detect mixed endian hardware.
      *
      */
-    u.a = 1.0/1983.0; 
-    if( u.p[1]==(ae_int32_t)0x3f408642 )
+    u.a = 1.0/1983.0;
+    if( u.p[1]==(ae_int32_t)0x3f408642 ) {
         return AE_LITTLE_ENDIAN;
-    if( u.p[0]==(ae_int32_t)0x3f408642 )
+    }
+    if( u.p[0]==(ae_int32_t)0x3f408642 ) {
         return AE_BIG_ENDIAN;
+    }
     return AE_MIXED_ENDIAN;
 }
 
@@ -1319,8 +1348,12 @@ double ae_sqrt(double x, ae_state *state)
 
 ae_int_t ae_sign(double x, ae_state *state)
 {
-    if( x>0 ) return  1;
-    if( x<0 ) return -1;
+    if( x>0 ) {
+        return  1;
+    }
+    if( x<0 ) {
+        return -1;
+    }
     return 0;
 }
 
@@ -1369,10 +1402,12 @@ double ae_randomreal(ae_state *state)
     int i1 = rand();
     int i2 = rand();
     double mx;
-    while(i1==RAND_MAX)
+    while(i1==RAND_MAX) {
         i1 =rand();
-    while(i2==RAND_MAX)
+    }
+    while(i2==RAND_MAX) {
         i2 =rand();
+    }
     mx = RAND_MAX;
     return (i1+i2/mx)/mx;
 }
@@ -1452,24 +1487,17 @@ Symmetric/Hermitian properties: check and force
 static void x_split_length(ae_int_t n, ae_int_t nb, ae_int_t* n1, ae_int_t* n2)
 {
     ae_int_t r;
-    if( n<=nb )
-    {
+    if( n<=nb ) {
         *n1 = n;
         *n2 = 0;
-    }
-    else
-    {
-        if( n%nb!=0 )
-        {
+    } else {
+        if( n%nb!=0 ) {
             *n2 = n%nb;
             *n1 = n-(*n2);
-        }
-        else
-        {
+        } else {
             *n2 = n/2;
             *n1 = n-(*n2);
-            if( *n1%nb==0 )
-            {
+            if( *n1%nb==0 ) {
                 return;
             }
             r = nb-*n1%nb;
@@ -1488,10 +1516,9 @@ static double x_safepythag2(double x, double y)
     yabs = fabs(y);
     w = xabs>yabs ? xabs : yabs;
     z = xabs<yabs ? xabs : yabs;
-    if( z==0 )
+    if( z==0 ) {
         return w;
-    else
-    {
+    } else {
         double t;
         t = z/w;
         return w*sqrt(1+t*t);
@@ -1515,25 +1542,19 @@ static double x_safepythag2(double x, double y)
 static void is_symmetric_rec_off_stat(x_matrix *a, ae_int_t offset0, ae_int_t offset1, ae_int_t len0, ae_int_t len1, ae_bool *nonfinite, double *mx, double *err, ae_state *_state)
 {
     /* try to split problem into two smaller ones */
-    if( len0>x_nb || len1>x_nb )
-    {
+    if( len0>x_nb || len1>x_nb ) {
         ae_int_t n1, n2;
-        if( len0>len1 )
-        {
+        if( len0>len1 ) {
             x_split_length(len0, x_nb, &n1, &n2);
             is_symmetric_rec_off_stat(a, offset0,    offset1, n1, len1, nonfinite, mx, err, _state);
             is_symmetric_rec_off_stat(a, offset0+n1, offset1, n2, len1, nonfinite, mx, err, _state);
-        }
-        else
-        {
+        } else {
             x_split_length(len1, x_nb, &n1, &n2);
             is_symmetric_rec_off_stat(a, offset0, offset1,    len0, n1, nonfinite, mx, err, _state);
             is_symmetric_rec_off_stat(a, offset0, offset1+n1, len0, n2, nonfinite, mx, err, _state);
         }
         return;
-    }
-    else
-    {
+    } else {
         /* base case */
         double *p1, *p2, *prow, *pcol;
         double v;
@@ -1541,25 +1562,20 @@ static void is_symmetric_rec_off_stat(x_matrix *a, ae_int_t offset0, ae_int_t of
 
         p1 = (double*)(a->ptr)+offset0*a->stride+offset1;
         p2 = (double*)(a->ptr)+offset1*a->stride+offset0;
-        for(i=0; i<len0; i++)
-        {
+        for(i=0; i<len0; i++) {
             pcol = p2+i;
             prow = p1+i*a->stride;
-            for(j=0; j<len1; j++)
-            {
-                if( !ae_isfinite(*pcol,_state) || !ae_isfinite(*prow,_state) )
-                {
+            for(j=0; j<len1; j++) {
+                if( !ae_isfinite(*pcol,_state) || !ae_isfinite(*prow,_state) ) {
                     *nonfinite = ae_true;
-                }
-                else
-                {
+                } else {
                     v = fabs(*pcol);
                     *mx =  *mx>v ? *mx : v;
                     v = fabs(*prow);
                     *mx =  *mx>v ? *mx : v;
                     v = fabs(*pcol-*prow);
                     *err = *err>v ? *err : v;
-                }                
+                }
                 pcol += a->stride;
                 prow++;
             }
@@ -1585,10 +1601,9 @@ static void is_symmetric_rec_diag_stat(x_matrix *a, ae_int_t offset, ae_int_t le
     double *p, *prow, *pcol;
     double v;
     ae_int_t i, j;
-    
+
     /* try to split problem into two smaller ones */
-    if( len>x_nb )
-    {
+    if( len>x_nb ) {
         ae_int_t n1, n2;
         x_split_length(len, x_nb, &n1, &n2);
         is_symmetric_rec_diag_stat(a, offset, n1, nonfinite, mx, err, _state);
@@ -1596,21 +1611,16 @@ static void is_symmetric_rec_diag_stat(x_matrix *a, ae_int_t offset, ae_int_t le
         is_symmetric_rec_off_stat(a, offset+n1, offset, n2, n1, nonfinite, mx, err, _state);
         return;
     }
-    
+
     /* base case */
     p = (double*)(a->ptr)+offset*a->stride+offset;
-    for(i=0; i<len; i++)
-    {
+    for(i=0; i<len; i++) {
         pcol = p+i;
         prow = p+i*a->stride;
-        for(j=0; j<i; j++,pcol+=a->stride,prow++)
-        {
-            if( !ae_isfinite(*pcol,_state) || !ae_isfinite(*prow,_state) )
-            {
+        for(j=0; j<i; j++,pcol+=a->stride,prow++) {
+            if( !ae_isfinite(*pcol,_state) || !ae_isfinite(*prow,_state) ) {
                 *nonfinite = ae_true;
-            }
-            else
-            {
+            } else {
                 v = fabs(*pcol);
                 *mx =  *mx>v ? *mx : v;
                 v = fabs(*prow);
@@ -1641,25 +1651,19 @@ static void is_symmetric_rec_diag_stat(x_matrix *a, ae_int_t offset, ae_int_t le
 static void is_hermitian_rec_off_stat(x_matrix *a, ae_int_t offset0, ae_int_t offset1, ae_int_t len0, ae_int_t len1, ae_bool *nonfinite, double *mx, double *err, ae_state *_state)
 {
     /* try to split problem into two smaller ones */
-    if( len0>x_nb || len1>x_nb )
-    {
+    if( len0>x_nb || len1>x_nb ) {
         ae_int_t n1, n2;
-        if( len0>len1 )
-        {
+        if( len0>len1 ) {
             x_split_length(len0, x_nb, &n1, &n2);
             is_hermitian_rec_off_stat(a, offset0,    offset1, n1, len1, nonfinite, mx, err, _state);
             is_hermitian_rec_off_stat(a, offset0+n1, offset1, n2, len1, nonfinite, mx, err, _state);
-        }
-        else
-        {
+        } else {
             x_split_length(len1, x_nb, &n1, &n2);
             is_hermitian_rec_off_stat(a, offset0, offset1,    len0, n1, nonfinite, mx, err, _state);
             is_hermitian_rec_off_stat(a, offset0, offset1+n1, len0, n2, nonfinite, mx, err, _state);
         }
         return;
-    }
-    else
-    {
+    } else {
         /* base case */
         ae_complex *p1, *p2, *prow, *pcol;
         double v;
@@ -1667,18 +1671,13 @@ static void is_hermitian_rec_off_stat(x_matrix *a, ae_int_t offset0, ae_int_t of
 
         p1 = (ae_complex*)(a->ptr)+offset0*a->stride+offset1;
         p2 = (ae_complex*)(a->ptr)+offset1*a->stride+offset0;
-        for(i=0; i<len0; i++)
-        {
+        for(i=0; i<len0; i++) {
             pcol = p2+i;
             prow = p1+i*a->stride;
-            for(j=0; j<len1; j++)
-            {
-                if( !ae_isfinite(pcol->x, _state) || !ae_isfinite(pcol->y, _state) || !ae_isfinite(prow->x, _state) || !ae_isfinite(prow->y, _state) )
-                {
+            for(j=0; j<len1; j++) {
+                if( !ae_isfinite(pcol->x, _state) || !ae_isfinite(pcol->y, _state) || !ae_isfinite(prow->x, _state) || !ae_isfinite(prow->y, _state) ) {
                     *nonfinite = ae_true;
-                }
-                else
-                {
+                } else {
                     v = x_safepythag2(pcol->x, pcol->y);
                     *mx =  *mx>v ? *mx : v;
                     v = x_safepythag2(prow->x, prow->y);
@@ -1711,10 +1710,9 @@ static void is_hermitian_rec_diag_stat(x_matrix *a, ae_int_t offset, ae_int_t le
     ae_complex *p, *prow, *pcol;
     double v;
     ae_int_t i, j;
-    
+
     /* try to split problem into two smaller ones */
-    if( len>x_nb )
-    {
+    if( len>x_nb ) {
         ae_int_t n1, n2;
         x_split_length(len, x_nb, &n1, &n2);
         is_hermitian_rec_diag_stat(a, offset, n1, nonfinite, mx, err, _state);
@@ -1722,21 +1720,16 @@ static void is_hermitian_rec_diag_stat(x_matrix *a, ae_int_t offset, ae_int_t le
         is_hermitian_rec_off_stat(a, offset+n1, offset, n2, n1, nonfinite, mx, err, _state);
         return;
     }
-    
+
     /* base case */
     p = (ae_complex*)(a->ptr)+offset*a->stride+offset;
-    for(i=0; i<len; i++)
-    {
+    for(i=0; i<len; i++) {
         pcol = p+i;
         prow = p+i*a->stride;
-        for(j=0; j<i; j++,pcol+=a->stride,prow++)
-        {
-            if( !ae_isfinite(pcol->x, _state) || !ae_isfinite(pcol->y, _state) || !ae_isfinite(prow->x, _state) || !ae_isfinite(prow->y, _state) )
-            {
+        for(j=0; j<i; j++,pcol+=a->stride,prow++) {
+            if( !ae_isfinite(pcol->x, _state) || !ae_isfinite(pcol->y, _state) || !ae_isfinite(prow->x, _state) || !ae_isfinite(prow->y, _state) ) {
                 *nonfinite = ae_true;
-            }
-            else
-            {
+            } else {
                 v = x_safepythag2(pcol->x, pcol->y);
                 *mx =  *mx>v ? *mx : v;
                 v = x_safepythag2(prow->x, prow->y);
@@ -1745,12 +1738,9 @@ static void is_hermitian_rec_diag_stat(x_matrix *a, ae_int_t offset, ae_int_t le
                 *err = *err>v ? *err : v;
             }
         }
-        if( !ae_isfinite(p[i+i*a->stride].x, _state) || !ae_isfinite(p[i+i*a->stride].y, _state) )
-        {
+        if( !ae_isfinite(p[i+i*a->stride].x, _state) || !ae_isfinite(p[i+i*a->stride].y, _state) ) {
             *nonfinite = ae_true;
-        }
-        else
-        {
+        } else {
             v = fabs(p[i+i*a->stride].x);
             *mx =  *mx>v ? *mx : v;
             v = fabs(p[i+i*a->stride].y);
@@ -1772,37 +1762,29 @@ static void is_hermitian_rec_diag_stat(x_matrix *a, ae_int_t offset, ae_int_t le
 static void force_symmetric_rec_off_stat(x_matrix *a, ae_int_t offset0, ae_int_t offset1, ae_int_t len0, ae_int_t len1)
 {
     /* try to split problem into two smaller ones */
-    if( len0>x_nb || len1>x_nb )
-    {
+    if( len0>x_nb || len1>x_nb ) {
         ae_int_t n1, n2;
-        if( len0>len1 )
-        {
+        if( len0>len1 ) {
             x_split_length(len0, x_nb, &n1, &n2);
             force_symmetric_rec_off_stat(a, offset0,    offset1, n1, len1);
             force_symmetric_rec_off_stat(a, offset0+n1, offset1, n2, len1);
-        }
-        else
-        {
+        } else {
             x_split_length(len1, x_nb, &n1, &n2);
             force_symmetric_rec_off_stat(a, offset0, offset1,    len0, n1);
             force_symmetric_rec_off_stat(a, offset0, offset1+n1, len0, n2);
         }
         return;
-    }
-    else
-    {
+    } else {
         /* base case */
         double *p1, *p2, *prow, *pcol;
         ae_int_t i, j;
 
         p1 = (double*)(a->ptr)+offset0*a->stride+offset1;
         p2 = (double*)(a->ptr)+offset1*a->stride+offset0;
-        for(i=0; i<len0; i++)
-        {
+        for(i=0; i<len0; i++) {
             pcol = p2+i;
             prow = p1+i*a->stride;
-            for(j=0; j<len1; j++)
-            {
+            for(j=0; j<len1; j++) {
                 *pcol = *prow;
                 pcol += a->stride;
                 prow++;
@@ -1824,10 +1806,9 @@ static void force_symmetric_rec_diag_stat(x_matrix *a, ae_int_t offset, ae_int_t
 {
     double *p, *prow, *pcol;
     ae_int_t i, j;
-    
+
     /* try to split problem into two smaller ones */
-    if( len>x_nb )
-    {
+    if( len>x_nb ) {
         ae_int_t n1, n2;
         x_split_length(len, x_nb, &n1, &n2);
         force_symmetric_rec_diag_stat(a, offset, n1);
@@ -1835,15 +1816,15 @@ static void force_symmetric_rec_diag_stat(x_matrix *a, ae_int_t offset, ae_int_t
         force_symmetric_rec_off_stat(a, offset+n1, offset, n2, n1);
         return;
     }
-    
+
     /* base case */
     p = (double*)(a->ptr)+offset*a->stride+offset;
-    for(i=0; i<len; i++)
-    {
+    for(i=0; i<len; i++) {
         pcol = p+i;
         prow = p+i*a->stride;
-        for(j=0; j<i; j++,pcol+=a->stride,prow++)
+        for(j=0; j<i; j++,pcol+=a->stride,prow++) {
             *pcol = *prow;
+        }
     }
 }
 /*
@@ -1859,37 +1840,29 @@ static void force_symmetric_rec_diag_stat(x_matrix *a, ae_int_t offset, ae_int_t
 static void force_hermitian_rec_off_stat(x_matrix *a, ae_int_t offset0, ae_int_t offset1, ae_int_t len0, ae_int_t len1)
 {
     /* try to split problem into two smaller ones */
-    if( len0>x_nb || len1>x_nb )
-    {
+    if( len0>x_nb || len1>x_nb ) {
         ae_int_t n1, n2;
-        if( len0>len1 )
-        {
+        if( len0>len1 ) {
             x_split_length(len0, x_nb, &n1, &n2);
             force_hermitian_rec_off_stat(a, offset0,    offset1, n1, len1);
             force_hermitian_rec_off_stat(a, offset0+n1, offset1, n2, len1);
-        }
-        else
-        {
+        } else {
             x_split_length(len1, x_nb, &n1, &n2);
             force_hermitian_rec_off_stat(a, offset0, offset1,    len0, n1);
             force_hermitian_rec_off_stat(a, offset0, offset1+n1, len0, n2);
         }
         return;
-    }
-    else
-    {
+    } else {
         /* base case */
         ae_complex *p1, *p2, *prow, *pcol;
         ae_int_t i, j;
 
         p1 = (ae_complex*)(a->ptr)+offset0*a->stride+offset1;
         p2 = (ae_complex*)(a->ptr)+offset1*a->stride+offset0;
-        for(i=0; i<len0; i++)
-        {
+        for(i=0; i<len0; i++) {
             pcol = p2+i;
             prow = p1+i*a->stride;
-            for(j=0; j<len1; j++)
-            {
+            for(j=0; j<len1; j++) {
                 *pcol = *prow;
                 pcol += a->stride;
                 prow++;
@@ -1911,10 +1884,9 @@ static void force_hermitian_rec_diag_stat(x_matrix *a, ae_int_t offset, ae_int_t
 {
     ae_complex *p, *prow, *pcol;
     ae_int_t i, j;
-    
+
     /* try to split problem into two smaller ones */
-    if( len>x_nb )
-    {
+    if( len>x_nb ) {
         ae_int_t n1, n2;
         x_split_length(len, x_nb, &n1, &n2);
         force_hermitian_rec_diag_stat(a, offset, n1);
@@ -1922,15 +1894,15 @@ static void force_hermitian_rec_diag_stat(x_matrix *a, ae_int_t offset, ae_int_t
         force_hermitian_rec_off_stat(a, offset+n1, offset, n2, n1);
         return;
     }
-    
+
     /* base case */
     p = (ae_complex*)(a->ptr)+offset*a->stride+offset;
-    for(i=0; i<len; i++)
-    {
+    for(i=0; i<len; i++) {
         pcol = p+i;
         prow = p+i*a->stride;
-        for(j=0; j<i; j++,pcol+=a->stride,prow++)
+        for(j=0; j<i; j++,pcol+=a->stride,prow++) {
             *pcol = *prow;
+        }
     }
 }
 ae_bool x_is_symmetric(x_matrix *a)
@@ -1938,21 +1910,26 @@ ae_bool x_is_symmetric(x_matrix *a)
     double mx, err;
     ae_bool nonfinite;
     ae_state _alglib_env_state;
-    if( a->datatype!=DT_REAL )
+    if( a->datatype!=DT_REAL ) {
         return ae_false;
-    if( a->cols!=a->rows )
+    }
+    if( a->cols!=a->rows ) {
         return ae_false;
-    if( a->cols==0 || a->rows==0 )
+    }
+    if( a->cols==0 || a->rows==0 ) {
         return ae_true;
+    }
     ae_state_init(&_alglib_env_state);
     mx = 0;
     err = 0;
     nonfinite = ae_false;
     is_symmetric_rec_diag_stat(a, 0, (ae_int_t)a->rows, &nonfinite, &mx, &err, &_alglib_env_state);
-    if( nonfinite )
+    if( nonfinite ) {
         return ae_false;
-    if( mx==0 )
+    }
+    if( mx==0 ) {
         return ae_true;
+    }
     return err/mx<=1.0E-14;
 }
 ae_bool x_is_hermitian(x_matrix *a)
@@ -1960,42 +1937,53 @@ ae_bool x_is_hermitian(x_matrix *a)
     double mx, err;
     ae_bool nonfinite;
     ae_state _alglib_env_state;
-    if( a->datatype!=DT_COMPLEX )
+    if( a->datatype!=DT_COMPLEX ) {
         return ae_false;
-    if( a->cols!=a->rows )
+    }
+    if( a->cols!=a->rows ) {
         return ae_false;
-    if( a->cols==0 || a->rows==0 )
+    }
+    if( a->cols==0 || a->rows==0 ) {
         return ae_true;
+    }
     ae_state_init(&_alglib_env_state);
     mx = 0;
     err = 0;
     nonfinite = ae_false;
     is_hermitian_rec_diag_stat(a, 0, (ae_int_t)a->rows, &nonfinite, &mx, &err, &_alglib_env_state);
-    if( nonfinite )
+    if( nonfinite ) {
         return ae_false;
-    if( mx==0 )
+    }
+    if( mx==0 ) {
         return ae_true;
+    }
     return err/mx<=1.0E-14;
 }
 ae_bool x_force_symmetric(x_matrix *a)
 {
-    if( a->datatype!=DT_REAL )
+    if( a->datatype!=DT_REAL ) {
         return ae_false;
-    if( a->cols!=a->rows )
+    }
+    if( a->cols!=a->rows ) {
         return ae_false;
-    if( a->cols==0 || a->rows==0 )
+    }
+    if( a->cols==0 || a->rows==0 ) {
         return ae_true;
+    }
     force_symmetric_rec_diag_stat(a, 0, (ae_int_t)a->rows);
     return ae_true;
 }
 ae_bool x_force_hermitian(x_matrix *a)
 {
-    if( a->datatype!=DT_COMPLEX )
+    if( a->datatype!=DT_COMPLEX ) {
         return ae_false;
-    if( a->cols!=a->rows )
+    }
+    if( a->cols!=a->rows ) {
         return ae_false;
-    if( a->cols==0 || a->rows==0 )
+    }
+    if( a->cols==0 || a->rows==0 ) {
         return ae_true;
+    }
     force_hermitian_rec_diag_stat(a, 0, (ae_int_t)a->rows);
     return ae_true;
 }
@@ -2038,23 +2026,25 @@ digits, lowercase and uppercase letters, minus and underscore are used).
 
 If v is negative or greater than 63, this function returns '?'.
 ************************************************************************/
-static char _sixbits2char_tbl[64] = { 
-        '0', '1', '2', '3', '4', '5', '6', '7',
-        '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
-        'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
-        'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
-        'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 
-        'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 
-        'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 
-        'u', 'v', 'w', 'x', 'y', 'z', '-', '_' };
+static char _sixbits2char_tbl[64] = {
+    '0', '1', '2', '3', '4', '5', '6', '7',
+    '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
+    'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
+    'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
+    'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd',
+    'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
+    'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+    'u', 'v', 'w', 'x', 'y', 'z', '-', '_'
+};
 
 char ae_sixbits2char(ae_int_t v)
 {
-    
-    if( v<0 || v>63 )
+
+    if( v<0 || v>63 ) {
         return '?';
-    return _sixbits2char_tbl[v]; 
-    
+    }
+    return _sixbits2char_tbl[v];
+
     /* v is correct, process it */
     /*if( v<10 )
         return '0'+v;
@@ -2081,8 +2071,8 @@ static ae_int_t _ae_char2sixbits_tbl[] = {
     -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, 62, -1, -1,
-     0,  1,  2,  3,  4,  5,  6,  7,
-     8,  9, -1, -1, -1, -1, -1, -1,
+    0,  1,  2,  3,  4,  5,  6,  7,
+    8,  9, -1, -1, -1, -1, -1, -1,
     -1, 10, 11, 12, 13, 14, 15, 16,
     17, 18, 19, 20, 21, 22, 23, 24,
     25, 26, 27, 28, 29, 30, 31, 32,
@@ -2090,14 +2080,15 @@ static ae_int_t _ae_char2sixbits_tbl[] = {
     -1, 36, 37, 38, 39, 40, 41, 42,
     43, 44, 45, 46, 47, 48, 49, 50,
     51, 52, 53, 54, 55, 56, 57, 58,
-    59, 60, 61, -1, -1, -1, -1, -1 };
+    59, 60, 61, -1, -1, -1, -1, -1
+};
 ae_int_t ae_char2sixbits(char c)
 {
     return (c>=0 && c<127) ? _ae_char2sixbits_tbl[c] : -1;
 }
 
 /************************************************************************
-This function converts three bytes (24 bits) to four six-bit values 
+This function converts three bytes (24 bits) to four six-bit values
 (24 bits again).
 
 src     pointer to three bytes
@@ -2129,7 +2120,7 @@ void ae_foursixbits2threebytes(const ae_int_t *src, unsigned char *dst)
 This function serializes boolean value into buffer
 
 v           boolean value to be serialized
-buf         buffer, at least 12 characters wide 
+buf         buffer, at least 12 characters wide
             (11 chars for value, one for trailing zero)
 state       ALGLIB environment state
 ************************************************************************/
@@ -2137,15 +2128,16 @@ void ae_bool2str(ae_bool v, char *buf, ae_state *state)
 {
     char c = v ? '1' : '0';
     ae_int_t i;
-    for(i=0; i<AE_SER_ENTRY_LENGTH; i++)
+    for(i=0; i<AE_SER_ENTRY_LENGTH; i++) {
         buf[i] = c;
+    }
     buf[AE_SER_ENTRY_LENGTH] = 0;
 }
 
 /************************************************************************
 This function unserializes boolean value from buffer
 
-buf         buffer which contains value; leading spaces/tabs/newlines are 
+buf         buffer which contains value; leading spaces/tabs/newlines are
             ignored, traling spaces/tabs/newlines are treated as  end  of
             the boolean value.
 state       ALGLIB environment state
@@ -2156,21 +2148,19 @@ ae_bool ae_str2bool(const char *buf, ae_state *state, const char **pasttheend)
 {
     ae_bool was0, was1;
     const char *emsg = "ALGLIB: unable to read boolean value from stream";
-    
+
     was0 = ae_false;
     was1 = ae_false;
-    while( *buf==' ' || *buf=='\t' || *buf=='\n' || *buf=='\r' )
+    while( *buf==' ' || *buf=='\t' || *buf=='\n' || *buf=='\r' ) {
         buf++;
-    while( *buf!=' ' && *buf!='\t' && *buf!='\n' && *buf!='\r' && *buf!=0 )
-    {
-        if( *buf=='0' )
-        {
+    }
+    while( *buf!=' ' && *buf!='\t' && *buf!='\n' && *buf!='\r' && *buf!=0 ) {
+        if( *buf=='0' ) {
             was0 = ae_true;
             buf++;
             continue;
         }
-        if( *buf=='1' )
-        {
+        if( *buf=='1' ) {
             was1 = ae_true;
             buf++;
             continue;
@@ -2178,10 +2168,12 @@ ae_bool ae_str2bool(const char *buf, ae_state *state, const char **pasttheend)
         ae_break(state, ERR_ASSERTION_FAILED, emsg);
     }
     *pasttheend = buf;
-    if( (!was0) && (!was1) )
+    if( (!was0) && (!was1) ) {
         ae_break(state, ERR_ASSERTION_FAILED, emsg);
-    if( was0 && was1 )
+    }
+    if( was0 && was1 ) {
         ae_break(state, ERR_ASSERTION_FAILED, emsg);
+    }
     return was1 ? ae_true : ae_false;
 }
 
@@ -2189,26 +2181,25 @@ ae_bool ae_str2bool(const char *buf, ae_state *state, const char **pasttheend)
 This function serializes integer value into buffer
 
 v           integer value to be serialized
-buf         buffer, at least 12 characters wide 
+buf         buffer, at least 12 characters wide
             (11 chars for value, one for trailing zero)
 state       ALGLIB environment state
 ************************************************************************/
 void ae_int2str(ae_int_t v, char *buf, ae_state *state)
 {
-    union _u
-    {
+    union _u {
         ae_int_t ival;
         unsigned char bytes[9];
     } u;
     ae_int_t i;
     ae_int_t sixbits[12];
     unsigned char c;
-    
+
     /*
-     * copy v to array of chars, sign extending it and 
+     * copy v to array of chars, sign extending it and
      * converting to little endian order
      *
-     * because we don't want to mention size of ae_int_t explicitly, 
+     * because we don't want to mention size of ae_int_t explicitly,
      * we do it as follows:
      * 1. we fill u.bytes by zeros or ones (depending on sign of v)
      * 2. we copy v to u.ival
@@ -2219,20 +2210,19 @@ void ae_int2str(ae_int_t v, char *buf, ae_state *state)
      */
     c = v<0 ? (unsigned char)0xFF : (unsigned char)0x00;
     u.ival = v;
-    for(i=sizeof(ae_int_t); i<=8; i++) /* <=8 is preferred because it avoids unnecessary compiler warnings*/
+    for(i=sizeof(ae_int_t); i<=8; i++) { /* <=8 is preferred because it avoids unnecessary compiler warnings*/
         u.bytes[i] = c;
+    }
     u.bytes[8] = 0;
-    if( state->endianness==AE_BIG_ENDIAN )
-    {
-        for(i=0; i<sizeof(ae_int_t)/2; i++)
-        {
+    if( state->endianness==AE_BIG_ENDIAN ) {
+        for(i=0; i<sizeof(ae_int_t)/2; i++) {
             unsigned char tc;
             tc = u.bytes[i];
             u.bytes[i] = u.bytes[sizeof(ae_int_t)-1-i];
             u.bytes[sizeof(ae_int_t)-1-i] = tc;
         }
     }
-    
+
     /*
      * convert to six-bit representation, output
      *
@@ -2240,16 +2230,17 @@ void ae_int2str(ae_int_t v, char *buf, ae_state *state)
      */
     ae_threebytes2foursixbits(u.bytes+0, sixbits+0);
     ae_threebytes2foursixbits(u.bytes+3, sixbits+4);
-    ae_threebytes2foursixbits(u.bytes+6, sixbits+8);        
-    for(i=0; i<AE_SER_ENTRY_LENGTH; i++)
+    ae_threebytes2foursixbits(u.bytes+6, sixbits+8);
+    for(i=0; i<AE_SER_ENTRY_LENGTH; i++) {
         buf[i] = ae_sixbits2char(sixbits[i]);
+    }
     buf[AE_SER_ENTRY_LENGTH] = 0x00;
 }
 
 /************************************************************************
 This function unserializes integer value from string
 
-buf         buffer which contains value; leading spaces/tabs/newlines are 
+buf         buffer which contains value; leading spaces/tabs/newlines are
             ignored, traling spaces/tabs/newlines are treated as  end  of
             the boolean value.
 state       ALGLIB environment state
@@ -2261,43 +2252,43 @@ ae_int_t ae_str2int(const char *buf, ae_state *state, const char **pasttheend)
     const char *emsg = "ALGLIB: unable to read integer value from stream";
     ae_int_t sixbits[12];
     ae_int_t sixbitsread, i;
-    union _u
-    {
+    union _u {
         ae_int_t ival;
         unsigned char bytes[9];
     } u;
-    /* 
+    /*
      * 1. skip leading spaces
      * 2. read and decode six-bit digits
      * 3. set trailing digits to zeros
      * 4. convert to little endian 64-bit integer representation
      * 5. convert to big endian representation, if needed
      */
-    while( *buf==' ' || *buf=='\t' || *buf=='\n' || *buf=='\r' )
+    while( *buf==' ' || *buf=='\t' || *buf=='\n' || *buf=='\r' ) {
         buf++;
+    }
     sixbitsread = 0;
-    while( *buf!=' ' && *buf!='\t' && *buf!='\n' && *buf!='\r' && *buf!=0 )
-    {
+    while( *buf!=' ' && *buf!='\t' && *buf!='\n' && *buf!='\r' && *buf!=0 ) {
         ae_int_t d;
         d = ae_char2sixbits(*buf);
-        if( d<0 || sixbitsread>=AE_SER_ENTRY_LENGTH )
+        if( d<0 || sixbitsread>=AE_SER_ENTRY_LENGTH ) {
             ae_break(state, ERR_ASSERTION_FAILED, emsg);
+        }
         sixbits[sixbitsread] = d;
         sixbitsread++;
         buf++;
     }
     *pasttheend = buf;
-    if( sixbitsread==0 )
+    if( sixbitsread==0 ) {
         ae_break(state, ERR_ASSERTION_FAILED, emsg);
-    for(i=sixbitsread; i<12; i++)
+    }
+    for(i=sixbitsread; i<12; i++) {
         sixbits[i] = 0;
+    }
     ae_foursixbits2threebytes(sixbits+0, u.bytes+0);
     ae_foursixbits2threebytes(sixbits+4, u.bytes+3);
     ae_foursixbits2threebytes(sixbits+8, u.bytes+6);
-    if( state->endianness==AE_BIG_ENDIAN )
-    {
-        for(i=0; i<sizeof(ae_int_t)/2; i++)
-        {
+    if( state->endianness==AE_BIG_ENDIAN ) {
+        for(i=0; i<sizeof(ae_int_t)/2; i++) {
             unsigned char tc;
             tc = u.bytes[i];
             u.bytes[i] = u.bytes[sizeof(ae_int_t)-1-i];
@@ -2312,14 +2303,13 @@ ae_int_t ae_str2int(const char *buf, ae_state *state, const char **pasttheend)
 This function serializes double value into buffer
 
 v           double value to be serialized
-buf         buffer, at least 12 characters wide 
+buf         buffer, at least 12 characters wide
             (11 chars for value, one for trailing zero)
 state       ALGLIB environment state
 ************************************************************************/
 void ae_double2str(double v, char *buf, ae_state *state)
 {
-    union _u
-    {
+    union _u {
         double dval;
         unsigned char bytes[9];
     } u;
@@ -2329,25 +2319,22 @@ void ae_double2str(double v, char *buf, ae_state *state)
     /*
      * handle special quantities
      */
-    if( ae_isnan(v, state) )
-    {
+    if( ae_isnan(v, state) ) {
         const char *s = ".nan_______";
         memcpy(buf, s, strlen(s)+1);
         return;
     }
-    if( ae_isposinf(v, state) )
-    {
+    if( ae_isposinf(v, state) ) {
         const char *s = ".posinf____";
         memcpy(buf, s, strlen(s)+1);
         return;
     }
-    if( ae_isneginf(v, state) )
-    {
+    if( ae_isneginf(v, state) ) {
         const char *s = ".neginf____";
         memcpy(buf, s, strlen(s)+1);
         return;
     }
-    
+
     /*
      * process general case:
      * 1. copy v to array of chars
@@ -2359,10 +2346,8 @@ void ae_double2str(double v, char *buf, ae_state *state)
      */
     u.dval = v;
     u.bytes[8] = 0;
-    if( state->endianness==AE_BIG_ENDIAN )
-    {
-        for(i=0; i<sizeof(double)/2; i++)
-        {
+    if( state->endianness==AE_BIG_ENDIAN ) {
+        for(i=0; i<sizeof(double)/2; i++) {
             unsigned char tc;
             tc = u.bytes[i];
             u.bytes[i] = u.bytes[sizeof(double)-1-i];
@@ -2372,15 +2357,16 @@ void ae_double2str(double v, char *buf, ae_state *state)
     ae_threebytes2foursixbits(u.bytes+0, sixbits+0);
     ae_threebytes2foursixbits(u.bytes+3, sixbits+4);
     ae_threebytes2foursixbits(u.bytes+6, sixbits+8);
-    for(i=0; i<AE_SER_ENTRY_LENGTH; i++)
+    for(i=0; i<AE_SER_ENTRY_LENGTH; i++) {
         buf[i] = ae_sixbits2char(sixbits[i]);
+    }
     buf[AE_SER_ENTRY_LENGTH] = 0x00;
 }
 
 /************************************************************************
 This function unserializes double value from string
 
-buf         buffer which contains value; leading spaces/tabs/newlines are 
+buf         buffer which contains value; leading spaces/tabs/newlines are
             ignored, traling spaces/tabs/newlines are treated as  end  of
             the boolean value.
 state       ALGLIB environment state
@@ -2392,46 +2378,42 @@ double ae_str2double(const char *buf, ae_state *state, const char **pasttheend)
     const char *emsg = "ALGLIB: unable to read double value from stream";
     ae_int_t sixbits[12];
     ae_int_t sixbitsread, i;
-    union _u
-    {
+    union _u {
         double dval;
         unsigned char bytes[9];
     } u;
-    
-    
-     /* 
-      * skip leading spaces
-      */
-    while( *buf==' ' || *buf=='\t' || *buf=='\n' || *buf=='\r' )
+
+
+    /*
+     * skip leading spaces
+     */
+    while( *buf==' ' || *buf=='\t' || *buf=='\n' || *buf=='\r' ) {
         buf++;
-      
+    }
+
     /*
      * Handle special cases
      */
-    if( *buf=='.' )
-    {
+    if( *buf=='.' ) {
         const char *s_nan =    ".nan_______";
         const char *s_posinf = ".posinf____";
         const char *s_neginf = ".neginf____";
-        if( strncmp(buf, s_nan, strlen(s_nan))==0 )
-        {
+        if( strncmp(buf, s_nan, strlen(s_nan))==0 ) {
             *pasttheend = buf+strlen(s_nan);
             return state->v_nan;
         }
-        if( strncmp(buf, s_posinf, strlen(s_posinf))==0 )
-        {
+        if( strncmp(buf, s_posinf, strlen(s_posinf))==0 ) {
             *pasttheend = buf+strlen(s_posinf);
             return state->v_posinf;
         }
-        if( strncmp(buf, s_neginf, strlen(s_neginf))==0 )
-        {
+        if( strncmp(buf, s_neginf, strlen(s_neginf))==0 ) {
             *pasttheend = buf+strlen(s_neginf);
             return state->v_neginf;
         }
         ae_break(state, ERR_ASSERTION_FAILED, emsg);
     }
-    
-    /* 
+
+    /*
      * General case:
      * 1. read and decode six-bit digits
      * 2. check that all 11 digits were read
@@ -2440,27 +2422,26 @@ double ae_str2double(const char *buf, ae_state *state, const char **pasttheend)
      * 5. convert to big endian representation, if needed
      */
     sixbitsread = 0;
-    while( *buf!=' ' && *buf!='\t' && *buf!='\n' && *buf!='\r' && *buf!=0 )
-    {
+    while( *buf!=' ' && *buf!='\t' && *buf!='\n' && *buf!='\r' && *buf!=0 ) {
         ae_int_t d;
         d = ae_char2sixbits(*buf);
-        if( d<0 || sixbitsread>=AE_SER_ENTRY_LENGTH )
+        if( d<0 || sixbitsread>=AE_SER_ENTRY_LENGTH ) {
             ae_break(state, ERR_ASSERTION_FAILED, emsg);
+        }
         sixbits[sixbitsread] = d;
         sixbitsread++;
         buf++;
     }
     *pasttheend = buf;
-    if( sixbitsread!=AE_SER_ENTRY_LENGTH )
+    if( sixbitsread!=AE_SER_ENTRY_LENGTH ) {
         ae_break(state, ERR_ASSERTION_FAILED, emsg);
+    }
     sixbits[AE_SER_ENTRY_LENGTH] = 0;
     ae_foursixbits2threebytes(sixbits+0, u.bytes+0);
     ae_foursixbits2threebytes(sixbits+4, u.bytes+3);
     ae_foursixbits2threebytes(sixbits+8, u.bytes+6);
-    if( state->endianness==AE_BIG_ENDIAN )
-    {
-        for(i=0; i<sizeof(double)/2; i++)
-        {
+    if( state->endianness==AE_BIG_ENDIAN ) {
+        for(i=0; i<sizeof(double)/2; i++) {
             unsigned char tc;
             tc = u.bytes[i];
             u.bytes[i] = u.bytes[sizeof(double)-1-i];
@@ -2499,25 +2480,23 @@ void ae_serializer_alloc_entry(ae_serializer *serializer)
 ae_int_t ae_serializer_get_alloc_size(ae_serializer *serializer)
 {
     ae_int_t rows, lastrowsize, result;
-    
+
     serializer->mode = AE_SM_READY2S;
-    
+
     /* if no entries needes (degenerate case) */
-    if( serializer->entries_needed==0 )
-    {
+    if( serializer->entries_needed==0 ) {
         serializer->bytes_asked = 1;
         return serializer->bytes_asked;
     }
-    
+
     /* non-degenerate case */
     rows = serializer->entries_needed/AE_SER_ENTRIES_PER_ROW;
     lastrowsize = AE_SER_ENTRIES_PER_ROW;
-    if( serializer->entries_needed%AE_SER_ENTRIES_PER_ROW )
-    {
+    if( serializer->entries_needed%AE_SER_ENTRIES_PER_ROW ) {
         lastrowsize = serializer->entries_needed%AE_SER_ENTRIES_PER_ROW;
         rows++;
     }
-    
+
     /* calculate result size */
     result  = ((rows-1)*AE_SER_ENTRIES_PER_ROW+lastrowsize)*AE_SER_ENTRY_LENGTH;
     result +=  (rows-1)*(AE_SER_ENTRIES_PER_ROW-1)+(lastrowsize-1);
@@ -2564,29 +2543,29 @@ void ae_serializer_serialize_bool(ae_serializer *serializer, ae_bool v, ae_state
     char buf[AE_SER_ENTRY_LENGTH+2+1];
     const char *emsg = "ALGLIB: serialization integrity error";
     ae_int_t bytes_appended;
-    
+
     /* prepare serialization, check consistency */
     ae_bool2str(v, buf, state);
     serializer->entries_saved++;
-    if( serializer->entries_saved%AE_SER_ENTRIES_PER_ROW )
+    if( serializer->entries_saved%AE_SER_ENTRIES_PER_ROW ) {
         strcat(buf, " ");
-    else
+    } else {
         strcat(buf, "\r\n");
+    }
     bytes_appended = (ae_int_t)strlen(buf);
-    if( serializer->bytes_written+bytes_appended > serializer->bytes_asked )
+    if( serializer->bytes_written+bytes_appended > serializer->bytes_asked ) {
         ae_break(state, ERR_ASSERTION_FAILED, emsg);
+    }
     serializer->bytes_written += bytes_appended;
-        
+
     /* append to buffer */
 #ifdef AE_USE_CPP_SERIALIZATION
-    if( serializer->mode==AE_SM_TO_CPPSTRING )
-    {
+    if( serializer->mode==AE_SM_TO_CPPSTRING ) {
         *(serializer->out_cppstr) += buf;
         return;
     }
 #endif
-    if( serializer->mode==AE_SM_TO_STRING )
-    {
+    if( serializer->mode==AE_SM_TO_STRING ) {
         strcat(serializer->out_str, buf);
         serializer->out_str += bytes_appended;
         return;
@@ -2599,29 +2578,29 @@ void ae_serializer_serialize_int(ae_serializer *serializer, ae_int_t v, ae_state
     char buf[AE_SER_ENTRY_LENGTH+2+1];
     const char *emsg = "ALGLIB: serialization integrity error";
     ae_int_t bytes_appended;
-    
+
     /* prepare serialization, check consistency */
     ae_int2str(v, buf, state);
     serializer->entries_saved++;
-    if( serializer->entries_saved%AE_SER_ENTRIES_PER_ROW )
+    if( serializer->entries_saved%AE_SER_ENTRIES_PER_ROW ) {
         strcat(buf, " ");
-    else
+    } else {
         strcat(buf, "\r\n");
+    }
     bytes_appended = (ae_int_t)strlen(buf);
-    if( serializer->bytes_written+bytes_appended > serializer->bytes_asked )
+    if( serializer->bytes_written+bytes_appended > serializer->bytes_asked ) {
         ae_break(state, ERR_ASSERTION_FAILED, emsg);
+    }
     serializer->bytes_written += bytes_appended;
-        
+
     /* append to buffer */
 #ifdef AE_USE_CPP_SERIALIZATION
-    if( serializer->mode==AE_SM_TO_CPPSTRING )
-    {
+    if( serializer->mode==AE_SM_TO_CPPSTRING ) {
         *(serializer->out_cppstr) += buf;
         return;
     }
 #endif
-    if( serializer->mode==AE_SM_TO_STRING )
-    {
+    if( serializer->mode==AE_SM_TO_STRING ) {
         strcat(serializer->out_str, buf);
         serializer->out_str += bytes_appended;
         return;
@@ -2634,29 +2613,29 @@ void ae_serializer_serialize_double(ae_serializer *serializer, double v, ae_stat
     char buf[AE_SER_ENTRY_LENGTH+2+1];
     const char *emsg = "ALGLIB: serialization integrity error";
     ae_int_t bytes_appended;
-    
+
     /* prepare serialization, check consistency */
     ae_double2str(v, buf, state);
     serializer->entries_saved++;
-    if( serializer->entries_saved%AE_SER_ENTRIES_PER_ROW )
+    if( serializer->entries_saved%AE_SER_ENTRIES_PER_ROW ) {
         strcat(buf, " ");
-    else
+    } else {
         strcat(buf, "\r\n");
+    }
     bytes_appended = (ae_int_t)strlen(buf);
-    if( serializer->bytes_written+bytes_appended > serializer->bytes_asked )
+    if( serializer->bytes_written+bytes_appended > serializer->bytes_asked ) {
         ae_break(state, ERR_ASSERTION_FAILED, emsg);
+    }
     serializer->bytes_written += bytes_appended;
-        
+
     /* append to buffer */
 #ifdef AE_USE_CPP_SERIALIZATION
-    if( serializer->mode==AE_SM_TO_CPPSTRING )
-    {
+    if( serializer->mode==AE_SM_TO_CPPSTRING ) {
         *(serializer->out_cppstr) += buf;
         return;
     }
 #endif
-    if( serializer->mode==AE_SM_TO_STRING )
-    {
+    if( serializer->mode==AE_SM_TO_STRING ) {
         strcat(serializer->out_str, buf);
         serializer->out_str += bytes_appended;
         return;
@@ -2730,10 +2709,9 @@ double ae_c_abs(ae_complex z, ae_state *state)
     yabs = fabs(z.y);
     w = xabs>yabs ? xabs : yabs;
     v = xabs<yabs ? xabs : yabs;
-    if( v==0 )
+    if( v==0 ) {
         return w;
-    else
-    {
+    } else {
         double t = v/w;
         return w*sqrt(1+t*t);
     }
@@ -2786,15 +2764,12 @@ ae_complex ae_c_div(ae_complex lhs,   ae_complex rhs)
     ae_complex result;
     double e;
     double f;
-    if( fabs(rhs.y)<fabs(rhs.x) )
-    {
+    if( fabs(rhs.y)<fabs(rhs.x) ) {
         e = rhs.y/rhs.x;
         f = rhs.x+rhs.y*e;
         result.x = (lhs.x+lhs.y*e)/f;
         result.y = (lhs.y-lhs.x*e)/f;
-    }
-    else
-    {
+    } else {
         e = rhs.x/rhs.y;
         f = rhs.y+rhs.x*e;
         result.x = (lhs.y+lhs.x*e)/f;
@@ -2866,15 +2841,12 @@ ae_complex ae_c_d_div(double lhs,   ae_complex rhs)
     ae_complex result;
     double e;
     double f;
-    if( fabs(rhs.y)<fabs(rhs.x) )
-    {
+    if( fabs(rhs.y)<fabs(rhs.x) ) {
         e = rhs.y/rhs.x;
         f = rhs.x+rhs.y*e;
         result.x = lhs/f;
         result.y = -lhs*e/f;
-    }
-    else
-    {
+    } else {
         e = rhs.x/rhs.y;
         f = rhs.y+rhs.x*e;
         result.x = lhs*e/f;
@@ -2889,16 +2861,14 @@ Complex BLAS operations
 ************************************************************************/
 ae_complex ae_v_cdotproduct(const ae_complex *v0, ae_int_t stride0, const char *conj0, const ae_complex *v1, ae_int_t stride1, const char *conj1, ae_int_t n)
 {
-    double rx = 0, ry = 0; 
+    double rx = 0, ry = 0;
     ae_int_t i;
     ae_bool bconj0 = !((conj0[0]=='N') || (conj0[0]=='n'));
     ae_bool bconj1 = !((conj1[0]=='N') || (conj1[0]=='n'));
     ae_complex result;
-    if( bconj0 && bconj1 )
-    {
+    if( bconj0 && bconj1 ) {
         double v0x, v0y, v1x, v1y;
-        for(i=0; i<n; i++, v0+=stride0, v1+=stride1)
-        {
+        for(i=0; i<n; i++, v0+=stride0, v1+=stride1) {
             v0x = v0->x;
             v0y = -v0->y;
             v1x = v1->x;
@@ -2907,11 +2877,9 @@ ae_complex ae_v_cdotproduct(const ae_complex *v0, ae_int_t stride0, const char *
             ry += v0x*v1y+v0y*v1x;
         }
     }
-    if( !bconj0 && bconj1 )
-    {
+    if( !bconj0 && bconj1 ) {
         double v0x, v0y, v1x, v1y;
-        for(i=0; i<n; i++, v0+=stride0, v1+=stride1)
-        {
+        for(i=0; i<n; i++, v0+=stride0, v1+=stride1) {
             v0x = v0->x;
             v0y = v0->y;
             v1x = v1->x;
@@ -2920,11 +2888,9 @@ ae_complex ae_v_cdotproduct(const ae_complex *v0, ae_int_t stride0, const char *
             ry += v0x*v1y+v0y*v1x;
         }
     }
-    if( bconj0 && !bconj1 )
-    {
+    if( bconj0 && !bconj1 ) {
         double v0x, v0y, v1x, v1y;
-        for(i=0; i<n; i++, v0+=stride0, v1+=stride1)
-        {
+        for(i=0; i<n; i++, v0+=stride0, v1+=stride1) {
             v0x = v0->x;
             v0y = -v0->y;
             v1x = v1->x;
@@ -2933,11 +2899,9 @@ ae_complex ae_v_cdotproduct(const ae_complex *v0, ae_int_t stride0, const char *
             ry += v0x*v1y+v0y*v1x;
         }
     }
-    if( !bconj0 && !bconj1 )
-    {
+    if( !bconj0 && !bconj1 ) {
         double v0x, v0y, v1x, v1y;
-        for(i=0; i<n; i++, v0+=stride0, v1+=stride1)
-        {
+        for(i=0; i<n; i++, v0+=stride0, v1+=stride1) {
             v0x = v0->x;
             v0y = v0->y;
             v1x = v1->x;
@@ -2955,42 +2919,33 @@ void ae_v_cmove(ae_complex *vdst, ae_int_t stride_dst, const ae_complex* vsrc, a
 {
     ae_bool bconj = !((conj_src[0]=='N') || (conj_src[0]=='n'));
     ae_int_t i;
-    if( stride_dst!=1 || stride_src!=1 )
-    {
+    if( stride_dst!=1 || stride_src!=1 ) {
         /*
          * general unoptimized case
          */
-        if( bconj )
-        {
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
-            {
+        if( bconj ) {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 vdst->x =  vsrc->x;
                 vdst->y = -vsrc->y;
             }
-        }
-        else
-        {
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
+        } else {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 *vdst = *vsrc;
+            }
         }
-    }
-    else
-    {
+    } else {
         /*
          * optimized case
          */
-        if( bconj )
-        {
-            for(i=0; i<n; i++, vdst++, vsrc++)
-            {
+        if( bconj ) {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 vdst->x =  vsrc->x;
                 vdst->y = -vsrc->y;
             }
-        }
-        else
-        {
-            for(i=0; i<n; i++, vdst++, vsrc++)
+        } else {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 *vdst = *vsrc;
+            }
         }
     }
 }
@@ -2999,45 +2954,32 @@ void ae_v_cmoveneg(ae_complex *vdst, ae_int_t stride_dst, const ae_complex* vsrc
 {
     ae_bool bconj = !((conj_src[0]=='N') || (conj_src[0]=='n'));
     ae_int_t i;
-    if( stride_dst!=1 || stride_src!=1 )
-    {
+    if( stride_dst!=1 || stride_src!=1 ) {
         /*
          * general unoptimized case
          */
-        if( bconj )
-        {
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
-            {
+        if( bconj ) {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 vdst->x = -vsrc->x;
                 vdst->y =  vsrc->y;
             }
-        }
-        else
-        {
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
-            {
+        } else {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 vdst->x = -vsrc->x;
                 vdst->y = -vsrc->y;
             }
         }
-    }
-    else
-    {
+    } else {
         /*
          * optimized case
          */
-        if( bconj )
-        {
-            for(i=0; i<n; i++, vdst++, vsrc++)
-            {
+        if( bconj ) {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 vdst->x = -vsrc->x;
                 vdst->y =  vsrc->y;
             }
-        }
-        else
-        {
-            for(i=0; i<n; i++, vdst++, vsrc++)
-            {
+        } else {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 vdst->x = -vsrc->x;
                 vdst->y = -vsrc->y;
             }
@@ -3049,45 +2991,32 @@ void ae_v_cmoved(ae_complex *vdst, ae_int_t stride_dst, const ae_complex* vsrc, 
 {
     ae_bool bconj = !((conj_src[0]=='N') || (conj_src[0]=='n'));
     ae_int_t i;
-    if( stride_dst!=1 || stride_src!=1 )
-    {
+    if( stride_dst!=1 || stride_src!=1 ) {
         /*
          * general unoptimized case
          */
-        if( bconj )
-        {
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
-            {
+        if( bconj ) {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 vdst->x =  alpha*vsrc->x;
                 vdst->y = -alpha*vsrc->y;
             }
-        }
-        else
-        {
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
-            {
+        } else {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 vdst->x = alpha*vsrc->x;
                 vdst->y = alpha*vsrc->y;
             }
         }
-    }
-    else
-    {
+    } else {
         /*
          * optimized case
          */
-        if( bconj )
-        {
-            for(i=0; i<n; i++, vdst++, vsrc++)
-            {
+        if( bconj ) {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 vdst->x =  alpha*vsrc->x;
                 vdst->y = -alpha*vsrc->y;
             }
-        }
-        else
-        {
-            for(i=0; i<n; i++, vdst++, vsrc++)
-            {
+        } else {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 vdst->x = alpha*vsrc->x;
                 vdst->y = alpha*vsrc->y;
             }
@@ -3099,49 +3028,36 @@ void ae_v_cmovec(ae_complex *vdst, ae_int_t stride_dst, const ae_complex* vsrc, 
 {
     ae_bool bconj = !((conj_src[0]=='N') || (conj_src[0]=='n'));
     ae_int_t i;
-    if( stride_dst!=1 || stride_src!=1 )
-    {
+    if( stride_dst!=1 || stride_src!=1 ) {
         /*
          * general unoptimized case
          */
-        if( bconj )
-        {
+        if( bconj ) {
             double ax = alpha.x, ay = alpha.y;
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
-            {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 vdst->x =  ax*vsrc->x+ay*vsrc->y;
                 vdst->y = -ax*vsrc->y+ay*vsrc->x;
             }
-        }
-        else
-        {
+        } else {
             double ax = alpha.x, ay = alpha.y;
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
-            {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 vdst->x = ax*vsrc->x-ay*vsrc->y;
                 vdst->y = ax*vsrc->y+ay*vsrc->x;
             }
         }
-    }
-    else
-    {
+    } else {
         /*
          * highly optimized case
          */
-        if( bconj )
-        {
+        if( bconj ) {
             double ax = alpha.x, ay = alpha.y;
-            for(i=0; i<n; i++, vdst++, vsrc++)
-            {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 vdst->x =  ax*vsrc->x+ay*vsrc->y;
                 vdst->y = -ax*vsrc->y+ay*vsrc->x;
             }
-        }
-        else
-        {
+        } else {
             double ax = alpha.x, ay = alpha.y;
-            for(i=0; i<n; i++, vdst++, vsrc++)
-            {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 vdst->x = ax*vsrc->x-ay*vsrc->y;
                 vdst->y = ax*vsrc->y+ay*vsrc->x;
             }
@@ -3153,45 +3069,32 @@ void ae_v_cadd(ae_complex *vdst,     ae_int_t stride_dst, const ae_complex *vsrc
 {
     ae_bool bconj = !((conj_src[0]=='N') || (conj_src[0]=='n'));
     ae_int_t i;
-    if( stride_dst!=1 || stride_src!=1 )
-    {
+    if( stride_dst!=1 || stride_src!=1 ) {
         /*
          * general unoptimized case
          */
-        if( bconj )
-        {
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
-            {
+        if( bconj ) {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 vdst->x += vsrc->x;
                 vdst->y -= vsrc->y;
             }
-        }
-        else
-        {
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
-            {
+        } else {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 vdst->x += vsrc->x;
                 vdst->y += vsrc->y;
             }
         }
-    }
-    else
-    {
+    } else {
         /*
          * optimized case
          */
-        if( bconj )
-        {
-            for(i=0; i<n; i++, vdst++, vsrc++)
-            {
+        if( bconj ) {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 vdst->x += vsrc->x;
                 vdst->y -= vsrc->y;
             }
-        }
-        else
-        {
-            for(i=0; i<n; i++, vdst++, vsrc++)
-            {
+        } else {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 vdst->x += vsrc->x;
                 vdst->y += vsrc->y;
             }
@@ -3203,45 +3106,32 @@ void ae_v_caddd(ae_complex *vdst,    ae_int_t stride_dst, const ae_complex *vsrc
 {
     ae_bool bconj = !((conj_src[0]=='N') || (conj_src[0]=='n'));
     ae_int_t i;
-    if( stride_dst!=1 || stride_src!=1 )
-    {
+    if( stride_dst!=1 || stride_src!=1 ) {
         /*
          * general unoptimized case
          */
-        if( bconj )
-        {
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
-            {
+        if( bconj ) {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 vdst->x += alpha*vsrc->x;
                 vdst->y -= alpha*vsrc->y;
             }
-        }
-        else
-        {
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
-            {
+        } else {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 vdst->x += alpha*vsrc->x;
                 vdst->y += alpha*vsrc->y;
             }
         }
-    }
-    else
-    {
+    } else {
         /*
          * optimized case
          */
-        if( bconj )
-        {
-            for(i=0; i<n; i++, vdst++, vsrc++)
-            {
+        if( bconj ) {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 vdst->x += alpha*vsrc->x;
                 vdst->y -= alpha*vsrc->y;
             }
-        }
-        else
-        {
-            for(i=0; i<n; i++, vdst++, vsrc++)
-            {
+        } else {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 vdst->x += alpha*vsrc->x;
                 vdst->y += alpha*vsrc->y;
             }
@@ -3253,47 +3143,34 @@ void ae_v_caddc(ae_complex *vdst,    ae_int_t stride_dst, const ae_complex *vsrc
 {
     ae_bool bconj = !((conj_src[0]=='N') || (conj_src[0]=='n'));
     ae_int_t i;
-    if( stride_dst!=1 || stride_src!=1 )
-    {
+    if( stride_dst!=1 || stride_src!=1 ) {
         /*
          * general unoptimized case
          */
         double ax = alpha.x, ay = alpha.y;
-        if( bconj )
-        {
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
-            {
+        if( bconj ) {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 vdst->x += ax*vsrc->x+ay*vsrc->y;
                 vdst->y -= ax*vsrc->y-ay*vsrc->x;
             }
-        }
-        else
-        {
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
-            {
+        } else {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 vdst->x += ax*vsrc->x-ay*vsrc->y;
                 vdst->y += ax*vsrc->y+ay*vsrc->x;
             }
         }
-    }
-    else
-    {
+    } else {
         /*
          * highly optimized case
          */
         double ax = alpha.x, ay = alpha.y;
-        if( bconj )
-        {
-            for(i=0; i<n; i++, vdst++, vsrc++)
-            {
+        if( bconj ) {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 vdst->x += ax*vsrc->x+ay*vsrc->y;
                 vdst->y -= ax*vsrc->y-ay*vsrc->x;
             }
-        }
-        else
-        {
-            for(i=0; i<n; i++, vdst++, vsrc++)
-            {
+        } else {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 vdst->x += ax*vsrc->x-ay*vsrc->y;
                 vdst->y += ax*vsrc->y+ay*vsrc->x;
             }
@@ -3305,45 +3182,32 @@ void ae_v_csub(ae_complex *vdst,     ae_int_t stride_dst, const ae_complex *vsrc
 {
     ae_bool bconj = !((conj_src[0]=='N') || (conj_src[0]=='n'));
     ae_int_t i;
-    if( stride_dst!=1 || stride_src!=1 )
-    {
+    if( stride_dst!=1 || stride_src!=1 ) {
         /*
          * general unoptimized case
          */
-        if( bconj )
-        {
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
-            {
+        if( bconj ) {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 vdst->x -= vsrc->x;
                 vdst->y += vsrc->y;
             }
-        }
-        else
-        {
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
-            {
+        } else {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 vdst->x -= vsrc->x;
                 vdst->y -= vsrc->y;
             }
         }
-    }
-    else
-    {
+    } else {
         /*
          * highly optimized case
          */
-        if( bconj )
-        {
-            for(i=0; i<n; i++, vdst++, vsrc++)
-            {
+        if( bconj ) {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 vdst->x -= vsrc->x;
                 vdst->y += vsrc->y;
             }
-        }
-        else
-        {
-            for(i=0; i<n; i++, vdst++, vsrc++)
-            {
+        } else {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 vdst->x -= vsrc->x;
                 vdst->y -= vsrc->y;
             }
@@ -3366,24 +3230,19 @@ void ae_v_csubc(ae_complex *vdst, ae_int_t stride_dst, const ae_complex *vsrc, a
 void ae_v_cmuld(ae_complex *vdst, ae_int_t stride_dst, ae_int_t n, double alpha)
 {
     ae_int_t i;
-    if( stride_dst!=1 )
-    {
+    if( stride_dst!=1 ) {
         /*
          * general unoptimized case
          */
-        for(i=0; i<n; i++, vdst+=stride_dst)
-        {
+        for(i=0; i<n; i++, vdst+=stride_dst) {
             vdst->x *= alpha;
             vdst->y *= alpha;
         }
-    }
-    else
-    {
+    } else {
         /*
          * optimized case
          */
-        for(i=0; i<n; i++, vdst++)
-        {
+        for(i=0; i<n; i++, vdst++) {
             vdst->x *= alpha;
             vdst->y *= alpha;
         }
@@ -3393,27 +3252,22 @@ void ae_v_cmuld(ae_complex *vdst, ae_int_t stride_dst, ae_int_t n, double alpha)
 void ae_v_cmulc(ae_complex *vdst, ae_int_t stride_dst, ae_int_t n, ae_complex alpha)
 {
     ae_int_t i;
-    if( stride_dst!=1 )
-    {
+    if( stride_dst!=1 ) {
         /*
          * general unoptimized case
          */
         double ax = alpha.x, ay = alpha.y;
-        for(i=0; i<n; i++, vdst+=stride_dst)
-        {
+        for(i=0; i<n; i++, vdst+=stride_dst) {
             double  dstx = vdst->x, dsty = vdst->y;
             vdst->x = ax*dstx-ay*dsty;
             vdst->y = ax*dsty+ay*dstx;
         }
-    }
-    else
-    {
+    } else {
         /*
          * highly optimized case
          */
         double ax = alpha.x, ay = alpha.y;
-        for(i=0; i<n; i++, vdst++)
-        {
+        for(i=0; i<n; i++, vdst++) {
             double  dstx = vdst->x, dsty = vdst->y;
             vdst->x = ax*dstx-ay*dsty;
             vdst->y = ax*dsty+ay*dstx;
@@ -3428,25 +3282,25 @@ double ae_v_dotproduct(const double *v0, ae_int_t stride0, const double *v1, ae_
 {
     double result = 0;
     ae_int_t i;
-    if( stride0!=1 || stride1!=1 )
-    {
+    if( stride0!=1 || stride1!=1 ) {
         /*
          * slow general code
          */
-        for(i=0; i<n; i++, v0+=stride0, v1+=stride1)
+        for(i=0; i<n; i++, v0+=stride0, v1+=stride1) {
             result += (*v0)*(*v1);
-    }
-    else
-    {
+        }
+    } else {
         /*
          * optimized code for stride=1
          */
         ae_int_t n4 = n/4;
         ae_int_t nleft = n%4;
-        for(i=0; i<n4; i++, v0+=4, v1+=4)
+        for(i=0; i<n4; i++, v0+=4, v1+=4) {
             result += v0[0]*v1[0]+v0[1]*v1[1]+v0[2]*v1[2]+v0[3]*v1[3];
-        for(i=0; i<nleft; i++, v0++, v1++)
+        }
+        for(i=0; i<nleft; i++, v0++, v1++) {
             result += v0[0]*v1[0];
+        }
     }
     return result;
 }
@@ -3454,162 +3308,150 @@ double ae_v_dotproduct(const double *v0, ae_int_t stride0, const double *v1, ae_
 void ae_v_move(double *vdst,  ae_int_t stride_dst, const double* vsrc,  ae_int_t stride_src, ae_int_t n)
 {
     ae_int_t i;
-    if( stride_dst!=1 || stride_src!=1 )
-    {
+    if( stride_dst!=1 || stride_src!=1 ) {
         /*
          * general unoptimized case
          */
-        for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
+        for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
             *vdst = *vsrc;
-    }
-    else
-    {
+        }
+    } else {
         /*
          * optimized case
          */
         ae_int_t n2 = n/2;
-        for(i=0; i<n2; i++, vdst+=2, vsrc+=2)
-        {
+        for(i=0; i<n2; i++, vdst+=2, vsrc+=2) {
             vdst[0] = vsrc[0];
             vdst[1] = vsrc[1];
         }
-        if( n%2!=0 )
+        if( n%2!=0 ) {
             vdst[0] = vsrc[0];
+        }
     }
 }
 
 void ae_v_moveneg(double *vdst,  ae_int_t stride_dst, const double* vsrc,  ae_int_t stride_src, ae_int_t n)
 {
     ae_int_t i;
-    if( stride_dst!=1 || stride_src!=1 )
-    {
+    if( stride_dst!=1 || stride_src!=1 ) {
         /*
          * general unoptimized case
          */
-        for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
+        for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
             *vdst = -*vsrc;
-    }
-    else
-    {
+        }
+    } else {
         /*
          * optimized case
          */
         ae_int_t n2 = n/2;
-        for(i=0; i<n2; i++, vdst+=2, vsrc+=2)
-        {
+        for(i=0; i<n2; i++, vdst+=2, vsrc+=2) {
             vdst[0] = -vsrc[0];
             vdst[1] = -vsrc[1];
         }
-        if( n%2!=0 )
+        if( n%2!=0 ) {
             vdst[0] = -vsrc[0];
+        }
     }
 }
 
 void ae_v_moved(double *vdst,  ae_int_t stride_dst, const double* vsrc,  ae_int_t stride_src, ae_int_t n, double alpha)
 {
     ae_int_t i;
-    if( stride_dst!=1 || stride_src!=1 )
-    {
+    if( stride_dst!=1 || stride_src!=1 ) {
         /*
          * general unoptimized case
          */
-        for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
+        for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
             *vdst = alpha*(*vsrc);
-    }
-    else
-    {
+        }
+    } else {
         /*
          * optimized case
          */
         ae_int_t n2 = n/2;
-        for(i=0; i<n2; i++, vdst+=2, vsrc+=2)
-        {
+        for(i=0; i<n2; i++, vdst+=2, vsrc+=2) {
             vdst[0] = alpha*vsrc[0];
             vdst[1] = alpha*vsrc[1];
         }
-        if( n%2!=0 )
+        if( n%2!=0 ) {
             vdst[0] = alpha*vsrc[0];
+        }
     }
 }
 
 void ae_v_add(double *vdst,     ae_int_t stride_dst, const double *vsrc,  ae_int_t stride_src, ae_int_t n)
 {
     ae_int_t i;
-    if( stride_dst!=1 || stride_src!=1 )
-    {
+    if( stride_dst!=1 || stride_src!=1 ) {
         /*
          * general unoptimized case
          */
-        for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
+        for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
             *vdst += *vsrc;
-    }
-    else
-    {
+        }
+    } else {
         /*
          * optimized case
          */
         ae_int_t n2 = n/2;
-        for(i=0; i<n2; i++, vdst+=2, vsrc+=2)
-        {
+        for(i=0; i<n2; i++, vdst+=2, vsrc+=2) {
             vdst[0] += vsrc[0];
             vdst[1] += vsrc[1];
         }
-        if( n%2!=0 )
+        if( n%2!=0 ) {
             vdst[0] += vsrc[0];
+        }
     }
 }
 
 void ae_v_addd(double *vdst,    ae_int_t stride_dst, const double *vsrc,  ae_int_t stride_src, ae_int_t n, double alpha)
 {
     ae_int_t i;
-    if( stride_dst!=1 || stride_src!=1 )
-    {
+    if( stride_dst!=1 || stride_src!=1 ) {
         /*
          * general unoptimized case
          */
-        for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
+        for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
             *vdst += alpha*(*vsrc);
-    }
-    else
-    {
+        }
+    } else {
         /*
          * optimized case
          */
         ae_int_t n2 = n/2;
-        for(i=0; i<n2; i++, vdst+=2, vsrc+=2)
-        {
+        for(i=0; i<n2; i++, vdst+=2, vsrc+=2) {
             vdst[0] += alpha*vsrc[0];
             vdst[1] += alpha*vsrc[1];
         }
-        if( n%2!=0 )
+        if( n%2!=0 ) {
             vdst[0] += alpha*vsrc[0];
+        }
     }
 }
 
 void ae_v_sub(double *vdst,     ae_int_t stride_dst, const double *vsrc,  ae_int_t stride_src, ae_int_t n)
 {
     ae_int_t i;
-    if( stride_dst!=1 || stride_src!=1 )
-    {
+    if( stride_dst!=1 || stride_src!=1 ) {
         /*
          * general unoptimized case
          */
-        for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
+        for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
             *vdst -= *vsrc;
-    }
-    else
-    {
+        }
+    } else {
         /*
          * highly optimized case
          */
         ae_int_t n2 = n/2;
-        for(i=0; i<n2; i++, vdst+=2, vsrc+=2)
-        {
+        for(i=0; i<n2; i++, vdst+=2, vsrc+=2) {
             vdst[0] -= vsrc[0];
             vdst[1] -= vsrc[1];
         }
-        if( n%2!=0 )
+        if( n%2!=0 ) {
             vdst[0] -= vsrc[0];
+        }
     }
 }
 
@@ -3621,21 +3463,20 @@ void ae_v_subd(double *vdst,  ae_int_t stride_dst, const double *vsrc,  ae_int_t
 void ae_v_muld(double *vdst,  ae_int_t stride_dst, ae_int_t n, double alpha)
 {
     ae_int_t i;
-    if( stride_dst!=1 )
-    {
+    if( stride_dst!=1 ) {
         /*
          * general unoptimized case
          */
-        for(i=0; i<n; i++, vdst+=stride_dst)
+        for(i=0; i<n; i++, vdst+=stride_dst) {
             *vdst *= alpha;
-    }
-    else
-    {
+        }
+    } else {
         /*
          * highly optimized case
          */
-        for(i=0; i<n; i++, vdst++)
+        for(i=0; i<n; i++, vdst++) {
             *vdst *= alpha;
+        }
     }
 }
 
@@ -3652,27 +3493,35 @@ RComm functions
 ************************************************************************/
 ae_bool _rcommstate_init(rcommstate* p, ae_state *_state, ae_bool make_automatic)
 {
-    if( !ae_vector_init(&p->ba, 0, DT_BOOL,    _state, make_automatic) )
+    if( !ae_vector_init(&p->ba, 0, DT_BOOL,    _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->ia, 0, DT_INT,     _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->ia, 0, DT_INT,     _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->ra, 0, DT_REAL,    _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->ra, 0, DT_REAL,    _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->ca, 0, DT_COMPLEX, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->ca, 0, DT_COMPLEX, _state, make_automatic) ) {
         return ae_false;
+    }
     return ae_true;
 }
 
 ae_bool _rcommstate_init_copy(rcommstate* dst, rcommstate* src, ae_state *_state, ae_bool make_automatic)
 {
-    if( !ae_vector_init_copy(&dst->ba, &src->ba, _state, make_automatic) )
+    if( !ae_vector_init_copy(&dst->ba, &src->ba, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init_copy(&dst->ia, &src->ia, _state, make_automatic) )
+    }
+    if( !ae_vector_init_copy(&dst->ia, &src->ia, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init_copy(&dst->ra, &src->ra, _state, make_automatic) )
+    }
+    if( !ae_vector_init_copy(&dst->ra, &src->ra, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init_copy(&dst->ca, &src->ca, _state, make_automatic) )
+    }
+    if( !ae_vector_init_copy(&dst->ca, &src->ca, _state, make_automatic) ) {
         return ae_false;
+    }
     dst->stage = src->stage;
     return ae_true;
 }
@@ -3697,24 +3546,24 @@ Internal forwards
 ********************************************************************/
 namespace alglib
 {
-    double get_aenv_nan();
-    double get_aenv_posinf();
-    double get_aenv_neginf();
-    ae_int_t my_stricmp(const char *s1, const char *s2);
-    char* filter_spaces(const char *s);
-    void str_vector_create(const char *src, bool match_head_only, std::vector<const char*> *p_vec);
-    void str_matrix_create(const char *src, std::vector< std::vector<const char*> > *p_mat);
-    
-    ae_bool parse_bool_delim(const char *s, const char *delim);
-    ae_int_t parse_int_delim(const char *s, const char *delim);
-    bool _parse_real_delim(const char *s, const char *delim, double *result, const char **new_s);
-    double parse_real_delim(const char *s, const char *delim);
-    alglib::complex parse_complex_delim(const char *s, const char *delim);
+double get_aenv_nan();
+double get_aenv_posinf();
+double get_aenv_neginf();
+ae_int_t my_stricmp(const char *s1, const char *s2);
+char* filter_spaces(const char *s);
+void str_vector_create(const char *src, bool match_head_only, std::vector<const char*> *p_vec);
+void str_matrix_create(const char *src, std::vector< std::vector<const char*> > *p_mat);
 
-    std::string arraytostring(const bool *ptr, ae_int_t n);
-    std::string arraytostring(const ae_int_t *ptr, ae_int_t n);
-    std::string arraytostring(const double *ptr, ae_int_t n, int dps);
-    std::string arraytostring(const alglib::complex *ptr, ae_int_t n, int dps);
+ae_bool parse_bool_delim(const char *s, const char *delim);
+ae_int_t parse_int_delim(const char *s, const char *delim);
+bool _parse_real_delim(const char *s, const char *delim, double *result, const char **new_s);
+double parse_real_delim(const char *s, const char *delim);
+alglib::complex parse_complex_delim(const char *s, const char *delim);
+
+std::string arraytostring(const bool *ptr, ae_int_t n);
+std::string arraytostring(const ae_int_t *ptr, ae_int_t n);
+std::string arraytostring(const double *ptr, ae_int_t n, int dps);
+std::string arraytostring(const alglib::complex *ptr, ae_int_t n, int dps);
 }
 
 /********************************************************************
@@ -3738,19 +3587,21 @@ alglib::ap_error::ap_error()
 
 alglib::ap_error::ap_error(const char *s)
 {
-    msg = s; 
+    msg = s;
 }
 
 void alglib::ap_error::make_assertion(bool bClause)
 {
-    if(!bClause) 
-        throw ap_error(); 
+    if(!bClause) {
+        throw ap_error();
+    }
 }
 
 void alglib::ap_error::make_assertion(bool bClause, const char *msg)
-{ 
-    if(!bClause) 
-        throw ap_error(msg); 
+{
+    if(!bClause) {
+        throw ap_error(msg);
+    }
 }
 
 
@@ -3775,15 +3626,15 @@ alglib::complex::complex(const alglib::complex &z):x(z.x),y(z.y)
 
 alglib::complex& alglib::complex::operator= (const double& v)
 {
-    x = v; 
-    y = 0.0; 
-    return *this; 
+    x = v;
+    y = 0.0;
+    return *this;
 }
 
 alglib::complex& alglib::complex::operator+=(const double& v)
 {
     x += v;
-    return *this; 
+    return *this;
 }
 
 alglib::complex& alglib::complex::operator-=(const double& v)
@@ -3796,7 +3647,7 @@ alglib::complex& alglib::complex::operator*=(const double& v)
 {
     x *= v;
     y *= v;
-    return *this; 
+    return *this;
 }
 
 alglib::complex& alglib::complex::operator/=(const double& v)
@@ -3831,7 +3682,7 @@ alglib::complex& alglib::complex::operator*=(const alglib::complex& z)
 {
     double t = x*z.x-y*z.y;
     y = x*z.y+y*z.x;
-    x = t; 
+    x = t;
     return *this;
 }
 
@@ -3840,15 +3691,12 @@ alglib::complex& alglib::complex::operator/=(const alglib::complex& z)
     alglib::complex result;
     double e;
     double f;
-    if( fabs(z.y)<fabs(z.x) )
-    {
+    if( fabs(z.y)<fabs(z.x) ) {
         e = z.y/z.x;
         f = z.x+z.y*e;
         result.x = (x+y*e)/f;
         result.y = (y-x*e)/f;
-    }
-    else
-    {
+    } else {
         e = z.x/z.y;
         f = z.y+z.x*e;
         result.x = (y+x*e)/f;
@@ -3867,7 +3715,7 @@ const alglib_impl::ae_complex* alglib::complex::c_ptr() const
 {
     return (const alglib_impl::ae_complex*)this;
 }
-    
+
 std::string alglib::complex::tostring(int _dps) const
 {
     char mask[32];
@@ -3875,34 +3723,44 @@ std::string alglib::complex::tostring(int _dps) const
     char buf_y[32];
     char buf_zero[32];
     int dps = _dps>=0 ? _dps : -_dps;
-    if( dps<=0 || dps>=20 )
+    if( dps<=0 || dps>=20 ) {
         throw ap_error("complex::tostring(): incorrect dps");
+    }
 
     // handle IEEE special quantities
-    if( fp_isnan(x) || fp_isnan(y) )
+    if( fp_isnan(x) || fp_isnan(y) ) {
         return "NAN";
-    if( fp_isinf(x) || fp_isinf(y) )
+    }
+    if( fp_isinf(x) || fp_isinf(y) ) {
         return "INF";
+    }
 
     // generate mask
-    if( sprintf(mask, "%%.%d%s", dps, _dps>=0 ? "f" : "e")>=(int)sizeof(mask) )
+    if( sprintf(mask, "%%.%d%s", dps, _dps>=0 ? "f" : "e")>=(int)sizeof(mask) ) {
         throw ap_error("complex::tostring(): buffer overflow");
+    }
 
     // print |x|, |y| and zero with same mask and compare
-    if( sprintf(buf_x, mask, (double)(fabs(x)))>=(int)sizeof(buf_x) )
+    if( sprintf(buf_x, mask, (double)(fabs(x)))>=(int)sizeof(buf_x) ) {
         throw ap_error("complex::tostring(): buffer overflow");
-    if( sprintf(buf_y, mask, (double)(fabs(y)))>=(int)sizeof(buf_y) )
+    }
+    if( sprintf(buf_y, mask, (double)(fabs(y)))>=(int)sizeof(buf_y) ) {
         throw ap_error("complex::tostring(): buffer overflow");
-    if( sprintf(buf_zero, mask, (double)0)>=(int)sizeof(buf_zero) )
+    }
+    if( sprintf(buf_zero, mask, (double)0)>=(int)sizeof(buf_zero) ) {
         throw ap_error("complex::tostring(): buffer overflow");
+    }
 
     // different zero/nonzero patterns
-    if( strcmp(buf_x,buf_zero)!=0 && strcmp(buf_y,buf_zero)!=0 )
+    if( strcmp(buf_x,buf_zero)!=0 && strcmp(buf_y,buf_zero)!=0 ) {
         return std::string(x>0 ? "" : "-")+buf_x+(y>0 ? "+" : "-")+buf_y+"i";
-    if( strcmp(buf_x,buf_zero)!=0 && strcmp(buf_y,buf_zero)==0 )
+    }
+    if( strcmp(buf_x,buf_zero)!=0 && strcmp(buf_y,buf_zero)==0 ) {
         return std::string(x>0 ? "" : "-")+buf_x;
-    if( strcmp(buf_x,buf_zero)==0 && strcmp(buf_y,buf_zero)!=0 )
+    }
+    if( strcmp(buf_x,buf_zero)==0 && strcmp(buf_y,buf_zero)!=0 ) {
         return std::string(y>0 ? "" : "-")+buf_y+"i";
+    }
     return std::string("0");
 }
 
@@ -3916,55 +3774,88 @@ const bool alglib::operator==(const alglib::complex& lhs, const alglib::complex&
 }
 
 const bool alglib::operator!=(const alglib::complex& lhs, const alglib::complex& rhs)
-{ return !(lhs==rhs); }
+{
+    return !(lhs==rhs);
+}
 
 const alglib::complex alglib::operator+(const alglib::complex& lhs)
-{ return lhs; }
+{
+    return lhs;
+}
 
 const alglib::complex alglib::operator-(const alglib::complex& lhs)
-{ return alglib::complex(-lhs.x, -lhs.y); }
+{
+    return alglib::complex(-lhs.x, -lhs.y);
+}
 
 const alglib::complex alglib::operator+(const alglib::complex& lhs, const alglib::complex& rhs)
-{ alglib::complex r = lhs; r += rhs; return r; }
+{
+    alglib::complex r = lhs;
+    r += rhs;
+    return r;
+}
 
 const alglib::complex alglib::operator+(const alglib::complex& lhs, const double& rhs)
-{ alglib::complex r = lhs; r += rhs; return r; }
+{
+    alglib::complex r = lhs;
+    r += rhs;
+    return r;
+}
 
 const alglib::complex alglib::operator+(const double& lhs, const alglib::complex& rhs)
-{ alglib::complex r = rhs; r += lhs; return r; }
+{
+    alglib::complex r = rhs;
+    r += lhs;
+    return r;
+}
 
 const alglib::complex alglib::operator-(const alglib::complex& lhs, const alglib::complex& rhs)
-{ alglib::complex r = lhs; r -= rhs; return r; }
+{
+    alglib::complex r = lhs;
+    r -= rhs;
+    return r;
+}
 
 const alglib::complex alglib::operator-(const alglib::complex& lhs, const double& rhs)
-{ alglib::complex r = lhs; r -= rhs; return r; }
+{
+    alglib::complex r = lhs;
+    r -= rhs;
+    return r;
+}
 
 const alglib::complex alglib::operator-(const double& lhs, const alglib::complex& rhs)
-{ alglib::complex r = lhs; r -= rhs; return r; }
+{
+    alglib::complex r = lhs;
+    r -= rhs;
+    return r;
+}
 
 const alglib::complex alglib::operator*(const alglib::complex& lhs, const alglib::complex& rhs)
-{ return alglib::complex(lhs.x*rhs.x - lhs.y*rhs.y,  lhs.x*rhs.y + lhs.y*rhs.x); }
+{
+    return alglib::complex(lhs.x*rhs.x - lhs.y*rhs.y,  lhs.x*rhs.y + lhs.y*rhs.x);
+}
 
 const alglib::complex alglib::operator*(const alglib::complex& lhs, const double& rhs)
-{ return alglib::complex(lhs.x*rhs,  lhs.y*rhs); }
+{
+    return alglib::complex(lhs.x*rhs,  lhs.y*rhs);
+}
 
 const alglib::complex alglib::operator*(const double& lhs, const alglib::complex& rhs)
-{ return alglib::complex(lhs*rhs.x,  lhs*rhs.y); }
+{
+    return alglib::complex(lhs*rhs.x,  lhs*rhs.y);
+}
 
 const alglib::complex alglib::operator/(const alglib::complex& lhs, const alglib::complex& rhs)
 {
     alglib::complex result;
     double e;
     double f;
-    if( fabs(rhs.y)<fabs(rhs.x) )
-    {
+    if( fabs(rhs.y)<fabs(rhs.x) ) {
         e = rhs.y/rhs.x;
         f = rhs.x+rhs.y*e;
         result.x = (lhs.x+lhs.y*e)/f;
         result.y = (lhs.y-lhs.x*e)/f;
-    }
-    else
-    {
+    } else {
         e = rhs.x/rhs.y;
         f = rhs.y+rhs.x*e;
         result.x = (lhs.y+lhs.x*e)/f;
@@ -3978,15 +3869,12 @@ const alglib::complex alglib::operator/(const double& lhs, const alglib::complex
     alglib::complex result;
     double e;
     double f;
-    if( fabs(rhs.y)<fabs(rhs.x) )
-    {
+    if( fabs(rhs.y)<fabs(rhs.x) ) {
         e = rhs.y/rhs.x;
         f = rhs.x+rhs.y*e;
         result.x = lhs/f;
         result.y = -lhs*e/f;
-    }
-    else
-    {
+    } else {
         e = rhs.x/rhs.y;
         f = rhs.y+rhs.x*e;
         result.x = lhs*e/f;
@@ -3996,7 +3884,9 @@ const alglib::complex alglib::operator/(const double& lhs, const alglib::complex
 }
 
 const alglib::complex alglib::operator/(const alglib::complex& lhs, const double& rhs)
-{ return alglib::complex(lhs.x/rhs, lhs.y/rhs); }
+{
+    return alglib::complex(lhs.x/rhs, lhs.y/rhs);
+}
 
 double alglib::abscomplex(const alglib::complex &z)
 {
@@ -4008,21 +3898,24 @@ double alglib::abscomplex(const alglib::complex &z)
     xabs = fabs(z.x);
     yabs = fabs(z.y);
     w = xabs>yabs ? xabs : yabs;
-    v = xabs<yabs ? xabs : yabs; 
-    if( v==0 )
+    v = xabs<yabs ? xabs : yabs;
+    if( v==0 ) {
         return w;
-    else
-    {
+    } else {
         double t = v/w;
         return w*sqrt(1+t*t);
     }
 }
 
 alglib::complex alglib::conj(const alglib::complex &z)
-{ return alglib::complex(z.x, -z.y); }
+{
+    return alglib::complex(z.x, -z.y);
+}
 
 alglib::complex alglib::csqr(const alglib::complex &z)
-{ return alglib::complex(z.x*z.x-z.y*z.y, 2*z.x*z.y); }
+{
+    return alglib::complex(z.x*z.x-z.y*z.y, 2*z.x*z.y);
+}
 
 
 /********************************************************************
@@ -4032,25 +3925,25 @@ double alglib::vdotproduct(const double *v0, ae_int_t stride0, const double *v1,
 {
     double result = 0;
     ae_int_t i;
-    if( stride0!=1 || stride1!=1 )
-    {
+    if( stride0!=1 || stride1!=1 ) {
         //
         // slow general code
         //
-        for(i=0; i<n; i++, v0+=stride0, v1+=stride1)
+        for(i=0; i<n; i++, v0+=stride0, v1+=stride1) {
             result += (*v0)*(*v1);
-    }
-    else
-    {
+        }
+    } else {
         //
         // optimized code for stride=1
         //
         ae_int_t n4 = n/4;
         ae_int_t nleft = n%4;
-        for(i=0; i<n4; i++, v0+=4, v1+=4)
+        for(i=0; i<n4; i++, v0+=4, v1+=4) {
             result += v0[0]*v1[0]+v0[1]*v1[1]+v0[2]*v1[2]+v0[3]*v1[3];
-        for(i=0; i<nleft; i++, v0++, v1++)
+        }
+        for(i=0; i<nleft; i++, v0++, v1++) {
             result += v0[0]*v1[0];
+        }
     }
     return result;
 }
@@ -4066,11 +3959,9 @@ alglib::complex alglib::vdotproduct(const alglib::complex *v0, ae_int_t stride0,
     ae_int_t i;
     bool bconj0 = !((conj0[0]=='N') || (conj0[0]=='n'));
     bool bconj1 = !((conj1[0]=='N') || (conj1[0]=='n'));
-    if( bconj0 && bconj1 )
-    {
+    if( bconj0 && bconj1 ) {
         double v0x, v0y, v1x, v1y;
-        for(i=0; i<n; i++, v0+=stride0, v1+=stride1)
-        {
+        for(i=0; i<n; i++, v0+=stride0, v1+=stride1) {
             v0x = v0->x;
             v0y = -v0->y;
             v1x = v1->x;
@@ -4079,11 +3970,9 @@ alglib::complex alglib::vdotproduct(const alglib::complex *v0, ae_int_t stride0,
             ry += v0x*v1y+v0y*v1x;
         }
     }
-    if( !bconj0 && bconj1 )
-    {
+    if( !bconj0 && bconj1 ) {
         double v0x, v0y, v1x, v1y;
-        for(i=0; i<n; i++, v0+=stride0, v1+=stride1)
-        {
+        for(i=0; i<n; i++, v0+=stride0, v1+=stride1) {
             v0x = v0->x;
             v0y = v0->y;
             v1x = v1->x;
@@ -4092,11 +3981,9 @@ alglib::complex alglib::vdotproduct(const alglib::complex *v0, ae_int_t stride0,
             ry += v0x*v1y+v0y*v1x;
         }
     }
-    if( bconj0 && !bconj1 )
-    {
+    if( bconj0 && !bconj1 ) {
         double v0x, v0y, v1x, v1y;
-        for(i=0; i<n; i++, v0+=stride0, v1+=stride1)
-        {
+        for(i=0; i<n; i++, v0+=stride0, v1+=stride1) {
             v0x = v0->x;
             v0y = -v0->y;
             v1x = v1->x;
@@ -4105,11 +3992,9 @@ alglib::complex alglib::vdotproduct(const alglib::complex *v0, ae_int_t stride0,
             ry += v0x*v1y+v0y*v1x;
         }
     }
-    if( !bconj0 && !bconj1 )
-    {
+    if( !bconj0 && !bconj1 ) {
         double v0x, v0y, v1x, v1y;
-        for(i=0; i<n; i++, v0+=stride0, v1+=stride1)
-        {
+        for(i=0; i<n; i++, v0+=stride0, v1+=stride1) {
             v0x = v0->x;
             v0y = v0->y;
             v1x = v1->x;
@@ -4129,27 +4014,25 @@ alglib::complex alglib::vdotproduct(const alglib::complex *v1, const alglib::com
 void alglib::vmove(double *vdst, ae_int_t stride_dst, const double* vsrc,  ae_int_t stride_src, ae_int_t n)
 {
     ae_int_t i;
-    if( stride_dst!=1 || stride_src!=1 )
-    {
+    if( stride_dst!=1 || stride_src!=1 ) {
         //
         // general unoptimized case
         //
-        for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
+        for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
             *vdst = *vsrc;
-    }
-    else
-    {
+        }
+    } else {
         //
         // optimized case
         //
         ae_int_t n2 = n/2;
-        for(i=0; i<n2; i++, vdst+=2, vsrc+=2)
-        {
+        for(i=0; i<n2; i++, vdst+=2, vsrc+=2) {
             vdst[0] = vsrc[0];
             vdst[1] = vsrc[1];
         }
-        if( n%2!=0 )
+        if( n%2!=0 ) {
             vdst[0] = vsrc[0];
+        }
     }
 }
 
@@ -4162,42 +4045,33 @@ void alglib::vmove(alglib::complex *vdst, ae_int_t stride_dst, const alglib::com
 {
     bool bconj = !((conj_src[0]=='N') || (conj_src[0]=='n'));
     ae_int_t i;
-    if( stride_dst!=1 || stride_src!=1 )
-    {
+    if( stride_dst!=1 || stride_src!=1 ) {
         //
         // general unoptimized case
         //
-        if( bconj )
-        {
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
-            {
+        if( bconj ) {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 vdst->x =  vsrc->x;
                 vdst->y = -vsrc->y;
             }
-        }
-        else
-        {
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
+        } else {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 *vdst = *vsrc;
+            }
         }
-    }
-    else
-    {
+    } else {
         //
         // optimized case
         //
-        if( bconj )
-        {
-            for(i=0; i<n; i++, vdst++, vsrc++)
-            {
+        if( bconj ) {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 vdst->x =  vsrc->x;
                 vdst->y = -vsrc->y;
             }
-        }
-        else
-        {
-            for(i=0; i<n; i++, vdst++, vsrc++)
+        } else {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 *vdst = *vsrc;
+            }
         }
     }
 }
@@ -4210,27 +4084,25 @@ void alglib::vmove(alglib::complex *vdst, const alglib::complex* vsrc, ae_int_t 
 void alglib::vmoveneg(double *vdst,  ae_int_t stride_dst, const double* vsrc,  ae_int_t stride_src, ae_int_t n)
 {
     ae_int_t i;
-    if( stride_dst!=1 || stride_src!=1 )
-    {
+    if( stride_dst!=1 || stride_src!=1 ) {
         //
         // general unoptimized case
         //
-        for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
+        for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
             *vdst = -*vsrc;
-    }
-    else
-    {
+        }
+    } else {
         //
         // optimized case
         //
         ae_int_t n2 = n/2;
-        for(i=0; i<n2; i++, vdst+=2, vsrc+=2)
-        {
+        for(i=0; i<n2; i++, vdst+=2, vsrc+=2) {
             vdst[0] = -vsrc[0];
             vdst[1] = -vsrc[1];
         }
-        if( n%2!=0 )
+        if( n%2!=0 ) {
             vdst[0] = -vsrc[0];
+        }
     }
 }
 
@@ -4243,45 +4115,32 @@ void alglib::vmoveneg(alglib::complex *vdst, ae_int_t stride_dst, const alglib::
 {
     bool bconj = !((conj_src[0]=='N') || (conj_src[0]=='n'));
     ae_int_t i;
-    if( stride_dst!=1 || stride_src!=1 )
-    {
+    if( stride_dst!=1 || stride_src!=1 ) {
         //
         // general unoptimized case
         //
-        if( bconj )
-        {
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
-            {
+        if( bconj ) {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 vdst->x = -vsrc->x;
                 vdst->y =  vsrc->y;
             }
-        }
-        else
-        {
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
-            {
+        } else {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 vdst->x = -vsrc->x;
                 vdst->y = -vsrc->y;
             }
         }
-    }
-    else
-    {
+    } else {
         //
         // optimized case
         //
-        if( bconj )
-        {
-            for(i=0; i<n; i++, vdst++, vsrc++)
-            {
+        if( bconj ) {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 vdst->x = -vsrc->x;
                 vdst->y =  vsrc->y;
             }
-        }
-        else
-        {
-            for(i=0; i<n; i++, vdst++, vsrc++)
-            {
+        } else {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 vdst->x = -vsrc->x;
                 vdst->y = -vsrc->y;
             }
@@ -4297,27 +4156,25 @@ void alglib::vmoveneg(alglib::complex *vdst, const alglib::complex *vsrc, ae_int
 void alglib::vmove(double *vdst,  ae_int_t stride_dst, const double* vsrc,  ae_int_t stride_src, ae_int_t n, double alpha)
 {
     ae_int_t i;
-    if( stride_dst!=1 || stride_src!=1 )
-    {
+    if( stride_dst!=1 || stride_src!=1 ) {
         //
         // general unoptimized case
         //
-        for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
+        for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
             *vdst = alpha*(*vsrc);
-    }
-    else
-    {
+        }
+    } else {
         //
         // optimized case
         //
         ae_int_t n2 = n/2;
-        for(i=0; i<n2; i++, vdst+=2, vsrc+=2)
-        {
+        for(i=0; i<n2; i++, vdst+=2, vsrc+=2) {
             vdst[0] = alpha*vsrc[0];
             vdst[1] = alpha*vsrc[1];
         }
-        if( n%2!=0 )
+        if( n%2!=0 ) {
             vdst[0] = alpha*vsrc[0];
+        }
     }
 }
 
@@ -4330,45 +4187,32 @@ void alglib::vmove(alglib::complex *vdst, ae_int_t stride_dst, const alglib::com
 {
     bool bconj = !((conj_src[0]=='N') || (conj_src[0]=='n'));
     ae_int_t i;
-    if( stride_dst!=1 || stride_src!=1 )
-    {
+    if( stride_dst!=1 || stride_src!=1 ) {
         //
         // general unoptimized case
         //
-        if( bconj )
-        {
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
-            {
+        if( bconj ) {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 vdst->x =  alpha*vsrc->x;
                 vdst->y = -alpha*vsrc->y;
             }
-        }
-        else
-        {
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
-            {
+        } else {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 vdst->x = alpha*vsrc->x;
                 vdst->y = alpha*vsrc->y;
             }
         }
-    }
-    else
-    {
+    } else {
         //
         // optimized case
         //
-        if( bconj )
-        {
-            for(i=0; i<n; i++, vdst++, vsrc++)
-            {
+        if( bconj ) {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 vdst->x =  alpha*vsrc->x;
                 vdst->y = -alpha*vsrc->y;
             }
-        }
-        else
-        {
-            for(i=0; i<n; i++, vdst++, vsrc++)
-            {
+        } else {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 vdst->x = alpha*vsrc->x;
                 vdst->y = alpha*vsrc->y;
             }
@@ -4385,49 +4229,36 @@ void alglib::vmove(alglib::complex *vdst, ae_int_t stride_dst, const alglib::com
 {
     bool bconj = !((conj_src[0]=='N') || (conj_src[0]=='n'));
     ae_int_t i;
-    if( stride_dst!=1 || stride_src!=1 )
-    {
+    if( stride_dst!=1 || stride_src!=1 ) {
         //
         // general unoptimized case
         //
-        if( bconj )
-        {
+        if( bconj ) {
             double ax = alpha.x, ay = alpha.y;
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
-            {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 vdst->x =  ax*vsrc->x+ay*vsrc->y;
                 vdst->y = -ax*vsrc->y+ay*vsrc->x;
             }
-        }
-        else
-        {
+        } else {
             double ax = alpha.x, ay = alpha.y;
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
-            {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 vdst->x = ax*vsrc->x-ay*vsrc->y;
                 vdst->y = ax*vsrc->y+ay*vsrc->x;
             }
         }
-    }
-    else
-    {
+    } else {
         //
         // optimized case
         //
-        if( bconj )
-        {
+        if( bconj ) {
             double ax = alpha.x, ay = alpha.y;
-            for(i=0; i<n; i++, vdst++, vsrc++)
-            {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 vdst->x =  ax*vsrc->x+ay*vsrc->y;
                 vdst->y = -ax*vsrc->y+ay*vsrc->x;
             }
-        }
-        else
-        {
+        } else {
             double ax = alpha.x, ay = alpha.y;
-            for(i=0; i<n; i++, vdst++, vsrc++)
-            {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 vdst->x = ax*vsrc->x-ay*vsrc->y;
                 vdst->y = ax*vsrc->y+ay*vsrc->x;
             }
@@ -4443,27 +4274,25 @@ void alglib::vmove(alglib::complex *vdst, const alglib::complex *vsrc, ae_int_t 
 void alglib::vadd(double *vdst,  ae_int_t stride_dst, const double *vsrc,  ae_int_t stride_src, ae_int_t n)
 {
     ae_int_t i;
-    if( stride_dst!=1 || stride_src!=1 )
-    {
+    if( stride_dst!=1 || stride_src!=1 ) {
         //
         // general unoptimized case
         //
-        for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
+        for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
             *vdst += *vsrc;
-    }
-    else
-    {
+        }
+    } else {
         //
         // optimized case
         //
         ae_int_t n2 = n/2;
-        for(i=0; i<n2; i++, vdst+=2, vsrc+=2)
-        {
+        for(i=0; i<n2; i++, vdst+=2, vsrc+=2) {
             vdst[0] += vsrc[0];
             vdst[1] += vsrc[1];
         }
-        if( n%2!=0 )
+        if( n%2!=0 ) {
             vdst[0] += vsrc[0];
+        }
     }
 }
 
@@ -4476,45 +4305,32 @@ void alglib::vadd(alglib::complex *vdst, ae_int_t stride_dst, const alglib::comp
 {
     bool bconj = !((conj_src[0]=='N') || (conj_src[0]=='n'));
     ae_int_t i;
-    if( stride_dst!=1 || stride_src!=1 )
-    {
+    if( stride_dst!=1 || stride_src!=1 ) {
         //
         // general unoptimized case
         //
-        if( bconj )
-        {
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
-            {
+        if( bconj ) {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 vdst->x += vsrc->x;
                 vdst->y -= vsrc->y;
             }
-        }
-        else
-        {
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
-            {
+        } else {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 vdst->x += vsrc->x;
                 vdst->y += vsrc->y;
             }
         }
-    }
-    else
-    {
+    } else {
         //
         // optimized case
         //
-        if( bconj )
-        {
-            for(i=0; i<n; i++, vdst++, vsrc++)
-            {
+        if( bconj ) {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 vdst->x += vsrc->x;
                 vdst->y -= vsrc->y;
             }
-        }
-        else
-        {
-            for(i=0; i<n; i++, vdst++, vsrc++)
-            {
+        } else {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 vdst->x += vsrc->x;
                 vdst->y += vsrc->y;
             }
@@ -4530,27 +4346,25 @@ void alglib::vadd(alglib::complex *vdst, const alglib::complex *vsrc, ae_int_t N
 void alglib::vadd(double *vdst,  ae_int_t stride_dst, const double *vsrc,  ae_int_t stride_src, ae_int_t n, double alpha)
 {
     ae_int_t i;
-    if( stride_dst!=1 || stride_src!=1 )
-    {
+    if( stride_dst!=1 || stride_src!=1 ) {
         //
         // general unoptimized case
         //
-        for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
+        for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
             *vdst += alpha*(*vsrc);
-    }
-    else
-    {
+        }
+    } else {
         //
         // optimized case
         //
         ae_int_t n2 = n/2;
-        for(i=0; i<n2; i++, vdst+=2, vsrc+=2)
-        {
+        for(i=0; i<n2; i++, vdst+=2, vsrc+=2) {
             vdst[0] += alpha*vsrc[0];
             vdst[1] += alpha*vsrc[1];
         }
-        if( n%2!=0 )
+        if( n%2!=0 ) {
             vdst[0] += alpha*vsrc[0];
+        }
     }
 }
 
@@ -4563,45 +4377,32 @@ void alglib::vadd(alglib::complex *vdst, ae_int_t stride_dst, const alglib::comp
 {
     bool bconj = !((conj_src[0]=='N') || (conj_src[0]=='n'));
     ae_int_t i;
-    if( stride_dst!=1 || stride_src!=1 )
-    {
+    if( stride_dst!=1 || stride_src!=1 ) {
         //
         // general unoptimized case
         //
-        if( bconj )
-        {
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
-            {
+        if( bconj ) {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 vdst->x += alpha*vsrc->x;
                 vdst->y -= alpha*vsrc->y;
             }
-        }
-        else
-        {
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
-            {
+        } else {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 vdst->x += alpha*vsrc->x;
                 vdst->y += alpha*vsrc->y;
             }
         }
-    }
-    else
-    {
+    } else {
         //
         // optimized case
         //
-        if( bconj )
-        {
-            for(i=0; i<n; i++, vdst++, vsrc++)
-            {
+        if( bconj ) {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 vdst->x += alpha*vsrc->x;
                 vdst->y -= alpha*vsrc->y;
             }
-        }
-        else
-        {
-            for(i=0; i<n; i++, vdst++, vsrc++)
-            {
+        } else {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 vdst->x += alpha*vsrc->x;
                 vdst->y += alpha*vsrc->y;
             }
@@ -4618,47 +4419,34 @@ void alglib::vadd(alglib::complex *vdst, ae_int_t stride_dst, const alglib::comp
 {
     bool bconj = !((conj_src[0]=='N') || (conj_src[0]=='n'));
     ae_int_t i;
-    if( stride_dst!=1 || stride_src!=1 )
-    {
+    if( stride_dst!=1 || stride_src!=1 ) {
         //
         // general unoptimized case
         //
         double ax = alpha.x, ay = alpha.y;
-        if( bconj )
-        {
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
-            {
+        if( bconj ) {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 vdst->x += ax*vsrc->x+ay*vsrc->y;
                 vdst->y -= ax*vsrc->y-ay*vsrc->x;
             }
-        }
-        else
-        {
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
-            {
+        } else {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 vdst->x += ax*vsrc->x-ay*vsrc->y;
                 vdst->y += ax*vsrc->y+ay*vsrc->x;
             }
         }
-    }
-    else
-    {
+    } else {
         //
         // optimized case
         //
         double ax = alpha.x, ay = alpha.y;
-        if( bconj )
-        {
-            for(i=0; i<n; i++, vdst++, vsrc++)
-            {
+        if( bconj ) {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 vdst->x += ax*vsrc->x+ay*vsrc->y;
                 vdst->y -= ax*vsrc->y-ay*vsrc->x;
             }
-        }
-        else
-        {
-            for(i=0; i<n; i++, vdst++, vsrc++)
-            {
+        } else {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 vdst->x += ax*vsrc->x-ay*vsrc->y;
                 vdst->y += ax*vsrc->y+ay*vsrc->x;
             }
@@ -4674,27 +4462,25 @@ void alglib::vadd(alglib::complex *vdst, const alglib::complex *vsrc, ae_int_t N
 void alglib::vsub(double *vdst,  ae_int_t stride_dst, const double *vsrc,  ae_int_t stride_src, ae_int_t n)
 {
     ae_int_t i;
-    if( stride_dst!=1 || stride_src!=1 )
-    {
+    if( stride_dst!=1 || stride_src!=1 ) {
         //
         // general unoptimized case
         //
-        for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
+        for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
             *vdst -= *vsrc;
-    }
-    else
-    {
+        }
+    } else {
         //
         // optimized case
         //
         ae_int_t n2 = n/2;
-        for(i=0; i<n2; i++, vdst+=2, vsrc+=2)
-        {
+        for(i=0; i<n2; i++, vdst+=2, vsrc+=2) {
             vdst[0] -= vsrc[0];
             vdst[1] -= vsrc[1];
         }
-        if( n%2!=0 )
+        if( n%2!=0 ) {
             vdst[0] -= vsrc[0];
+        }
     }
 }
 
@@ -4707,45 +4493,32 @@ void alglib::vsub(alglib::complex *vdst, ae_int_t stride_dst, const alglib::comp
 {
     bool bconj = !((conj_src[0]=='N') || (conj_src[0]=='n'));
     ae_int_t i;
-    if( stride_dst!=1 || stride_src!=1 )
-    {
+    if( stride_dst!=1 || stride_src!=1 ) {
         //
         // general unoptimized case
         //
-        if( bconj )
-        {
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
-            {
+        if( bconj ) {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 vdst->x -= vsrc->x;
                 vdst->y += vsrc->y;
             }
-        }
-        else
-        {
-            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src)
-            {
+        } else {
+            for(i=0; i<n; i++, vdst+=stride_dst, vsrc+=stride_src) {
                 vdst->x -= vsrc->x;
                 vdst->y -= vsrc->y;
             }
         }
-    }
-    else
-    {
+    } else {
         //
         // optimized case
         //
-        if( bconj )
-        {
-            for(i=0; i<n; i++, vdst++, vsrc++)
-            {
+        if( bconj ) {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 vdst->x -= vsrc->x;
                 vdst->y += vsrc->y;
             }
-        }
-        else
-        {
-            for(i=0; i<n; i++, vdst++, vsrc++)
-            {
+        } else {
+            for(i=0; i<n; i++, vdst++, vsrc++) {
                 vdst->x -= vsrc->x;
                 vdst->y -= vsrc->y;
             }
@@ -4790,21 +4563,20 @@ void alglib::vsub(alglib::complex *vdst, const alglib::complex *vsrc, ae_int_t n
 void alglib::vmul(double *vdst,  ae_int_t stride_dst, ae_int_t n, double alpha)
 {
     ae_int_t i;
-    if( stride_dst!=1 )
-    {
+    if( stride_dst!=1 ) {
         //
         // general unoptimized case
         //
-        for(i=0; i<n; i++, vdst+=stride_dst)
+        for(i=0; i<n; i++, vdst+=stride_dst) {
             *vdst *= alpha;
-    }
-    else
-    {
+        }
+    } else {
         //
         // optimized case
         //
-        for(i=0; i<n; i++, vdst++)
+        for(i=0; i<n; i++, vdst++) {
             *vdst *= alpha;
+        }
     }
 }
 
@@ -4816,24 +4588,19 @@ void alglib::vmul(double *vdst, ae_int_t N, double alpha)
 void alglib::vmul(alglib::complex *vdst, ae_int_t stride_dst, ae_int_t n, double alpha)
 {
     ae_int_t i;
-    if( stride_dst!=1 )
-    {
+    if( stride_dst!=1 ) {
         //
         // general unoptimized case
         //
-        for(i=0; i<n; i++, vdst+=stride_dst)
-        {
+        for(i=0; i<n; i++, vdst+=stride_dst) {
             vdst->x *= alpha;
             vdst->y *= alpha;
         }
-    }
-    else
-    {
+    } else {
         //
         // optimized case
         //
-        for(i=0; i<n; i++, vdst++)
-        {
+        for(i=0; i<n; i++, vdst++) {
             vdst->x *= alpha;
             vdst->y *= alpha;
         }
@@ -4848,27 +4615,22 @@ void alglib::vmul(alglib::complex *vdst, ae_int_t N, double alpha)
 void alglib::vmul(alglib::complex *vdst, ae_int_t stride_dst, ae_int_t n, alglib::complex alpha)
 {
     ae_int_t i;
-    if( stride_dst!=1 )
-    {
+    if( stride_dst!=1 ) {
         //
         // general unoptimized case
         //
         double ax = alpha.x, ay = alpha.y;
-        for(i=0; i<n; i++, vdst+=stride_dst)
-        {
+        for(i=0; i<n; i++, vdst+=stride_dst) {
             double  dstx = vdst->x, dsty = vdst->y;
             vdst->x = ax*dstx-ay*dsty;
             vdst->y = ax*dsty+ay*dstx;
         }
-    }
-    else
-    {
+    } else {
         //
         // optimized case
         //
         double ax = alpha.x, ay = alpha.y;
-        for(i=0; i<n; i++, vdst++)
-        {
+        for(i=0; i<n; i++, vdst++) {
             double  dstx = vdst->x, dsty = vdst->y;
             vdst->x = ax*dstx-ay*dsty;
             vdst->y = ax*dsty+ay*dstx;
@@ -4892,72 +4654,83 @@ alglib::ae_vector_wrapper::ae_vector_wrapper()
 
 alglib::ae_vector_wrapper::~ae_vector_wrapper()
 {
-    if( p_vec==&vec )
+    if( p_vec==&vec ) {
         ae_vector_clear(p_vec);
+    }
 }
 
 alglib::ae_vector_wrapper::ae_vector_wrapper(const alglib::ae_vector_wrapper &rhs)
 {
-    if( rhs.p_vec!=NULL )
-    {
+    if( rhs.p_vec!=NULL ) {
         p_vec = &vec;
-        if( !ae_vector_init_copy(p_vec, rhs.p_vec, NULL, ae_false) )
+        if( !ae_vector_init_copy(p_vec, rhs.p_vec, NULL, ae_false) ) {
             throw alglib::ap_error("ALGLIB: malloc error!");
-    }
-    else
+        }
+    } else {
         p_vec = NULL;
+    }
 }
 
 const alglib::ae_vector_wrapper& alglib::ae_vector_wrapper::operator=(const alglib::ae_vector_wrapper &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
-    if( p_vec==&vec )
-        ae_vector_clear(p_vec);
-    if( rhs.p_vec!=NULL )
-    {
-        p_vec = &vec;
-        if( !ae_vector_init_copy(p_vec, rhs.p_vec, NULL, ae_false) )
-            throw alglib::ap_error("ALGLIB: malloc error!");
     }
-    else
+    if( p_vec==&vec ) {
+        ae_vector_clear(p_vec);
+    }
+    if( rhs.p_vec!=NULL ) {
+        p_vec = &vec;
+        if( !ae_vector_init_copy(p_vec, rhs.p_vec, NULL, ae_false) ) {
+            throw alglib::ap_error("ALGLIB: malloc error!");
+        }
+    } else {
         p_vec = NULL;
+    }
     return *this;
 }
 
 void alglib::ae_vector_wrapper::setlength(ae_int_t iLen)
 {
-    if( p_vec==NULL )
+    if( p_vec==NULL ) {
         throw alglib::ap_error("ALGLIB: setlength() error, p_vec==NULL (array was not correctly initialized)");
-    if( p_vec!=&vec )
+    }
+    if( p_vec!=&vec ) {
         throw alglib::ap_error("ALGLIB: setlength() error, p_vec!=&vec (attempt to resize frozen array)");
-    if( !ae_vector_set_length(p_vec, iLen, NULL) )
+    }
+    if( !ae_vector_set_length(p_vec, iLen, NULL) ) {
         throw alglib::ap_error("ALGLIB: malloc error");
+    }
 }
 
 alglib::ae_int_t alglib::ae_vector_wrapper::length() const
 {
-    if( p_vec==NULL )
+    if( p_vec==NULL ) {
         return 0;
+    }
     return p_vec->cnt;
 }
 
 void alglib::ae_vector_wrapper::attach_to(alglib_impl::ae_vector *ptr)
 {
-    if( ptr==&vec )
+    if( ptr==&vec ) {
         throw alglib::ap_error("ALGLIB: attempt to attach vector to itself");
-    if( p_vec==&vec )
+    }
+    if( p_vec==&vec ) {
         ae_vector_clear(p_vec);
+    }
     p_vec = ptr;
 }
 
 void alglib::ae_vector_wrapper::allocate_own(ae_int_t size, alglib_impl::ae_datatype datatype)
 {
-    if( p_vec==&vec )
+    if( p_vec==&vec ) {
         ae_vector_clear(p_vec);
+    }
     p_vec = &vec;
-    if( !ae_vector_init(p_vec, size, datatype, NULL, false) )
+    if( !ae_vector_init(p_vec, size, datatype, NULL, false) ) {
         throw alglib::ap_error("ALGLIB: malloc error");
+    }
 }
 
 const alglib_impl::ae_vector* alglib::ae_vector_wrapper::c_ptr() const
@@ -4970,38 +4743,36 @@ alglib_impl::ae_vector* alglib::ae_vector_wrapper::c_ptr()
     return p_vec;
 }
 
-alglib::boolean_1d_array::boolean_1d_array()  
+alglib::boolean_1d_array::boolean_1d_array()
 {
     allocate_own(0, alglib_impl::DT_BOOL);
 }
 
-alglib::boolean_1d_array::boolean_1d_array(const char *s)  
+alglib::boolean_1d_array::boolean_1d_array(const char *s)
 {
     std::vector<const char*> svec;
     size_t i;
     char *p = filter_spaces(s);
-    try
-    {
+    try {
         str_vector_create(p, true, &svec);
         allocate_own((ae_int_t)(svec.size()), alglib_impl::DT_BOOL);
-        for(i=0; i<svec.size(); i++)
+        for(i=0; i<svec.size(); i++) {
             operator()((ae_int_t)i) = parse_bool_delim(svec[i],",]");
+        }
         alglib_impl::ae_free(p);
-    }
-    catch(...)
-    {
+    } catch(...) {
         alglib_impl::ae_free(p);
         throw;
     }
 }
 
-alglib::boolean_1d_array::boolean_1d_array(alglib_impl::ae_vector *p)  
+alglib::boolean_1d_array::boolean_1d_array(alglib_impl::ae_vector *p)
 {
     p_vec = NULL;
     attach_to(p);
 }
 
-alglib::boolean_1d_array::~boolean_1d_array() 
+alglib::boolean_1d_array::~boolean_1d_array()
 {
 }
 
@@ -5029,8 +4800,9 @@ void alglib::boolean_1d_array::setcontent(ae_int_t iLen, const bool *pContent )
 {
     ae_int_t i;
     setlength(iLen);
-    for(i=0; i<iLen; i++)
+    for(i=0; i<iLen; i++) {
         p_vec->ptr.p_bool[i] = pContent[i];
+    }
 }
 
 ae_bool* alglib::boolean_1d_array::getcontent()
@@ -5043,45 +4815,44 @@ const ae_bool* alglib::boolean_1d_array::getcontent() const
     return p_vec->ptr.p_bool;
 }
 
-std::string alglib::boolean_1d_array::tostring() const 
+std::string alglib::boolean_1d_array::tostring() const
 {
-    if( length()==0 )
+    if( length()==0 ) {
         return "[]";
+    }
     return arraytostring(&(operator()(0)), length());
 }
 
-alglib::integer_1d_array::integer_1d_array()  
+alglib::integer_1d_array::integer_1d_array()
 {
     allocate_own(0, alglib_impl::DT_INT);
 }
 
-alglib::integer_1d_array::integer_1d_array(alglib_impl::ae_vector *p)  
+alglib::integer_1d_array::integer_1d_array(alglib_impl::ae_vector *p)
 {
     p_vec = NULL;
     attach_to(p);
 }
 
-alglib::integer_1d_array::integer_1d_array(const char *s)  
+alglib::integer_1d_array::integer_1d_array(const char *s)
 {
     std::vector<const char*> svec;
     size_t i;
     char *p = filter_spaces(s);
-    try
-    {
+    try {
         str_vector_create(p, true, &svec);
         allocate_own((ae_int_t)(svec.size()), alglib_impl::DT_INT);
-        for(i=0; i<svec.size(); i++)
+        for(i=0; i<svec.size(); i++) {
             operator()((ae_int_t)i) = parse_int_delim(svec[i],",]");
+        }
         alglib_impl::ae_free(p);
-    }
-    catch(...)
-    {
+    } catch(...) {
         alglib_impl::ae_free(p);
         throw;
     }
 }
 
-alglib::integer_1d_array::~integer_1d_array() 
+alglib::integer_1d_array::~integer_1d_array()
 {
 }
 
@@ -5109,8 +4880,9 @@ void alglib::integer_1d_array::setcontent(ae_int_t iLen, const ae_int_t *pConten
 {
     ae_int_t i;
     setlength(iLen);
-    for(i=0; i<iLen; i++)
+    for(i=0; i<iLen; i++) {
         p_vec->ptr.p_int[i] = pContent[i];
+    }
 }
 
 alglib::ae_int_t* alglib::integer_1d_array::getcontent()
@@ -5123,45 +4895,44 @@ const alglib::ae_int_t* alglib::integer_1d_array::getcontent() const
     return p_vec->ptr.p_int;
 }
 
-std::string alglib::integer_1d_array::tostring() const 
+std::string alglib::integer_1d_array::tostring() const
 {
-    if( length()==0 )
+    if( length()==0 ) {
         return "[]";
+    }
     return arraytostring(&operator()(0), length());
 }
 
-alglib::real_1d_array::real_1d_array()  
+alglib::real_1d_array::real_1d_array()
 {
     allocate_own(0, alglib_impl::DT_REAL);
 }
 
-alglib::real_1d_array::real_1d_array(alglib_impl::ae_vector *p)  
+alglib::real_1d_array::real_1d_array(alglib_impl::ae_vector *p)
 {
     p_vec = NULL;
     attach_to(p);
 }
 
-alglib::real_1d_array::real_1d_array(const char *s)  
+alglib::real_1d_array::real_1d_array(const char *s)
 {
     std::vector<const char*> svec;
     size_t i;
     char *p = filter_spaces(s);
-    try
-    {
+    try {
         str_vector_create(p, true, &svec);
         allocate_own((ae_int_t)(svec.size()), alglib_impl::DT_REAL);
-        for(i=0; i<svec.size(); i++)
+        for(i=0; i<svec.size(); i++) {
             operator()((ae_int_t)i) = parse_real_delim(svec[i],",]");
+        }
         alglib_impl::ae_free(p);
-    }
-    catch(...)
-    {
+    } catch(...) {
         alglib_impl::ae_free(p);
         throw;
     }
 }
 
-alglib::real_1d_array::~real_1d_array() 
+alglib::real_1d_array::~real_1d_array()
 {
 }
 
@@ -5189,8 +4960,9 @@ void alglib::real_1d_array::setcontent(ae_int_t iLen, const double *pContent )
 {
     ae_int_t i;
     setlength(iLen);
-    for(i=0; i<iLen; i++)
+    for(i=0; i<iLen; i++) {
         p_vec->ptr.p_double[i] = pContent[i];
+    }
 }
 
 double* alglib::real_1d_array::getcontent()
@@ -5203,45 +4975,44 @@ const double* alglib::real_1d_array::getcontent() const
     return p_vec->ptr.p_double;
 }
 
-std::string alglib::real_1d_array::tostring(int dps) const 
+std::string alglib::real_1d_array::tostring(int dps) const
 {
-    if( length()==0 )
+    if( length()==0 ) {
         return "[]";
+    }
     return arraytostring(&operator()(0), length(), dps);
 }
 
-alglib::complex_1d_array::complex_1d_array()  
+alglib::complex_1d_array::complex_1d_array()
 {
     allocate_own(0, alglib_impl::DT_COMPLEX);
 }
 
-alglib::complex_1d_array::complex_1d_array(alglib_impl::ae_vector *p)  
+alglib::complex_1d_array::complex_1d_array(alglib_impl::ae_vector *p)
 {
     p_vec = NULL;
     attach_to(p);
 }
 
-alglib::complex_1d_array::complex_1d_array(const char *s)  
+alglib::complex_1d_array::complex_1d_array(const char *s)
 {
     std::vector<const char*> svec;
     size_t i;
     char *p = filter_spaces(s);
-    try
-    {
+    try {
         str_vector_create(p, true, &svec);
         allocate_own((ae_int_t)(svec.size()), alglib_impl::DT_COMPLEX);
-        for(i=0; i<svec.size(); i++)
+        for(i=0; i<svec.size(); i++) {
             operator()((ae_int_t)i) = parse_complex_delim(svec[i],",]");
+        }
         alglib_impl::ae_free(p);
-    }
-    catch(...)
-    {
+    } catch(...) {
         alglib_impl::ae_free(p);
         throw;
     }
 }
 
-alglib::complex_1d_array::~complex_1d_array() 
+alglib::complex_1d_array::~complex_1d_array()
 {
 }
 
@@ -5269,14 +5040,13 @@ void alglib::complex_1d_array::setcontent(ae_int_t iLen, const alglib::complex *
 {
     ae_int_t i;
     setlength(iLen);
-    for(i=0; i<iLen; i++)
-    {
+    for(i=0; i<iLen; i++) {
         p_vec->ptr.p_complex[i].x = pContent[i].x;
         p_vec->ptr.p_complex[i].y = pContent[i].y;
     }
 }
 
- alglib::complex* alglib::complex_1d_array::getcontent()
+alglib::complex* alglib::complex_1d_array::getcontent()
 {
     return (alglib::complex*)p_vec->ptr.p_complex;
 }
@@ -5286,10 +5056,11 @@ const alglib::complex* alglib::complex_1d_array::getcontent() const
     return (const alglib::complex*)p_vec->ptr.p_complex;
 }
 
-std::string alglib::complex_1d_array::tostring(int dps) const 
+std::string alglib::complex_1d_array::tostring(int dps) const
 {
-    if( length()==0 )
+    if( length()==0 ) {
         return "[]";
+    }
     return arraytostring(&operator()(0), length(), dps);
 }
 
@@ -5300,60 +5071,68 @@ alglib::ae_matrix_wrapper::ae_matrix_wrapper()
 
 alglib::ae_matrix_wrapper::~ae_matrix_wrapper()
 {
-    if( p_mat==&mat )
+    if( p_mat==&mat ) {
         ae_matrix_clear(p_mat);
+    }
 }
 
 alglib::ae_matrix_wrapper::ae_matrix_wrapper(const alglib::ae_matrix_wrapper &rhs)
 {
-    if( rhs.p_mat!=NULL )
-    {
+    if( rhs.p_mat!=NULL ) {
         p_mat = &mat;
-        if( !ae_matrix_init_copy(p_mat, rhs.p_mat, NULL, ae_false) )
+        if( !ae_matrix_init_copy(p_mat, rhs.p_mat, NULL, ae_false) ) {
             throw alglib::ap_error("ALGLIB: malloc error!");
-    }
-    else
+        }
+    } else {
         p_mat = NULL;
+    }
 }
 
 const alglib::ae_matrix_wrapper& alglib::ae_matrix_wrapper::operator=(const alglib::ae_matrix_wrapper &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
-    if( p_mat==&mat )
-        ae_matrix_clear(p_mat);
-    if( rhs.p_mat!=NULL )
-    {
-        p_mat = &mat;
-        if( !ae_matrix_init_copy(p_mat, rhs.p_mat, NULL, ae_false) )
-            throw alglib::ap_error("ALGLIB: malloc error!");
     }
-    else
+    if( p_mat==&mat ) {
+        ae_matrix_clear(p_mat);
+    }
+    if( rhs.p_mat!=NULL ) {
+        p_mat = &mat;
+        if( !ae_matrix_init_copy(p_mat, rhs.p_mat, NULL, ae_false) ) {
+            throw alglib::ap_error("ALGLIB: malloc error!");
+        }
+    } else {
         p_mat = NULL;
+    }
     return *this;
 }
 
 void alglib::ae_matrix_wrapper::setlength(ae_int_t rows, ae_int_t cols)
 {
-    if( p_mat==NULL )
+    if( p_mat==NULL ) {
         throw alglib::ap_error("ALGLIB: setlength() error, p_mat==NULL (array was not correctly initialized)");
-    if( p_mat!=&mat )
+    }
+    if( p_mat!=&mat ) {
         throw alglib::ap_error("ALGLIB: setlength() error, p_mat!=&mat (attempt to resize frozen array)");
-    if( !ae_matrix_set_length(p_mat, rows, cols, NULL) )
+    }
+    if( !ae_matrix_set_length(p_mat, rows, cols, NULL) ) {
         throw alglib::ap_error("ALGLIB: malloc error");
+    }
 }
 
 alglib::ae_int_t alglib::ae_matrix_wrapper::rows() const
 {
-    if( p_mat==NULL )
+    if( p_mat==NULL ) {
         return 0;
+    }
     return p_mat->rows;
 }
 
 alglib::ae_int_t alglib::ae_matrix_wrapper::cols() const
 {
-    if( p_mat==NULL )
+    if( p_mat==NULL ) {
         return 0;
+    }
     return p_mat->cols;
 }
 
@@ -5364,27 +5143,32 @@ bool alglib::ae_matrix_wrapper::isempty() const
 
 alglib::ae_int_t alglib::ae_matrix_wrapper::getstride() const
 {
-    if( p_mat==NULL )
+    if( p_mat==NULL ) {
         return 0;
+    }
     return p_mat->stride;
 }
 
 void alglib::ae_matrix_wrapper::attach_to(alglib_impl::ae_matrix *ptr)
 {
-    if( ptr==&mat )
+    if( ptr==&mat ) {
         throw alglib::ap_error("ALGLIB: attempt to attach matrix to itself");
-    if( p_mat==&mat )
+    }
+    if( p_mat==&mat ) {
         ae_matrix_clear(p_mat);
+    }
     p_mat = ptr;
 }
 
 void alglib::ae_matrix_wrapper::allocate_own(ae_int_t rows, ae_int_t cols, alglib_impl::ae_datatype datatype)
 {
-    if( p_mat==&mat )
+    if( p_mat==&mat ) {
         ae_matrix_clear(p_mat);
+    }
     p_mat = &mat;
-    if( !ae_matrix_init(p_mat, rows, cols, datatype, NULL, false) )
+    if( !ae_matrix_init(p_mat, rows, cols, datatype, NULL, false) ) {
         throw alglib::ap_error("ALGLIB: malloc error");
+    }
 }
 
 const alglib_impl::ae_matrix* alglib::ae_matrix_wrapper::c_ptr() const
@@ -5397,44 +5181,41 @@ alglib_impl::ae_matrix* alglib::ae_matrix_wrapper::c_ptr()
     return p_mat;
 }
 
-alglib::boolean_2d_array::boolean_2d_array()  
+alglib::boolean_2d_array::boolean_2d_array()
 {
     allocate_own(0, 0, alglib_impl::DT_BOOL);
 }
 
-alglib::boolean_2d_array::boolean_2d_array(alglib_impl::ae_matrix *p)  
+alglib::boolean_2d_array::boolean_2d_array(alglib_impl::ae_matrix *p)
 {
     p_mat = NULL;
     attach_to(p);
 }
 
-alglib::boolean_2d_array::boolean_2d_array(const char *s)  
+alglib::boolean_2d_array::boolean_2d_array(const char *s)
 {
     std::vector< std::vector<const char*> > smat;
     size_t i, j;
     char *p = filter_spaces(s);
-    try
-    {
+    try {
         str_matrix_create(p, &smat);
-        if( smat.size()!=0 )
-        {
+        if( smat.size()!=0 ) {
             allocate_own((ae_int_t)(smat.size()), (ae_int_t)(smat[0].size()), alglib_impl::DT_BOOL);
             for(i=0; i<smat.size(); i++)
-                for(j=0; j<smat[0].size(); j++)
+                for(j=0; j<smat[0].size(); j++) {
                     operator()((ae_int_t)i,(ae_int_t)j) = parse_bool_delim(smat[i][j],",]");
-        }
-        else
+                }
+        } else {
             allocate_own(0, 0, alglib_impl::DT_BOOL);
+        }
         alglib_impl::ae_free(p);
-    }
-    catch(...)
-    {
+    } catch(...) {
         alglib_impl::ae_free(p);
         throw;
     }
 }
 
-alglib::boolean_2d_array::~boolean_2d_array() 
+alglib::boolean_2d_array::~boolean_2d_array()
 {
 }
 
@@ -5463,65 +5244,64 @@ void alglib::boolean_2d_array::setcontent(ae_int_t irows, ae_int_t icols, const 
     ae_int_t i, j;
     setlength(irows, icols);
     for(i=0; i<irows; i++)
-        for(j=0; j<icols; j++)
+        for(j=0; j<icols; j++) {
             p_mat->ptr.pp_bool[i][j] = pContent[i*icols+j];
+        }
 }
 
-std::string alglib::boolean_2d_array::tostring() const 
+std::string alglib::boolean_2d_array::tostring() const
 {
     std::string result;
     ae_int_t i;
-    if( isempty() )
+    if( isempty() ) {
         return "[[]]";
+    }
     result = "[";
-    for(i=0; i<rows(); i++)
-    {
-        if( i!=0 )
+    for(i=0; i<rows(); i++) {
+        if( i!=0 ) {
             result += ",";
+        }
         result += arraytostring(&operator()(i,0), cols());
     }
     result += "]";
     return result;
 }
 
-alglib::integer_2d_array::integer_2d_array()  
+alglib::integer_2d_array::integer_2d_array()
 {
     allocate_own(0, 0, alglib_impl::DT_INT);
 }
 
-alglib::integer_2d_array::integer_2d_array(alglib_impl::ae_matrix *p)  
+alglib::integer_2d_array::integer_2d_array(alglib_impl::ae_matrix *p)
 {
     p_mat = NULL;
     attach_to(p);
 }
 
-alglib::integer_2d_array::integer_2d_array(const char *s)  
+alglib::integer_2d_array::integer_2d_array(const char *s)
 {
     std::vector< std::vector<const char*> > smat;
     size_t i, j;
     char *p = filter_spaces(s);
-    try
-    {
+    try {
         str_matrix_create(p, &smat);
-        if( smat.size()!=0 )
-        {
+        if( smat.size()!=0 ) {
             allocate_own((ae_int_t)(smat.size()), (ae_int_t)(smat[0].size()), alglib_impl::DT_INT);
             for(i=0; i<smat.size(); i++)
-                for(j=0; j<smat[0].size(); j++)
+                for(j=0; j<smat[0].size(); j++) {
                     operator()((ae_int_t)i,(ae_int_t)j) = parse_int_delim(smat[i][j],",]");
-        }
-        else
+                }
+        } else {
             allocate_own(0, 0, alglib_impl::DT_INT);
+        }
         alglib_impl::ae_free(p);
-    }
-    catch(...)
-    {
+    } catch(...) {
         alglib_impl::ae_free(p);
         throw;
     }
 }
 
-alglib::integer_2d_array::~integer_2d_array() 
+alglib::integer_2d_array::~integer_2d_array()
 {
 }
 
@@ -5550,28 +5330,30 @@ void alglib::integer_2d_array::setcontent(ae_int_t irows, ae_int_t icols, const 
     ae_int_t i, j;
     setlength(irows, icols);
     for(i=0; i<irows; i++)
-        for(j=0; j<icols; j++)
+        for(j=0; j<icols; j++) {
             p_mat->ptr.pp_int[i][j] = pContent[i*icols+j];
+        }
 }
 
-std::string alglib::integer_2d_array::tostring() const 
+std::string alglib::integer_2d_array::tostring() const
 {
     std::string result;
     ae_int_t i;
-    if( isempty() )
+    if( isempty() ) {
         return "[[]]";
+    }
     result = "[";
-    for(i=0; i<rows(); i++)
-    {
-        if( i!=0 )
+    for(i=0; i<rows(); i++) {
+        if( i!=0 ) {
             result += ",";
+        }
         result += arraytostring(&operator()(i,0), cols());
     }
     result += "]";
     return result;
 }
 
-alglib::real_2d_array::real_2d_array()  
+alglib::real_2d_array::real_2d_array()
 {
     allocate_own(0, 0, alglib_impl::DT_REAL);
 }
@@ -5582,33 +5364,30 @@ alglib::real_2d_array::real_2d_array(alglib_impl::ae_matrix *p)
     attach_to(p);
 }
 
-alglib::real_2d_array::real_2d_array(const char *s)  
+alglib::real_2d_array::real_2d_array(const char *s)
 {
     std::vector< std::vector<const char*> > smat;
     size_t i, j;
     char *p = filter_spaces(s);
-    try
-    {
+    try {
         str_matrix_create(p, &smat);
-        if( smat.size()!=0 )
-        {
+        if( smat.size()!=0 ) {
             allocate_own((ae_int_t)(smat.size()), (ae_int_t)(smat[0].size()), alglib_impl::DT_REAL);
             for(i=0; i<smat.size(); i++)
-                for(j=0; j<smat[0].size(); j++)
+                for(j=0; j<smat[0].size(); j++) {
                     operator()((ae_int_t)i,(ae_int_t)j) = parse_real_delim(smat[i][j],",]");
-        }
-        else
+                }
+        } else {
             allocate_own(0, 0, alglib_impl::DT_REAL);
+        }
         alglib_impl::ae_free(p);
-    }
-    catch(...)
-    {
+    } catch(...) {
         alglib_impl::ae_free(p);
         throw;
     }
 }
 
-alglib::real_2d_array::~real_2d_array() 
+alglib::real_2d_array::~real_2d_array()
 {
 }
 
@@ -5637,65 +5416,64 @@ void alglib::real_2d_array::setcontent(ae_int_t irows, ae_int_t icols, const dou
     ae_int_t i, j;
     setlength(irows, icols);
     for(i=0; i<irows; i++)
-        for(j=0; j<icols; j++)
+        for(j=0; j<icols; j++) {
             p_mat->ptr.pp_double[i][j] = pContent[i*icols+j];
+        }
 }
 
-std::string alglib::real_2d_array::tostring(int dps) const 
+std::string alglib::real_2d_array::tostring(int dps) const
 {
     std::string result;
     ae_int_t i;
-    if( isempty() )
+    if( isempty() ) {
         return "[[]]";
+    }
     result = "[";
-    for(i=0; i<rows(); i++)
-    {
-        if( i!=0 )
+    for(i=0; i<rows(); i++) {
+        if( i!=0 ) {
             result += ",";
+        }
         result += arraytostring(&operator()(i,0), cols(), dps);
     }
     result += "]";
     return result;
 }
 
-alglib::complex_2d_array::complex_2d_array()  
+alglib::complex_2d_array::complex_2d_array()
 {
     allocate_own(0, 0, alglib_impl::DT_COMPLEX);
 }
 
-alglib::complex_2d_array::complex_2d_array(alglib_impl::ae_matrix *p)  
+alglib::complex_2d_array::complex_2d_array(alglib_impl::ae_matrix *p)
 {
     p_mat = NULL;
     attach_to(p);
 }
 
-alglib::complex_2d_array::complex_2d_array(const char *s)  
+alglib::complex_2d_array::complex_2d_array(const char *s)
 {
     std::vector< std::vector<const char*> > smat;
     size_t i, j;
     char *p = filter_spaces(s);
-    try
-    {
+    try {
         str_matrix_create(p, &smat);
-        if( smat.size()!=0 )
-        {
+        if( smat.size()!=0 ) {
             allocate_own((ae_int_t)(smat.size()), (ae_int_t)(smat[0].size()), alglib_impl::DT_COMPLEX);
             for(i=0; i<smat.size(); i++)
-                for(j=0; j<smat[0].size(); j++)
+                for(j=0; j<smat[0].size(); j++) {
                     operator()((ae_int_t)i,(ae_int_t)j) = parse_complex_delim(smat[i][j],",]");
-        }
-        else
+                }
+        } else {
             allocate_own(0, 0, alglib_impl::DT_COMPLEX);
+        }
         alglib_impl::ae_free(p);
-    }
-    catch(...)
-    {
+    } catch(...) {
         alglib_impl::ae_free(p);
         throw;
     }
 }
 
-alglib::complex_2d_array::~complex_2d_array() 
+alglib::complex_2d_array::~complex_2d_array()
 {
 }
 
@@ -5724,24 +5502,24 @@ void alglib::complex_2d_array::setcontent(ae_int_t irows, ae_int_t icols, const 
     ae_int_t i, j;
     setlength(irows, icols);
     for(i=0; i<irows; i++)
-        for(j=0; j<icols; j++)
-        {
+        for(j=0; j<icols; j++) {
             p_mat->ptr.pp_complex[i][j].x = pContent[i*icols+j].x;
             p_mat->ptr.pp_complex[i][j].y = pContent[i*icols+j].y;
         }
 }
 
-std::string alglib::complex_2d_array::tostring(int dps) const 
+std::string alglib::complex_2d_array::tostring(int dps) const
 {
     std::string result;
     ae_int_t i;
-    if( isempty() )
+    if( isempty() ) {
         return "[[]]";
+    }
     result = "[";
-    for(i=0; i<rows(); i++)
-    {
-        if( i!=0 )
+    for(i=0; i<rows(); i++) {
+        if( i!=0 ) {
             result += ",";
+        }
         result += arraytostring(&operator()(i,0), cols(), dps);
     }
     result += "]";
@@ -5785,36 +5563,42 @@ double alglib::get_aenv_neginf()
 alglib::ae_int_t alglib::my_stricmp(const char *s1, const char *s2)
 {
     int c1, c2;
-    
+
     //
     // handle special cases
     //
-    if(s1==NULL && s2!=NULL)
+    if(s1==NULL && s2!=NULL) {
         return -1;
-    if(s1!=NULL && s2==NULL)
+    }
+    if(s1!=NULL && s2==NULL) {
         return +1;
-    if(s1==NULL && s2==NULL)
+    }
+    if(s1==NULL && s2==NULL) {
         return 0;
+    }
 
     //
     // compare
     //
-    for (;;)
-    {
+    for (;;) {
         c1 = *s1;
         c2 = *s2;
         s1++;
         s2++;
-        if( c1==0 )
+        if( c1==0 ) {
             return c2==0 ? 0 : -1;
-        if( c2==0 )
+        }
+        if( c2==0 ) {
             return c1==0 ? 0 : +1;
+        }
         c1 = tolower(c1);
         c2 = tolower(c2);
-        if( c1<c2 )
+        if( c1<c2 ) {
             return -1;
-        if( c1>c2 )
+        }
+        if( c1>c2 ) {
             return +1;
+        }
     }
 }
 
@@ -5825,11 +5609,11 @@ char* alglib::filter_spaces(const char *s)
     char *r0;
     n = strlen(s);
     r = (char*)alglib_impl::ae_malloc(n+1, NULL);
-    if( r==NULL )
+    if( r==NULL ) {
         throw ap_error("malloc error");
+    }
     for(i=0,j=0,r0=r; i<=n; i++,s++)
-        if( !isspace(*s) )
-        {
+        if( !isspace(*s) ) {
             *r0 = *s;
             r0++;
         }
@@ -5843,24 +5627,25 @@ void alglib::str_vector_create(const char *src, bool match_head_only, std::vecto
     // try to handle "[]" string
     //
     p_vec->clear();
-    if( *src!='[' )
+    if( *src!='[' ) {
         throw alglib::ap_error("Incorrect initializer for vector");
+    }
     src++;
-    if( *src==']' )
+    if( *src==']' ) {
         return;
+    }
     p_vec->push_back(src);
-    for(;;)
-    {
-        if( *src==0 )
-            throw alglib::ap_error("Incorrect initializer for vector");
-        if( *src==']' )
-        {
-            if( src[1]==0 || !match_head_only)
-                return;
+    for(;;) {
+        if( *src==0 ) {
             throw alglib::ap_error("Incorrect initializer for vector");
         }
-        if( *src==',' )
-        {
+        if( *src==']' ) {
+            if( src[1]==0 || !match_head_only) {
+                return;
+            }
+            throw alglib::ap_error("Incorrect initializer for vector");
+        }
+        if( *src==',' ) {
             p_vec->push_back(src+1);
             src++;
             continue;
@@ -5872,56 +5657,60 @@ void alglib::str_vector_create(const char *src, bool match_head_only, std::vecto
 void alglib::str_matrix_create(const char *src, std::vector< std::vector<const char*> > *p_mat)
 {
     p_mat->clear();
-    
+
     //
     // Try to handle "[[]]" string
     //
-    if( strcmp(src, "[[]]")==0 )
+    if( strcmp(src, "[[]]")==0 ) {
         return;
+    }
 
     //
     // Parse non-empty string
     //
-    if( *src!='[' )
-        throw alglib::ap_error("Incorrect initializer for matrix");
-    src++;
-    for(;;)
-    {
-        p_mat->push_back(std::vector<const char*>());
-        str_vector_create(src, false, &p_mat->back());
-        if( p_mat->back().size()==0 || p_mat->back().size()!=(*p_mat)[0].size() )
-            throw alglib::ap_error("Incorrect initializer for matrix");
-        src = strchr(src, ']');
-        if( src==NULL )
-            throw alglib::ap_error("Incorrect initializer for matrix");
-        src++;
-        if( *src==',' )
-        {
-            src++;
-            continue;
-        }
-        if( *src==']' )
-            break;
+    if( *src!='[' ) {
         throw alglib::ap_error("Incorrect initializer for matrix");
     }
     src++;
-    if( *src!=0 )
+    for(;;) {
+        p_mat->push_back(std::vector<const char*>());
+        str_vector_create(src, false, &p_mat->back());
+        if( p_mat->back().size()==0 || p_mat->back().size()!=(*p_mat)[0].size() ) {
+            throw alglib::ap_error("Incorrect initializer for matrix");
+        }
+        src = strchr(src, ']');
+        if( src==NULL ) {
+            throw alglib::ap_error("Incorrect initializer for matrix");
+        }
+        src++;
+        if( *src==',' ) {
+            src++;
+            continue;
+        }
+        if( *src==']' ) {
+            break;
+        }
         throw alglib::ap_error("Incorrect initializer for matrix");
+    }
+    src++;
+    if( *src!=0 ) {
+        throw alglib::ap_error("Incorrect initializer for matrix");
+    }
 }
 
 ae_bool alglib::parse_bool_delim(const char *s, const char *delim)
 {
     const char *p;
     char buf[8];
-    
+
     // try to parse false
     p = "false";
     memset(buf, 0, sizeof(buf));
     strncpy(buf, s, strlen(p));
-    if( my_stricmp(buf, p)==0 )
-    {
-        if( s[strlen(p)]==0 || strchr(delim,s[strlen(p)])==NULL )
+    if( my_stricmp(buf, p)==0 ) {
+        if( s[strlen(p)]==0 || strchr(delim,s[strlen(p)])==NULL ) {
             throw alglib::ap_error("Cannot parse value");
+        }
         return ae_false;
     }
 
@@ -5929,10 +5718,10 @@ ae_bool alglib::parse_bool_delim(const char *s, const char *delim)
     p = "true";
     memset(buf, 0, sizeof(buf));
     strncpy(buf, s, strlen(p));
-    if( my_stricmp(buf, p)==0 )
-    {
-        if( s[strlen(p)]==0 || strchr(delim,s[strlen(p)])==NULL )
+    if( my_stricmp(buf, p)==0 ) {
+        if( s[strlen(p)]==0 || strchr(delim,s[strlen(p)])==NULL ) {
             throw alglib::ap_error("Cannot parse value");
+        }
         return ae_true;
     }
 
@@ -5945,7 +5734,7 @@ alglib::ae_int_t alglib::parse_int_delim(const char *s, const char *delim)
     const char *p;
     long long_val;
     volatile ae_int_t ae_val;
-    
+
     p = s;
 
     //
@@ -5954,21 +5743,26 @@ alglib::ae_int_t alglib::parse_int_delim(const char *s, const char *delim)
     // * at least one digit
     // * delimiter
     //
-    if( *s=='-' || *s=='+' )
+    if( *s=='-' || *s=='+' ) {
         s++;
-    if( *s==0 || strchr("1234567890",*s)==NULL)
+    }
+    if( *s==0 || strchr("1234567890",*s)==NULL) {
         throw alglib::ap_error("Cannot parse value");
-    while( *s!=0 && strchr("1234567890",*s)!=NULL )
+    }
+    while( *s!=0 && strchr("1234567890",*s)!=NULL ) {
         s++;
-    if( *s==0 || strchr(delim,*s)==NULL )
+    }
+    if( *s==0 || strchr(delim,*s)==NULL ) {
         throw alglib::ap_error("Cannot parse value");
+    }
 
     // convert and ensure that value fits into ae_int_t
     s = p;
     long_val = atol(s);
     ae_val = long_val;
-    if( ae_val!=long_val )
+    if( ae_val!=long_val ) {
         throw alglib::ap_error("Cannot parse value");
+    }
     return ae_val;
 }
 
@@ -5982,85 +5776,91 @@ bool alglib::_parse_real_delim(const char *s, const char *delim, double *result,
     lconv *loc;
 
     p = s;
-    
+
     //
     // check string structure and decide what to do
     //
     isign = 1;
-    if( *s=='-' || *s=='+' )
-    {
+    if( *s=='-' || *s=='+' ) {
         isign = *s=='-' ? -1 : +1;
         s++;
     }
     memset(buf, 0, sizeof(buf));
     strncpy(buf, s, 3);
-    if( my_stricmp(buf,"nan")!=0 && my_stricmp(buf,"inf")!=0 )
-    {
+    if( my_stricmp(buf,"nan")!=0 && my_stricmp(buf,"inf")!=0 ) {
         //
         // [sign] [ddd] [.] [ddd] [e|E[sign]ddd]
         //
         has_digits = false;
-        if( *s!=0 && strchr("1234567890",*s)!=NULL )
-        {
+        if( *s!=0 && strchr("1234567890",*s)!=NULL ) {
             has_digits = true;
-            while( *s!=0 && strchr("1234567890",*s)!=NULL )
+            while( *s!=0 && strchr("1234567890",*s)!=NULL ) {
                 s++;
+            }
         }
-        if( *s=='.' )
+        if( *s=='.' ) {
             s++;
-        if( *s!=0 && strchr("1234567890",*s)!=NULL )
-        {
-            has_digits = true;
-            while( *s!=0 && strchr("1234567890",*s)!=NULL )
-                s++;
         }
-        if (!has_digits )
+        if( *s!=0 && strchr("1234567890",*s)!=NULL ) {
+            has_digits = true;
+            while( *s!=0 && strchr("1234567890",*s)!=NULL ) {
+                s++;
+            }
+        }
+        if (!has_digits ) {
             return false;
-        if( *s=='e' || *s=='E' )
-        {
+        }
+        if( *s=='e' || *s=='E' ) {
             s++;
-            if( *s=='-' || *s=='+' )
+            if( *s=='-' || *s=='+' ) {
                 s++;
-            if( *s==0 || strchr("1234567890",*s)==NULL )
+            }
+            if( *s==0 || strchr("1234567890",*s)==NULL ) {
                 return false;
-            while( *s!=0 && strchr("1234567890",*s)!=NULL )
+            }
+            while( *s!=0 && strchr("1234567890",*s)!=NULL ) {
                 s++;
-        }   
-        if( *s==0 || strchr(delim,*s)==NULL )
+            }
+        }
+        if( *s==0 || strchr(delim,*s)==NULL ) {
             return false;
+        }
         *new_s = s;
 
         //
         // finite value conversion
         //
-        if( *new_s-p>=(int)sizeof(buf) )
+        if( *new_s-p>=(int)sizeof(buf) ) {
             return false;
+        }
         strncpy(buf, p, (size_t)(*new_s-p));
         buf[*new_s-p] = 0;
         loc = localeconv();
         t = strchr(buf,'.');
-        if( t!=NULL )
+        if( t!=NULL ) {
             *t = *loc->decimal_point;
+        }
         *result = atof(buf);
         return true;
-    }
-    else
-    {
+    } else {
         //
         // check delimiter and update *new_s
         //
         s += 3;
-        if( *s==0 || strchr(delim,*s)==NULL )
+        if( *s==0 || strchr(delim,*s)==NULL ) {
             return false;
+        }
         *new_s = s;
 
         //
         // NAN, INF conversion
         //
-        if( my_stricmp(buf,"nan")==0 )
+        if( my_stricmp(buf,"nan")==0 ) {
             *result = fp_nan;
-        if( my_stricmp(buf,"inf")==0 )
+        }
+        if( my_stricmp(buf,"inf")==0 ) {
             *result = isign>0 ? fp_posinf : fp_neginf;
+        }
         return true;
     }
 }
@@ -6069,8 +5869,9 @@ double alglib::parse_real_delim(const char *s, const char *delim)
 {
     double result;
     const char *new_s;
-    if( !_parse_real_delim(s, delim, &result, &new_s) )
+    if( !_parse_real_delim(s, delim, &result, &new_s) ) {
         throw alglib::ap_error("Cannot parse value");
+    }
     return result;
 }
 
@@ -6079,38 +5880,39 @@ alglib::complex alglib::parse_complex_delim(const char *s, const char *delim)
     double d_result;
     const char *new_s;
     alglib::complex c_result;
-    
+
     // parse as real value
-    if( _parse_real_delim(s, delim, &d_result, &new_s) )
+    if( _parse_real_delim(s, delim, &d_result, &new_s) ) {
         return d_result;
+    }
 
     // parse as "a+bi" or "a-bi"
-    if( _parse_real_delim(s, "+-", &c_result.x, &new_s) )
-    {
+    if( _parse_real_delim(s, "+-", &c_result.x, &new_s) ) {
         s = new_s;
-        if( !_parse_real_delim(s, "i", &c_result.y, &new_s) )
+        if( !_parse_real_delim(s, "i", &c_result.y, &new_s) ) {
             throw alglib::ap_error("Cannot parse value");
+        }
         s = new_s+1;
-        if( *s==0 || strchr(delim,*s)==NULL )
+        if( *s==0 || strchr(delim,*s)==NULL ) {
             throw alglib::ap_error("Cannot parse value");
+        }
         return c_result;
     }
-    
+
     // parse as complex value "bi+a" or "bi-a"
-    if( _parse_real_delim(s, "i", &c_result.y, &new_s) )
-    {
+    if( _parse_real_delim(s, "i", &c_result.y, &new_s) ) {
         s = new_s+1;
-        if( *s==0 )
+        if( *s==0 ) {
             throw alglib::ap_error("Cannot parse value");
-        if( strchr(delim,*s)!=NULL )
-        {
+        }
+        if( strchr(delim,*s)!=NULL ) {
             c_result.x = 0;
             return c_result;
         }
-        if( strchr("+-",*s)!=NULL )
-        {
-            if( !_parse_real_delim(s, delim, &c_result.x, &new_s) )
+        if( strchr("+-",*s)!=NULL ) {
+            if( !_parse_real_delim(s, delim, &c_result.x, &new_s) ) {
                 throw alglib::ap_error("Cannot parse value");
+            }
             return c_result;
         }
         throw alglib::ap_error("Cannot parse value");
@@ -6125,10 +5927,10 @@ std::string alglib::arraytostring(const bool *ptr, ae_int_t n)
     std::string result;
     ae_int_t i;
     result = "[";
-    for(i=0; i<n; i++)
-    {
-        if( i!=0 )
+    for(i=0; i<n; i++) {
+        if( i!=0 ) {
             result += ",";
+        }
         result += ptr[i] ? "true" : "false";
     }
     result += "]";
@@ -6141,10 +5943,10 @@ std::string alglib::arraytostring(const ae_int_t *ptr, ae_int_t n)
     ae_int_t i;
     char buf[64];
     result = "[";
-    for(i=0; i<n; i++)
-    {
-        if( sprintf(buf, i==0 ? "%ld" : ",%ld", long(ptr[i]))>=(int)sizeof(buf) )
+    for(i=0; i<n; i++) {
+        if( sprintf(buf, i==0 ? "%ld" : ",%ld", long(ptr[i]))>=(int)sizeof(buf) ) {
             throw ap_error("arraytostring(): buffer overflow");
+        }
         result += buf;
     }
     result += "]";
@@ -6160,24 +5962,25 @@ std::string alglib::arraytostring(const double *ptr, ae_int_t n, int _dps)
     char mask2[64];
     int dps = _dps>=0 ? _dps : -_dps;
     result = "[";
-    if( sprintf(mask1, "%%.%d%s", dps, _dps>=0 ? "f" : "e")>=(int)sizeof(mask1) )
+    if( sprintf(mask1, "%%.%d%s", dps, _dps>=0 ? "f" : "e")>=(int)sizeof(mask1) ) {
         throw ap_error("arraytostring(): buffer overflow");
-    if( sprintf(mask2, ",%s", mask1)>=(int)sizeof(mask2) )
+    }
+    if( sprintf(mask2, ",%s", mask1)>=(int)sizeof(mask2) ) {
         throw ap_error("arraytostring(): buffer overflow");
-    for(i=0; i<n; i++)
-    {
+    }
+    for(i=0; i<n; i++) {
         buf[0] = 0;
-        if( fp_isfinite(ptr[i]) )
-        {
-            if( sprintf(buf, i==0 ? mask1 : mask2, double(ptr[i]))>=(int)sizeof(buf) )
+        if( fp_isfinite(ptr[i]) ) {
+            if( sprintf(buf, i==0 ? mask1 : mask2, double(ptr[i]))>=(int)sizeof(buf) ) {
                 throw ap_error("arraytostring(): buffer overflow");
-        }
-        else if( fp_isnan(ptr[i]) )
+            }
+        } else if( fp_isnan(ptr[i]) ) {
             strcpy(buf, i==0 ?  "NAN" :  ",NAN");
-        else if( fp_isposinf(ptr[i]) )
+        } else if( fp_isposinf(ptr[i]) ) {
             strcpy(buf, i==0 ? "+INF" : ",+INF");
-        else if( fp_isneginf(ptr[i]) )
+        } else if( fp_isneginf(ptr[i]) ) {
             strcpy(buf, i==0 ? "-INF" : ",-INF");
+        }
         result += buf;
     }
     result += "]";
@@ -6189,10 +5992,10 @@ std::string alglib::arraytostring(const alglib::complex *ptr, ae_int_t n, int dp
     std::string result;
     ae_int_t i;
     result = "[";
-    for(i=0; i<n; i++)
-    {
-        if( i!=0 )
+    for(i=0; i<n; i++) {
+        if( i!=0 ) {
             result += ",";
+        }
         result += ptr[i].tostring(dps);
     }
     result += "]";
@@ -6205,8 +6008,12 @@ standard functions
 ********************************************************************/
 int alglib::sign(double x)
 {
-    if( x>0 ) return  1;
-    if( x<0 ) return -1;
+    if( x>0 ) {
+        return  1;
+    }
+    if( x<0 ) {
+        return -1;
+    }
     return 0;
 }
 
@@ -6214,34 +6021,50 @@ double alglib::randomreal()
 {
     int i1 = rand();
     int i2 = rand();
-    while(i1==RAND_MAX)
+    while(i1==RAND_MAX) {
         i1 =rand();
-    while(i2==RAND_MAX)
+    }
+    while(i2==RAND_MAX) {
         i2 =rand();
+    }
     double mx = RAND_MAX;
     return (i1+i2/mx)/mx;
 }
 
 int alglib::randominteger(int maxv)
-{  return rand()%maxv; }
+{
+    return rand()%maxv;
+}
 
 int alglib::round(double x)
-{ return int(floor(x+0.5)); }
+{
+    return int(floor(x+0.5));
+}
 
 int alglib::trunc(double x)
-{ return int(x>0 ? floor(x) : ceil(x)); }
+{
+    return int(x>0 ? floor(x) : ceil(x));
+}
 
 int alglib::ifloor(double x)
-{ return int(floor(x)); }
+{
+    return int(floor(x));
+}
 
 int alglib::iceil(double x)
-{ return int(ceil(x)); }
+{
+    return int(ceil(x));
+}
 
 double alglib::pi()
-{ return 3.14159265358979323846; }
+{
+    return 3.14159265358979323846;
+}
 
 double alglib::sqr(double x)
-{ return x*x; }
+{
+    return x*x;
+}
 
 int alglib::maxint(int m1, int m2)
 {
@@ -6359,7 +6182,7 @@ bool alglib::readstrings(std::string file, std::list<std::string> *pOutput, std:
         // TODO: read file by small chunks, combine in one large string
         if( strlen(str)==0 )
             continue;
-            
+
         //
         // trim trailing newline chars
         //
@@ -6569,7 +6392,7 @@ bool alglib::opendataset(std::string file, dataset *pdataset)
     ValLast = ValFirst + pdataset->valsize;
     TstFirst = ValLast;
     TstLast = TstFirst + pdataset->tstsize;
-                
+
     //
     // columns
     //
@@ -6798,11 +6621,9 @@ void _ialglib_mv_32(const double *a, const double *x, double *y, ae_int_t stride
     pa0 = a;
     pa1 = a+alglib_r_block;
     pb = x;
-    for(i=0; i<16; i++)
-    {
+    for(i=0; i<16; i++) {
         double v0 = 0, v1 = 0;
-        for(k=0; k<4; k++)
-        {
+        for(k=0; k<4; k++) {
             v0 += pa0[0]*pb[0];
             v1 += pa1[0]*pb[0];
             v0 += pa0[1]*pb[1];
@@ -6849,7 +6670,7 @@ using generic C code. It calls _ialglib_mv_32 if both M=32 and N=32.
 If beta is zero, we do not use previous values of y (they are  overwritten
 by alpha*A*x without ever being read).  If alpha is zero, no matrix-vector
 product is calculated (only beta is updated); however, this update  is not
-efficient  and  this  function  should  NOT  be used for multiplication of 
+efficient  and  this  function  should  NOT  be used for multiplication of
 vector and scalar.
 
 IMPORTANT:
@@ -6863,43 +6684,35 @@ void _ialglib_rmv(ae_int_t m, ae_int_t n, const double *a, const double *x, doub
      * - alpha is zero or n is zero
      * - m is zero
      */
-    if( m==0 )
+    if( m==0 ) {
         return;
-    if( alpha==0.0 || n==0 )
-    {
+    }
+    if( alpha==0.0 || n==0 ) {
         ae_int_t i;
-        if( beta==0.0 )
-        {
-            for(i=0; i<m; i++)
-            {
+        if( beta==0.0 ) {
+            for(i=0; i<m; i++) {
                 *y = 0.0;
                 y += stride;
             }
-        }
-        else
-        {
-            for(i=0; i<m; i++)
-            {
+        } else {
+            for(i=0; i<m; i++) {
                 *y *= beta;
                 y += stride;
             }
         }
         return;
     }
-    
+
     /*
      * Handle general case: nonzero alpha, n and m
      *
      */
-    if( m==32 && n==32 )
-    {
+    if( m==32 && n==32 ) {
         /*
          * 32x32, may be we have something better than general implementation
          */
         _ialglib_mv_32(a, x, y, stride, alpha, beta);
-    }
-    else
-    {
+    } else {
         ae_int_t i, k, m2, n8, n2, ntrail2;
         const double *pa0, *pa1, *pb;
 
@@ -6910,8 +6723,7 @@ void _ialglib_rmv(ae_int_t m, ae_int_t n, const double *a, const double *x, doub
         m2 = m/2;
         n8 = n/8;
         ntrail2 = (n-8*n8)/2;
-        for(i=0; i<m2; i++)
-        {
+        for(i=0; i<m2; i++) {
             double v0 = 0, v1 = 0;
 
             /*
@@ -6926,8 +6738,7 @@ void _ialglib_rmv(ae_int_t m, ae_int_t n, const double *a, const double *x, doub
             /*
              * 8 elements per iteration
              */
-            for(k=0; k<n8; k++)
-            {
+            for(k=0; k<n8; k++) {
                 v0 += pa0[0]*pb[0];
                 v1 += pa1[0]*pb[0];
                 v0 += pa0[1]*pb[1];
@@ -6952,8 +6763,7 @@ void _ialglib_rmv(ae_int_t m, ae_int_t n, const double *a, const double *x, doub
             /*
              * 2 elements per iteration
              */
-            for(k=0; k<ntrail2; k++)
-            {
+            for(k=0; k<ntrail2; k++) {
                 v0 += pa0[0]*pb[0];
                 v1 += pa1[0]*pb[0];
                 v0 += pa0[1]*pb[1];
@@ -6966,8 +6776,7 @@ void _ialglib_rmv(ae_int_t m, ae_int_t n, const double *a, const double *x, doub
             /*
              * last element, if needed
              */
-            if( n%2!=0 )
-            {
+            if( n%2!=0 ) {
                 v0 += pa0[0]*pb[0];
                 v1 += pa1[0]*pb[0];
             }
@@ -6975,17 +6784,14 @@ void _ialglib_rmv(ae_int_t m, ae_int_t n, const double *a, const double *x, doub
             /*
              * final update
              */
-            if( beta!=0 )
-            {
+            if( beta!=0 ) {
                 y[0] = beta*y[0]+alpha*v0;
                 y[stride] = beta*y[stride]+alpha*v1;
-            }
-            else
-            {
+            } else {
                 y[0] = alpha*v0;
                 y[stride] = alpha*v1;
             }
-            
+
             /*
              * move to the next pair of elements
              */
@@ -6996,8 +6802,7 @@ void _ialglib_rmv(ae_int_t m, ae_int_t n, const double *a, const double *x, doub
         /*
          * Last (odd) row is processed with less optimized code.
          */
-        if( m%2!=0 )
-        {
+        if( m%2!=0 ) {
             double v0 = 0;
 
             /*
@@ -7011,8 +6816,7 @@ void _ialglib_rmv(ae_int_t m, ae_int_t n, const double *a, const double *x, doub
              * 2 elements per iteration
              */
             n2 = n/2;
-            for(k=0; k<n2; k++)
-            {
+            for(k=0; k<n2; k++) {
                 v0 += pa0[0]*pb[0]+pa0[1]*pb[1];
                 pa0 += 2;
                 pb  += 2;
@@ -7021,16 +6825,18 @@ void _ialglib_rmv(ae_int_t m, ae_int_t n, const double *a, const double *x, doub
             /*
              * last element, if needed
              */
-            if( n%2!=0 )
+            if( n%2!=0 ) {
                 v0 += pa0[0]*pb[0];
+            }
 
             /*
              * final update
              */
-            if( beta!=0 )
+            if( beta!=0 ) {
                 y[0] = beta*y[0]+alpha*v0;
-            else
+            } else {
                 y[0] = alpha*v0;
+            }
         }
     }
 }
@@ -7046,7 +6852,7 @@ using generic C code. It calls _ialglib_mv_32 if both M=32 and N=32.
 If beta is zero, we do not use previous values of y (they are  overwritten
 by alpha*A*x without ever being read).  If alpha is zero, no matrix-vector
 product is calculated (only beta is updated); however, this update  is not
-efficient  and  this  function  should  NOT  be used for multiplication of 
+efficient  and  this  function  should  NOT  be used for multiplication of
 vector and scalar.
 
 IMPORTANT:
@@ -7055,18 +6861,18 @@ IMPORTANT:
 * y may be non-aligned
 * both A and x must have same offset with respect to 16-byte boundary:
   either both are aligned, or both are aligned with offset 8. Function
-  will crash your system if you try to call it with misaligned or 
+  will crash your system if you try to call it with misaligned or
   incorrectly aligned data.
 
 This function supports SSE2; it can be used when:
 1. AE_HAS_SSE2_INTRINSICS was defined (checked at compile-time)
 2. ae_cpuid() result contains CPU_SSE2 (checked at run-time)
 
-If (1) is failed, this function will be undefined. If (2) is failed,  call 
-to this function will probably crash your system. 
+If (1) is failed, this function will be undefined. If (2) is failed,  call
+to this function will probably crash your system.
 
-If  you  want  to  know  whether  it  is safe to call it, you should check 
-results  of  ae_cpuid(). If CPU_SSE2 bit is set, this function is callable 
+If  you  want  to  know  whether  it  is safe to call it, you should check
+results  of  ae_cpuid(). If CPU_SSE2 bit is set, this function is callable
 and will do its work.
 *************************************************************************/
 #if defined(AE_HAS_SSE2_INTRINSICS)
@@ -7075,38 +6881,33 @@ void _ialglib_rmv_sse2(ae_int_t m, ae_int_t n, const double *a, const double *x,
     ae_int_t i, k, n2;
     ae_int_t mb3, mtail, nhead, nb8, nb2, ntail;
     const double *pa0, *pa1, *pa2, *pb;
-    __m128d v0, v1, v2, va0, va1, va2, vx, vtmp; 
+    __m128d v0, v1, v2, va0, va1, va2, vx, vtmp;
     double buf3[3], buf6[6];
     double d;
-    
+
     /*
      * Handle special cases:
      * - alpha is zero or n is zero
      * - m is zero
      */
-    if( m==0 )
+    if( m==0 ) {
         return;
-    if( alpha==0.0 || n==0 )
-    {
-        if( beta==0.0 )
-        {
-            for(i=0; i<m; i++)
-            {
+    }
+    if( alpha==0.0 || n==0 ) {
+        if( beta==0.0 ) {
+            for(i=0; i<m; i++) {
                 *y = 0.0;
                 y += stride;
             }
-        }
-        else
-        {
-            for(i=0; i<m; i++)
-            {
+        } else {
+            for(i=0; i<m; i++) {
                 *y *= beta;
                 y += stride;
             }
         }
         return;
     }
-    
+
     /*
      * Handle general case: nonzero alpha, n and m
      *
@@ -7123,15 +6924,14 @@ void _ialglib_rmv_sse2(ae_int_t m, ae_int_t n, const double *a, const double *x,
      * - ntail 1x1 blocks, aligned too (altough we don't rely on it)
      *
      */
-    n2 = n/2;    
+    n2 = n/2;
     mb3 = m/3;
     mtail = m%3;
     nhead = ae_misalignment(a,alglib_simd_alignment)==0 ? 0 : 1;
     nb8 = (n-nhead)/8;
     nb2 = (n-nhead-8*nb8)/2;
     ntail = n-nhead-8*nb8-2*nb2;
-    for(i=0; i<mb3; i++)
-    {
+    for(i=0; i<mb3; i++) {
         double row0, row1, row2;
         row0 = 0;
         row1 = 0;
@@ -7141,30 +6941,26 @@ void _ialglib_rmv_sse2(ae_int_t m, ae_int_t n, const double *a, const double *x,
         pa1 = a+alglib_r_block;
         pa2 = a+alglib_twice_r_block;
         a += 3*alglib_r_block;
-        if( nhead==1 )
-        {
+        if( nhead==1 ) {
             vx  = _mm_load_sd(pb);
             v0 = _mm_load_sd(pa0);
             v1 = _mm_load_sd(pa1);
             v2 = _mm_load_sd(pa2);
-            
+
             v0 = _mm_mul_sd(v0,vx);
             v1 = _mm_mul_sd(v1,vx);
             v2 = _mm_mul_sd(v2,vx);
-            
+
             pa0++;
             pa1++;
             pa2++;
             pb++;
-        }
-        else
-        {
+        } else {
             v0 = _mm_setzero_pd();
             v1 = _mm_setzero_pd();
             v2 = _mm_setzero_pd();
         }
-        for(k=0; k<nb8; k++)
-        {
+        for(k=0; k<nb8; k++) {
             /*
              * this code is a shuffle of simultaneous dot product.
              * see below for commented unshuffled original version.
@@ -7209,7 +7005,7 @@ void _ialglib_rmv_sse2(ae_int_t m, ae_int_t n, const double *a, const double *x,
             v1 = _mm_add_pd(va1,v1);
             va2 = _mm_mul_pd(va2,vx);
             v2 = _mm_add_pd(va2,v2);
-            
+
             pa0 += 8;
             pa1 += 8;
             pa2 += 8;
@@ -7217,42 +7013,42 @@ void _ialglib_rmv_sse2(ae_int_t m, ae_int_t n, const double *a, const double *x,
 
             /*
             this is unshuffled version of code above
-            
+
             vx  = _mm_load_pd(pb);
-            va0 = _mm_load_pd(pa0);            
+            va0 = _mm_load_pd(pa0);
             va1 = _mm_load_pd(pa1);
             va2 = _mm_load_pd(pa2);
-            
+
             va0 = _mm_mul_pd(va0,vx);
             va1 = _mm_mul_pd(va1,vx);
             va2 = _mm_mul_pd(va2,vx);
-            
+
             v0 = _mm_add_pd(va0,v0);
             v1 = _mm_add_pd(va1,v1);
             v2 = _mm_add_pd(va2,v2);
-            
+
             vx  = _mm_load_pd(pb+2);
-            va0 = _mm_load_pd(pa0+2);            
+            va0 = _mm_load_pd(pa0+2);
             va1 = _mm_load_pd(pa1+2);
             va2 = _mm_load_pd(pa2+2);
-            
+
             va0 = _mm_mul_pd(va0,vx);
             va1 = _mm_mul_pd(va1,vx);
             va2 = _mm_mul_pd(va2,vx);
-            
+
             v0 = _mm_add_pd(va0,v0);
             v1 = _mm_add_pd(va1,v1);
             v2 = _mm_add_pd(va2,v2);
 
             vx  = _mm_load_pd(pb+4);
-            va0 = _mm_load_pd(pa0+4);            
+            va0 = _mm_load_pd(pa0+4);
             va1 = _mm_load_pd(pa1+4);
             va2 = _mm_load_pd(pa2+4);
-            
+
             va0 = _mm_mul_pd(va0,vx);
             va1 = _mm_mul_pd(va1,vx);
             va2 = _mm_mul_pd(va2,vx);
-            
+
             v0 = _mm_add_pd(va0,v0);
             v1 = _mm_add_pd(va1,v1);
             v2 = _mm_add_pd(va2,v2);
@@ -7261,87 +7057,82 @@ void _ialglib_rmv_sse2(ae_int_t m, ae_int_t n, const double *a, const double *x,
             va0 = _mm_load_pd(pa0+6);
             va1 = _mm_load_pd(pa1+6);
             va2 = _mm_load_pd(pa2+6);
-            
+
             va0 = _mm_mul_pd(va0,vx);
             va1 = _mm_mul_pd(va1,vx);
             va2 = _mm_mul_pd(va2,vx);
-            
+
             v0 = _mm_add_pd(va0,v0);
             v1 = _mm_add_pd(va1,v1);
             v2 = _mm_add_pd(va2,v2);
             */
         }
-        for(k=0; k<nb2; k++)
-        {
+        for(k=0; k<nb2; k++) {
             vx  = _mm_load_pd(pb);
             va0 = _mm_load_pd(pa0);
             va1 = _mm_load_pd(pa1);
             va2 = _mm_load_pd(pa2);
-            
+
             va0 = _mm_mul_pd(va0,vx);
             v0 = _mm_add_pd(va0,v0);
             va1 = _mm_mul_pd(va1,vx);
             v1 = _mm_add_pd(va1,v1);
             va2 = _mm_mul_pd(va2,vx);
             v2 = _mm_add_pd(va2,v2);
-            
+
             pa0 += 2;
             pa1 += 2;
             pa2 += 2;
             pb += 2;
         }
-        for(k=0; k<ntail; k++)
-        {
+        for(k=0; k<ntail; k++) {
             vx  = _mm_load1_pd(pb);
             va0 = _mm_load1_pd(pa0);
             va1 = _mm_load1_pd(pa1);
             va2 = _mm_load1_pd(pa2);
-            
+
             va0 = _mm_mul_sd(va0,vx);
             v0 = _mm_add_sd(v0,va0);
             va1 = _mm_mul_sd(va1,vx);
             v1 = _mm_add_sd(v1,va1);
             va2 = _mm_mul_sd(va2,vx);
             v2 = _mm_add_sd(v2,va2);
-        }        
+        }
         vtmp = _mm_add_pd(_mm_unpacklo_pd(v0,v1),_mm_unpackhi_pd(v0,v1));
         _mm_storel_pd(&row0, vtmp);
         _mm_storeh_pd(&row1, vtmp);
         v2 = _mm_add_sd(_mm_shuffle_pd(v2,v2,1),v2);
         _mm_storel_pd(&row2, v2);
-        if( beta!=0 )
-        {
+        if( beta!=0 ) {
             y[0] = beta*y[0]+alpha*row0;
             y[stride] = beta*y[stride]+alpha*row1;
             y[2*stride] = beta*y[2*stride]+alpha*row2;
-        }
-        else
-        {
+        } else {
             y[0] = alpha*row0;
             y[stride] = alpha*row1;
             y[2*stride] = alpha*row2;
         }
         y+=3*stride;
     }
-    for(i=0; i<mtail; i++)
-    {
+    for(i=0; i<mtail; i++) {
         double row0;
         row0 = 0;
         pb = x;
         pa0 = a;
         a += alglib_r_block;
-        for(k=0; k<n2; k++)
-        {
-            row0 += pb[0]*pa0[0]+pb[1]*pa0[1];            
+        for(k=0; k<n2; k++) {
+            row0 += pb[0]*pa0[0]+pb[1]*pa0[1];
             pa0 += 2;
             pb += 2;
         }
-        if( n%2 )
+        if( n%2 ) {
             row0 += pb[0]*pa0[0];
-        if( beta!=0 )
+        }
+        if( beta!=0 ) {
             y[0] = beta*y[0]+alpha*row0;
-        else
+        } else {
             y[0] = alpha*row0;
+        }
         y+=stride;
     }
 }
@@ -7356,7 +7147,7 @@ This subroutine calculates fast MxN complex matrix-vector product:
 using generic C code, where A, x, y, alpha and beta are complex.
 
 If beta is zero, we do not use previous values of y (they are  overwritten
-by alpha*A*x without ever being read). However, when  alpha  is  zero,  we 
+by alpha*A*x without ever being read). However, when  alpha  is  zero,  we
 still calculate A*x and  multiply  it  by  alpha  (this distinction can be
 important when A or x contain infinities/NANs).
 
@@ -7366,7 +7157,7 @@ IMPORTANT:
   pairs. Stride is alglib_c_block (it is measured in pairs of doubles, not
   in doubles).
 * Y may be referenced by cy (pointer to ae_complex) or
-  dy (pointer to array of double precision pair) depending on what type of 
+  dy (pointer to array of double precision pair) depending on what type of
   output you wish. Pass pointer to Y as one of these parameters,
   AND SET OTHER PARAMETER TO NULL.
 * both A and x must be aligned; y may be non-aligned.
@@ -7377,13 +7168,11 @@ void _ialglib_cmv(ae_int_t m, ae_int_t n, const double *a, const double *x, ae_c
     const double *pa, *parow, *pb;
 
     parow = a;
-    for(i=0; i<m; i++)
-    {
+    for(i=0; i<m; i++) {
         double v0 = 0, v1 = 0;
         pa = parow;
         pb = x;
-        for(j=0; j<n; j++)
-        {
+        for(j=0; j<n; j++) {
             v0 += pa[0]*pb[0];
             v1 += pa[0]*pb[1];
             v0 -= pa[1]*pb[1];
@@ -7392,16 +7181,13 @@ void _ialglib_cmv(ae_int_t m, ae_int_t n, const double *a, const double *x, ae_c
             pa  += 2;
             pb  += 2;
         }
-        if( cy!=NULL )
-        {
+        if( cy!=NULL ) {
             double tx = (beta.x*cy->x-beta.y*cy->y)+(alpha.x*v0-alpha.y*v1);
             double ty = (beta.x*cy->y+beta.y*cy->x)+(alpha.x*v1+alpha.y*v0);
             cy->x = tx;
             cy->y = ty;
             cy+=stride;
-        }
-        else
-        {
+        } else {
             double tx = (beta.x*dy[0]-beta.y*dy[1])+(alpha.x*v0-alpha.y*v1);
             double ty = (beta.x*dy[1]+beta.y*dy[0])+(alpha.x*v1+alpha.y*v0);
             dy[0] = tx;
@@ -7421,7 +7207,7 @@ This subroutine calculates fast MxN complex matrix-vector product:
 using generic C code, where A, x, y, alpha and beta are complex.
 
 If beta is zero, we do not use previous values of y (they are  overwritten
-by alpha*A*x without ever being read). However, when  alpha  is  zero,  we 
+by alpha*A*x without ever being read). However, when  alpha  is  zero,  we
 still calculate A*x and  multiply  it  by  alpha  (this distinction can be
 important when A or x contain infinities/NANs).
 
@@ -7431,7 +7217,7 @@ IMPORTANT:
   pairs. Stride is alglib_c_block (it is measured in pairs of doubles, not
   in doubles).
 * Y may be referenced by cy (pointer to ae_complex) or
-  dy (pointer to array of double precision pair) depending on what type of 
+  dy (pointer to array of double precision pair) depending on what type of
   output you wish. Pass pointer to Y as one of these parameters,
   AND SET OTHER PARAMETER TO NULL.
 * both A and x must be aligned; y may be non-aligned.
@@ -7440,11 +7226,11 @@ This function supports SSE2; it can be used when:
 1. AE_HAS_SSE2_INTRINSICS was defined (checked at compile-time)
 2. ae_cpuid() result contains CPU_SSE2 (checked at run-time)
 
-If (1) is failed, this function will be undefined. If (2) is failed,  call 
-to this function will probably crash your system. 
+If (1) is failed, this function will be undefined. If (2) is failed,  call
+to this function will probably crash your system.
 
-If  you  want  to  know  whether  it  is safe to call it, you should check 
-results  of  ae_cpuid(). If CPU_SSE2 bit is set, this function is callable 
+If  you  want  to  know  whether  it  is safe to call it, you should check
+results  of  ae_cpuid(). If CPU_SSE2 bit is set, this function is callable
 and will do its work.
 *************************************************************************/
 #if defined(AE_HAS_SSE2_INTRINSICS)
@@ -7454,11 +7240,10 @@ void _ialglib_cmv_sse2(ae_int_t m, ae_int_t n, const double *a, const double *x,
     const double *pa0, *pa1, *parow, *pb;
     __m128d vbeta, vbetax, vbetay;
     __m128d valpha, valphax, valphay;
-    
+
     m2 = m/2;
     parow = a;
-    if( cy!=NULL )
-    {
+    if( cy!=NULL ) {
         dy = (double*)cy;
         cy = NULL;
     }
@@ -7468,8 +7253,7 @@ void _ialglib_cmv_sse2(ae_int_t m, ae_int_t n, const double *a, const double *x,
     valpha = _mm_loadh_pd(_mm_load_sd(&alpha.x),&alpha.y);
     valphax = _mm_unpacklo_pd(valpha,valpha);
     valphay = _mm_unpackhi_pd(valpha,valpha);
-    for(i=0; i<m2; i++)
-    {
+    for(i=0; i<m2; i++) {
         double v0 = 0, v1 = 0, v2 = 0, v3 = 0;
         double tx, ty;
         __m128d vx, vy, vt0, vt1, vt2, vt3, vt4, vt5, vrx, vry, vtx, vty, vbeta;
@@ -7478,8 +7262,7 @@ void _ialglib_cmv_sse2(ae_int_t m, ae_int_t n, const double *a, const double *x,
         pb = x;
         vx = _mm_setzero_pd();
         vy = _mm_setzero_pd();
-        for(j=0; j<n; j++)
-        {
+        for(j=0; j<n; j++) {
             vt0 = _mm_load1_pd(pb);
             vt1 = _mm_load1_pd(pb+1);
             vt2 = _mm_load_pd(pa0);
@@ -7488,7 +7271,7 @@ void _ialglib_cmv_sse2(ae_int_t m, ae_int_t n, const double *a, const double *x,
             vt4 = _mm_unpackhi_pd(vt2,vt3);
             vt2 = vt5;
             vt3 = vt4;
-            
+
             vt2 = _mm_mul_pd(vt2,vt0);
             vx = _mm_add_pd(vx,vt2);
             vt3 = _mm_mul_pd(vt3,vt1);
@@ -7497,18 +7280,15 @@ void _ialglib_cmv_sse2(ae_int_t m, ae_int_t n, const double *a, const double *x,
             vy = _mm_add_pd(vy,vt4);
             vt5 = _mm_mul_pd(vt5,vt1);
             vy = _mm_add_pd(vy,vt5);
-            
+
             pa0 += 2;
             pa1 += 2;
             pb  += 2;
         }
-        if( beta.x==0.0 && beta.y==0.0 )
-        {
+        if( beta.x==0.0 && beta.y==0.0 ) {
             vrx = _mm_setzero_pd();
             vry = _mm_setzero_pd();
-        }
-        else
-        {
+        } else {
             vtx = _mm_loadh_pd(_mm_load_sd(dy+0),dy+2*stride+0);
             vty = _mm_loadh_pd(_mm_load_sd(dy+1),dy+2*stride+1);
             vrx = _mm_sub_pd(_mm_mul_pd(vbetax,vtx),_mm_mul_pd(vbetay,vty));
@@ -7522,17 +7302,15 @@ void _ialglib_cmv_sse2(ae_int_t m, ae_int_t n, const double *a, const double *x,
         _mm_storeh_pd(dy+2*stride+0, vrx);
         _mm_storel_pd(dy+1,          vry);
         _mm_storeh_pd(dy+2*stride+1, vry);
-        dy += 4*stride;        
+        dy += 4*stride;
         parow += 4*alglib_c_block;
     }
-    if( m%2 )
-    {
+    if( m%2 ) {
         double v0 = 0, v1 = 0, v2 = 0, v3 = 0;
         double tx, ty;
         pa0 = parow;
         pb = x;
-        for(j=0; j<n; j++)
-        {
+        for(j=0; j<n; j++) {
             v0 += pa0[0]*pb[0];
             v1 += pa0[0]*pb[1];
             v0 -= pa0[1]*pb[1];
@@ -7541,13 +7319,10 @@ void _ialglib_cmv_sse2(ae_int_t m, ae_int_t n, const double *a, const double *x,
             pa0 += 2;
             pb  += 2;
         }
-        if( beta.x==0.0 && beta.y==0.0 )
-        {
+        if( beta.x==0.0 && beta.y==0.0 ) {
             tx = 0.0;
             ty = 0.0;
-        }
-        else
-        {
+        } else {
             tx = beta.x*dy[0]-beta.y*dy[1];
             ty = beta.x*dy[1]+beta.y*dy[0];
         }
@@ -7567,15 +7342,14 @@ This subroutine sets vector to zero
 void _ialglib_vzero(ae_int_t n, double *p, ae_int_t stride)
 {
     ae_int_t i;
-    if( stride==1 )
-    {
-        for(i=0; i<n; i++,p++)
+    if( stride==1 ) {
+        for(i=0; i<n; i++,p++) {
             *p = 0.0;
-    }
-    else
-    {
-        for(i=0; i<n; i++,p+=stride)
+        }
+    } else {
+        for(i=0; i<n; i++,p+=stride) {
             *p = 0.0;
+        }
     }
 }
 
@@ -7585,18 +7359,13 @@ This subroutine sets vector to zero
 void _ialglib_vzero_complex(ae_int_t n, ae_complex *p, ae_int_t stride)
 {
     ae_int_t i;
-    if( stride==1 )
-    {
-        for(i=0; i<n; i++,p++)
-        {
+    if( stride==1 ) {
+        for(i=0; i<n; i++,p++) {
             p->x = 0.0;
             p->y = 0.0;
         }
-    }
-    else
-    {
-        for(i=0; i<n; i++,p+=stride)
-        {
+    } else {
+        for(i=0; i<n; i++,p+=stride) {
             p->x = 0.0;
             p->y = 0.0;
         }
@@ -7610,21 +7379,19 @@ This subroutine copies unaligned real vector
 void _ialglib_vcopy(ae_int_t n, const double *a, ae_int_t stridea, double *b, ae_int_t strideb)
 {
     ae_int_t i, n2;
-    if( stridea==1 && strideb==1 )
-    {
+    if( stridea==1 && strideb==1 ) {
         n2 = n/2;
-        for(i=n2; i!=0; i--, a+=2, b+=2)
-        {
+        for(i=n2; i!=0; i--, a+=2, b+=2) {
             b[0] = a[0];
             b[1] = a[1];
         }
-        if( n%2!=0 )
+        if( n%2!=0 ) {
             b[0] = a[0];
-    }
-    else
-    {
-        for(i=0; i<n; i++,a+=stridea,b+=strideb)
+        }
+    } else {
+        for(i=0; i<n; i++,a+=stridea,b+=strideb) {
             *b = *a;
+        }
     }
 }
 
@@ -7643,18 +7410,13 @@ void _ialglib_vcopy_complex(ae_int_t n, const ae_complex *a, ae_int_t stridea, d
     /*
      * more general case
      */
-    if( conj[0]=='N' || conj[0]=='n' )
-    {
-        for(i=0; i<n; i++,a+=stridea,b+=2*strideb)
-        {
+    if( conj[0]=='N' || conj[0]=='n' ) {
+        for(i=0; i<n; i++,a+=stridea,b+=2*strideb) {
             b[0] = a->x;
             b[1] = a->y;
         }
-    }
-    else
-    {
-        for(i=0; i<n; i++,a+=stridea,b+=2*strideb)
-        {
+    } else {
+        for(i=0; i<n; i++,a+=stridea,b+=2*strideb) {
             b[0] = a->x;
             b[1] = -a->y;
         }
@@ -7675,18 +7437,13 @@ void _ialglib_vcopy_dcomplex(ae_int_t n, const double *a, ae_int_t stridea, doub
     /*
      * more general case
      */
-    if( conj[0]=='N' || conj[0]=='n' )
-    {
-        for(i=0; i<n; i++,a+=2*stridea,b+=2*strideb)
-        {
+    if( conj[0]=='N' || conj[0]=='n' ) {
+        for(i=0; i<n; i++,a+=2*stridea,b+=2*strideb) {
             b[0] = a[0];
             b[1] = a[1];
         }
-    }
-    else
-    {
-        for(i=0; i<n; i++,a+=2*stridea,b+=2*strideb)
-        {
+    } else {
+        for(i=0; i<n; i++,a+=2*stridea,b+=2*strideb) {
             b[0] = a[0];
             b[1] = -a[1];
         }
@@ -7718,32 +7475,27 @@ void _ialglib_mcopyblock(ae_int_t m, ae_int_t n, const double *a, ae_int_t op, a
     ae_int_t i, j, n2;
     const double *psrc;
     double *pdst;
-    if( op==0 )
-    {
+    if( op==0 ) {
         n2 = n/2;
-        for(i=0,psrc=a; i<m; i++,a+=stride,b+=alglib_r_block,psrc=a)
-        {
-            for(j=0,pdst=b; j<n2; j++,pdst+=2,psrc+=2)
-            {
+        for(i=0,psrc=a; i<m; i++,a+=stride,b+=alglib_r_block,psrc=a) {
+            for(j=0,pdst=b; j<n2; j++,pdst+=2,psrc+=2) {
                 pdst[0] = psrc[0];
                 pdst[1] = psrc[1];
             }
-            if( n%2!=0 )
+            if( n%2!=0 ) {
                 pdst[0] = psrc[0];
+            }
         }
-    }
-    else
-    {
+    } else {
         n2 = n/2;
-        for(i=0,psrc=a; i<m; i++,a+=stride,b+=1,psrc=a)
-        {
-            for(j=0,pdst=b; j<n2; j++,pdst+=alglib_twice_r_block,psrc+=2)
-            {
+        for(i=0,psrc=a; i<m; i++,a+=stride,b+=1,psrc=a) {
+            for(j=0,pdst=b; j<n2; j++,pdst+=alglib_twice_r_block,psrc+=2) {
                 pdst[0] = psrc[0];
                 pdst[alglib_r_block] = psrc[1];
             }
-            if( n%2!=0 )
+            if( n%2!=0 ) {
                 pdst[0] = psrc[0];
+            }
         }
     }
 }
@@ -7772,11 +7524,11 @@ This function supports SSE2; it can be used when:
 1. AE_HAS_SSE2_INTRINSICS was defined (checked at compile-time)
 2. ae_cpuid() result contains CPU_SSE2 (checked at run-time)
 
-If (1) is failed, this function will be undefined. If (2) is failed,  call 
-to this function will probably crash your system. 
+If (1) is failed, this function will be undefined. If (2) is failed,  call
+to this function will probably crash your system.
 
-If  you  want  to  know  whether  it  is safe to call it, you should check 
-results  of  ae_cpuid(). If CPU_SSE2 bit is set, this function is callable 
+If  you  want  to  know  whether  it  is safe to call it, you should check
+results  of  ae_cpuid(). If CPU_SSE2 bit is set, this function is callable
 and will do its work.
 ********************************************************************/
 #if defined(AE_HAS_SSE2_INTRINSICS)
@@ -7787,13 +7539,10 @@ void _ialglib_mcopyblock_sse2(ae_int_t m, ae_int_t n, const double *a, ae_int_t 
     double *pdst;
     nb8 = n/8;
     ntail = n-8*nb8;
-    if( op==0 )
-    {
-        for(i=0,psrc0=a; i<m; i++,a+=stride,b+=alglib_r_block,psrc0=a)
-        {
+    if( op==0 ) {
+        for(i=0,psrc0=a; i<m; i++,a+=stride,b+=alglib_r_block,psrc0=a) {
             pdst=b;
-            for(j=0; j<nb8; j++)
-            {
+            for(j=0; j<nb8; j++) {
                 __m128d v0, v1;
                 v0 = _mm_loadu_pd(psrc0);
                 _mm_store_pd(pdst, v0);
@@ -7806,40 +7555,37 @@ void _ialglib_mcopyblock_sse2(ae_int_t m, ae_int_t n, const double *a, ae_int_t 
                 pdst+=8;
                 psrc0+=8;
             }
-            for(j=0; j<ntail; j++)
+            for(j=0; j<ntail; j++) {
                 pdst[j] = psrc0[j];
+            }
         }
-    }
-    else
-    {
+    } else {
         const double *arow0, *arow1;
         double *bcol0, *bcol1, *pdst0, *pdst1;
         ae_int_t nb4, ntail, n2;
-                
+
         n2 = n/2;
         mb2 = m/2;
         nb4 = n/4;
         ntail = n-4*nb4;
-        
+
         arow0 = a;
         arow1 = a+stride;
         bcol0 = b;
         bcol1 = b+1;
-        for(i=0; i<mb2; i++)
-        {
+        for(i=0; i<mb2; i++) {
             psrc0 = arow0;
             psrc1 = arow1;
             pdst0 = bcol0;
             pdst1 = bcol1;
-            for(j=0; j<nb4; j++)
-            {
+            for(j=0; j<nb4; j++) {
                 __m128d v0, v1, v2, v3;
                 v0 = _mm_loadu_pd(psrc0);
                 v1 = _mm_loadu_pd(psrc1);
                 v2 = _mm_loadu_pd(psrc0+2);
                 v3 = _mm_loadu_pd(psrc1+2);
                 _mm_store_pd(pdst0, _mm_unpacklo_pd(v0,v1));
-                _mm_store_pd(pdst0+alglib_r_block, _mm_unpackhi_pd(v0,v1));                
+                _mm_store_pd(pdst0+alglib_r_block, _mm_unpackhi_pd(v0,v1));
                 _mm_store_pd(pdst0+2*alglib_r_block, _mm_unpacklo_pd(v2,v3));
                 _mm_store_pd(pdst0+3*alglib_r_block, _mm_unpackhi_pd(v2,v3));
 
@@ -7848,8 +7594,7 @@ void _ialglib_mcopyblock_sse2(ae_int_t m, ae_int_t n, const double *a, ae_int_t 
                 psrc0 += 4;
                 psrc1 += 4;
             }
-            for(j=0; j<ntail; j++)
-            {
+            for(j=0; j<ntail; j++) {
                 pdst0[0] = psrc0[0];
                 pdst1[0] = psrc1[0];
                 pdst0 += alglib_r_block;
@@ -7862,19 +7607,18 @@ void _ialglib_mcopyblock_sse2(ae_int_t m, ae_int_t n, const double *a, ae_int_t 
             bcol0 += 2;
             bcol1 += 2;
         }
-        if( m%2 )
-        {
+        if( m%2 ) {
             psrc0 = arow0;
             pdst0 = bcol0;
-            for(j=0; j<n2; j++)
-            {
+            for(j=0; j<n2; j++) {
                 pdst0[0] = psrc0[0];
                 pdst0[alglib_r_block] = psrc0[1];
                 pdst0 += alglib_twice_r_block;
                 psrc0 += 2;
             }
-            if( n%2!=0 )
+            if( n%2!=0 ) {
                 pdst0[0] = psrc0[0];
+            }
         }
     }
 }
@@ -7905,32 +7649,27 @@ void _ialglib_mcopyunblock(ae_int_t m, ae_int_t n, const double *a, ae_int_t op,
     ae_int_t i, j, n2;
     const double *psrc;
     double *pdst;
-    if( op==0 )
-    {
+    if( op==0 ) {
         n2 = n/2;
-        for(i=0,psrc=a; i<m; i++,a+=alglib_r_block,b+=stride,psrc=a)
-        {
-            for(j=0,pdst=b; j<n2; j++,pdst+=2,psrc+=2)
-            {
+        for(i=0,psrc=a; i<m; i++,a+=alglib_r_block,b+=stride,psrc=a) {
+            for(j=0,pdst=b; j<n2; j++,pdst+=2,psrc+=2) {
                 pdst[0] = psrc[0];
                 pdst[1] = psrc[1];
             }
-            if( n%2!=0 )
+            if( n%2!=0 ) {
                 pdst[0] = psrc[0];
+            }
         }
-    }
-    else
-    {
+    } else {
         n2 = n/2;
-        for(i=0,psrc=a; i<m; i++,a++,b+=stride,psrc=a)
-        {
-            for(j=0,pdst=b; j<n2; j++,pdst+=2,psrc+=alglib_twice_r_block)
-            {
+        for(i=0,psrc=a; i<m; i++,a++,b+=stride,psrc=a) {
+            for(j=0,pdst=b; j<n2; j++,pdst+=2,psrc+=alglib_twice_r_block) {
                 pdst[0] = psrc[0];
                 pdst[1] = psrc[alglib_r_block];
             }
-            if( n%2!=0 )
+            if( n%2!=0 ) {
                 pdst[0] = psrc[0];
+            }
         }
     }
 }
@@ -7964,38 +7703,30 @@ void _ialglib_mcopyblock_complex(ae_int_t m, ae_int_t n, const ae_complex *a, ae
     ae_int_t i, j;
     const ae_complex *psrc;
     double *pdst;
-    if( op==0 )
-    {
+    if( op==0 ) {
         for(i=0,psrc=a; i<m; i++,a+=stride,b+=alglib_twice_c_block,psrc=a)
-            for(j=0,pdst=b; j<n; j++,pdst+=2,psrc++)
-            {
+            for(j=0,pdst=b; j<n; j++,pdst+=2,psrc++) {
                 pdst[0] = psrc->x;
                 pdst[1] = psrc->y;
             }
     }
-    if( op==1 )
-    {
+    if( op==1 ) {
         for(i=0,psrc=a; i<m; i++,a+=stride,b+=2,psrc=a)
-            for(j=0,pdst=b; j<n; j++,pdst+=alglib_twice_c_block,psrc++)
-            {
+            for(j=0,pdst=b; j<n; j++,pdst+=alglib_twice_c_block,psrc++) {
                 pdst[0] = psrc->x;
                 pdst[1] = psrc->y;
             }
     }
-    if( op==2 )
-    {
+    if( op==2 ) {
         for(i=0,psrc=a; i<m; i++,a+=stride,b+=2,psrc=a)
-            for(j=0,pdst=b; j<n; j++,pdst+=alglib_twice_c_block,psrc++)
-            {
+            for(j=0,pdst=b; j<n; j++,pdst+=alglib_twice_c_block,psrc++) {
                 pdst[0] = psrc->x;
                 pdst[1] = -psrc->y;
             }
     }
-    if( op==3 )
-    {
+    if( op==3 ) {
         for(i=0,psrc=a; i<m; i++,a+=stride,b+=alglib_twice_c_block,psrc=a)
-            for(j=0,pdst=b; j<n; j++,pdst+=2,psrc++)
-            {
+            for(j=0,pdst=b; j<n; j++,pdst+=2,psrc++) {
                 pdst[0] = psrc->x;
                 pdst[1] = -psrc->y;
             }
@@ -8031,38 +7762,30 @@ void _ialglib_mcopyunblock_complex(ae_int_t m, ae_int_t n, const double *a, ae_i
     ae_int_t i, j;
     const double *psrc;
     ae_complex *pdst;
-    if( op==0 )
-    {
+    if( op==0 ) {
         for(i=0,psrc=a; i<m; i++,a+=alglib_twice_c_block,b+=stride,psrc=a)
-            for(j=0,pdst=b; j<n; j++,pdst++,psrc+=2)
-            {
+            for(j=0,pdst=b; j<n; j++,pdst++,psrc+=2) {
                 pdst->x = psrc[0];
                 pdst->y = psrc[1];
             }
     }
-    if( op==1 )
-    {
+    if( op==1 ) {
         for(i=0,psrc=a; i<m; i++,a+=2,b+=stride,psrc=a)
-            for(j=0,pdst=b; j<n; j++,pdst++,psrc+=alglib_twice_c_block)
-            {
+            for(j=0,pdst=b; j<n; j++,pdst++,psrc+=alglib_twice_c_block) {
                 pdst->x = psrc[0];
                 pdst->y = psrc[1];
             }
     }
-    if( op==2 )
-    {
+    if( op==2 ) {
         for(i=0,psrc=a; i<m; i++,a+=2,b+=stride,psrc=a)
-            for(j=0,pdst=b; j<n; j++,pdst++,psrc+=alglib_twice_c_block)
-            {
+            for(j=0,pdst=b; j<n; j++,pdst++,psrc+=alglib_twice_c_block) {
                 pdst->x = psrc[0];
                 pdst->y = -psrc[1];
             }
     }
-    if( op==3 )
-    {
+    if( op==3 ) {
         for(i=0,psrc=a; i<m; i++,a+=alglib_twice_c_block,b+=stride,psrc=a)
-            for(j=0,pdst=b; j<n; j++,pdst++,psrc+=2)
-            {
+            for(j=0,pdst=b; j<n; j++,pdst++,psrc+=2) {
                 pdst->x = psrc[0];
                 pdst->y = -psrc[1];
             }
@@ -8074,18 +7797,18 @@ void _ialglib_mcopyunblock_complex(ae_int_t m, ae_int_t n, const double *a, ae_i
 Real GEMM kernel
 ********************************************************************/
 ae_bool _ialglib_rmatrixgemm(ae_int_t m,
-     ae_int_t n,
-     ae_int_t k,
-     double alpha,
-     double *_a,
-     ae_int_t _a_stride,
-     ae_int_t optypea,
-     double *_b,
-     ae_int_t _b_stride,
-     ae_int_t optypeb,
-     double beta,
-     double *_c,
-     ae_int_t _c_stride)
+                             ae_int_t n,
+                             ae_int_t k,
+                             double alpha,
+                             double *_a,
+                             ae_int_t _a_stride,
+                             ae_int_t optypea,
+                             double *_b,
+                             ae_int_t _b_stride,
+                             ae_int_t optypeb,
+                             double beta,
+                             double *_c,
+                             ae_int_t _c_stride)
 {
     int i;
     double *crow;
@@ -8095,55 +7818,53 @@ ae_bool _ialglib_rmatrixgemm(ae_int_t m,
     double * const b    = (double * const) ae_align(__b,   alglib_simd_alignment);
     void (*rmv)(ae_int_t, ae_int_t, const double *, const double *, double *, ae_int_t, double, double) = &_ialglib_rmv;
     void (*mcopyblock)(ae_int_t, ae_int_t, const double *, ae_int_t, ae_int_t, double *) = &_ialglib_mcopyblock;
-    
-    if( m>alglib_r_block || n>alglib_r_block || k>alglib_r_block || m<=0 || n<=0 || k<=0 || alpha==0.0 )
+
+    if( m>alglib_r_block || n>alglib_r_block || k>alglib_r_block || m<=0 || n<=0 || k<=0 || alpha==0.0 ) {
         return ae_false;
+    }
 
     /*
      * Check for SSE2 support
      */
 #ifdef AE_HAS_SSE2_INTRINSICS
-    if( ae_cpuid() & CPU_SSE2 )
-    {
+    if( ae_cpuid() & CPU_SSE2 ) {
         rmv = &_ialglib_rmv_sse2;
         mcopyblock = &_ialglib_mcopyblock_sse2;
     }
 #endif
-    
+
     /*
      * copy b
      */
-    if( optypeb==0 )
+    if( optypeb==0 ) {
         mcopyblock(k, n, _b, 1, _b_stride, b);
-    else
+    } else {
         mcopyblock(n, k, _b, 0, _b_stride, b);
+    }
 
     /*
      * multiply B by A (from the right, by rows)
      * and store result in C
      */
     crow  = _c;
-    if( optypea==0 )
-    {
+    if( optypea==0 ) {
         const double *arow = _a;
-        for(i=0; i<m; i++)
-        {
+        for(i=0; i<m; i++) {
             _ialglib_vcopy(k, arow, 1, abuf, 1);
-            if( beta==0 )
+            if( beta==0 ) {
                 _ialglib_vzero(n, crow, 1);
+            }
             rmv(n, k, b, abuf, crow, 1, alpha, beta);
             crow += _c_stride;
             arow += _a_stride;
         }
-    }
-    else
-    {
+    } else {
         const double *acol = _a;
-        for(i=0; i<m; i++)
-        {
+        for(i=0; i<m; i++) {
             _ialglib_vcopy(k, acol, _a_stride, abuf, 1);
-            if( beta==0 )
+            if( beta==0 ) {
                 _ialglib_vzero(n, crow, 1);
+            }
             rmv(n, k, b, abuf, crow, 1, alpha, beta);
             crow += _c_stride;
             acol++;
@@ -8157,19 +7878,19 @@ ae_bool _ialglib_rmatrixgemm(ae_int_t m,
 Complex GEMM kernel
 ********************************************************************/
 ae_bool _ialglib_cmatrixgemm(ae_int_t m,
-     ae_int_t n,
-     ae_int_t k,
-     ae_complex alpha,
-     ae_complex *_a,
-     ae_int_t _a_stride,
-     ae_int_t optypea,
-     ae_complex *_b,
-     ae_int_t _b_stride,
-     ae_int_t optypeb,
-     ae_complex beta,
-     ae_complex *_c,
-     ae_int_t _c_stride)
- {
+                             ae_int_t n,
+                             ae_int_t k,
+                             ae_complex alpha,
+                             ae_complex *_a,
+                             ae_int_t _a_stride,
+                             ae_int_t optypea,
+                             ae_complex *_b,
+                             ae_int_t _b_stride,
+                             ae_int_t optypeb,
+                             ae_complex beta,
+                             ae_complex *_c,
+                             ae_int_t _c_stride)
+{
     const ae_complex *arow;
     ae_complex *crow;
     ae_int_t i;
@@ -8180,31 +7901,34 @@ ae_bool _ialglib_cmatrixgemm(ae_int_t m,
     ae_int_t brows;
     ae_int_t bcols;
     void (*cmv)(ae_int_t, ae_int_t, const double *, const double *, ae_complex *, double *, ae_int_t, ae_complex, ae_complex) = &_ialglib_cmv;
-    
-    if( m>alglib_c_block || n>alglib_c_block || k>alglib_c_block )
+
+    if( m>alglib_c_block || n>alglib_c_block || k>alglib_c_block ) {
         return ae_false;
+    }
 
     /*
      * Check for SSE2 support
      */
 #ifdef AE_HAS_SSE2_INTRINSICS
-    if( ae_cpuid() & CPU_SSE2 )
-    {
+    if( ae_cpuid() & CPU_SSE2 ) {
         cmv = &_ialglib_cmv_sse2;
-    }    
+    }
 #endif
-    
+
     /*
      * copy b
      */
     brows = optypeb==0 ? k : n;
     bcols = optypeb==0 ? n : k;
-    if( optypeb==0 )
+    if( optypeb==0 ) {
         _ialglib_mcopyblock_complex(brows, bcols, _b, 1, _b_stride, b);
-    if( optypeb==1 )
+    }
+    if( optypeb==1 ) {
         _ialglib_mcopyblock_complex(brows, bcols, _b, 0, _b_stride, b);
-    if( optypeb==2 )
+    }
+    if( optypeb==2 ) {
         _ialglib_mcopyblock_complex(brows, bcols, _b, 3, _b_stride, b);
+    }
 
     /*
      * multiply B by A (from the right, by rows)
@@ -8212,25 +7936,20 @@ ae_bool _ialglib_cmatrixgemm(ae_int_t m,
      */
     arow  = _a;
     crow  = _c;
-    for(i=0; i<m; i++)
-    {
-        if( optypea==0 )
-        {
+    for(i=0; i<m; i++) {
+        if( optypea==0 ) {
             _ialglib_vcopy_complex(k, arow, 1, abuf, 1, "No conj");
             arow += _a_stride;
-        }
-        else if( optypea==1 )
-        {
+        } else if( optypea==1 ) {
             _ialglib_vcopy_complex(k, arow, _a_stride, abuf, 1, "No conj");
             arow++;
-        }
-        else
-        {
+        } else {
             _ialglib_vcopy_complex(k, arow, _a_stride, abuf, 1, "Conj");
             arow++;
         }
-        if( beta.x==0 && beta.y==0 )
+        if( beta.x==0 && beta.y==0 ) {
             _ialglib_vzero_complex(n, crow, 1);
+        }
         cmv(n, k, b, abuf, crow, NULL, 1, alpha, beta);
         crow += _c_stride;
     }
@@ -8242,14 +7961,14 @@ ae_bool _ialglib_cmatrixgemm(ae_int_t m,
 complex TRSM kernel
 ********************************************************************/
 ae_bool _ialglib_cmatrixrighttrsm(ae_int_t m,
-     ae_int_t n,
-     ae_complex *_a,
-     ae_int_t _a_stride,
-     ae_bool isupper,
-     ae_bool isunit,
-     ae_int_t optype,
-     ae_complex *_x,
-     ae_int_t _x_stride)
+                                  ae_int_t n,
+                                  ae_complex *_a,
+                                  ae_int_t _a_stride,
+                                  ae_bool isupper,
+                                  ae_bool isunit,
+                                  ae_int_t optype,
+                                  ae_complex *_x,
+                                  ae_int_t _x_stride)
 {
     /*
      * local buffers
@@ -8264,43 +7983,41 @@ ae_bool _ialglib_cmatrixrighttrsm(ae_int_t m,
     double * const tmpbuf = (double * const) ae_align(_loc_tmpbuf,alglib_simd_alignment);
     ae_bool uppera;
     void (*cmv)(ae_int_t, ae_int_t, const double *, const double *, ae_complex *, double *, ae_int_t, ae_complex, ae_complex) = &_ialglib_cmv;
-    
-    if( m>alglib_c_block || n>alglib_c_block )
+
+    if( m>alglib_c_block || n>alglib_c_block ) {
         return ae_false;
+    }
 
     /*
      * Check for SSE2 support
      */
 #ifdef AE_HAS_SSE2_INTRINSICS
-    if( ae_cpuid() & CPU_SSE2 )
-    {
+    if( ae_cpuid() & CPU_SSE2 ) {
         cmv = &_ialglib_cmv_sse2;
-    }    
+    }
 #endif
-    
+
     /*
      * Prepare
      */
     _ialglib_mcopyblock_complex(n, n, _a, optype, _a_stride, abuf);
     _ialglib_mcopyblock_complex(m, n, _x, 0, _x_stride, xbuf);
     if( isunit )
-        for(i=0,pdiag=abuf; i<n; i++,pdiag+=2*(alglib_c_block+1))
-        {
+        for(i=0,pdiag=abuf; i<n; i++,pdiag+=2*(alglib_c_block+1)) {
             pdiag[0] = 1.0;
             pdiag[1] = 0.0;
         }
-    if( optype==0 )
+    if( optype==0 ) {
         uppera = isupper;
-    else
+    } else {
         uppera = !isupper;
+    }
 
     /*
      * Solve Y*A^-1=X where A is upper or lower triangular
      */
-    if( uppera )
-    {
-        for(i=0,pdiag=abuf; i<n; i++,pdiag+=2*(alglib_c_block+1))
-        {
+    if( uppera ) {
+        for(i=0,pdiag=abuf; i<n; i++,pdiag+=2*(alglib_c_block+1)) {
             ae_complex tmp_c;
             ae_complex beta;
             ae_complex alpha;
@@ -8313,11 +8030,8 @@ ae_bool _ialglib_cmatrixrighttrsm(ae_int_t m,
             cmv(m, i, xbuf, tmpbuf, NULL, xbuf+2*i, alglib_c_block, alpha, beta);
         }
         _ialglib_mcopyunblock_complex(m, n, xbuf, 0, _x, _x_stride);
-    }
-    else
-    {
-        for(i=n-1,pdiag=abuf+2*((n-1)*alglib_c_block+(n-1)); i>=0; i--,pdiag-=2*(alglib_c_block+1))
-        {
+    } else {
+        for(i=n-1,pdiag=abuf+2*((n-1)*alglib_c_block+(n-1)); i>=0; i--,pdiag-=2*(alglib_c_block+1)) {
             ae_complex tmp_c;
             ae_complex beta;
             ae_complex alpha;
@@ -8339,14 +8053,14 @@ ae_bool _ialglib_cmatrixrighttrsm(ae_int_t m,
 real TRSM kernel
 ********************************************************************/
 ae_bool _ialglib_rmatrixrighttrsm(ae_int_t m,
-     ae_int_t n,
-     double *_a,
-     ae_int_t _a_stride,
-     ae_bool isupper,
-     ae_bool isunit,
-     ae_int_t optype,
-     double *_x,
-     ae_int_t _x_stride)
+                                  ae_int_t n,
+                                  double *_a,
+                                  ae_int_t _a_stride,
+                                  ae_bool isupper,
+                                  ae_bool isunit,
+                                  ae_int_t optype,
+                                  double *_x,
+                                  ae_int_t _x_stride)
 {
     /*
      * local buffers
@@ -8362,52 +8076,49 @@ ae_bool _ialglib_rmatrixrighttrsm(ae_int_t m,
     ae_bool uppera;
     void (*rmv)(ae_int_t, ae_int_t, const double *, const double *, double *, ae_int_t, double, double) = &_ialglib_rmv;
     void (*mcopyblock)(ae_int_t, ae_int_t, const double *, ae_int_t, ae_int_t, double *) = &_ialglib_mcopyblock;
-    
-    if( m>alglib_r_block || n>alglib_r_block )
+
+    if( m>alglib_r_block || n>alglib_r_block ) {
         return ae_false;
+    }
 
     /*
      * Check for SSE2 support
      */
 #ifdef AE_HAS_SSE2_INTRINSICS
-    if( ae_cpuid() & CPU_SSE2 )
-    {
+    if( ae_cpuid() & CPU_SSE2 ) {
         rmv = &_ialglib_rmv_sse2;
         mcopyblock = &_ialglib_mcopyblock_sse2;
-    }    
+    }
 #endif
-    
+
     /*
      * Prepare
      */
     mcopyblock(n, n, _a, optype, _a_stride, abuf);
     mcopyblock(m, n, _x, 0, _x_stride, xbuf);
     if( isunit )
-        for(i=0,pdiag=abuf; i<n; i++,pdiag+=alglib_r_block+1)
+        for(i=0,pdiag=abuf; i<n; i++,pdiag+=alglib_r_block+1) {
             *pdiag = 1.0;
-    if( optype==0 )
+        }
+    if( optype==0 ) {
         uppera = isupper;
-    else
+    } else {
         uppera = !isupper;
+    }
 
     /*
      * Solve Y*A^-1=X where A is upper or lower triangular
      */
-    if( uppera )
-    {
-        for(i=0,pdiag=abuf; i<n; i++,pdiag+=alglib_r_block+1)
-        {
+    if( uppera ) {
+        for(i=0,pdiag=abuf; i<n; i++,pdiag+=alglib_r_block+1) {
             double beta  = 1.0/(*pdiag);
             double alpha = -beta;
             _ialglib_vcopy(i, abuf+i, alglib_r_block, tmpbuf, 1);
             rmv(m, i, xbuf, tmpbuf, xbuf+i, alglib_r_block, alpha, beta);
         }
         _ialglib_mcopyunblock(m, n, xbuf, 0, _x, _x_stride);
-    }
-    else
-    {
-        for(i=n-1,pdiag=abuf+(n-1)*alglib_r_block+(n-1); i>=0; i--,pdiag-=alglib_r_block+1)
-        {
+    } else {
+        for(i=n-1,pdiag=abuf+(n-1)*alglib_r_block+(n-1); i>=0; i--,pdiag-=alglib_r_block+1) {
             double beta = 1.0/(*pdiag);
             double alpha = -beta;
             _ialglib_vcopy(n-1-i, pdiag+alglib_r_block, alglib_r_block, tmpbuf+i+1, 1);
@@ -8423,14 +8134,14 @@ ae_bool _ialglib_rmatrixrighttrsm(ae_int_t m,
 complex TRSM kernel
 ********************************************************************/
 ae_bool _ialglib_cmatrixlefttrsm(ae_int_t m,
-     ae_int_t n,
-     ae_complex *_a,
-     ae_int_t _a_stride,
-     ae_bool isupper,
-     ae_bool isunit,
-     ae_int_t optype,
-     ae_complex *_x,
-     ae_int_t _x_stride)
+                                 ae_int_t n,
+                                 ae_complex *_a,
+                                 ae_int_t _a_stride,
+                                 ae_bool isupper,
+                                 ae_bool isunit,
+                                 ae_int_t optype,
+                                 ae_complex *_x,
+                                 ae_int_t _x_stride)
 {
     /*
      * local buffers
@@ -8445,20 +8156,20 @@ ae_bool _ialglib_cmatrixlefttrsm(ae_int_t m,
     double * const tmpbuf = (double * const) ae_align(_loc_tmpbuf,alglib_simd_alignment);
     ae_bool uppera;
     void (*cmv)(ae_int_t, ae_int_t, const double *, const double *, ae_complex *, double *, ae_int_t, ae_complex, ae_complex) = &_ialglib_cmv;
-    
-    if( m>alglib_c_block || n>alglib_c_block )
+
+    if( m>alglib_c_block || n>alglib_c_block ) {
         return ae_false;
+    }
 
     /*
      * Check for SSE2 support
      */
 #ifdef AE_HAS_SSE2_INTRINSICS
-    if( ae_cpuid() & CPU_SSE2 )
-    {
+    if( ae_cpuid() & CPU_SSE2 ) {
         cmv = &_ialglib_cmv_sse2;
-    }    
+    }
 #endif
-    
+
     /*
      * Prepare
      * Transpose X (so we may use mv, which calculates A*x, but not x*A)
@@ -8466,23 +8177,21 @@ ae_bool _ialglib_cmatrixlefttrsm(ae_int_t m,
     _ialglib_mcopyblock_complex(m, m, _a, optype, _a_stride, abuf);
     _ialglib_mcopyblock_complex(m, n, _x, 1, _x_stride, xbuf);
     if( isunit )
-        for(i=0,pdiag=abuf; i<m; i++,pdiag+=2*(alglib_c_block+1))
-        {
+        for(i=0,pdiag=abuf; i<m; i++,pdiag+=2*(alglib_c_block+1)) {
             pdiag[0] = 1.0;
             pdiag[1] = 0.0;
         }
-    if( optype==0 )
+    if( optype==0 ) {
         uppera = isupper;
-    else
+    } else {
         uppera = !isupper;
+    }
 
     /*
      * Solve A^-1*Y^T=X^T where A is upper or lower triangular
      */
-    if( uppera )
-    {
-        for(i=m-1,pdiag=abuf+2*((m-1)*alglib_c_block+(m-1)); i>=0; i--,pdiag-=2*(alglib_c_block+1))
-        {
+    if( uppera ) {
+        for(i=m-1,pdiag=abuf+2*((m-1)*alglib_c_block+(m-1)); i>=0; i--,pdiag-=2*(alglib_c_block+1)) {
             ae_complex tmp_c;
             ae_complex beta;
             ae_complex alpha;
@@ -8495,10 +8204,8 @@ ae_bool _ialglib_cmatrixlefttrsm(ae_int_t m,
             cmv(n, m-1-i, xbuf+2*(i+1), tmpbuf, NULL, xbuf+2*i, alglib_c_block, alpha, beta);
         }
         _ialglib_mcopyunblock_complex(m, n, xbuf, 1, _x, _x_stride);
-    }
-    else
-    {   for(i=0,pdiag=abuf,arow=abuf; i<m; i++,pdiag+=2*(alglib_c_block+1),arow+=2*alglib_c_block)
-        {
+    } else {
+        for(i=0,pdiag=abuf,arow=abuf; i<m; i++,pdiag+=2*(alglib_c_block+1),arow+=2*alglib_c_block) {
             ae_complex tmp_c;
             ae_complex beta;
             ae_complex alpha;
@@ -8520,14 +8227,14 @@ ae_bool _ialglib_cmatrixlefttrsm(ae_int_t m,
 real TRSM kernel
 ********************************************************************/
 ae_bool _ialglib_rmatrixlefttrsm(ae_int_t m,
-     ae_int_t n,
-     double *_a,
-     ae_int_t _a_stride,
-     ae_bool isupper,
-     ae_bool isunit,
-     ae_int_t optype,
-     double *_x,
-     ae_int_t _x_stride)
+                                 ae_int_t n,
+                                 double *_a,
+                                 ae_int_t _a_stride,
+                                 ae_bool isupper,
+                                 ae_bool isunit,
+                                 ae_int_t optype,
+                                 double *_x,
+                                 ae_int_t _x_stride)
 {
     /*
      * local buffers
@@ -8543,21 +8250,21 @@ ae_bool _ialglib_rmatrixlefttrsm(ae_int_t m,
     ae_bool uppera;
     void (*rmv)(ae_int_t, ae_int_t, const double *, const double *, double *, ae_int_t, double, double) = &_ialglib_rmv;
     void (*mcopyblock)(ae_int_t, ae_int_t, const double *, ae_int_t, ae_int_t, double *) = &_ialglib_mcopyblock;
-    
-    if( m>alglib_r_block || n>alglib_r_block )
+
+    if( m>alglib_r_block || n>alglib_r_block ) {
         return ae_false;
+    }
 
     /*
      * Check for SSE2 support
      */
 #ifdef AE_HAS_SSE2_INTRINSICS
-    if( ae_cpuid() & CPU_SSE2 )
-    {
+    if( ae_cpuid() & CPU_SSE2 ) {
         rmv = &_ialglib_rmv_sse2;
         mcopyblock = &_ialglib_mcopyblock_sse2;
-    }    
+    }
 #endif
-    
+
     /*
      * Prepare
      * Transpose X (so we may use mv, which calculates A*x, but not x*A)
@@ -8565,30 +8272,28 @@ ae_bool _ialglib_rmatrixlefttrsm(ae_int_t m,
     mcopyblock(m, m, _a, optype, _a_stride, abuf);
     mcopyblock(m, n, _x, 1, _x_stride, xbuf);
     if( isunit )
-        for(i=0,pdiag=abuf; i<m; i++,pdiag+=alglib_r_block+1)
+        for(i=0,pdiag=abuf; i<m; i++,pdiag+=alglib_r_block+1) {
             *pdiag = 1.0;
-    if( optype==0 )
+        }
+    if( optype==0 ) {
         uppera = isupper;
-    else
+    } else {
         uppera = !isupper;
+    }
 
     /*
      * Solve A^-1*Y^T=X^T where A is upper or lower triangular
      */
-    if( uppera )
-    {
-        for(i=m-1,pdiag=abuf+(m-1)*alglib_r_block+(m-1); i>=0; i--,pdiag-=alglib_r_block+1)
-        {
+    if( uppera ) {
+        for(i=m-1,pdiag=abuf+(m-1)*alglib_r_block+(m-1); i>=0; i--,pdiag-=alglib_r_block+1) {
             double beta = 1.0/(*pdiag);
             double alpha = -beta;
             _ialglib_vcopy(m-1-i, pdiag+1, 1, tmpbuf+i+1, 1);
             rmv(n, m-1-i, xbuf+i+1, tmpbuf+i+1, xbuf+i, alglib_r_block, alpha, beta);
         }
         _ialglib_mcopyunblock(m, n, xbuf, 1, _x, _x_stride);
-    }
-    else
-    {   for(i=0,pdiag=abuf,arow=abuf; i<m; i++,pdiag+=alglib_r_block+1,arow+=alglib_r_block)
-        {
+    } else {
+        for(i=0,pdiag=abuf,arow=abuf; i<m; i++,pdiag+=alglib_r_block+1,arow+=alglib_r_block) {
             double beta = 1.0/(*pdiag);
             double alpha = -beta;
             _ialglib_vcopy(i, arow, 1, tmpbuf, 1);
@@ -8604,15 +8309,15 @@ ae_bool _ialglib_rmatrixlefttrsm(ae_int_t m,
 complex SYRK kernel
 ********************************************************************/
 ae_bool _ialglib_cmatrixsyrk(ae_int_t n,
-     ae_int_t k,
-     double alpha,
-     ae_complex *_a,
-     ae_int_t _a_stride,
-     ae_int_t optypea,
-     double beta,
-     ae_complex *_c,
-     ae_int_t _c_stride,
-     ae_bool isupper)
+                             ae_int_t k,
+                             double alpha,
+                             ae_complex *_a,
+                             ae_int_t _a_stride,
+                             ae_int_t optypea,
+                             double beta,
+                             ae_complex *_c,
+                             ae_int_t _c_stride,
+                             ae_bool isupper)
 {
     /*
      * local buffers
@@ -8627,10 +8332,12 @@ ae_bool _ialglib_cmatrixsyrk(ae_int_t n,
     double * const cbuf   = (double * const) ae_align(_loc_cbuf,  alglib_simd_alignment);
     double * const tmpbuf = (double * const) ae_align(_loc_tmpbuf,alglib_simd_alignment);
 
-    if( n>alglib_c_block || k>alglib_c_block )
+    if( n>alglib_c_block || k>alglib_c_block ) {
         return ae_false;
-    if( n==0 )
+    }
+    if( n==0 ) {
         return ae_true;
+    }
 
     /*
      * copy A and C, task is transformed to "A*A^H"-form.
@@ -8642,41 +8349,37 @@ ae_bool _ialglib_cmatrixsyrk(ae_int_t n,
     c_alpha.y = 0;
     c_beta.x = beta;
     c_beta.y = 0;
-    if( alpha==0 )
+    if( alpha==0 ) {
         k = 0;
-    if( k>0 )
-    {
-        if( optypea==0 )
+    }
+    if( k>0 ) {
+        if( optypea==0 ) {
             _ialglib_mcopyblock_complex(n, k, _a, 3, _a_stride, abuf);
-        else
+        } else {
             _ialglib_mcopyblock_complex(k, n, _a, 1, _a_stride, abuf);
+        }
     }
     _ialglib_mcopyblock_complex(n, n, _c, 0, _c_stride, cbuf);
-    if( beta==0 )
-    {
+    if( beta==0 ) {
         for(i=0,crow=cbuf; i<n; i++,crow+=2*alglib_c_block)
-            if( isupper )
+            if( isupper ) {
                 _ialglib_vzero(2*(n-i), crow+2*i, 1);
-            else
+            } else {
                 _ialglib_vzero(2*(i+1), crow, 1);
+            }
     }
 
 
     /*
      * update C
      */
-    if( isupper )
-    {
-        for(i=0,arow=abuf,crow=cbuf; i<n; i++,arow+=2*alglib_c_block,crow+=2*alglib_c_block)
-        {
+    if( isupper ) {
+        for(i=0,arow=abuf,crow=cbuf; i<n; i++,arow+=2*alglib_c_block,crow+=2*alglib_c_block) {
             _ialglib_vcopy_dcomplex(k, arow, 1, tmpbuf, 1, "Conj");
             _ialglib_cmv(n-i, k, arow, tmpbuf, NULL, crow+2*i, 1, c_alpha, c_beta);
         }
-    }
-    else
-    {
-        for(i=0,arow=abuf,crow=cbuf; i<n; i++,arow+=2*alglib_c_block,crow+=2*alglib_c_block)
-        {
+    } else {
+        for(i=0,arow=abuf,crow=cbuf; i<n; i++,arow+=2*alglib_c_block,crow+=2*alglib_c_block) {
             _ialglib_vcopy_dcomplex(k, arow, 1, tmpbuf, 1, "Conj");
             _ialglib_cmv(i+1, k, abuf, tmpbuf, NULL, crow, 1, c_alpha, c_beta);
         }
@@ -8695,15 +8398,15 @@ ae_bool _ialglib_cmatrixsyrk(ae_int_t n,
 real SYRK kernel
 ********************************************************************/
 ae_bool _ialglib_rmatrixsyrk(ae_int_t n,
-     ae_int_t k,
-     double alpha,
-     double *_a,
-     ae_int_t _a_stride,
-     ae_int_t optypea,
-     double beta,
-     double *_c,
-     ae_int_t _c_stride,
-     ae_bool isupper)
+                             ae_int_t k,
+                             double alpha,
+                             double *_a,
+                             ae_int_t _a_stride,
+                             ae_int_t optypea,
+                             double beta,
+                             double *_c,
+                             ae_int_t _c_stride,
+                             ae_bool isupper)
 {
     /*
      * local buffers
@@ -8715,10 +8418,12 @@ ae_bool _ialglib_rmatrixsyrk(ae_int_t n,
     double * const abuf   = (double * const) ae_align(_loc_abuf,  alglib_simd_alignment);
     double * const cbuf   = (double * const) ae_align(_loc_cbuf,  alglib_simd_alignment);
 
-    if( n>alglib_r_block || k>alglib_r_block )
+    if( n>alglib_r_block || k>alglib_r_block ) {
         return ae_false;
-    if( n==0 )
+    }
+    if( n==0 ) {
         return ae_true;
+    }
 
     /*
      * copy A and C, task is transformed to "A*A^T"-form.
@@ -8726,40 +8431,36 @@ ae_bool _ialglib_rmatrixsyrk(ae_int_t n,
      *
      * alpha==0 or k==0 are correctly processed (A is not referenced)
      */
-    if( alpha==0 )
+    if( alpha==0 ) {
         k = 0;
-    if( k>0 )
-    {
-        if( optypea==0 )
+    }
+    if( k>0 ) {
+        if( optypea==0 ) {
             _ialglib_mcopyblock(n, k, _a, 0, _a_stride, abuf);
-        else
+        } else {
             _ialglib_mcopyblock(k, n, _a, 1, _a_stride, abuf);
+        }
     }
     _ialglib_mcopyblock(n, n, _c, 0, _c_stride, cbuf);
-    if( beta==0 )
-    {
+    if( beta==0 ) {
         for(i=0,crow=cbuf; i<n; i++,crow+=alglib_r_block)
-            if( isupper )
+            if( isupper ) {
                 _ialglib_vzero(n-i, crow+i, 1);
-            else
+            } else {
                 _ialglib_vzero(i+1, crow, 1);
+            }
     }
 
 
     /*
      * update C
      */
-    if( isupper )
-    {
-        for(i=0,arow=abuf,crow=cbuf; i<n; i++,arow+=alglib_r_block,crow+=alglib_r_block)
-        {
+    if( isupper ) {
+        for(i=0,arow=abuf,crow=cbuf; i<n; i++,arow+=alglib_r_block,crow+=alglib_r_block) {
             _ialglib_rmv(n-i, k, arow, arow, crow+i, 1, alpha, beta);
         }
-    }
-    else
-    {
-        for(i=0,arow=abuf,crow=cbuf; i<n; i++,arow+=alglib_r_block,crow+=alglib_r_block)
-        {
+    } else {
+        for(i=0,arow=abuf,crow=cbuf; i<n; i++,arow+=alglib_r_block,crow+=alglib_r_block) {
             _ialglib_rmv(i+1, k, abuf, arow, crow, 1, alpha, beta);
         }
     }
@@ -8777,11 +8478,11 @@ ae_bool _ialglib_rmatrixsyrk(ae_int_t n,
 complex rank-1 kernel
 ********************************************************************/
 ae_bool _ialglib_cmatrixrank1(ae_int_t m,
-     ae_int_t n,
-     ae_complex *_a,
-     ae_int_t _a_stride,
-     ae_complex *_u,
-     ae_complex *_v)
+                              ae_int_t n,
+                              ae_complex *_a,
+                              ae_int_t _a_stride,
+                              ae_complex *_u,
+                              ae_complex *_v)
 {
     ae_complex *arow, *pu, *pv, *vtmp, *dst;
     ae_int_t n2 = n/2;
@@ -8793,13 +8494,11 @@ ae_bool _ialglib_cmatrixrank1(ae_int_t m,
     arow  = _a;
     pu    = _u;
     vtmp  = _v;
-    for(i=0; i<m; i++, arow+=_a_stride, pu++)
-    {
+    for(i=0; i<m; i++, arow+=_a_stride, pu++) {
         /*
          * update by two
          */
-        for(j=0,pv=vtmp, dst=arow; j<n2; j++, dst+=2, pv+=2)
-        {
+        for(j=0,pv=vtmp, dst=arow; j<n2; j++, dst+=2, pv+=2) {
             double ux  = pu[0].x;
             double uy  = pu[0].y;
             double v0x = pv[0].x;
@@ -8815,8 +8514,7 @@ ae_bool _ialglib_cmatrixrank1(ae_int_t m,
         /*
          * final update
          */
-        if( n%2!=0 )
-        {
+        if( n%2!=0 ) {
             double ux = pu[0].x;
             double uy = pu[0].y;
             double vx = pv[0].x;
@@ -8833,11 +8531,11 @@ ae_bool _ialglib_cmatrixrank1(ae_int_t m,
 real rank-1 kernel
 ********************************************************************/
 ae_bool _ialglib_rmatrixrank1(ae_int_t m,
-     ae_int_t n,
-     double *_a,
-     ae_int_t _a_stride,
-     double *_u,
-     double *_v)
+                              ae_int_t n,
+                              double *_a,
+                              ae_int_t _a_stride,
+                              double *_u,
+                              double *_v)
 {
     double *arow0, *arow1, *pu, *pv, *vtmp, *dst0, *dst1;
     ae_int_t m2 = m/2;
@@ -8853,13 +8551,11 @@ ae_bool _ialglib_rmatrixrank1(ae_int_t m,
     arow1 = arow0+stride;
     pu    = _u;
     vtmp  = _v;
-    for(i=0; i<m2; i++,arow0+=stride2,arow1+=stride2,pu+=2)
-    {
+    for(i=0; i<m2; i++,arow0+=stride2,arow1+=stride2,pu+=2) {
         /*
          * update by two
          */
-        for(j=0,pv=vtmp, dst0=arow0, dst1=arow1; j<n2; j++, dst0+=2, dst1+=2, pv+=2)
-        {
+        for(j=0,pv=vtmp, dst0=arow0, dst1=arow1; j<n2; j++, dst0+=2, dst1+=2, pv+=2) {
             dst0[0] += pu[0]*pv[0];
             dst0[1] += pu[0]*pv[1];
             dst1[0] += pu[1]*pv[0];
@@ -8869,8 +8565,7 @@ ae_bool _ialglib_rmatrixrank1(ae_int_t m,
         /*
          * final update
          */
-        if( n%2!=0 )
-        {
+        if( n%2!=0 ) {
             dst0[0] += pu[0]*pv[0];
             dst1[0] += pu[1]*pv[0];
         }
@@ -8879,13 +8574,11 @@ ae_bool _ialglib_rmatrixrank1(ae_int_t m,
     /*
      * update last row
      */
-    if( m%2!=0 )
-    {
+    if( m%2!=0 ) {
         /*
          * update by two
          */
-        for(j=0,pv=vtmp, dst0=arow0; j<n2; j++, dst0+=2, pv+=2)
-        {
+        for(j=0,pv=vtmp, dst0=arow0; j<n2; j++, dst0+=2, pv+=2) {
             dst0[0] += pu[0]*pv[0];
             dst0[1] += pu[0]*pv[1];
         }
@@ -8893,8 +8586,9 @@ ae_bool _ialglib_rmatrixrank1(ae_int_t m,
         /*
          * final update
          */
-        if( n%2!=0 )
+        if( n%2!=0 ) {
             dst0[0] += pu[0]*pv[0];
+        }
     }
     return ae_true;
 }
@@ -8904,159 +8598,159 @@ ae_bool _ialglib_rmatrixrank1(ae_int_t m,
 Interface functions for efficient kernels
 ********************************************************************/
 ae_bool _ialglib_i_rmatrixgemmf(ae_int_t m,
-     ae_int_t n,
-     ae_int_t k,
-     double alpha,
-     ae_matrix *_a,
-     ae_int_t ia,
-     ae_int_t ja,
-     ae_int_t optypea,
-     ae_matrix *_b,
-     ae_int_t ib,
-     ae_int_t jb,
-     ae_int_t optypeb,
-     double beta,
-     ae_matrix *_c,
-     ae_int_t ic,
-     ae_int_t jc)
+                                ae_int_t n,
+                                ae_int_t k,
+                                double alpha,
+                                ae_matrix *_a,
+                                ae_int_t ia,
+                                ae_int_t ja,
+                                ae_int_t optypea,
+                                ae_matrix *_b,
+                                ae_int_t ib,
+                                ae_int_t jb,
+                                ae_int_t optypeb,
+                                double beta,
+                                ae_matrix *_c,
+                                ae_int_t ic,
+                                ae_int_t jc)
 {
     return _ialglib_rmatrixgemm(m, n, k, alpha, _a->ptr.pp_double[ia]+ja, _a->stride, optypea, _b->ptr.pp_double[ib]+jb, _b->stride, optypeb, beta, _c->ptr.pp_double[ic]+jc, _c->stride);
 }
 
 ae_bool _ialglib_i_cmatrixgemmf(ae_int_t m,
-     ae_int_t n,
-     ae_int_t k,
-     ae_complex alpha,
-     ae_matrix *_a,
-     ae_int_t ia,
-     ae_int_t ja,
-     ae_int_t optypea,
-     ae_matrix *_b,
-     ae_int_t ib,
-     ae_int_t jb,
-     ae_int_t optypeb,
-     ae_complex beta,
-     ae_matrix *_c,
-     ae_int_t ic,
-     ae_int_t jc)
+                                ae_int_t n,
+                                ae_int_t k,
+                                ae_complex alpha,
+                                ae_matrix *_a,
+                                ae_int_t ia,
+                                ae_int_t ja,
+                                ae_int_t optypea,
+                                ae_matrix *_b,
+                                ae_int_t ib,
+                                ae_int_t jb,
+                                ae_int_t optypeb,
+                                ae_complex beta,
+                                ae_matrix *_c,
+                                ae_int_t ic,
+                                ae_int_t jc)
 {
     return _ialglib_cmatrixgemm(m, n, k, alpha, _a->ptr.pp_complex[ia]+ja, _a->stride, optypea, _b->ptr.pp_complex[ib]+jb, _b->stride, optypeb, beta, _c->ptr.pp_complex[ic]+jc, _c->stride);
 }
 
 ae_bool _ialglib_i_cmatrixrighttrsmf(ae_int_t m,
-     ae_int_t n,
-     ae_matrix *a,
-     ae_int_t i1,
-     ae_int_t j1,
-     ae_bool isupper,
-     ae_bool isunit,
-     ae_int_t optype,
-     ae_matrix *x,
-     ae_int_t i2,
-     ae_int_t j2)
+                                     ae_int_t n,
+                                     ae_matrix *a,
+                                     ae_int_t i1,
+                                     ae_int_t j1,
+                                     ae_bool isupper,
+                                     ae_bool isunit,
+                                     ae_int_t optype,
+                                     ae_matrix *x,
+                                     ae_int_t i2,
+                                     ae_int_t j2)
 {
     return _ialglib_cmatrixrighttrsm(m, n, &a->ptr.pp_complex[i1][j1], a->stride, isupper, isunit, optype, &x->ptr.pp_complex[i2][j2], x->stride);
 }
 
 ae_bool _ialglib_i_rmatrixrighttrsmf(ae_int_t m,
-     ae_int_t n,
-     ae_matrix *a,
-     ae_int_t i1,
-     ae_int_t j1,
-     ae_bool isupper,
-     ae_bool isunit,
-     ae_int_t optype,
-     ae_matrix *x,
-     ae_int_t i2,
-     ae_int_t j2)
+                                     ae_int_t n,
+                                     ae_matrix *a,
+                                     ae_int_t i1,
+                                     ae_int_t j1,
+                                     ae_bool isupper,
+                                     ae_bool isunit,
+                                     ae_int_t optype,
+                                     ae_matrix *x,
+                                     ae_int_t i2,
+                                     ae_int_t j2)
 {
     return _ialglib_rmatrixrighttrsm(m, n, &a->ptr.pp_double[i1][j1], a->stride, isupper, isunit, optype, &x->ptr.pp_double[i2][j2], x->stride);
 }
 
 ae_bool _ialglib_i_cmatrixlefttrsmf(ae_int_t m,
-     ae_int_t n,
-     ae_matrix *a,
-     ae_int_t i1,
-     ae_int_t j1,
-     ae_bool isupper,
-     ae_bool isunit,
-     ae_int_t optype,
-     ae_matrix *x,
-     ae_int_t i2,
-     ae_int_t j2)
+                                    ae_int_t n,
+                                    ae_matrix *a,
+                                    ae_int_t i1,
+                                    ae_int_t j1,
+                                    ae_bool isupper,
+                                    ae_bool isunit,
+                                    ae_int_t optype,
+                                    ae_matrix *x,
+                                    ae_int_t i2,
+                                    ae_int_t j2)
 {
     return _ialglib_cmatrixlefttrsm(m, n, &a->ptr.pp_complex[i1][j1], a->stride, isupper, isunit, optype, &x->ptr.pp_complex[i2][j2], x->stride);
 }
 
 ae_bool _ialglib_i_rmatrixlefttrsmf(ae_int_t m,
-     ae_int_t n,
-     ae_matrix *a,
-     ae_int_t i1,
-     ae_int_t j1,
-     ae_bool isupper,
-     ae_bool isunit,
-     ae_int_t optype,
-     ae_matrix *x,
-     ae_int_t i2,
-     ae_int_t j2)
+                                    ae_int_t n,
+                                    ae_matrix *a,
+                                    ae_int_t i1,
+                                    ae_int_t j1,
+                                    ae_bool isupper,
+                                    ae_bool isunit,
+                                    ae_int_t optype,
+                                    ae_matrix *x,
+                                    ae_int_t i2,
+                                    ae_int_t j2)
 {
     return _ialglib_rmatrixlefttrsm(m, n, &a->ptr.pp_double[i1][j1], a->stride, isupper, isunit, optype, &x->ptr.pp_double[i2][j2], x->stride);
 }
 
 ae_bool _ialglib_i_cmatrixsyrkf(ae_int_t n,
-     ae_int_t k,
-     double alpha,
-     ae_matrix *a,
-     ae_int_t ia,
-     ae_int_t ja,
-     ae_int_t optypea,
-     double beta,
-     ae_matrix *c,
-     ae_int_t ic,
-     ae_int_t jc,
-     ae_bool isupper)
+                                ae_int_t k,
+                                double alpha,
+                                ae_matrix *a,
+                                ae_int_t ia,
+                                ae_int_t ja,
+                                ae_int_t optypea,
+                                double beta,
+                                ae_matrix *c,
+                                ae_int_t ic,
+                                ae_int_t jc,
+                                ae_bool isupper)
 {
     return _ialglib_cmatrixsyrk(n, k, alpha, &a->ptr.pp_complex[ia][ja], a->stride, optypea, beta, &c->ptr.pp_complex[ic][jc], c->stride, isupper);
 }
 
 ae_bool _ialglib_i_rmatrixsyrkf(ae_int_t n,
-     ae_int_t k,
-     double alpha,
-     ae_matrix *a,
-     ae_int_t ia,
-     ae_int_t ja,
-     ae_int_t optypea,
-     double beta,
-     ae_matrix *c,
-     ae_int_t ic,
-     ae_int_t jc,
-     ae_bool isupper)
+                                ae_int_t k,
+                                double alpha,
+                                ae_matrix *a,
+                                ae_int_t ia,
+                                ae_int_t ja,
+                                ae_int_t optypea,
+                                double beta,
+                                ae_matrix *c,
+                                ae_int_t ic,
+                                ae_int_t jc,
+                                ae_bool isupper)
 {
     return _ialglib_rmatrixsyrk(n, k, alpha, &a->ptr.pp_double[ia][ja], a->stride, optypea, beta, &c->ptr.pp_double[ic][jc], c->stride, isupper);
 }
 
 ae_bool _ialglib_i_cmatrixrank1f(ae_int_t m,
-     ae_int_t n,
-     ae_matrix *a,
-     ae_int_t ia,
-     ae_int_t ja,
-     ae_vector *u,
-     ae_int_t uoffs,
-     ae_vector *v,
-     ae_int_t voffs)
+                                 ae_int_t n,
+                                 ae_matrix *a,
+                                 ae_int_t ia,
+                                 ae_int_t ja,
+                                 ae_vector *u,
+                                 ae_int_t uoffs,
+                                 ae_vector *v,
+                                 ae_int_t voffs)
 {
     return _ialglib_cmatrixrank1(m, n, &a->ptr.pp_complex[ia][ja], a->stride, &u->ptr.p_complex[uoffs], &v->ptr.p_complex[voffs]);
 }
 
 ae_bool _ialglib_i_rmatrixrank1f(ae_int_t m,
-     ae_int_t n,
-     ae_matrix *a,
-     ae_int_t ia,
-     ae_int_t ja,
-     ae_vector *u,
-     ae_int_t uoffs,
-     ae_vector *v,
-     ae_int_t voffs)
+                                 ae_int_t n,
+                                 ae_matrix *a,
+                                 ae_int_t ia,
+                                 ae_int_t ja,
+                                 ae_vector *u,
+                                 ae_int_t uoffs,
+                                 ae_vector *v,
+                                 ae_int_t voffs)
 {
     return _ialglib_rmatrixrank1(m, n, &a->ptr.pp_double[ia][ja], a->stride, &u->ptr.p_double[uoffs], &v->ptr.p_double[voffs]);
 }
@@ -9080,14 +8774,12 @@ void _ialglib_pack_n2(
     double *dst)
 {
     ae_int_t n2, j, stride2;
-    
+
     /*
      * handle special case
      */
-    if( col1==NULL )
-    {
-        for(j=0; j<n; j++)
-        {
+    if( col1==NULL ) {
+        for(j=0; j<n; j++) {
             dst[0] = *col0;
             dst[1] = 0.0;
             col0 += src_stride;
@@ -9101,8 +8793,7 @@ void _ialglib_pack_n2(
      */
     n2 = n/2;
     stride2 = src_stride*2;
-    for(j=0; j<n2; j++)
-    {
+    for(j=0; j<n2; j++) {
         dst[0] = *col0;
         dst[1] = *col1;
         dst[2] = col0[src_stride];
@@ -9111,16 +8802,15 @@ void _ialglib_pack_n2(
         col1 += stride2;
         dst  += 4;
     }
-    if( n%2 )
-    {
+    if( n%2 ) {
         dst[0] = *col0;
         dst[1] = *col1;
     }
 }
 
 /*************************************************************************
-This function reads rectangular matrix A given by two column pointers col0 
-and  col1  and  stride src_stride and moves it into  contiguous row-by-row 
+This function reads rectangular matrix A given by two column pointers col0
+and  col1  and  stride src_stride and moves it into  contiguous row-by-row
 storage given by dst.
 
 dst must be aligned, col0 and col1 may be non-aligned.
@@ -9134,8 +8824,8 @@ This function supports SSE2; it can be used when:
 1. AE_HAS_SSE2_INTRINSICS was defined (checked at compile-time)
 2. ae_cpuid() result contains CPU_SSE2 (checked at run-time)
 
-If  you  want  to  know  whether  it  is safe to call it, you should check 
-results  of  ae_cpuid(). If CPU_SSE2 bit is set, this function is callable 
+If  you  want  to  know  whether  it  is safe to call it, you should check
+results  of  ae_cpuid(). If CPU_SSE2 bit is set, this function is callable
 and will do its work.
 *************************************************************************/
 #if defined(AE_HAS_SSE2_INTRINSICS)
@@ -9147,14 +8837,12 @@ void _ialglib_pack_n2_sse2(
     double *dst)
 {
     ae_int_t n2, j, stride2;
-    
+
     /*
      * handle special case: col1==NULL
      */
-    if( col1==NULL )
-    {
-        for(j=0; j<n; j++)
-        {
+    if( col1==NULL ) {
+        for(j=0; j<n; j++) {
             dst[0] = *col0;
             dst[1] = 0.0;
             col0 += src_stride;
@@ -9166,12 +8854,10 @@ void _ialglib_pack_n2_sse2(
     /*
      * handle unit stride
      */
-    if( src_stride==1 )
-    {
+    if( src_stride==1 ) {
         __m128d v0, v1, r0, r1;
         n2 = n/2;
-        for(j=0; j<n2; j++)
-        {
+        for(j=0; j<n2; j++) {
             v0 = _mm_loadu_pd(col0);
             col0 += 2;
             v1 = _mm_loadu_pd(col1);
@@ -9180,8 +8866,7 @@ void _ialglib_pack_n2_sse2(
             _mm_store_pd(dst+2,_mm_unpackhi_pd(v0,v1));
             dst  += 4;
         }
-        if( n%2 )
-        {
+        if( n%2 ) {
             dst[0] = *col0;
             dst[1] = *col1;
         }
@@ -9191,13 +8876,11 @@ void _ialglib_pack_n2_sse2(
     /*
      * handle col1-col0==1
      */
-    if( col1-col0==1 )
-    {
+    if( col1-col0==1 ) {
         __m128d v0, v1;
         n2 = n/2;
         stride2 = 2*src_stride;
-        for(j=0; j<n2; j++)
-        {
+        for(j=0; j<n2; j++) {
             v0 = _mm_loadu_pd(col0);
             v1 = _mm_loadu_pd(col0+src_stride);
             _mm_store_pd(dst,  v0);
@@ -9205,21 +8888,19 @@ void _ialglib_pack_n2_sse2(
             col0 += stride2;
             dst  += 4;
         }
-        if( n%2 )
-        {
+        if( n%2 ) {
             dst[0] = col0[0];
             dst[1] = col0[1];
         }
         return;
     }
-    
+
     /*
      * handle general case
      */
     n2 = n/2;
     stride2 = src_stride*2;
-    for(j=0; j<n2; j++)
-    {
+    for(j=0; j<n2; j++) {
         dst[0] = *col0;
         dst[1] = *col1;
         dst[2] = col0[src_stride];
@@ -9228,8 +8909,7 @@ void _ialglib_pack_n2_sse2(
         col1 += stride2;
         dst  += 4;
     }
-    if( n%2 )
-    {
+    if( n%2 ) {
         dst[0] = *col0;
         dst[1] = *col1;
     }
@@ -9238,7 +8918,7 @@ void _ialglib_pack_n2_sse2(
 
 
 /********************************************************************
-This function calculates R := alpha*A'*B+beta*R where A and B are Kx2 
+This function calculates R := alpha*A'*B+beta*R where A and B are Kx2
 matrices stored in contiguous row-by-row storage,  R  is  2x2  matrix
 stored in non-contiguous row-by-row storage.
 
@@ -9247,7 +8927,7 @@ A and B must be aligned; R may be non-aligned.
 If beta is zero, contents of R is ignored (not  multiplied  by zero -
 just ignored).
 
-However, when alpha is zero, we still calculate A'*B, which is 
+However, when alpha is zero, we still calculate A'*B, which is
 multiplied by zero afterwards.
 
 Function accepts additional parameter store_mode:
@@ -9264,8 +8944,7 @@ void _ialglib_mm22(double alpha, const double *a, const double *b, ae_int_t k, d
     v01 = 0.0;
     v10 = 0.0;
     v11 = 0.0;
-    for(t=0; t<k; t++)
-    {
+    for(t=0; t<k; t++) {
         v00 += a[0]*b[0];
         v01 += a[0]*b[1];
         v10 += a[1]*b[0];
@@ -9273,17 +8952,13 @@ void _ialglib_mm22(double alpha, const double *a, const double *b, ae_int_t k, d
         a+=2;
         b+=2;
     }
-    if( store_mode==0 )
-    {
-        if( beta==0 )
-        {
+    if( store_mode==0 ) {
+        if( beta==0 ) {
             r[0] = alpha*v00;
             r[1] = alpha*v01;
             r[stride+0] = alpha*v10;
             r[stride+1] = alpha*v11;
-        }
-        else
-        {
+        } else {
             r[0] = beta*r[0] + alpha*v00;
             r[1] = beta*r[1] + alpha*v01;
             r[stride+0] = beta*r[stride+0] + alpha*v10;
@@ -9291,42 +8966,30 @@ void _ialglib_mm22(double alpha, const double *a, const double *b, ae_int_t k, d
         }
         return;
     }
-    if( store_mode==1 )
-    {
-        if( beta==0 )
-        {
+    if( store_mode==1 ) {
+        if( beta==0 ) {
             r[0] = alpha*v00;
             r[1] = alpha*v01;
-        }
-        else
-        {
+        } else {
             r[0] = beta*r[0] + alpha*v00;
             r[1] = beta*r[1] + alpha*v01;
         }
         return;
     }
-    if( store_mode==2 )
-    {
-        if( beta==0 )
-        {
+    if( store_mode==2 ) {
+        if( beta==0 ) {
             r[0] =alpha*v00;
             r[stride+0] = alpha*v10;
-        }
-        else
-        {
-            r[0] = beta*r[0] + alpha*v00; 
+        } else {
+            r[0] = beta*r[0] + alpha*v00;
             r[stride+0] = beta*r[stride+0] + alpha*v10;
         }
         return;
     }
-    if( store_mode==3 )
-    {
-        if( beta==0 )
-        {
+    if( store_mode==3 ) {
+        if( beta==0 ) {
             r[0] = alpha*v00;
-        }
-        else
-        {
+        } else {
             r[0] = beta*r[0] + alpha*v00;
         }
         return;
@@ -9335,7 +8998,7 @@ void _ialglib_mm22(double alpha, const double *a, const double *b, ae_int_t k, d
 
 
 /********************************************************************
-This function calculates R := alpha*A'*B+beta*R where A and B are Kx2 
+This function calculates R := alpha*A'*B+beta*R where A and B are Kx2
 matrices stored in contiguous row-by-row storage,  R  is  2x2  matrix
 stored in non-contiguous row-by-row storage.
 
@@ -9344,7 +9007,7 @@ A and B must be aligned; R may be non-aligned.
 If beta is zero, contents of R is ignored (not  multiplied  by zero -
 just ignored).
 
-However, when alpha is zero, we still calculate A'*B, which is 
+However, when alpha is zero, we still calculate A'*B, which is
 multiplied by zero afterwards.
 
 Function accepts additional parameter store_mode:
@@ -9357,19 +9020,19 @@ This function supports SSE2; it can be used when:
 1. AE_HAS_SSE2_INTRINSICS was defined (checked at compile-time)
 2. ae_cpuid() result contains CPU_SSE2 (checked at run-time)
 
-If (1) is failed, this function will still be defined and callable, but it 
-will do nothing.  If (2)  is  failed , call to this function will probably 
-crash your system. 
+If (1) is failed, this function will still be defined and callable, but it
+will do nothing.  If (2)  is  failed , call to this function will probably
+crash your system.
 
-If  you  want  to  know  whether  it  is safe to call it, you should check 
-results  of  ae_cpuid(). If CPU_SSE2 bit is set, this function is callable 
+If  you  want  to  know  whether  it  is safe to call it, you should check
+results  of  ae_cpuid(). If CPU_SSE2 bit is set, this function is callable
 and will do its work.
 ********************************************************************/
 #if defined(AE_HAS_SSE2_INTRINSICS)
 void _ialglib_mm22_sse2(double alpha, const double *a, const double *b, ae_int_t k, double beta, double *r, ae_int_t stride, ae_int_t store_mode)
 {
     /*
-     * We calculate product of two Kx2 matrices (result is 2x2). 
+     * We calculate product of two Kx2 matrices (result is 2x2).
      * VA and VB store result as follows:
      *
      *        [ VD[0]  VE[0] ]
@@ -9377,23 +9040,22 @@ void _ialglib_mm22_sse2(double alpha, const double *a, const double *b, ae_int_t
      *        [ VE[1]  VD[1] ]
      *
      */
-    __m128d va, vb, vd, ve, vt, vt0, vt1, r0, r1, valpha, vbeta; 
+    __m128d va, vb, vd, ve, vt, vt0, vt1, r0, r1, valpha, vbeta;
     ae_int_t t, k2, k3;
-    
+
     /*
      * calculate product
      */
     k2 = k/2;
     vd = _mm_setzero_pd();
     ve = _mm_setzero_pd();
-    for(t=0; t<k2; t++)
-    {
+    for(t=0; t<k2; t++) {
         vb = _mm_load_pd(b);
         va = _mm_load_pd(a);
         vt = vb;
         vb = _mm_mul_pd(va,vb);
         vt = _mm_shuffle_pd(vt, vt, 1);
-        vd = _mm_add_pd(vb,vd);        
+        vd = _mm_add_pd(vb,vd);
         vt = _mm_mul_pd(va,vt);
         vb = _mm_load_pd(b+2);
         ve = _mm_add_pd(vt,ve);
@@ -9407,73 +9069,64 @@ void _ialglib_mm22_sse2(double alpha, const double *a, const double *b, ae_int_t
         a+=4;
         b+=4;
     }
-    if( k%2 )
-    {
+    if( k%2 ) {
         va = _mm_load_pd(a);
         vb = _mm_load_pd(b);
         vt = _mm_shuffle_pd(vb, vb, 1);
         vd = _mm_add_pd(_mm_mul_pd(va,vb),vd);
         ve = _mm_add_pd(_mm_mul_pd(va,vt),ve);
-    }    
-    
+    }
+
     /*
      * r0 is first row of alpha*A'*B, r1 is second row
      */
     valpha = _mm_load1_pd(&alpha);
     r0 = _mm_mul_pd(_mm_unpacklo_pd(vd,ve),valpha);
     r1 = _mm_mul_pd(_mm_unpackhi_pd(ve,vd),valpha);
-    
+
     /*
      * store
      */
-    if( store_mode==0 )
-    {
-        if( beta==0 )
-        {
+    if( store_mode==0 ) {
+        if( beta==0 ) {
             _mm_storeu_pd(r,r0);
             _mm_storeu_pd(r+stride,r1);
-        }
-        else
-        {
+        } else {
             vbeta = _mm_load1_pd(&beta);
             _mm_storeu_pd(r,_mm_add_pd(_mm_mul_pd(_mm_loadu_pd(r),vbeta),r0));
             _mm_storeu_pd(r+stride,_mm_add_pd(_mm_mul_pd(_mm_loadu_pd(r+stride),vbeta),r1));
         }
         return;
     }
-    if( store_mode==1 )
-    {
-        if( beta==0 )
+    if( store_mode==1 ) {
+        if( beta==0 ) {
             _mm_storeu_pd(r,r0);
-        else
+        } else {
             _mm_storeu_pd(r,_mm_add_pd(_mm_mul_pd(_mm_loadu_pd(r),_mm_load1_pd(&beta)),r0));
+        }
         return;
     }
-    if( store_mode==2 )
-    {
+    if( store_mode==2 ) {
         double buf[4];
         _mm_storeu_pd(buf,r0);
         _mm_storeu_pd(buf+2,r1);
-        if( beta==0 )
-        {
+        if( beta==0 ) {
             r[0] =buf[0];
             r[stride+0] = buf[2];
-        }
-        else
-        {
-            r[0] = beta*r[0] + buf[0]; 
+        } else {
+            r[0] = beta*r[0] + buf[0];
             r[stride+0] = beta*r[stride+0] + buf[2];
         }
         return;
     }
-    if( store_mode==3 )
-    {
+    if( store_mode==3 ) {
         double buf[2];
         _mm_storeu_pd(buf,r0);
-        if( beta==0 )
+        if( beta==0 ) {
             r[0] = buf[0];
-        else
+        } else {
             r[0] = beta*r[0] + buf[0];
+        }
         return;
     }
 }
@@ -9481,22 +9134,22 @@ void _ialglib_mm22_sse2(double alpha, const double *a, const double *b, ae_int_t
 
 
 /*************************************************************************
-This function calculates R := alpha*A'*(B0|B1)+beta*R where A, B0  and  B1 
-are Kx2 matrices stored in contiguous row-by-row storage, R is 2x4  matrix 
+This function calculates R := alpha*A'*(B0|B1)+beta*R where A, B0  and  B1
+are Kx2 matrices stored in contiguous row-by-row storage, R is 2x4  matrix
 stored in non-contiguous row-by-row storage.
 
 A, B0 and B1 must be aligned; R may be non-aligned.
 
-Note  that  B0  and  B1  are  two  separate  matrices  stored in different 
+Note  that  B0  and  B1  are  two  separate  matrices  stored in different
 locations.
 
-If beta is zero, contents of R is ignored (not  multiplied  by zero - just 
+If beta is zero, contents of R is ignored (not  multiplied  by zero - just
 ignored).
 
-However,  when  alpha  is  zero , we still calculate MM product,  which is 
+However,  when  alpha  is  zero , we still calculate MM product,  which is
 multiplied by zero afterwards.
 
-Unlike mm22 functions, this function does NOT support partial  output of R 
+Unlike mm22 functions, this function does NOT support partial  output of R
 - we always store full 2x4 matrix.
 *************************************************************************/
 void _ialglib_mm22x2(double alpha, const double *a, const double *b0, const double *b1, ae_int_t k, double beta, double *r, ae_int_t stride)
@@ -9506,41 +9159,41 @@ void _ialglib_mm22x2(double alpha, const double *a, const double *b0, const doub
 }
 
 /*************************************************************************
-This function calculates R := alpha*A'*(B0|B1)+beta*R where A, B0  and  B1 
-are Kx2 matrices stored in contiguous row-by-row storage, R is 2x4  matrix 
+This function calculates R := alpha*A'*(B0|B1)+beta*R where A, B0  and  B1
+are Kx2 matrices stored in contiguous row-by-row storage, R is 2x4  matrix
 stored in non-contiguous row-by-row storage.
 
 A, B0 and B1 must be aligned; R may be non-aligned.
 
-Note  that  B0  and  B1  are  two  separate  matrices  stored in different 
+Note  that  B0  and  B1  are  two  separate  matrices  stored in different
 locations.
 
-If beta is zero, contents of R is ignored (not  multiplied  by zero - just 
+If beta is zero, contents of R is ignored (not  multiplied  by zero - just
 ignored).
 
-However,  when  alpha  is  zero , we still calculate MM product,  which is 
+However,  when  alpha  is  zero , we still calculate MM product,  which is
 multiplied by zero afterwards.
 
-Unlike mm22 functions, this function does NOT support partial  output of R 
+Unlike mm22 functions, this function does NOT support partial  output of R
 - we always store full 2x4 matrix.
 
 This function supports SSE2; it can be used when:
 1. AE_HAS_SSE2_INTRINSICS was defined (checked at compile-time)
 2. ae_cpuid() result contains CPU_SSE2 (checked at run-time)
 
-If (1) is failed, this function will still be defined and callable, but it 
-will do nothing.  If (2)  is  failed , call to this function will probably 
-crash your system. 
+If (1) is failed, this function will still be defined and callable, but it
+will do nothing.  If (2)  is  failed , call to this function will probably
+crash your system.
 
-If  you  want  to  know  whether  it  is safe to call it, you should check 
-results  of  ae_cpuid(). If CPU_SSE2 bit is set, this function is callable 
+If  you  want  to  know  whether  it  is safe to call it, you should check
+results  of  ae_cpuid(). If CPU_SSE2 bit is set, this function is callable
 and will do its work.
 *************************************************************************/
 #if defined(AE_HAS_SSE2_INTRINSICS)
 void _ialglib_mm22x2_sse2(double alpha, const double *a, const double *b0, const double *b1, ae_int_t k, double beta, double *r, ae_int_t stride)
 {
     /*
-     * We calculate product of two Kx2 matrices (result is 2x2). 
+     * We calculate product of two Kx2 matrices (result is 2x2).
      * V0, V1, V2, V3 store result as follows:
      *
      *     [ V0[0]  V1[1] V2[0]  V3[1] ]
@@ -9551,35 +9204,34 @@ void _ialglib_mm22x2_sse2(double alpha, const double *a, const double *b0, const
      * VB0 and VB1 are used to store two copies of 1x2 block of B0 or B1
      * (both vars store same data - either B0 or B1). Results from multiplication
      * by VA0/VA1 are stored in VB0/VB1 too.
-     * 
+     *
      */
-    __m128d v0, v1, v2, v3, va0, va1, vb0, vb1; 
-    __m128d r00, r01, r10, r11, valpha, vbeta; 
+    __m128d v0, v1, v2, v3, va0, va1, vb0, vb1;
+    __m128d r00, r01, r10, r11, valpha, vbeta;
     ae_int_t t, k2;
-    
+
     k2 = k/2;
     v0 = _mm_setzero_pd();
     v1 = _mm_setzero_pd();
     v2 = _mm_setzero_pd();
     v3 = _mm_setzero_pd();
-    for(t=0; t<k; t++)
-    {
+    for(t=0; t<k; t++) {
         va0 = _mm_load_pd(a);
         vb0 = _mm_load_pd(b0);
         va1 = _mm_load_pd(a);
-        
+
         vb0 = _mm_mul_pd(va0,vb0);
         vb1 = _mm_load_pd(b0);
-        v0 = _mm_add_pd(v0,vb0);        
+        v0 = _mm_add_pd(v0,vb0);
         vb1 = _mm_mul_pd(va1,vb1);
         vb0 = _mm_load_pd(b1);
-        v1 = _mm_add_pd(v1,vb1);        
-        
+        v1 = _mm_add_pd(v1,vb1);
+
         vb0 = _mm_mul_pd(va0,vb0);
         vb1 = _mm_load_pd(b1);
-        v2 = _mm_add_pd(v2,vb0);        
+        v2 = _mm_add_pd(v2,vb0);
         vb1 = _mm_mul_pd(va1,vb1);
-        v3 = _mm_add_pd(v3,vb1);        
+        v3 = _mm_add_pd(v3,vb1);
 
         a+=2;
         b0+=2;
@@ -9606,25 +9258,22 @@ void _ialglib_mm22x2_sse2(double alpha, const double *a, const double *b0, const
     r10 = _mm_mul_pd(_mm_unpackhi_pd(v1,v0),valpha);
     r01 = _mm_mul_pd(_mm_unpacklo_pd(v2,v3),valpha);
     r11 = _mm_mul_pd(_mm_unpackhi_pd(v3,v2),valpha);
-    
+
     /*
      * store
      */
-    if( beta==0 )
-    {
+    if( beta==0 ) {
         _mm_storeu_pd(r,r00);
         _mm_storeu_pd(r+2,r01);
         _mm_storeu_pd(r+stride,r10);
         _mm_storeu_pd(r+stride+2,r11);
-    }
-    else
-    {
+    } else {
         vbeta = _mm_load1_pd(&beta);
         _mm_storeu_pd(r,          _mm_add_pd(_mm_mul_pd(_mm_loadu_pd(r),vbeta),r00));
         _mm_storeu_pd(r+2,        _mm_add_pd(_mm_mul_pd(_mm_loadu_pd(r+2),vbeta),r01));
         _mm_storeu_pd(r+stride,   _mm_add_pd(_mm_mul_pd(_mm_loadu_pd(r+stride),vbeta),r10));
         _mm_storeu_pd(r+stride+2, _mm_add_pd(_mm_mul_pd(_mm_loadu_pd(r+stride+2),vbeta),r11));
-    }    
+    }
 }
 #endif
 

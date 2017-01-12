@@ -23,22 +23,23 @@
 
 void TextureMultiFaces::ApplyTexture( VisiblePoint& visPoint ) const
 {
-	int i = visPoint.GetFaceNumber();
-	if ( i>= NumTextureMaps ) {
-		i = NumTextureMaps-1;
-	}
-	TextureMapPointer p = TexMapPtrs[i];
-	if ( p ) {
-		p->ApplyTexture(visPoint);
-	}
-	return;
+    int i = visPoint.GetFaceNumber();
+    if ( i>= NumTextureMaps ) {
+        i = NumTextureMaps-1;
+    }
+    TextureMapPointer p = TexMapPtrs[i];
+    if ( p ) {
+        p->ApplyTexture(visPoint);
+    }
+    return;
 }
 
-void TextureMultiFaces::DeleteAll() {
-	for (int i=0; i<NumTextureMaps; i++) {
-		TextureMapPointer p = TexMapPtrs[i];
-		delete (TextureMapBase*)p;
-		TexMapPtrs[i] = 0;
-	}
-	return;
+void TextureMultiFaces::DeleteAll()
+{
+    for (int i=0; i<NumTextureMaps; i++) {
+        TextureMapPointer p = TexMapPtrs[i];
+        delete (TextureMapBase*)p;
+        TexMapPtrs[i] = 0;
+    }
+    return;
 }

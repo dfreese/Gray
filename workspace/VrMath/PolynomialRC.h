@@ -38,23 +38,23 @@ using namespace std;
 // The "Safe" versions should be used only if the leading coefficient, a,
 //		is known to be non-zero.
 int QuadraticSolveReal( double a, double b, double c,
-					    double *root1, double *root2);
+                        double *root1, double *root2);
 int QuadraticSolveReal( double a, double b, double c,
-					    double* rootlist);
+                        double* rootlist);
 int QuadraticSolveRealSafe( double a, double b, double c,
-					    double *root1, double *root2);
+                            double *root1, double *root2);
 int QuadraticSolveRealSafe( double a, double b, double c,
-					    double* rootlist);
+                            double* rootlist);
 
 int CubicSolveReal( double a, double b, double c, double d,
-				    double* rootlist );
+                    double* rootlist );
 
 // Finds all the real roots of a polynomial of given degree.
 int PolySolveReal( int degree, double *coefs, double *roots);
 
 // Intended only for internal use:
-int QuadraticSolveRealDescrimPos( double a, double b, double c, 
-						double descrim, double *root1, double *root2);
+int QuadraticSolveRealDescrimPos( double a, double b, double c,
+                                  double descrim, double *root1, double *root2);
 int PolySolveRealAll( int degree, double *coefsarray, double* rootsarray );
 
 //
@@ -73,38 +73,38 @@ int PolySolveRealAll( int degree, double *coefsarray, double* rootsarray );
 // In the general case, solutions all have the form
 //  (alpha)(soln1A, soln1Y) and (alpha)(soln2X, soln2Y),
 //  where alpha can be any constant.
-// Special case: if the determinant is non-zero, it still 
+// Special case: if the determinant is non-zero, it still
 //	returns values for x and y.  Namely the values where the
 //	value of the quadratic polynomial is maximized.
 int QuadraticSolveHomogeneousReal( double a, double b, double c,
-								   double* soln1X, double* soln1Y,
-								   double* soln2X, double* soln2Y );
+                                   double* soln1X, double* soln1Y,
+                                   double* soln2X, double* soln2Y );
 
 /*****************************************************/
 /*    Inlined routines								 */
 /*****************************************************/
 
 inline int QuadraticSolveReal( double a, double b, double c,
-							   double* rootlist)
+                               double* rootlist)
 {
-	return QuadraticSolveReal(a, b, c, rootlist, rootlist+1);
+    return QuadraticSolveReal(a, b, c, rootlist, rootlist+1);
 }
 
 inline int QuadraticSolveRealSafe( double a, double b, double c,
-							   double* rootlist)
+                                   double* rootlist)
 {
-	return QuadraticSolveRealSafe(a, b, c, rootlist, rootlist+1);
+    return QuadraticSolveRealSafe(a, b, c, rootlist, rootlist+1);
 }
 
 inline int QuadraticSolveRealSafe( double a, double b, double c,
-							   double* root1, double *root2)
+                                   double* root1, double *root2)
 {
-	double descrim = b*b-4.0*a*c;
-	if ( descrim<0.0 ) {
-		return 0;
-	}
-	return QuadraticSolveRealDescrimPos( a, b, c, descrim, 
-										 root1, root2 );
+    double descrim = b*b-4.0*a*c;
+    if ( descrim<0.0 ) {
+        return 0;
+    }
+    return QuadraticSolveRealDescrimPos( a, b, c, descrim,
+                                         root1, root2 );
 }
 
 #endif //POLYNOMIALRC_H

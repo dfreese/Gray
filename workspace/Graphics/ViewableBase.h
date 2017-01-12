@@ -36,153 +36,173 @@
 //		if it intersects a given line of sight.  Thus it must
 //		perform intersection and distance tests, and when successful
 //		must return depth information.
-class ViewableBase {
+class ViewableBase
+{
 
 public:
-	ViewableBase();
+    ViewableBase();
 
-	// Returns an intersection if found with distance maxDistance
-	// viewDir must be a unit vector.
-	// intersectDistance and visPoint are returned values.
-	virtual bool FindIntersection ( 
-		const VectorR3& viewPos, const VectorR3& viewDir, double maxDistance,
-		double *intersectDistance, VisiblePoint& returnedPoint ) const;
+    // Returns an intersection if found with distance maxDistance
+    // viewDir must be a unit vector.
+    // intersectDistance and visPoint are returned values.
+    virtual bool FindIntersection (
+        const VectorR3& viewPos, const VectorR3& viewDir, double maxDistance,
+        double *intersectDistance, VisiblePoint& returnedPoint ) const;
 
-	// Sets front and back texture maps.
-	// Subclasses of ViewablePoint will have more routines.
-	void TextureMap( const TextureMapBase* texture );	// Front & back
-	void TextureMapFront( const TextureMapBase* texture );
-	void TextureMapBack( const TextureMapBase* texture );
-	void TextureMapOuter( const TextureMapBase* texture );
-	void TextureMapInner( const TextureMapBase* texture );
+    // Sets front and back texture maps.
+    // Subclasses of ViewablePoint will have more routines.
+    void TextureMap( const TextureMapBase* texture );	// Front & back
+    void TextureMapFront( const TextureMapBase* texture );
+    void TextureMapBack( const TextureMapBase* texture );
+    void TextureMapOuter( const TextureMapBase* texture );
+    void TextureMapInner( const TextureMapBase* texture );
 
-	bool HasFrontTextureMap() const { return (TextureFront!=0); }
-	bool HasBackTextureMap() const { return (TextureBack!=0); }
-	bool HasInnerTextureMap() const { return (TextureFront!=0); }
-	bool HasOuterTextureMap() const { return (TextureBack!=0); }
+    bool HasFrontTextureMap() const
+    {
+        return (TextureFront!=0);
+    }
+    bool HasBackTextureMap() const
+    {
+        return (TextureBack!=0);
+    }
+    bool HasInnerTextureMap() const
+    {
+        return (TextureFront!=0);
+    }
+    bool HasOuterTextureMap() const
+    {
+        return (TextureBack!=0);
+    }
 
-	// CalcBoundingPlanes:
-	//   Computes the extents of the viewable object with respect to a
-	//		a given normal direction  u.   u is the normal to a family of planes.
-	//   Returns  min{u^x} and max{u^x} for x a point on the object (^ = dot product)
-	//   Important: u must be a unit vector!
-	virtual void CalcBoundingPlanes( const VectorR3& u, double *minDot, double *maxDot ) const = 0;
+    // CalcBoundingPlanes:
+    //   Computes the extents of the viewable object with respect to a
+    //		a given normal direction  u.   u is the normal to a family of planes.
+    //   Returns  min{u^x} and max{u^x} for x a point on the object (^ = dot product)
+    //   Important: u must be a unit vector!
+    virtual void CalcBoundingPlanes( const VectorR3& u, double *minDot, double *maxDot ) const = 0;
 
-	// Calculate the axis aligned bounding box
-	virtual void CalcAABB( AABB& retAABB ) const;
+    // Calculate the axis aligned bounding box
+    virtual void CalcAABB( AABB& retAABB ) const;
 
-	// Calculate the extent intersected with a bounding box
-	virtual bool CalcExtentsInBox( const AABB& aabb, AABB& retAABB ) const;
+    // Calculate the extent intersected with a bounding box
+    virtual bool CalcExtentsInBox( const AABB& aabb, AABB& retAABB ) const;
 
-	// CalcPartials:
-	//   Returns partial derivatives with respect to u and v.
-	//   Letting p(u,v) be the point on the surface with coord's u,v;
-	//   CalcPartials returns (partial p)/(partial u) and (partial p)/(partial v).
-	//		in the vectors retPartialU and retPartialV.
-	//	 If at a singularity (so either partial is zero or infinity, then the boolean
-	//		return value is FALSE.  Otherwise the boolean return value is TRUE to indicate
-	//		that the returned partial derivative information is valid.
-	// Needed only for bump mapping at present.
-	virtual bool CalcPartials( const VisiblePoint& visPoint, 
-							   VectorR3& retPartialU, VectorR3& retPartialV ) const = 0;
-							   
+    // CalcPartials:
+    //   Returns partial derivatives with respect to u and v.
+    //   Letting p(u,v) be the point on the surface with coord's u,v;
+    //   CalcPartials returns (partial p)/(partial u) and (partial p)/(partial v).
+    //		in the vectors retPartialU and retPartialV.
+    //	 If at a singularity (so either partial is zero or infinity, then the boolean
+    //		return value is FALSE.  Otherwise the boolean return value is TRUE to indicate
+    //		that the returned partial derivative information is valid.
+    // Needed only for bump mapping at present.
+    virtual bool CalcPartials( const VisiblePoint& visPoint,
+                               VectorR3& retPartialU, VectorR3& retPartialV ) const = 0;
 
 
-	// For run time typing, we use the following "type code":
-	enum ViewableType { 
-			Viewable_BezierSet, 
-			Viewable_Cone, 
-			Viewable_Cylinder, 
-			Viewable_Ellipsoid,
-			Viewable_Parallelepiped,
-			Viewable_Parallelogram,
-			Viewable_Sphere,
-			Viewable_Torus,
-			Viewable_Triangle };
-	virtual ViewableType GetViewableType() const = 0;
-	
+
+    // For run time typing, we use the following "type code":
+    enum ViewableType {
+        Viewable_BezierSet,
+        Viewable_Cone,
+        Viewable_Cylinder,
+        Viewable_Ellipsoid,
+        Viewable_Parallelepiped,
+        Viewable_Parallelogram,
+        Viewable_Sphere,
+        Viewable_Torus,
+        Viewable_Triangle
+    };
+    virtual ViewableType GetViewableType() const = 0;
+
 //#ifdef GAMMA_PHYSICS
-	void SetGammaReject() { m_GammaReject = true; };
-	bool GammaReject() const { return m_GammaReject; };
+    void SetGammaReject()
+    {
+        m_GammaReject = true;
+    };
+    bool GammaReject() const
+    {
+        return m_GammaReject;
+    };
 //#endif
 
 
 protected:
 
-	const TextureMapBase* TextureFront;		// Front texture map
-	const TextureMapBase* TextureBack;		// Back Texture map
+    const TextureMapBase* TextureFront;		// Front texture map
+    const TextureMapBase* TextureBack;		// Back Texture map
 
-	// The "NT" version is the one that does all the work of finding
-	//		the intersection point, and computing u,v coordinates.
-	//	The "NT" version does not call the texture map: this is left for
-	//		the non-NT version to do.
-	virtual bool FindIntersectionNT ( 
-		const VectorR3& viewPos, const VectorR3& viewDir, double maxDistance,
-		double *intersectDistance, VisiblePoint& returnedPoint ) const = 0;
+    // The "NT" version is the one that does all the work of finding
+    //		the intersection point, and computing u,v coordinates.
+    //	The "NT" version does not call the texture map: this is left for
+    //		the non-NT version to do.
+    virtual bool FindIntersectionNT (
+        const VectorR3& viewPos, const VectorR3& viewDir, double maxDistance,
+        double *intersectDistance, VisiblePoint& returnedPoint ) const = 0;
 
 //#ifdef GAMMA_PHYSICS
-	bool m_GammaReject;
+    bool m_GammaReject;
 //#endif
-		
+
 
 };
 
 inline ViewableBase::ViewableBase()
 {
-	TextureMap( 0 );
-	m_GammaReject = false;
+    TextureMap( 0 );
+    m_GammaReject = false;
 }
 
-inline void ViewableBase::TextureMap( 
-				const TextureMapBase* texture )
+inline void ViewableBase::TextureMap(
+    const TextureMapBase* texture )
 {
-	TextureMapFront( texture );
-	TextureMapBack( texture );
+    TextureMapFront( texture );
+    TextureMapBack( texture );
 }
 
 inline void ViewableBase::TextureMapFront( const TextureMapBase* texture )
 {
-	TextureFront = texture;
+    TextureFront = texture;
 }
 
 inline void ViewableBase::TextureMapBack( const TextureMapBase* texture )
 {
-	TextureBack = texture;
+    TextureBack = texture;
 }
 
 inline void ViewableBase::TextureMapOuter( const TextureMapBase* texture )
 {
-	TextureMapFront( texture );
+    TextureMapFront( texture );
 }
 
 inline void ViewableBase::TextureMapInner( const TextureMapBase* texture )
 {
-	TextureMapBack( texture );
+    TextureMapBack( texture );
 }
 
-inline bool ViewableBase::FindIntersection ( 
-		const VectorR3& viewPos, const VectorR3& viewDir, double maxDistance,
-		double *intersectDistance, VisiblePoint& returnedPoint ) const 
+inline bool ViewableBase::FindIntersection (
+    const VectorR3& viewPos, const VectorR3& viewDir, double maxDistance,
+    double *intersectDistance, VisiblePoint& returnedPoint ) const
 {
-	bool found;
-	found = FindIntersectionNT(viewPos, viewDir, 
-								maxDistance, intersectDistance, returnedPoint);
-	if ( found ) {
-		returnedPoint.SetObject( this );
-		// Invoke the texture map (if any)
-		const TextureMapBase* texmap = returnedPoint.IsFrontFacing() ? TextureFront : TextureBack;
-		if ( texmap ) {
-			texmap->ApplyTexture( returnedPoint, viewDir );
-		}
-	}
-	return found;
+    bool found;
+    found = FindIntersectionNT(viewPos, viewDir,
+                               maxDistance, intersectDistance, returnedPoint);
+    if ( found ) {
+        returnedPoint.SetObject( this );
+        // Invoke the texture map (if any)
+        const TextureMapBase* texmap = returnedPoint.IsFrontFacing() ? TextureFront : TextureBack;
+        if ( texmap ) {
+            texmap->ApplyTexture( returnedPoint, viewDir );
+        }
+    }
+    return found;
 }
 
 
 // NOW THEY ARE PURELY VIRTUAL
 // Eventually these routine should be purely virtual, but first I have to implement
 //		lots of special cases.
-//inline bool ViewableBase::CalcPartials( const VisiblePoint& visPoint, 
+//inline bool ViewableBase::CalcPartials( const VisiblePoint& visPoint,
 //									    VectorR3& retPartialU, VectorR3& retPartialV ) const
 //{
 //	assert(0);		// Not yet implemented for this class!
@@ -191,7 +211,7 @@ inline bool ViewableBase::FindIntersection (
 
 // This routine could be made purely virtual, but perhaps it is not implemented
 //		for all classes.
-//inline void ViewableBase::CalcBoundingPlanes( const VectorR3& u, 
+//inline void ViewableBase::CalcBoundingPlanes( const VectorR3& u,
 //											  double *minDot, double *maxDot )
 //{
 //	assert(0);			// Not implemented for this class (comment out if desired)

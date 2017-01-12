@@ -74,209 +74,201 @@ const double OneMinusEpsilon15 = 1.0-1.0e-15;
 
 inline double ZeroValue(const double& x)
 {
-	return 0.0;
+    return 0.0;
 }
 
 // Inner product -- so can be used in templated situations
 
-inline double InnerProduct( double x, double y ) 
+inline double InnerProduct( double x, double y )
 {
-	return x*y;
+    return x*y;
 }
 
 //
 // Comparisons
 //
 
-template<class T> inline T Min ( const T& x, const T& y ) 
+template<class T> inline T Min ( const T& x, const T& y )
 {
-	return (x<y ? x : y);
+    return (x<y ? x : y);
 }
 
-template<class T> inline T Max ( const T& x, const T& y ) 
+template<class T> inline T Max ( const T& x, const T& y )
 {
-	return (y<x ? x : y);
+    return (y<x ? x : y);
 }
 
-template<class T> inline T ClampRange ( const T& x, const T& min, const T& max) 
+template<class T> inline T ClampRange ( const T& x, const T& min, const T& max)
 {
-	if ( x<min ) {
-		return min;
-	}
-	if ( x>max ) {
-		return max;
-	}
-	return x;
+    if ( x<min ) {
+        return min;
+    }
+    if ( x>max ) {
+        return max;
+    }
+    return x;
 }
 
-template<class T> inline bool ClampRange ( T *x, const T& min, const T& max) 
+template<class T> inline bool ClampRange ( T *x, const T& min, const T& max)
 {
-	if ( (*x)<min ) {
-		(*x) = min;
-		return false;
-	}
-	else if ( (*x)>max ) {
-		(*x) = max;
-		return false;
-	}
-	else {
-		return true;
-	}
+    if ( (*x)<min ) {
+        (*x) = min;
+        return false;
+    } else if ( (*x)>max ) {
+        (*x) = max;
+        return false;
+    } else {
+        return true;
+    }
 }
 
-inline void ClampRangeSafe ( double* x, double min, double max) 
+inline void ClampRangeSafe ( double* x, double min, double max)
 {
-	if ( (!((*x)>=min)) || isnan(*x) ) {
-		*x = min;
-	}
-	else if ( !((*x)<=max) ) {
-		*x = max;
-	}
+    if ( (!((*x)>=min)) || isnan(*x) ) {
+        *x = min;
+    } else if ( !((*x)<=max) ) {
+        *x = max;
+    }
 }
 
-template<class T> inline bool ClampMin ( T *x, const T& min) 
+template<class T> inline bool ClampMin ( T *x, const T& min)
 {
-	if ( (*x)<min ) {
-		(*x) = min;
-		return false;
-	}
-	return true;
+    if ( (*x)<min ) {
+        (*x) = min;
+        return false;
+    }
+    return true;
 }
 
 
-template<class T> inline bool ClampMax ( T *x, const T& max) 
+template<class T> inline bool ClampMax ( T *x, const T& max)
 {
-	if ( (*x)>max ) {
-		(*x) = max;
-		return false;
-	}
-	return true;
+    if ( (*x)>max ) {
+        (*x) = max;
+        return false;
+    }
+    return true;
 }
 
-template<class T> inline T& UpdateMin ( const T& x, T& y ) 
+template<class T> inline T& UpdateMin ( const T& x, T& y )
 {
-	if ( x<y ) {
-		y = x;
-	}
-	return y;
+    if ( x<y ) {
+        y = x;
+    }
+    return y;
 }
 
-template<class T> inline T& UpdateMax ( const T& x, T& y ) 
+template<class T> inline T& UpdateMax ( const T& x, T& y )
 {
-	if ( x>y ) {
-		y = x;
-	}
-	return y;
+    if ( x>y ) {
+        y = x;
+    }
+    return y;
 }
 
-template<class T> inline int UpdateMinMax ( const T& x, T& min, T& max ) 
+template<class T> inline int UpdateMinMax ( const T& x, T& min, T& max )
 {
-	if ( x>max ) {
-		max = x;
-		return 1;
-	}
-	if ( x<min ) {
-		min = x;
-		return -1;
-	}
-	return 0;
+    if ( x>max ) {
+        max = x;
+        return 1;
+    }
+    if ( x<min ) {
+        min = x;
+        return -1;
+    }
+    return 0;
 }
 
 template<class T> inline bool SameSignNonzero( const T& x, const T& y )
 {
-	if ( x<0 ) {
-		return (y<0);
-	}
-	else if ( 0<x ) {
-		return (0<y);
-	}
-	else {
-		return false;
-	}
+    if ( x<0 ) {
+        return (y<0);
+    } else if ( 0<x ) {
+        return (0<y);
+    } else {
+        return false;
+    }
 }
 
 // Template version of Sign function
-template<class T> inline int Sign( T x) 
+template<class T> inline int Sign( T x)
 {
-	if ( x<0 ) {
-		return -1;
-	}
-	else if ( x==0 ) {
-		return 0;
-	}
-	else {
-		return 1;
-	}
+    if ( x<0 ) {
+        return -1;
+    } else if ( x==0 ) {
+        return 0;
+    } else {
+        return 1;
+    }
 }
 
-inline double Mag ( double x ) {
-	return fabs(x);
+inline double Mag ( double x )
+{
+    return fabs(x);
 }
 
-inline double Dist ( double x, double y ) {
-	return fabs(x-y);
+inline double Dist ( double x, double y )
+{
+    return fabs(x-y);
 }
 
 template <class T>
-inline bool NearEqual( const T& a, const T& b, double tolerance ) {
-	T delta = a;
-	delta -= b;
-	return ( Mag(delta)<=tolerance );
+inline bool NearEqual( const T& a, const T& b, double tolerance )
+{
+    T delta = a;
+    delta -= b;
+    return ( Mag(delta)<=tolerance );
 }
 
-inline bool EqualZeroFuzzy( double x ) {
-	return ( fabs(x)<=1.0e-14 );
+inline bool EqualZeroFuzzy( double x )
+{
+    return ( fabs(x)<=1.0e-14 );
 }
 
-inline bool NearZero( double x, double tolerance ) {
-	return ( fabs(x)<=tolerance );
+inline bool NearZero( double x, double tolerance )
+{
+    return ( fabs(x)<=tolerance );
 }
 
 inline bool LessOrEqualFuzzy( double x, double y )
 {
-	if ( x <= y ) {
-		return true;
-	}
+    if ( x <= y ) {
+        return true;
+    }
 
-	if ( y > 0.0 ) {
-		if ( x>0.0 ) {
-			return ( x*OneMinusEpsilon15 < y*OnePlusEpsilon15 );
-		}
-		else {
-			return ( y<1.0e-15 );	// x==0 in this case
-		}
-	}
-	else if ( y < 0.0 ) {
-		if ( x<0.0 ) {
-			return ( x*OnePlusEpsilon15 < y*OneMinusEpsilon15 );
-		}
-		else {
-			return ( y>-1.0e-15 );	// x==0 in this case
-		}
-	}
-	else {
-		return ( -1.0e-15<x && x<1.0e-15 );
-	}
+    if ( y > 0.0 ) {
+        if ( x>0.0 ) {
+            return ( x*OneMinusEpsilon15 < y*OnePlusEpsilon15 );
+        } else {
+            return ( y<1.0e-15 );	// x==0 in this case
+        }
+    } else if ( y < 0.0 ) {
+        if ( x<0.0 ) {
+            return ( x*OnePlusEpsilon15 < y*OneMinusEpsilon15 );
+        } else {
+            return ( y>-1.0e-15 );	// x==0 in this case
+        }
+    } else {
+        return ( -1.0e-15<x && x<1.0e-15 );
+    }
 }
 
-inline bool GreaterOrEqualFuzzy ( double x, double y ) 
+inline bool GreaterOrEqualFuzzy ( double x, double y )
 {
-	return LessOrEqualFuzzy( y, x );
+    return LessOrEqualFuzzy( y, x );
 }
 
 inline bool UpdateMaxAbs( double *maxabs, double updateval )
 {
-	if ( updateval > *maxabs ) {
-		*maxabs = updateval;
-		return true;
-	}
-	else if ( -updateval > *maxabs ) {
-		*maxabs = -updateval;
-		return true;
-	}
-	else {
-		return false;
-	}
+    if ( updateval > *maxabs ) {
+        *maxabs = updateval;
+        return true;
+    } else if ( -updateval > *maxabs ) {
+        *maxabs = -updateval;
+        return true;
+    } else {
+        return false;
+    }
 }
 
 // **********************************************************
@@ -284,71 +276,74 @@ inline bool UpdateMaxAbs( double *maxabs, double updateval )
 // **********************************************************
 
 template <class T>
-inline void averageOf ( const T& a, const T &b, T&c ) {
-	c = a;
-	c += b;
-	c *= 0.5;
+inline void averageOf ( const T& a, const T &b, T&c )
+{
+    c = a;
+    c += b;
+    c *= 0.5;
 }
 
 template <class T>
-inline void Lerp( const T& a, const T&b, double alpha, T&c ) {
-	double beta = 1.0-alpha;
-	if ( beta>alpha ) {
-		c = b;
-		c *= alpha/beta;
-		c += a;
-		c *= beta;
-	}
-	else {
-		c = a;
-		c *= beta/alpha;
-		c += b;
-		c *= alpha;
-	}
+inline void Lerp( const T& a, const T&b, double alpha, T&c )
+{
+    double beta = 1.0-alpha;
+    if ( beta>alpha ) {
+        c = b;
+        c *= alpha/beta;
+        c += a;
+        c *= beta;
+    } else {
+        c = a;
+        c *= beta/alpha;
+        c += b;
+        c *= alpha;
+    }
 }
 
 template <class T>
-inline T Lerp( const T& a, const T&b, double alpha ) {
-	T ret;
-	Lerp( a, b, alpha, ret );
-	return ret;
+inline T Lerp( const T& a, const T&b, double alpha )
+{
+    T ret;
+    Lerp( a, b, alpha, ret );
+    return ret;
 }
 
 // This version is a little better in that if a and b are equal,
 //    the Lerp( a, b, alpha, c) will yield c = a = b.
 template <class T>
-inline void LerpDelta( const T& a, const T&b, double alpha, T& c ) {
-	if ( alpha<=0.5 ) {
-		c = b;
-		c -= a;
-		c *= alpha;
-		c += a;
-	}
-	else {
-		double beta = 1.0-alpha;
-		c = a;
-		c -= b;
-		c *= beta;
-		c += b;
-	}
+inline void LerpDelta( const T& a, const T&b, double alpha, T& c )
+{
+    if ( alpha<=0.5 ) {
+        c = b;
+        c -= a;
+        c *= alpha;
+        c += a;
+    } else {
+        double beta = 1.0-alpha;
+        c = a;
+        c -= b;
+        c *= beta;
+        c += b;
+    }
 }
 
 inline void LerpWith( float *a, float b, float alpha )
 {
-	(*a) *= (1.0f-alpha);
-	(*a) += alpha*b;
+    (*a) *= (1.0f-alpha);
+    (*a) += alpha*b;
 }
 
 inline void LerpWith( double *a, double b, double alpha )
 {
-	(*a) *= (1.0-alpha);
-	(*a) += alpha*b;
+    (*a) *= (1.0-alpha);
+    (*a) += alpha*b;
 }
 
 template <class T>
-inline void LerpWith( T* a, const T&b, double alpha ) {
-	(*a) *= (1.0-alpha);
-	a -> AddScaled( b, alpha );
+inline void LerpWith( T* a, const T&b, double alpha )
+{
+    (*a) *= (1.0-alpha);
+    a -> AddScaled( b, alpha );
 }
 
 // **********************************************************
@@ -356,56 +351,54 @@ inline void LerpWith( T* a, const T&b, double alpha ) {
 // **********************************************************
 
 // TimesCot(x) returns x*cot(x)
-inline double TimesCot ( double x ) {	
-	if ( -1.0e-5 < x && x < 1.0e-5 ) {
-		return 1.0+x*OneThird;
-	}
-	else {
-		return ( x*cos(x)/sin(x) );
-	}
+inline double TimesCot ( double x )
+{
+    if ( -1.0e-5 < x && x < 1.0e-5 ) {
+        return 1.0+x*OneThird;
+    } else {
+        return ( x*cos(x)/sin(x) );
+    }
 }
 
 // SineOver(x) returns sin(x)/x.
-inline double SineOver( double x ) {
-	if ( -1.0e-5 < x && x < 1.0e-5 ) {
-		return 1.0-x*x*OneSixth;
-	}
-	else {
-		return sin(x)/x;
-	}
+inline double SineOver( double x )
+{
+    if ( -1.0e-5 < x && x < 1.0e-5 ) {
+        return 1.0-x*x*OneSixth;
+    } else {
+        return sin(x)/x;
+    }
 }
 // OverSine(x) returns x/sin(x).
-inline double OverSine( double x ) {
-	if ( -1.0e-5 < x && x < 1.0e-5 ) {
-		return 1.0+x*x*OneSixth;
-	}
-	else {
-		return x/sin(x);
-	}
+inline double OverSine( double x )
+{
+    if ( -1.0e-5 < x && x < 1.0e-5 ) {
+        return 1.0+x*x*OneSixth;
+    } else {
+        return x/sin(x);
+    }
 }
 
-inline double SafeAsin( double x ) {
-	if ( x <= -1.0 ) { 
-		return -PIhalves;
-	}
-	else if ( x >= 1.0 ) {
-		return PIhalves;
-	}
-	else {
-		return asin(x);
-	}
+inline double SafeAsin( double x )
+{
+    if ( x <= -1.0 ) {
+        return -PIhalves;
+    } else if ( x >= 1.0 ) {
+        return PIhalves;
+    } else {
+        return asin(x);
+    }
 }
 
-inline double SafeAcos( double x ) {
-	if ( x <= -1.0 ) { 
-		return PI;
-	}
-	else if ( x >= 1.0 ) {
-		return 0.0;
-	}
-	else {
-		return acos(x);
-	}
+inline double SafeAcos( double x )
+{
+    if ( x <= -1.0 ) {
+        return PI;
+    } else if ( x >= 1.0 ) {
+        return 0.0;
+    } else {
+        return acos(x);
+    }
 }
 
 
@@ -415,44 +408,43 @@ inline double SafeAcos( double x ) {
 
 // Square(x) returns x*x,  of course!
 
-template<class T> inline T Square ( const T& x ) 
+template<class T> inline T Square ( const T& x )
 {
-	return (x*x);
+    return (x*x);
 }
 
 // Cube(x) returns x*x*x,  of course!
 
-template<class T> inline T Cube ( const T& x ) 
+template<class T> inline T Cube ( const T& x )
 {
-	return (x*x*x);
+    return (x*x*x);
 }
 
 template<class T> inline T FourthPower( const T& x )
 {
-	return Square(Square(x));
+    return Square(Square(x));
 }
 
 // SafeSqrt(x) = returns sqrt(max(x, 0.0));
 
-inline double SafeSqrt( double x ) {
-	if ( x<=0.0 ) {
-		return 0.0;
-	}
-	else {
-		return sqrt(x);
-	}
+inline double SafeSqrt( double x )
+{
+    if ( x<=0.0 ) {
+        return 0.0;
+    } else {
+        return sqrt(x);
+    }
 }
 
 
 // SignedSqrt(a, s) returns (sign(s)*sqrt(a)).
 inline double SignedSqrt( double a, double sgn )
 {
-	if ( sgn==0.0 ) {
-		return 0.0;
-	}
-	else {
-		return ( sgn>0.0 ? sqrt(a) : -sqrt(a) );
-	}
+    if ( sgn==0.0 ) {
+        return 0.0;
+    } else {
+        return ( sgn>0.0 ? sqrt(a) : -sqrt(a) );
+    }
 }
 
 

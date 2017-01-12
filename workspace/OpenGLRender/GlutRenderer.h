@@ -64,91 +64,95 @@ class SceneDescription;
 //		1. Call RenderScene() with the Scene Description
 //	Repeat step 1 for each frame to be rendered.
 
-class GlutRenderer {
+class GlutRenderer
+{
 
 public:
-	GlutRenderer();
+    GlutRenderer();
 
-	// Set values for GLUT's "stacks" and "slices".
-	void SetMeshCounts( int meshCounts ) { MeshCount = meshCounts; }	
+    // Set values for GLUT's "stacks" and "slices".
+    void SetMeshCounts( int meshCounts )
+    {
+        MeshCount = meshCounts;
+    }
 
-	// Multiplies all material coefficients by this factor. Default = 1.
-	// Compensates for lack of bounces adding more brightness.
-	void SetBrightnessFactor( double factor );
+    // Multiplies all material coefficients by this factor. Default = 1.
+    // Compensates for lack of bounces adding more brightness.
+    void SetBrightnessFactor( double factor );
 
-	void SetupCameraView( const CameraView& theCameraView );
-	void SetupCameraView( const CameraView& theCameraView, double nearDistance );
-	void SetupCameraView( const CameraView& theCameraView, double nearDistance, double farDistance );
+    void SetupCameraView( const CameraView& theCameraView );
+    void SetupCameraView( const CameraView& theCameraView, double nearDistance );
+    void SetupCameraView( const CameraView& theCameraView, double nearDistance, double farDistance );
 
-	void SetGlobalAmbientLight( const VectorR3& ambientLight );
-	void SetGlobalAmbientLight( double ambientRed, double ambientGreen, double ambientBlue );
-	void SetBackgroundColor( const VectorR3& backgroundColor );
-	void SetBackgroundColor( double backRed, double backGreen, double backBlue );
-	
-	bool AddLight( const Light& light );			// Returns false if quota of lights exceeded
+    void SetGlobalAmbientLight( const VectorR3& ambientLight );
+    void SetGlobalAmbientLight( double ambientRed, double ambientGreen, double ambientBlue );
+    void SetBackgroundColor( const VectorR3& backgroundColor );
+    void SetBackgroundColor( double backRed, double backGreen, double backBlue );
 
-	void InitLightsAndView( const SceneDescription& scene );
+    bool AddLight( const Light& light );			// Returns false if quota of lights exceeded
 
-	void RenderViewable( const ViewableBase& object );
-	void RenderViewables( const SceneDescription& scene );
-	void RenderViewables( const Array<ViewableBase*>& viewables );
-	void FinishRendering();
+    void InitLightsAndView( const SceneDescription& scene );
 
-	void RenderScene( const SceneDescription& scene );
-	
-	void InitRendering();	// Called by SetupLightsAndView, so usually you do not need to call this.
+    void RenderViewable( const ViewableBase& object );
+    void RenderViewables( const SceneDescription& scene );
+    void RenderViewables( const Array<ViewableBase*>& viewables );
+    void FinishRendering();
+
+    void RenderScene( const SceneDescription& scene );
+
+    void InitRendering();	// Called by SetupLightsAndView, so usually you do not need to call this.
 
 public:
-	// These routines are usually not called directly: usually "RenderViewable" above
-	//		is easier to use.
-	void RenderViewableBezierSet( const ViewableBezierSet& bezierSet );
-	void RenderViewableCone( const ViewableCone& object );
-	void RenderViewableCylinder( const ViewableCylinder& object );
-	void RenderViewableEllipsoid( const ViewableEllipsoid& object );
-	void RenderViewableParallelepiped( const ViewableParallelepiped& object );
-	void RenderViewableParallelogram( const ViewableParallelogram& object );
-	void RenderViewableSphere( const ViewableSphere& object );
-	void RenderViewableTorus( const ViewableTorus& object );
-	void RenderViewableTriangle( const ViewableTriangle& object );
-	
-private:
-	int MeshCount;
-	double BrightnessMultiplier;
-	VectorR3 GlobalAmbientLight;
-
-	VectorR3 BackgroundColor;
-
-	int NumLightsUsed;
-	int NumLightsAllowed;
-
-	void ApplyGlobalAmbientLight();
-	void ApplyBackgroundColor();
-
-	void SetFrontMaterial( const MaterialBase* mat );
-	void SetBackMaterial( const MaterialBase* mat );
-	void SetFaceMaterial( GLenum faceID, const MaterialBase* mat );
-	void SetNormal( const VectorR3& normal );
-	void PutVertex( const VectorR3& vertPos );
+    // These routines are usually not called directly: usually "RenderViewable" above
+    //		is easier to use.
+    void RenderViewableBezierSet( const ViewableBezierSet& bezierSet );
+    void RenderViewableCone( const ViewableCone& object );
+    void RenderViewableCylinder( const ViewableCylinder& object );
+    void RenderViewableEllipsoid( const ViewableEllipsoid& object );
+    void RenderViewableParallelepiped( const ViewableParallelepiped& object );
+    void RenderViewableParallelogram( const ViewableParallelogram& object );
+    void RenderViewableSphere( const ViewableSphere& object );
+    void RenderViewableTorus( const ViewableTorus& object );
+    void RenderViewableTriangle( const ViewableTriangle& object );
 
 private:
-	void CalcConeBasePt( double theta, const VectorR3& baseN, double baseD, 
-						 const VectorR3& apex, const VectorR3& axisC, 
-						 const VectorR3& axisA, const VectorR3& axisB, 
-						 VectorR3* basePt1, VectorR3* normal1 );
-	void CalcCylBasePt( double theta, const VectorR3& baseN, double baseD, 
-						const VectorR3& center, const VectorR3& axisC, 
-						const VectorR3& axisA, const VectorR3& axisB, 
-						const VectorR3& topN, double topD, 
-						VectorR3* basePt1, VectorR3* normal1 );
-	void CalcCylTopPt ( double theta, const VectorR3& baseN, double baseD, 
-						const VectorR3& center, const VectorR3& axisC, 
-						const VectorR3& axisA, const VectorR3& axisB, 
-						const VectorR3& topN, double topD, 
-						VectorR3* basePt1 );
+    int MeshCount;
+    double BrightnessMultiplier;
+    VectorR3 GlobalAmbientLight;
 
-	void DrawLadder( const VectorR3& basePt1, const VectorR3& basePt2, 
-					 const VectorR3& topPt1, const VectorR3& topPt2, 
-					 const VectorR3& normal1, const VectorR3& normal2 );
+    VectorR3 BackgroundColor;
+
+    int NumLightsUsed;
+    int NumLightsAllowed;
+
+    void ApplyGlobalAmbientLight();
+    void ApplyBackgroundColor();
+
+    void SetFrontMaterial( const MaterialBase* mat );
+    void SetBackMaterial( const MaterialBase* mat );
+    void SetFaceMaterial( GLenum faceID, const MaterialBase* mat );
+    void SetNormal( const VectorR3& normal );
+    void PutVertex( const VectorR3& vertPos );
+
+private:
+    void CalcConeBasePt( double theta, const VectorR3& baseN, double baseD,
+                         const VectorR3& apex, const VectorR3& axisC,
+                         const VectorR3& axisA, const VectorR3& axisB,
+                         VectorR3* basePt1, VectorR3* normal1 );
+    void CalcCylBasePt( double theta, const VectorR3& baseN, double baseD,
+                        const VectorR3& center, const VectorR3& axisC,
+                        const VectorR3& axisA, const VectorR3& axisB,
+                        const VectorR3& topN, double topD,
+                        VectorR3* basePt1, VectorR3* normal1 );
+    void CalcCylTopPt ( double theta, const VectorR3& baseN, double baseD,
+                        const VectorR3& center, const VectorR3& axisC,
+                        const VectorR3& axisA, const VectorR3& axisB,
+                        const VectorR3& topN, double topD,
+                        VectorR3* basePt1 );
+
+    void DrawLadder( const VectorR3& basePt1, const VectorR3& basePt2,
+                     const VectorR3& topPt1, const VectorR3& topPt2,
+                     const VectorR3& normal1, const VectorR3& normal2 );
 };
 
 #endif	// GLUT_RENDERER

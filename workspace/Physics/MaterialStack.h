@@ -32,20 +32,24 @@
 #define ERROR_MATERIAL (MaterialBase*)-2
 #define ERROR_MATERIAL_TRACE_DEPTH (MaterialBase*)-3
 
-class MaterialStack {
+class MaterialStack
+{
 public:
-	MaterialStack();
-	void PushMaterial(MaterialBase * mat);
-	MaterialBase * PopMaterial();
-	MaterialBase * curMaterial();
-	void ResetMaterial();
-	int NumMaterials() const { return MatStack.Size(); }
-	void SetDefault(MaterialBase * mat);
-	
+    MaterialStack();
+    void PushMaterial(MaterialBase * mat);
+    MaterialBase * PopMaterial();
+    MaterialBase * curMaterial();
+    void ResetMaterial();
+    int NumMaterials() const
+    {
+        return MatStack.Size();
+    }
+    void SetDefault(MaterialBase * mat);
+
 private:
-	Stack<MaterialBase*> MatStack;
-	MaterialBase * defaultMaterial;
-	MaterialBase * errorMaterial;
+    Stack<MaterialBase*> MatStack;
+    MaterialBase * defaultMaterial;
+    MaterialBase * errorMaterial;
 };
 
 #endif

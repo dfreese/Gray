@@ -21,12 +21,13 @@
 
 using namespace std;
 
-class BackBack : public Positron {
+class BackBack : public Positron
+{
 public:
-	BackBack();
-	virtual void Decay(unsigned int photon_number);
-	virtual void Reset();
-	virtual ostream & print_on(ostream & os) const;
+    BackBack();
+    virtual void Decay(unsigned int photon_number);
+    virtual void Reset();
+    virtual ostream & print_on(ostream & os) const;
 };
 
 #endif /* BackBack_H */

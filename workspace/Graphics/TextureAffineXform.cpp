@@ -23,8 +23,8 @@
 
 void TextureAffineXform::ApplyTexture( VisiblePoint& visPoint ) const
 {
-	double u = visPoint.GetU();
-	double v = visPoint.GetV();
-	visPoint.SetUV( m11*u+m12*v+m13, m21*u+m22*v+m23 );
-	return;
+    double u = visPoint.GetU();
+    double v = visPoint.GetV();
+    visPoint.SetUV( m11*u+m12*v+m13, m21*u+m22*v+m23 );
+    return;
 }

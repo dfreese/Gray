@@ -25,14 +25,15 @@ using namespace std;
 const double CONST_E_ZR89_GAMMA = 0.90915; /* MeV */
 const double CONST_PROB_ZR89_POS = 0.227;	/* 22.7% of decays lead to a positron */
 
-class ZR89 : public Positron {
+class ZR89 : public Positron
+{
 public:
-	ZR89();
-	virtual void Decay(unsigned int photon_number);
-	virtual void Reset();
-	virtual ostream & print_on(ostream & os) const;
+    ZR89();
+    virtual void Decay(unsigned int photon_number);
+    virtual void Reset();
+    virtual ostream & print_on(ostream & os) const;
 protected:
-	GammaDecay g;
+    GammaDecay g;
 };
 
 #endif /* ZR89_H */

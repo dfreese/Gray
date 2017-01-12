@@ -23,11 +23,11 @@
 
 void TextureBilinearXform::ApplyTexture( VisiblePoint& visPoint ) const
 {
-	double uCoord = visPoint.GetU();
-	double vCoord = visPoint.GetV();
-	visPoint.SetUV( (1.0-uCoord)*((1.0-vCoord)*TextureCoordA
-										+vCoord*TextureCoordD)
-						+ uCoord*((1.0-vCoord)*TextureCoordB
-									+vCoord*TextureCoordC));
-	return;
+    double uCoord = visPoint.GetU();
+    double vCoord = visPoint.GetV();
+    visPoint.SetUV( (1.0-uCoord)*((1.0-vCoord)*TextureCoordA
+                                  +vCoord*TextureCoordD)
+                    + uCoord*((1.0-vCoord)*TextureCoordB
+                              +vCoord*TextureCoordC));
+    return;
 }

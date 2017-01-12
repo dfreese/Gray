@@ -24,7 +24,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
-//#include <iostream.h>  // I/O 
+//#include <iostream.h>  // I/O
 //#include <fstream.h>   // file I/O
 
 #include "../Graphics/MaterialBase.h"
@@ -45,22 +45,23 @@ using namespace std;
 //#define XRAY_ESCALE_ENERGY_TE 31.814
 // TODO DO CZT XRAY_ESCAPE PHYSICS
 
-const double si1_SOL = (1.0 / 29979245800.0); 
+const double si1_SOL = (1.0 / 29979245800.0);
 
-class Interaction {
+class Interaction
+{
 public:
-	Interaction();
-	~Interaction();
-	INTER_TYPE GammaInteraction(Photon &p, double dist, const MaterialBase & mat, InteractionList &l, Output &o);
-	bool GammaAttenuation(double &dist, double u_attentuation);
-	INTER_TYPE PE(double sigma, double mu, Photon &p, const MaterialBase & mat, InteractionList &l, Output &o);
-	void Klein_Nishina(double dsdom, Photon &p, const MaterialBase & mat, InteractionList &l, Output &o);
-	double Random();
-	double dsigma(double phi, double alpha);
+    Interaction();
+    ~Interaction();
+    INTER_TYPE GammaInteraction(Photon &p, double dist, const MaterialBase & mat, InteractionList &l, Output &o);
+    bool GammaAttenuation(double &dist, double u_attentuation);
+    INTER_TYPE PE(double sigma, double mu, Photon &p, const MaterialBase & mat, InteractionList &l, Output &o);
+    void Klein_Nishina(double dsdom, Photon &p, const MaterialBase & mat, InteractionList &l, Output &o);
+    double Random();
+    double dsigma(double phi, double alpha);
 private:
-	bool XrayEscape(Photon &p, const MaterialBase & mat, InteractionList &l, Output &o);
-	void UniformSphere(VectorR3 & p);
-	VectorR3 comp_pos;
+    bool XrayEscape(Photon &p, const MaterialBase & mat, InteractionList &l, Output &o);
+    void UniformSphere(VectorR3 & p);
+    VectorR3 comp_pos;
 };
 
 #endif

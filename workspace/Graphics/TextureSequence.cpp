@@ -22,20 +22,21 @@
 
 void TextureSequence::ApplyTexture( VisiblePoint& visPoint ) const
 {
-	for (int i=0; i<NumTextureMaps; i++) {
-		TextureMapPointer p = TexMapPtrs[i];
-		if ( p ) {
-			p->ApplyTexture(visPoint);
-		}
-	}
-	return;
+    for (int i=0; i<NumTextureMaps; i++) {
+        TextureMapPointer p = TexMapPtrs[i];
+        if ( p ) {
+            p->ApplyTexture(visPoint);
+        }
+    }
+    return;
 }
 
-void TextureSequence::DeleteAll() {
-	for (int i=0; i<NumTextureMaps; i++) {
-		TextureMapPointer p = TexMapPtrs[i];
-		delete (TextureMapBase*)p;
-		TexMapPtrs[i] = 0;
-	}
-	return;
+void TextureSequence::DeleteAll()
+{
+    for (int i=0; i<NumTextureMaps; i++) {
+        TextureMapPointer p = TexMapPtrs[i];
+        delete (TextureMapBase*)p;
+        TexMapPtrs[i] = 0;
+    }
+    return;
 }

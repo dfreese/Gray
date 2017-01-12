@@ -26,50 +26,63 @@
 
 // TextureBilinearXform - Warps texture map coordinates bilinearly.
 
-class TextureBilinearXform : public TextureMapBase {
+class TextureBilinearXform : public TextureMapBase
+{
 
 public:
-	TextureBilinearXform();
+    TextureBilinearXform();
 
-	void SetTextureCoords( double* );	// 4 pairs of doubles, giving texture coordinates
-	void SetTextureCoords( float* );	// 4 pairs of float, giving texture coordinates
-	
-	void SetTextureCoordA ( double u, double v ) { TextureCoordA.Set(u,v); }
-	void SetTextureCoordB ( double u, double v ) { TextureCoordB.Set(u,v); }
-	void SetTextureCoordC ( double u, double v ) { TextureCoordC.Set(u,v); }
-	void SetTextureCoordD ( double u, double v ) { TextureCoordD.Set(u,v); }
+    void SetTextureCoords( double* );	// 4 pairs of doubles, giving texture coordinates
+    void SetTextureCoords( float* );	// 4 pairs of float, giving texture coordinates
 
-	void ApplyTexture( VisiblePoint& visPoint ) const;
+    void SetTextureCoordA ( double u, double v )
+    {
+        TextureCoordA.Set(u,v);
+    }
+    void SetTextureCoordB ( double u, double v )
+    {
+        TextureCoordB.Set(u,v);
+    }
+    void SetTextureCoordC ( double u, double v )
+    {
+        TextureCoordC.Set(u,v);
+    }
+    void SetTextureCoordD ( double u, double v )
+    {
+        TextureCoordD.Set(u,v);
+    }
+
+    void ApplyTexture( VisiblePoint& visPoint ) const;
 
 private:
-	VectorR2 TextureCoordA;		// Tex. coordinate for vertex A
-	VectorR2 TextureCoordB;		// Tex. coordinate for vertex B
-	VectorR2 TextureCoordC;		// Tex. coordinate for vertex C
-	VectorR2 TextureCoordD;		// Tex. coordinate for vertex D
+    VectorR2 TextureCoordA;		// Tex. coordinate for vertex A
+    VectorR2 TextureCoordB;		// Tex. coordinate for vertex B
+    VectorR2 TextureCoordC;		// Tex. coordinate for vertex C
+    VectorR2 TextureCoordD;		// Tex. coordinate for vertex D
 };
 
-inline TextureBilinearXform::TextureBilinearXform() 
+inline TextureBilinearXform::TextureBilinearXform()
 {
-	TextureCoordA.Set( 0.0, 0.0 );
-	TextureCoordB.Set( 1.0, 0.0 );
-	TextureCoordC.Set( 1.0, 1.0 );
-	TextureCoordD.Set( 0.0, 1.0 );
+    TextureCoordA.Set( 0.0, 0.0 );
+    TextureCoordB.Set( 1.0, 0.0 );
+    TextureCoordC.Set( 1.0, 1.0 );
+    TextureCoordD.Set( 0.0, 1.0 );
 }
 
 inline void TextureBilinearXform::SetTextureCoords( double* tc )	// 4 pairs of doubles, giving texture coordinates
 {
-	TextureCoordA.Load( tc );
-	TextureCoordB.Load( tc+2 );
-	TextureCoordC.Load( tc+4 );
-	TextureCoordD.Load( tc+6 );
+    TextureCoordA.Load( tc );
+    TextureCoordB.Load( tc+2 );
+    TextureCoordC.Load( tc+4 );
+    TextureCoordD.Load( tc+6 );
 }
 
 inline void TextureBilinearXform::SetTextureCoords( float* tc )	// 4 pairs of doubles, giving texture coordinates
 {
-	TextureCoordA.Load( tc );
-	TextureCoordB.Load( tc+2 );
-	TextureCoordC.Load( tc+4 );
-	TextureCoordD.Load( tc+6 );
+    TextureCoordA.Load( tc );
+    TextureCoordB.Load( tc+2 );
+    TextureCoordC.Load( tc+4 );
+    TextureCoordD.Load( tc+6 );
 }
 
 

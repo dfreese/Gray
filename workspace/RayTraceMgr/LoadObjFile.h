@@ -38,61 +38,62 @@ bool LoadObjFile( const char* filename, SceneDescription& theScene );
 
 // ObjFileLoader are intended for future internal use.
 
-class ObjFileLoader {
+class ObjFileLoader
+{
 
-	friend class NffFileLoader;
+    friend class NffFileLoader;
 
 public:
-	ObjFileLoader();
+    ObjFileLoader();
 
-	// The "Load()" routines reads from the file and includes whatever it
-	//	knows how to process into the scene.  (If the scene already includes
-	//  items, they are left unchanged.)
-	bool Load( const char* filename, SceneDescription& theScene );
-	static char* ScanForSecondField( char* inbuf );
-
-private:
-	bool ReportUnsupportedFeatures;
-	bool UnsupFlagTextureDepth;
-	bool UnsupFlagTooManyVerts;
-	bool UnsupFlagLines;
-	long FileLineNumber;
+    // The "Load()" routines reads from the file and includes whatever it
+    //	knows how to process into the scene.  (If the scene already includes
+    //  items, they are left unchanged.)
+    bool Load( const char* filename, SceneDescription& theScene );
+    static char* ScanForSecondField( char* inbuf );
 
 private:
-	SceneDescription* ScenePtr;
-	void Reset();
+    bool ReportUnsupportedFeatures;
+    bool UnsupFlagTextureDepth;
+    bool UnsupFlagTooManyVerts;
+    bool UnsupFlagLines;
+    long FileLineNumber;
 
-	static char* Preparse( char* inbuf );
-	static char* ScanForNonwhite( char* inbuf );
-	static char* ScanForWhite( char* inbuf );
-	static char* ScanForWhiteOrSlash( char* inbuf );
-	
-	static int GetCommandNumber( char *cmd );
-	static bool ReadVectorR4Hg( char* inbuf, VectorR4* theVec );
-	bool ReadTexCoords( char* inbuf, VectorR2* theVec );
-	bool ProcessFace( char *inbuf );
-	static int NextTriVertIdx( int start, int* step, int totalNum );
+private:
+    SceneDescription* ScenePtr;
+    void Reset();
 
-	void UnsupportedTextureDepth();
-	void UnsupportedLines();
-	void UnsupportedTooManyVerts( int maxVerts );
-	void AddUnsupportedCmd( char *cmd );
-	void PrintCmdNotSupportedErrors( FILE* outstream );
+    static char* Preparse( char* inbuf );
+    static char* ScanForNonwhite( char* inbuf );
+    static char* ScanForWhite( char* inbuf );
+    static char* ScanForWhiteOrSlash( char* inbuf );
 
-	Array<VectorR4> Vertices;			// Vertices in homogenous format
-	Array<VectorR2> TextureCoords;		// Texture coordinates not supported yet
-	Array<VectorR3> VertexNormals;		// Vertex normals not supported yet
+    static int GetCommandNumber( char *cmd );
+    static bool ReadVectorR4Hg( char* inbuf, VectorR4* theVec );
+    bool ReadTexCoords( char* inbuf, VectorR2* theVec );
+    bool ProcessFace( char *inbuf );
+    static int NextTriVertIdx( int start, int* step, int totalNum );
 
-	Array<char*> UnsupportedCmds;
+    void UnsupportedTextureDepth();
+    void UnsupportedLines();
+    void UnsupportedTooManyVerts( int maxVerts );
+    void AddUnsupportedCmd( char *cmd );
+    void PrintCmdNotSupportedErrors( FILE* outstream );
+
+    Array<VectorR4> Vertices;			// Vertices in homogenous format
+    Array<VectorR2> TextureCoords;		// Texture coordinates not supported yet
+    Array<VectorR3> VertexNormals;		// Vertex normals not supported yet
+
+    Array<char*> UnsupportedCmds;
 
 };
 
 inline ObjFileLoader::ObjFileLoader()
 {
-	ReportUnsupportedFeatures = true;
-	UnsupFlagTextureDepth = false;
-	UnsupFlagTooManyVerts = false;
-	UnsupFlagLines = false;
+    ReportUnsupportedFeatures = true;
+    UnsupFlagTextureDepth = false;
+    UnsupFlagTooManyVerts = false;
+    UnsupFlagLines = false;
 }
 
 

@@ -26,23 +26,27 @@ class VisiblePoint;
 class VectorR2;
 class VectorR3;
 
-// TextureMapBase is purely virtual.  
+// TextureMapBase is purely virtual.
 
-class TextureMapBase {
+class TextureMapBase
+{
 
 public:
 
-	// The section ApplyTexture routine must be written for every
-	//  texture map class.  It must modify the VisiblePoint according
-	//	to the texture map.  At least one of the following two routines
-	//  *must* be written;
+    // The section ApplyTexture routine must be written for every
+    //  texture map class.  It must modify the VisiblePoint according
+    //	to the texture map.  At least one of the following two routines
+    //  *must* be written;
 
 
-	virtual void ApplyTexture( VisiblePoint& visPoint ) const { assert(0); }
-	virtual void ApplyTexture( VisiblePoint& visPoint, const VectorR3& viewDir ) const;
+    virtual void ApplyTexture( VisiblePoint& visPoint ) const
+    {
+        assert(0);
+    }
+    virtual void ApplyTexture( VisiblePoint& visPoint, const VectorR3& viewDir ) const;
 
-	// Convert a unit vector reflection direction to cube map coordinates
-	static void ReflectDirToCubeMap( const VectorR3& reflectDir,VectorR2* cubeMapCoords );
+    // Convert a unit vector reflection direction to cube map coordinates
+    static void ReflectDirToCubeMap( const VectorR3& reflectDir,VectorR2* cubeMapCoords );
 
 protected:
 
@@ -50,7 +54,7 @@ protected:
 
 inline void TextureMapBase::ApplyTexture( VisiblePoint& visPoint, const VectorR3& viewDir ) const
 {
-	ApplyTexture( visPoint );	// Default implementation
-} 
+    ApplyTexture( visPoint );	// Default implementation
+}
 
 #endif // TEXTUREMAPBASE_H

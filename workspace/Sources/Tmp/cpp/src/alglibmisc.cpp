@@ -50,28 +50,34 @@ Fields:
 _hqrndstate_owner::_hqrndstate_owner()
 {
     p_struct = (alglib_impl::hqrndstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::hqrndstate), NULL);
-    if( p_struct==NULL )
+    if( p_struct==NULL ) {
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_hqrndstate_init(p_struct, NULL, ae_false) )
+    }
+    if( !alglib_impl::_hqrndstate_init(p_struct, NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
 }
 
 _hqrndstate_owner::_hqrndstate_owner(const _hqrndstate_owner &rhs)
 {
     p_struct = (alglib_impl::hqrndstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::hqrndstate), NULL);
-    if( p_struct==NULL )
+    if( p_struct==NULL ) {
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_hqrndstate_init_copy(p_struct, const_cast<alglib_impl::hqrndstate*>(rhs.p_struct), NULL, ae_false) )
+    }
+    if( !alglib_impl::_hqrndstate_init_copy(p_struct, const_cast<alglib_impl::hqrndstate*>(rhs.p_struct), NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
 }
 
 _hqrndstate_owner& _hqrndstate_owner::operator=(const _hqrndstate_owner &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
+    }
     alglib_impl::_hqrndstate_clear(p_struct);
-    if( !alglib_impl::_hqrndstate_init_copy(p_struct, const_cast<alglib_impl::hqrndstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_hqrndstate_init_copy(p_struct, const_cast<alglib_impl::hqrndstate*>(rhs.p_struct), NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
     return *this;
 }
 
@@ -90,18 +96,19 @@ alglib_impl::hqrndstate* _hqrndstate_owner::c_ptr() const
 {
     return const_cast<alglib_impl::hqrndstate*>(p_struct);
 }
-hqrndstate::hqrndstate() : _hqrndstate_owner() 
+hqrndstate::hqrndstate() : _hqrndstate_owner()
 {
 }
 
-hqrndstate::hqrndstate(const hqrndstate &rhs):_hqrndstate_owner(rhs) 
+hqrndstate::hqrndstate(const hqrndstate &rhs):_hqrndstate_owner(rhs)
 {
 }
 
 hqrndstate& hqrndstate::operator=(const hqrndstate &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
+    }
     _hqrndstate_owner::operator=(rhs);
     return *this;
 }
@@ -121,18 +128,13 @@ void hqrndrandomize(hqrndstate &state)
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::hqrndrandomize(const_cast<alglib_impl::hqrndstate*>(state.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -147,18 +149,13 @@ void hqrndseed(const ae_int_t s1, const ae_int_t s2, hqrndstate &state)
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::hqrndseed(s1, s2, const_cast<alglib_impl::hqrndstate*>(state.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -176,18 +173,13 @@ double hqrnduniformr(const hqrndstate &state)
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         double result = alglib_impl::hqrnduniformr(const_cast<alglib_impl::hqrndstate*>(state.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -205,18 +197,13 @@ ae_int_t hqrnduniformi(const hqrndstate &state, const ae_int_t n)
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::ae_int_t result = alglib_impl::hqrnduniformi(const_cast<alglib_impl::hqrndstate*>(state.c_ptr()), n, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return *(reinterpret_cast<ae_int_t*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -236,18 +223,13 @@ double hqrndnormal(const hqrndstate &state)
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         double result = alglib_impl::hqrndnormal(const_cast<alglib_impl::hqrndstate*>(state.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -264,18 +246,13 @@ void hqrndunit2(const hqrndstate &state, double &x, double &y)
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::hqrndunit2(const_cast<alglib_impl::hqrndstate*>(state.c_ptr()), &x, &y, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -295,18 +272,13 @@ void hqrndnormal2(const hqrndstate &state, double &x1, double &x2)
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::hqrndnormal2(const_cast<alglib_impl::hqrndstate*>(state.c_ptr()), &x1, &x2, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -323,18 +295,13 @@ double hqrndexponential(const hqrndstate &state, const double lambdav)
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         double result = alglib_impl::hqrndexponential(const_cast<alglib_impl::hqrndstate*>(state.c_ptr()), lambdav, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -345,28 +312,34 @@ double hqrndexponential(const hqrndstate &state, const double lambdav)
 _kdtree_owner::_kdtree_owner()
 {
     p_struct = (alglib_impl::kdtree*)alglib_impl::ae_malloc(sizeof(alglib_impl::kdtree), NULL);
-    if( p_struct==NULL )
+    if( p_struct==NULL ) {
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_kdtree_init(p_struct, NULL, ae_false) )
+    }
+    if( !alglib_impl::_kdtree_init(p_struct, NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
 }
 
 _kdtree_owner::_kdtree_owner(const _kdtree_owner &rhs)
 {
     p_struct = (alglib_impl::kdtree*)alglib_impl::ae_malloc(sizeof(alglib_impl::kdtree), NULL);
-    if( p_struct==NULL )
+    if( p_struct==NULL ) {
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_kdtree_init_copy(p_struct, const_cast<alglib_impl::kdtree*>(rhs.p_struct), NULL, ae_false) )
+    }
+    if( !alglib_impl::_kdtree_init_copy(p_struct, const_cast<alglib_impl::kdtree*>(rhs.p_struct), NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
 }
 
 _kdtree_owner& _kdtree_owner::operator=(const _kdtree_owner &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
+    }
     alglib_impl::_kdtree_clear(p_struct);
-    if( !alglib_impl::_kdtree_init_copy(p_struct, const_cast<alglib_impl::kdtree*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_kdtree_init_copy(p_struct, const_cast<alglib_impl::kdtree*>(rhs.p_struct), NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
     return *this;
 }
 
@@ -385,18 +358,19 @@ alglib_impl::kdtree* _kdtree_owner::c_ptr() const
 {
     return const_cast<alglib_impl::kdtree*>(p_struct);
 }
-kdtree::kdtree() : _kdtree_owner() 
+kdtree::kdtree() : _kdtree_owner()
 {
 }
 
-kdtree::kdtree(const kdtree &rhs):_kdtree_owner(rhs) 
+kdtree::kdtree(const kdtree &rhs):_kdtree_owner(rhs)
 {
 }
 
 kdtree& kdtree::operator=(const kdtree &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
+    }
     _kdtree_owner::operator=(rhs);
     return *this;
 }
@@ -413,17 +387,17 @@ Important properties of s_out:
 * it contains alphanumeric characters, dots, underscores, minus signs
 * these symbols are grouped into words, which are separated by spaces
   and Windows-style (CR+LF) newlines
-* although  serializer  uses  spaces and CR+LF as separators, you can 
+* although  serializer  uses  spaces and CR+LF as separators, you can
   replace any separator character by arbitrary combination of spaces,
   tabs, Windows or Unix newlines. It allows flexible reformatting  of
-  the  string  in  case you want to include it into text or XML file. 
+  the  string  in  case you want to include it into text or XML file.
   But you should not insert separators into the middle of the "words"
   nor you should change case of letters.
 * s_out can be freely moved between 32-bit and 64-bit systems, little
   and big endian machines, and so on. You can serialize structure  on
   32-bit machine and unserialize it on 64-bit one (or vice versa), or
-  serialize  it  on  SPARC  and  unserialize  on  x86.  You  can also 
-  serialize  it  in  C++ version of ALGLIB and unserialize in C# one, 
+  serialize  it  on  SPARC  and  unserialize  on  x86.  You  can also
+  serialize  it  in  C++ version of ALGLIB and unserialize in C# one,
   and vice versa.
 *************************************************************************/
 void kdtreeserialize(kdtree &obj, std::string &s_out)
@@ -433,8 +407,7 @@ void kdtreeserialize(kdtree &obj, std::string &s_out)
     alglib_impl::ae_int_t ssize;
 
     alglib_impl::ae_state_init(&state);
-    try
-    {
+    try {
         alglib_impl::ae_serializer_init(&serializer);
         alglib_impl::ae_serializer_alloc_start(&serializer);
         alglib_impl::kdtreealloc(&serializer, obj.c_ptr(), &state);
@@ -444,17 +417,14 @@ void kdtreeserialize(kdtree &obj, std::string &s_out)
         alglib_impl::ae_serializer_sstart_str(&serializer, &s_out);
         alglib_impl::kdtreeserialize(&serializer, obj.c_ptr(), &state);
         alglib_impl::ae_serializer_stop(&serializer);
-        if( s_out.length()>(size_t)ssize )
+        if( s_out.length()>(size_t)ssize ) {
             throw ap_error("ALGLIB: serialization integrity error");
+        }
         alglib_impl::ae_serializer_clear(&serializer);
         alglib_impl::ae_state_clear(&state);
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -467,21 +437,16 @@ void kdtreeunserialize(std::string &s_in, kdtree &obj)
     alglib_impl::ae_serializer serializer;
 
     alglib_impl::ae_state_init(&state);
-    try
-    {
+    try {
         alglib_impl::ae_serializer_init(&serializer);
         alglib_impl::ae_serializer_ustart_str(&serializer, &s_in);
         alglib_impl::kdtreeunserialize(&serializer, obj.c_ptr(), &state);
         alglib_impl::ae_serializer_stop(&serializer);
         alglib_impl::ae_serializer_clear(&serializer);
         alglib_impl::ae_state_clear(&state);
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -525,18 +490,13 @@ void kdtreebuild(const real_2d_array &xy, const ae_int_t n, const ae_int_t nx, c
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::kdtreebuild(const_cast<alglib_impl::ae_matrix*>(xy.c_ptr()), n, nx, ny, normtype, const_cast<alglib_impl::kdtree*>(kdt.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -578,24 +538,19 @@ NOTES
 *************************************************************************/
 void kdtreebuild(const real_2d_array &xy, const ae_int_t nx, const ae_int_t ny, const ae_int_t normtype, kdtree &kdt)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
 
     n = xy.rows();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::kdtreebuild(const_cast<alglib_impl::ae_matrix*>(xy.c_ptr()), n, nx, ny, normtype, const_cast<alglib_impl::kdtree*>(kdt.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -641,18 +596,13 @@ void kdtreebuildtagged(const real_2d_array &xy, const integer_1d_array &tags, co
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::kdtreebuildtagged(const_cast<alglib_impl::ae_matrix*>(xy.c_ptr()), const_cast<alglib_impl::ae_vector*>(tags.c_ptr()), n, nx, ny, normtype, const_cast<alglib_impl::kdtree*>(kdt.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -696,25 +646,21 @@ NOTES
 *************************************************************************/
 void kdtreebuildtagged(const real_2d_array &xy, const integer_1d_array &tags, const ae_int_t nx, const ae_int_t ny, const ae_int_t normtype, kdtree &kdt)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
-    if( (xy.rows()!=tags.length()))
+    if( (xy.rows()!=tags.length())) {
         throw ap_error("Error while calling 'kdtreebuildtagged': looks like one of arguments has wrong size");
+    }
     n = xy.rows();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::kdtreebuildtagged(const_cast<alglib_impl::ae_matrix*>(xy.c_ptr()), const_cast<alglib_impl::ae_vector*>(tags.c_ptr()), n, nx, ny, normtype, const_cast<alglib_impl::kdtree*>(kdt.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -751,18 +697,13 @@ ae_int_t kdtreequeryknn(const kdtree &kdt, const real_1d_array &x, const ae_int_
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::ae_int_t result = alglib_impl::kdtreequeryknn(const_cast<alglib_impl::kdtree*>(kdt.c_ptr()), const_cast<alglib_impl::ae_vector*>(x.c_ptr()), k, selfmatch, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return *(reinterpret_cast<ae_int_t*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -797,24 +738,19 @@ these results:
 *************************************************************************/
 ae_int_t kdtreequeryknn(const kdtree &kdt, const real_1d_array &x, const ae_int_t k)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     bool selfmatch;
 
     selfmatch = true;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::ae_int_t result = alglib_impl::kdtreequeryknn(const_cast<alglib_impl::kdtree*>(kdt.c_ptr()), const_cast<alglib_impl::ae_vector*>(x.c_ptr()), k, selfmatch, &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return *(reinterpret_cast<ae_int_t*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -851,18 +787,13 @@ ae_int_t kdtreequeryrnn(const kdtree &kdt, const real_1d_array &x, const double 
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::ae_int_t result = alglib_impl::kdtreequeryrnn(const_cast<alglib_impl::kdtree*>(kdt.c_ptr()), const_cast<alglib_impl::ae_vector*>(x.c_ptr()), r, selfmatch, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return *(reinterpret_cast<ae_int_t*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -897,24 +828,19 @@ actual results:
 *************************************************************************/
 ae_int_t kdtreequeryrnn(const kdtree &kdt, const real_1d_array &x, const double r)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     bool selfmatch;
 
     selfmatch = true;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::ae_int_t result = alglib_impl::kdtreequeryrnn(const_cast<alglib_impl::kdtree*>(kdt.c_ptr()), const_cast<alglib_impl::ae_vector*>(x.c_ptr()), r, selfmatch, &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return *(reinterpret_cast<ae_int_t*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -958,18 +884,13 @@ ae_int_t kdtreequeryaknn(const kdtree &kdt, const real_1d_array &x, const ae_int
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::ae_int_t result = alglib_impl::kdtreequeryaknn(const_cast<alglib_impl::kdtree*>(kdt.c_ptr()), const_cast<alglib_impl::ae_vector*>(x.c_ptr()), k, selfmatch, eps, &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return *(reinterpret_cast<ae_int_t*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -1011,24 +932,19 @@ these results:
 *************************************************************************/
 ae_int_t kdtreequeryaknn(const kdtree &kdt, const real_1d_array &x, const ae_int_t k, const double eps)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     bool selfmatch;
 
     selfmatch = true;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::ae_int_t result = alglib_impl::kdtreequeryaknn(const_cast<alglib_impl::kdtree*>(kdt.c_ptr()), const_cast<alglib_impl::ae_vector*>(x.c_ptr()), k, selfmatch, eps, &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return *(reinterpret_cast<ae_int_t*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -1066,18 +982,13 @@ void kdtreequeryresultsx(const kdtree &kdt, real_2d_array &x)
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::kdtreequeryresultsx(const_cast<alglib_impl::kdtree*>(kdt.c_ptr()), const_cast<alglib_impl::ae_matrix*>(x.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -1116,18 +1027,13 @@ void kdtreequeryresultsxy(const kdtree &kdt, real_2d_array &xy)
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::kdtreequeryresultsxy(const_cast<alglib_impl::kdtree*>(kdt.c_ptr()), const_cast<alglib_impl::ae_matrix*>(xy.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -1166,18 +1072,13 @@ void kdtreequeryresultstags(const kdtree &kdt, integer_1d_array &tags)
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::kdtreequeryresultstags(const_cast<alglib_impl::kdtree*>(kdt.c_ptr()), const_cast<alglib_impl::ae_vector*>(tags.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -1215,18 +1116,13 @@ void kdtreequeryresultsdistances(const kdtree &kdt, real_1d_array &r)
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::kdtreequeryresultsdistances(const_cast<alglib_impl::kdtree*>(kdt.c_ptr()), const_cast<alglib_impl::ae_vector*>(r.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -1247,18 +1143,13 @@ void kdtreequeryresultsxi(const kdtree &kdt, real_2d_array &x)
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::kdtreequeryresultsxi(const_cast<alglib_impl::kdtree*>(kdt.c_ptr()), const_cast<alglib_impl::ae_matrix*>(x.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -1279,18 +1170,13 @@ void kdtreequeryresultsxyi(const kdtree &kdt, real_2d_array &xy)
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::kdtreequeryresultsxyi(const_cast<alglib_impl::kdtree*>(kdt.c_ptr()), const_cast<alglib_impl::ae_matrix*>(xy.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -1311,18 +1197,13 @@ void kdtreequeryresultstagsi(const kdtree &kdt, integer_1d_array &tags)
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::kdtreequeryresultstagsi(const_cast<alglib_impl::kdtree*>(kdt.c_ptr()), const_cast<alglib_impl::ae_vector*>(tags.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -1343,18 +1224,13 @@ void kdtreequeryresultsdistancesi(const kdtree &kdt, real_1d_array &r)
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::kdtreequeryresultsdistancesi(const_cast<alglib_impl::kdtree*>(kdt.c_ptr()), const_cast<alglib_impl::ae_vector*>(r.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -1372,45 +1248,45 @@ static ae_int_t hqrnd_hqrndm1 = 2147483563;
 static ae_int_t hqrnd_hqrndm2 = 2147483399;
 static ae_int_t hqrnd_hqrndmagic = 1634357784;
 static ae_int_t hqrnd_hqrndintegerbase(hqrndstate* state,
-     ae_state *_state);
+                                       ae_state *_state);
 
 
 static ae_int_t nearestneighbor_splitnodesize = 6;
 static ae_int_t nearestneighbor_kdtreefirstversion = 0;
 static void nearestneighbor_kdtreesplit(kdtree* kdt,
-     ae_int_t i1,
-     ae_int_t i2,
-     ae_int_t d,
-     double s,
-     ae_int_t* i3,
-     ae_state *_state);
+                                        ae_int_t i1,
+                                        ae_int_t i2,
+                                        ae_int_t d,
+                                        double s,
+                                        ae_int_t* i3,
+                                        ae_state *_state);
 static void nearestneighbor_kdtreegeneratetreerec(kdtree* kdt,
-     ae_int_t* nodesoffs,
-     ae_int_t* splitsoffs,
-     ae_int_t i1,
-     ae_int_t i2,
-     ae_int_t maxleafsize,
-     ae_state *_state);
+        ae_int_t* nodesoffs,
+        ae_int_t* splitsoffs,
+        ae_int_t i1,
+        ae_int_t i2,
+        ae_int_t maxleafsize,
+        ae_state *_state);
 static void nearestneighbor_kdtreequerynnrec(kdtree* kdt,
-     ae_int_t offs,
-     ae_state *_state);
+        ae_int_t offs,
+        ae_state *_state);
 static void nearestneighbor_kdtreeinitbox(kdtree* kdt,
-     /* Real    */ ae_vector* x,
-     ae_state *_state);
+        /* Real    */ ae_vector* x,
+        ae_state *_state);
 static void nearestneighbor_kdtreeallocdatasetindependent(kdtree* kdt,
-     ae_int_t nx,
-     ae_int_t ny,
-     ae_state *_state);
+        ae_int_t nx,
+        ae_int_t ny,
+        ae_state *_state);
 static void nearestneighbor_kdtreeallocdatasetdependent(kdtree* kdt,
-     ae_int_t n,
-     ae_int_t nx,
-     ae_int_t ny,
-     ae_state *_state);
+        ae_int_t n,
+        ae_int_t nx,
+        ae_int_t ny,
+        ae_state *_state);
 static void nearestneighbor_kdtreealloctemporaries(kdtree* kdt,
-     ae_int_t n,
-     ae_int_t nx,
-     ae_int_t ny,
-     ae_state *_state);
+        ae_int_t n,
+        ae_int_t nx,
+        ae_int_t ny,
+        ae_state *_state);
 
 
 
@@ -1439,9 +1315,9 @@ HQRNDState initialization with seed values
      Copyright 02.12.2009 by Bochkanov Sergey
 *************************************************************************/
 void hqrndseed(ae_int_t s1,
-     ae_int_t s2,
-     hqrndstate* state,
-     ae_state *_state)
+               ae_int_t s2,
+               hqrndstate* state,
+               ae_state *_state)
 {
 
     _hqrndstate_clear(state);
@@ -1487,7 +1363,7 @@ ae_int_t hqrnduniformi(hqrndstate* state, ae_int_t n, ae_state *_state)
     ae_int_t result;
 
 
-    
+
     /*
      * Correct handling of N's close to RNDBaseMax
      * (avoiding skewed distributions for RNDBaseMax<>K*N)
@@ -1495,11 +1371,9 @@ ae_int_t hqrnduniformi(hqrndstate* state, ae_int_t n, ae_state *_state)
     ae_assert(n>0, "HQRNDUniformI: N<=0!", _state);
     ae_assert(n<hqrnd_hqrndmax-1, "HQRNDUniformI: N>=RNDBaseMax-1!", _state);
     mx = hqrnd_hqrndmax-1-(hqrnd_hqrndmax-1)%n;
-    do
-    {
+    do {
         result = hqrnd_hqrndintegerbase(state, _state)-1;
-    }
-    while(result>=mx);
+    } while(result>=mx);
     result = result%n;
     return result;
 }
@@ -1546,11 +1420,9 @@ void hqrndunit2(hqrndstate* state, double* x, double* y, ae_state *_state)
     *x = 0;
     *y = 0;
 
-    do
-    {
+    do {
         hqrndnormal2(state, x, y, _state);
-    }
-    while(!(ae_fp_neq(*x,0)||ae_fp_neq(*y,0)));
+    } while(!(ae_fp_neq(*x,0)||ae_fp_neq(*y,0)));
     mx = ae_maxreal(ae_fabs(*x, _state), ae_fabs(*y, _state), _state);
     mn = ae_minreal(ae_fabs(*x, _state), ae_fabs(*y, _state), _state);
     v = mx*ae_sqrt(1+ae_sqr(mn/mx, _state), _state);
@@ -1571,9 +1443,9 @@ State structure must be initialized with HQRNDRandomize() or HQRNDSeed().
      Copyright 02.12.2009 by Bochkanov Sergey
 *************************************************************************/
 void hqrndnormal2(hqrndstate* state,
-     double* x1,
-     double* x2,
-     ae_state *_state)
+                  double* x1,
+                  double* x2,
+                  ae_state *_state)
 {
     double u;
     double v;
@@ -1582,14 +1454,12 @@ void hqrndnormal2(hqrndstate* state,
     *x1 = 0;
     *x2 = 0;
 
-    for(;;)
-    {
+    for(;;) {
         u = 2*hqrnduniformr(state, _state)-1;
         v = 2*hqrnduniformr(state, _state)-1;
         s = ae_sqr(u, _state)+ae_sqr(v, _state);
-        if( ae_fp_greater(s,0)&&ae_fp_less(s,1) )
-        {
-            
+        if( ae_fp_greater(s,0)&&ae_fp_less(s,1) ) {
+
             /*
              * two Sqrt's instead of one to
              * avoid overflow when S is too small
@@ -1612,8 +1482,8 @@ State structure must be initialized with HQRNDRandomize() or HQRNDSeed().
      Copyright 11.08.2007 by Bochkanov Sergey
 *************************************************************************/
 double hqrndexponential(hqrndstate* state,
-     double lambdav,
-     ae_state *_state)
+                        double lambdav,
+                        ae_state *_state)
 {
     double result;
 
@@ -1629,7 +1499,7 @@ double hqrndexponential(hqrndstate* state,
 L'Ecuyer, Efficient and portable combined random number generators
 *************************************************************************/
 static ae_int_t hqrnd_hqrndintegerbase(hqrndstate* state,
-     ae_state *_state)
+                                       ae_state *_state)
 {
     ae_int_t k;
     ae_int_t result;
@@ -1638,23 +1508,20 @@ static ae_int_t hqrnd_hqrndintegerbase(hqrndstate* state,
     ae_assert(state->magicv==hqrnd_hqrndmagic, "HQRNDIntegerBase: State is not correctly initialized!", _state);
     k = state->s1/53668;
     state->s1 = 40014*(state->s1-k*53668)-k*12211;
-    if( state->s1<0 )
-    {
+    if( state->s1<0 ) {
         state->s1 = state->s1+2147483563;
     }
     k = state->s2/52774;
     state->s2 = 40692*(state->s2-k*52774)-k*3791;
-    if( state->s2<0 )
-    {
+    if( state->s2<0 ) {
         state->s2 = state->s2+2147483399;
     }
-    
+
     /*
      * Result
      */
     result = state->s1-state->s2;
-    if( result<1 )
-    {
+    if( result<1 ) {
         result = result+2147483562;
     }
     return result;
@@ -1701,11 +1568,11 @@ INPUT PARAMETERS
                 * 0 denotes infinity-norm
                 * 1 denotes 1-norm
                 * 2 denotes 2-norm (Euclidean norm)
-                
+
 OUTPUT PARAMETERS
     KDT     -   KD-tree
-    
-    
+
+
 NOTES
 
 1. KD-tree  creation  have O(N*logN) complexity and O(N*(2*NX+NY))  memory
@@ -1720,12 +1587,12 @@ NOTES
      Copyright 28.02.2010 by Bochkanov Sergey
 *************************************************************************/
 void kdtreebuild(/* Real    */ ae_matrix* xy,
-     ae_int_t n,
-     ae_int_t nx,
-     ae_int_t ny,
-     ae_int_t normtype,
-     kdtree* kdt,
-     ae_state *_state)
+                               ae_int_t n,
+                               ae_int_t nx,
+                               ae_int_t ny,
+                               ae_int_t normtype,
+                               kdtree* kdt,
+                               ae_state *_state)
 {
     ae_frame _frame_block;
     ae_vector tags;
@@ -1743,8 +1610,7 @@ void kdtreebuild(/* Real    */ ae_matrix* xy,
     ae_assert(xy->cols>=nx+ny, "KDTreeBuild: cols(X)<NX+NY!", _state);
     ae_assert(apservisfinitematrix(xy, n, nx+ny, _state), "KDTreeBuild: X contains infinite or NaN values!", _state);
     ae_vector_set_length(&tags, n, _state);
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         tags.ptr.p_int[i] = 0;
     }
     kdtreebuildtagged(xy, &tags, n, nx, ny, normtype, kdt, _state);
@@ -1790,13 +1656,13 @@ NOTES
      Copyright 28.02.2010 by Bochkanov Sergey
 *************************************************************************/
 void kdtreebuildtagged(/* Real    */ ae_matrix* xy,
-     /* Integer */ ae_vector* tags,
-     ae_int_t n,
-     ae_int_t nx,
-     ae_int_t ny,
-     ae_int_t normtype,
-     kdtree* kdt,
-     ae_state *_state)
+                                     /* Integer */ ae_vector* tags,
+                                     ae_int_t n,
+                                     ae_int_t nx,
+                                     ae_int_t ny,
+                                     ae_int_t normtype,
+                                     kdtree* kdt,
+                                     ae_state *_state)
 {
     ae_int_t i;
     ae_int_t j;
@@ -1813,7 +1679,7 @@ void kdtreebuildtagged(/* Real    */ ae_matrix* xy,
     ae_assert(xy->rows>=n, "KDTreeBuildTagged: rows(X)<N!", _state);
     ae_assert(xy->cols>=nx+ny, "KDTreeBuildTagged: cols(X)<NX+NY!", _state);
     ae_assert(apservisfinitematrix(xy, n, nx+ny, _state), "KDTreeBuildTagged: X contains infinite or NaN values!", _state);
-    
+
     /*
      * initialize
      */
@@ -1821,37 +1687,34 @@ void kdtreebuildtagged(/* Real    */ ae_matrix* xy,
     kdt->nx = nx;
     kdt->ny = ny;
     kdt->normtype = normtype;
-    
+
     /*
      * Allocate
      */
     nearestneighbor_kdtreeallocdatasetindependent(kdt, nx, ny, _state);
     nearestneighbor_kdtreeallocdatasetdependent(kdt, n, nx, ny, _state);
-    
+
     /*
      * Initial fill
      */
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         ae_v_move(&kdt->xy.ptr.pp_double[i][0], 1, &xy->ptr.pp_double[i][0], 1, ae_v_len(0,nx-1));
         ae_v_move(&kdt->xy.ptr.pp_double[i][nx], 1, &xy->ptr.pp_double[i][0], 1, ae_v_len(nx,2*nx+ny-1));
         kdt->tags.ptr.p_int[i] = tags->ptr.p_int[i];
     }
-    
+
     /*
      * Determine bounding box
      */
     ae_v_move(&kdt->boxmin.ptr.p_double[0], 1, &kdt->xy.ptr.pp_double[0][0], 1, ae_v_len(0,nx-1));
     ae_v_move(&kdt->boxmax.ptr.p_double[0], 1, &kdt->xy.ptr.pp_double[0][0], 1, ae_v_len(0,nx-1));
-    for(i=1; i<=n-1; i++)
-    {
-        for(j=0; j<=nx-1; j++)
-        {
+    for(i=1; i<=n-1; i++) {
+        for(j=0; j<=nx-1; j++) {
             kdt->boxmin.ptr.p_double[j] = ae_minreal(kdt->boxmin.ptr.p_double[j], kdt->xy.ptr.pp_double[i][j], _state);
             kdt->boxmax.ptr.p_double[j] = ae_maxreal(kdt->boxmax.ptr.p_double[j], kdt->xy.ptr.pp_double[i][j], _state);
         }
     }
-    
+
     /*
      * prepare tree structure
      * * MaxNodes=N because we guarantee no trivial splits, i.e.
@@ -1865,7 +1728,7 @@ void kdtreebuildtagged(/* Real    */ ae_matrix* xy,
     ae_v_move(&kdt->curboxmin.ptr.p_double[0], 1, &kdt->boxmin.ptr.p_double[0], 1, ae_v_len(0,nx-1));
     ae_v_move(&kdt->curboxmax.ptr.p_double[0], 1, &kdt->boxmax.ptr.p_double[0], 1, ae_v_len(0,nx-1));
     nearestneighbor_kdtreegeneratetreerec(kdt, &nodesoffs, &splitsoffs, 0, n, 8, _state);
-    
+
     /*
      * Set current query size to 0
      */
@@ -1902,10 +1765,10 @@ these results:
      Copyright 28.02.2010 by Bochkanov Sergey
 *************************************************************************/
 ae_int_t kdtreequeryknn(kdtree* kdt,
-     /* Real    */ ae_vector* x,
-     ae_int_t k,
-     ae_bool selfmatch,
-     ae_state *_state)
+                        /* Real    */ ae_vector* x,
+                        ae_int_t k,
+                        ae_bool selfmatch,
+                        ae_state *_state)
 {
     ae_int_t result;
 
@@ -1947,10 +1810,10 @@ actual results:
      Copyright 28.02.2010 by Bochkanov Sergey
 *************************************************************************/
 ae_int_t kdtreequeryrnn(kdtree* kdt,
-     /* Real    */ ae_vector* x,
-     double r,
-     ae_bool selfmatch,
-     ae_state *_state)
+                        /* Real    */ ae_vector* x,
+                        double r,
+                        ae_bool selfmatch,
+                        ae_state *_state)
 {
     ae_int_t i;
     ae_int_t j;
@@ -1960,34 +1823,31 @@ ae_int_t kdtreequeryrnn(kdtree* kdt,
     ae_assert(ae_fp_greater(r,0), "KDTreeQueryRNN: incorrect R!", _state);
     ae_assert(x->cnt>=kdt->nx, "KDTreeQueryRNN: Length(X)<NX!", _state);
     ae_assert(isfinitevector(x, kdt->nx, _state), "KDTreeQueryRNN: X contains infinite or NaN values!", _state);
-    
+
     /*
      * Prepare parameters
      */
     kdt->kneeded = 0;
-    if( kdt->normtype!=2 )
-    {
+    if( kdt->normtype!=2 ) {
         kdt->rneeded = r;
-    }
-    else
-    {
+    } else {
         kdt->rneeded = ae_sqr(r, _state);
     }
     kdt->selfmatch = selfmatch;
     kdt->approxf = 1;
     kdt->kcur = 0;
-    
+
     /*
      * calculate distance from point to current bounding box
      */
     nearestneighbor_kdtreeinitbox(kdt, x, _state);
-    
+
     /*
      * call recursive search
      * results are returned as heap
      */
     nearestneighbor_kdtreequerynnrec(kdt, 0, _state);
-    
+
     /*
      * pop from heap to generate ordered representation
      *
@@ -1996,8 +1856,7 @@ ae_int_t kdtreequeryrnn(kdtree* kdt,
      */
     result = kdt->kcur;
     j = kdt->kcur;
-    for(i=kdt->kcur; i>=2; i--)
-    {
+    for(i=kdt->kcur; i>=2; i--) {
         tagheappopi(&kdt->r, &kdt->idx, &j, _state);
     }
     return result;
@@ -2023,7 +1882,7 @@ INPUT PARAMETERS
 
 RESULT
     number of actual neighbors found (either K or N, if K>N).
-    
+
 NOTES
     significant performance gain may be achieved only when Eps  is  is  on
     the order of magnitude of 1 or larger.
@@ -2040,11 +1899,11 @@ these results:
      Copyright 28.02.2010 by Bochkanov Sergey
 *************************************************************************/
 ae_int_t kdtreequeryaknn(kdtree* kdt,
-     /* Real    */ ae_vector* x,
-     ae_int_t k,
-     ae_bool selfmatch,
-     double eps,
-     ae_state *_state)
+                         /* Real    */ ae_vector* x,
+                         ae_int_t k,
+                         ae_bool selfmatch,
+                         double eps,
+                         ae_state *_state)
 {
     ae_int_t i;
     ae_int_t j;
@@ -2055,7 +1914,7 @@ ae_int_t kdtreequeryaknn(kdtree* kdt,
     ae_assert(ae_fp_greater_eq(eps,0), "KDTreeQueryAKNN: incorrect Eps!", _state);
     ae_assert(x->cnt>=kdt->nx, "KDTreeQueryAKNN: Length(X)<NX!", _state);
     ae_assert(isfinitevector(x, kdt->nx, _state), "KDTreeQueryAKNN: X contains infinite or NaN values!", _state);
-    
+
     /*
      * Prepare parameters
      */
@@ -2063,27 +1922,24 @@ ae_int_t kdtreequeryaknn(kdtree* kdt,
     kdt->kneeded = k;
     kdt->rneeded = 0;
     kdt->selfmatch = selfmatch;
-    if( kdt->normtype==2 )
-    {
+    if( kdt->normtype==2 ) {
         kdt->approxf = 1/ae_sqr(1+eps, _state);
-    }
-    else
-    {
+    } else {
         kdt->approxf = 1/(1+eps);
     }
     kdt->kcur = 0;
-    
+
     /*
      * calculate distance from point to current bounding box
      */
     nearestneighbor_kdtreeinitbox(kdt, x, _state);
-    
+
     /*
      * call recursive search
      * results are returned as heap
      */
     nearestneighbor_kdtreequerynnrec(kdt, 0, _state);
-    
+
     /*
      * pop from heap to generate ordered representation
      *
@@ -2092,8 +1948,7 @@ ae_int_t kdtreequeryaknn(kdtree* kdt,
      */
     result = kdt->kcur;
     j = kdt->kcur;
-    for(i=kdt->kcur; i>=2; i--)
-    {
+    for(i=kdt->kcur; i>=2; i--) {
         tagheappopi(&kdt->r, &kdt->idx, &j, _state);
     }
     return result;
@@ -2130,24 +1985,21 @@ SEE ALSO
      Copyright 28.02.2010 by Bochkanov Sergey
 *************************************************************************/
 void kdtreequeryresultsx(kdtree* kdt,
-     /* Real    */ ae_matrix* x,
-     ae_state *_state)
+                         /* Real    */ ae_matrix* x,
+                         ae_state *_state)
 {
     ae_int_t i;
     ae_int_t k;
 
 
-    if( kdt->kcur==0 )
-    {
+    if( kdt->kcur==0 ) {
         return;
     }
-    if( x->rows<kdt->kcur||x->cols<kdt->nx )
-    {
+    if( x->rows<kdt->kcur||x->cols<kdt->nx ) {
         ae_matrix_set_length(x, kdt->kcur, kdt->nx, _state);
     }
     k = kdt->kcur;
-    for(i=0; i<=k-1; i++)
-    {
+    for(i=0; i<=k-1; i++) {
         ae_v_move(&x->ptr.pp_double[i][0], 1, &kdt->xy.ptr.pp_double[kdt->idx.ptr.p_int[i]][kdt->nx], 1, ae_v_len(0,kdt->nx-1));
     }
 }
@@ -2184,24 +2036,21 @@ SEE ALSO
      Copyright 28.02.2010 by Bochkanov Sergey
 *************************************************************************/
 void kdtreequeryresultsxy(kdtree* kdt,
-     /* Real    */ ae_matrix* xy,
-     ae_state *_state)
+                          /* Real    */ ae_matrix* xy,
+                          ae_state *_state)
 {
     ae_int_t i;
     ae_int_t k;
 
 
-    if( kdt->kcur==0 )
-    {
+    if( kdt->kcur==0 ) {
         return;
     }
-    if( xy->rows<kdt->kcur||xy->cols<kdt->nx+kdt->ny )
-    {
+    if( xy->rows<kdt->kcur||xy->cols<kdt->nx+kdt->ny ) {
         ae_matrix_set_length(xy, kdt->kcur, kdt->nx+kdt->ny, _state);
     }
     k = kdt->kcur;
-    for(i=0; i<=k-1; i++)
-    {
+    for(i=0; i<=k-1; i++) {
         ae_v_move(&xy->ptr.pp_double[i][0], 1, &kdt->xy.ptr.pp_double[kdt->idx.ptr.p_int[i]][kdt->nx], 1, ae_v_len(0,kdt->nx+kdt->ny-1));
     }
 }
@@ -2238,24 +2087,21 @@ SEE ALSO
      Copyright 28.02.2010 by Bochkanov Sergey
 *************************************************************************/
 void kdtreequeryresultstags(kdtree* kdt,
-     /* Integer */ ae_vector* tags,
-     ae_state *_state)
+                            /* Integer */ ae_vector* tags,
+                            ae_state *_state)
 {
     ae_int_t i;
     ae_int_t k;
 
 
-    if( kdt->kcur==0 )
-    {
+    if( kdt->kcur==0 ) {
         return;
     }
-    if( tags->cnt<kdt->kcur )
-    {
+    if( tags->cnt<kdt->kcur ) {
         ae_vector_set_length(tags, kdt->kcur, _state);
     }
     k = kdt->kcur;
-    for(i=0; i<=k-1; i++)
-    {
+    for(i=0; i<=k-1; i++) {
         tags->ptr.p_int[i] = kdt->tags.ptr.p_int[kdt->idx.ptr.p_int[i]];
     }
 }
@@ -2291,47 +2137,39 @@ SEE ALSO
      Copyright 28.02.2010 by Bochkanov Sergey
 *************************************************************************/
 void kdtreequeryresultsdistances(kdtree* kdt,
-     /* Real    */ ae_vector* r,
-     ae_state *_state)
+                                 /* Real    */ ae_vector* r,
+                                 ae_state *_state)
 {
     ae_int_t i;
     ae_int_t k;
 
 
-    if( kdt->kcur==0 )
-    {
+    if( kdt->kcur==0 ) {
         return;
     }
-    if( r->cnt<kdt->kcur )
-    {
+    if( r->cnt<kdt->kcur ) {
         ae_vector_set_length(r, kdt->kcur, _state);
     }
     k = kdt->kcur;
-    
+
     /*
      * unload norms
      *
      * Abs() call is used to handle cases with negative norms
      * (generated during KFN requests)
      */
-    if( kdt->normtype==0 )
-    {
-        for(i=0; i<=k-1; i++)
-        {
+    if( kdt->normtype==0 ) {
+        for(i=0; i<=k-1; i++) {
             r->ptr.p_double[i] = ae_fabs(kdt->r.ptr.p_double[i], _state);
         }
     }
-    if( kdt->normtype==1 )
-    {
-        for(i=0; i<=k-1; i++)
-        {
+    if( kdt->normtype==1 ) {
+        for(i=0; i<=k-1; i++) {
             r->ptr.p_double[i] = ae_fabs(kdt->r.ptr.p_double[i], _state);
         }
     }
-    if( kdt->normtype==2 )
-    {
-        for(i=0; i<=k-1; i++)
-        {
+    if( kdt->normtype==2 ) {
+        for(i=0; i<=k-1; i++) {
             r->ptr.p_double[i] = ae_sqrt(ae_fabs(kdt->r.ptr.p_double[i], _state), _state);
         }
     }
@@ -2351,8 +2189,8 @@ when you call it from command line.
      Copyright 28.02.2010 by Bochkanov Sergey
 *************************************************************************/
 void kdtreequeryresultsxi(kdtree* kdt,
-     /* Real    */ ae_matrix* x,
-     ae_state *_state)
+                          /* Real    */ ae_matrix* x,
+                          ae_state *_state)
 {
 
     ae_matrix_clear(x);
@@ -2374,8 +2212,8 @@ when you call it from command line.
      Copyright 28.02.2010 by Bochkanov Sergey
 *************************************************************************/
 void kdtreequeryresultsxyi(kdtree* kdt,
-     /* Real    */ ae_matrix* xy,
-     ae_state *_state)
+                           /* Real    */ ae_matrix* xy,
+                           ae_state *_state)
 {
 
     ae_matrix_clear(xy);
@@ -2397,8 +2235,8 @@ when you call it from command line.
      Copyright 28.02.2010 by Bochkanov Sergey
 *************************************************************************/
 void kdtreequeryresultstagsi(kdtree* kdt,
-     /* Integer */ ae_vector* tags,
-     ae_state *_state)
+                             /* Integer */ ae_vector* tags,
+                             ae_state *_state)
 {
 
     ae_vector_clear(tags);
@@ -2420,8 +2258,8 @@ when you call it from command line.
      Copyright 28.02.2010 by Bochkanov Sergey
 *************************************************************************/
 void kdtreequeryresultsdistancesi(kdtree* kdt,
-     /* Real    */ ae_vector* r,
-     ae_state *_state)
+                                  /* Real    */ ae_vector* r,
+                                  ae_state *_state)
 {
 
     ae_vector_clear(r);
@@ -2440,13 +2278,13 @@ void kdtreealloc(ae_serializer* s, kdtree* tree, ae_state *_state)
 {
 
 
-    
+
     /*
      * Header
      */
     ae_serializer_alloc_entry(s);
     ae_serializer_alloc_entry(s);
-    
+
     /*
      * Data
      */
@@ -2473,13 +2311,13 @@ void kdtreeserialize(ae_serializer* s, kdtree* tree, ae_state *_state)
 {
 
 
-    
+
     /*
      * Header
      */
     ae_serializer_serialize_int(s, getkdtreeserializationcode(_state), _state);
     ae_serializer_serialize_int(s, nearestneighbor_kdtreefirstversion, _state);
-    
+
     /*
      * Data
      */
@@ -2509,7 +2347,7 @@ void kdtreeunserialize(ae_serializer* s, kdtree* tree, ae_state *_state)
 
     _kdtree_clear(tree);
 
-    
+
     /*
      * check correctness of header
      */
@@ -2517,7 +2355,7 @@ void kdtreeunserialize(ae_serializer* s, kdtree* tree, ae_state *_state)
     ae_assert(i0==getkdtreeserializationcode(_state), "KDTreeUnserialize: stream header corrupted", _state);
     ae_serializer_unserialize_int(s, &i1, _state);
     ae_assert(i1==nearestneighbor_kdtreefirstversion, "KDTreeUnserialize: stream header corrupted", _state);
-    
+
     /*
      * Unserialize data
      */
@@ -2542,12 +2380,12 @@ Returns split position I3: [I1,I3) and [I3,I2) are created as result.
 This subroutine doesn't create tree structures, just rearranges nodes.
 *************************************************************************/
 static void nearestneighbor_kdtreesplit(kdtree* kdt,
-     ae_int_t i1,
-     ae_int_t i2,
-     ae_int_t d,
-     double s,
-     ae_int_t* i3,
-     ae_state *_state)
+                                        ae_int_t i1,
+                                        ae_int_t i2,
+                                        ae_int_t d,
+                                        double s,
+                                        ae_int_t* i3,
+                                        ae_state *_state)
 {
     ae_int_t i;
     ae_int_t j;
@@ -2557,7 +2395,7 @@ static void nearestneighbor_kdtreesplit(kdtree* kdt,
 
     *i3 = 0;
 
-    
+
     /*
      * split XY/Tags in two parts:
      * * [ILeft,IRight] is non-processed part of XY/Tags
@@ -2570,26 +2408,21 @@ static void nearestneighbor_kdtreesplit(kdtree* kdt,
      */
     ileft = i1;
     iright = i2-1;
-    while(ileft<iright)
-    {
-        if( ae_fp_less_eq(kdt->xy.ptr.pp_double[ileft][d],s) )
-        {
-            
+    while(ileft<iright) {
+        if( ae_fp_less_eq(kdt->xy.ptr.pp_double[ileft][d],s) ) {
+
             /*
              * XY[ILeft] is on its place.
              * Advance ILeft.
              */
             ileft = ileft+1;
-        }
-        else
-        {
-            
+        } else {
+
             /*
              * XY[ILeft,..] must be at IRight.
              * Swap and advance IRight.
              */
-            for(i=0; i<=2*kdt->nx+kdt->ny-1; i++)
-            {
+            for(i=0; i<=2*kdt->nx+kdt->ny-1; i++) {
                 v = kdt->xy.ptr.pp_double[ileft][i];
                 kdt->xy.ptr.pp_double[ileft][i] = kdt->xy.ptr.pp_double[iright][i];
                 kdt->xy.ptr.pp_double[iright][i] = v;
@@ -2600,12 +2433,9 @@ static void nearestneighbor_kdtreesplit(kdtree* kdt,
             iright = iright-1;
         }
     }
-    if( ae_fp_less_eq(kdt->xy.ptr.pp_double[ileft][d],s) )
-    {
+    if( ae_fp_less_eq(kdt->xy.ptr.pp_double[ileft][d],s) ) {
         ileft = ileft+1;
-    }
-    else
-    {
+    } else {
         iright = iright-1;
     }
     *i3 = ileft;
@@ -2620,19 +2450,19 @@ PARAMETERS
     NodesOffs   unused part of Nodes[] which must be filled by tree
     SplitsOffs  unused part of Splits[]
     I1, I2      points from [I1,I2) are processed
-    
+
 NodesOffs[] and SplitsOffs[] must be large enough.
 
   -- ALGLIB --
      Copyright 28.02.2010 by Bochkanov Sergey
 *************************************************************************/
 static void nearestneighbor_kdtreegeneratetreerec(kdtree* kdt,
-     ae_int_t* nodesoffs,
-     ae_int_t* splitsoffs,
-     ae_int_t i1,
-     ae_int_t i2,
-     ae_int_t maxleafsize,
-     ae_state *_state)
+        ae_int_t* nodesoffs,
+        ae_int_t* splitsoffs,
+        ae_int_t i1,
+        ae_int_t i2,
+        ae_int_t maxleafsize,
+        ae_state *_state)
 {
     ae_int_t n;
     ae_int_t nx;
@@ -2654,40 +2484,37 @@ static void nearestneighbor_kdtreegeneratetreerec(kdtree* kdt,
 
 
     ae_assert(i2>i1, "KDTreeGenerateTreeRec: internal error", _state);
-    
+
     /*
      * Generate leaf if needed
      */
-    if( i2-i1<=maxleafsize )
-    {
+    if( i2-i1<=maxleafsize ) {
         kdt->nodes.ptr.p_int[*nodesoffs+0] = i2-i1;
         kdt->nodes.ptr.p_int[*nodesoffs+1] = i1;
         *nodesoffs = *nodesoffs+2;
         return;
     }
-    
+
     /*
      * Load values for easier access
      */
     nx = kdt->nx;
     ny = kdt->ny;
-    
+
     /*
      * select dimension to split:
      * * D is a dimension number
      */
     d = 0;
     ds = kdt->curboxmax.ptr.p_double[0]-kdt->curboxmin.ptr.p_double[0];
-    for(i=1; i<=nx-1; i++)
-    {
+    for(i=1; i<=nx-1; i++) {
         v = kdt->curboxmax.ptr.p_double[i]-kdt->curboxmin.ptr.p_double[i];
-        if( ae_fp_greater(v,ds) )
-        {
+        if( ae_fp_greater(v,ds) ) {
             ds = v;
             d = i;
         }
     }
-    
+
     /*
      * Select split position S using sliding midpoint rule,
      * rearrange points into [I1,I3) and [I3,I2)
@@ -2701,55 +2528,44 @@ static void nearestneighbor_kdtreegeneratetreerec(kdtree* kdt,
     maxv = kdt->buf.ptr.p_double[0];
     minidx = i1;
     maxidx = i1;
-    for(i=0; i<=n-1; i++)
-    {
+    for(i=0; i<=n-1; i++) {
         v = kdt->buf.ptr.p_double[i];
-        if( ae_fp_less(v,minv) )
-        {
+        if( ae_fp_less(v,minv) ) {
             minv = v;
             minidx = i1+i;
         }
-        if( ae_fp_greater(v,maxv) )
-        {
+        if( ae_fp_greater(v,maxv) ) {
             maxv = v;
             maxidx = i1+i;
         }
-        if( ae_fp_less(v,s) )
-        {
+        if( ae_fp_less(v,s) ) {
             cntless = cntless+1;
         }
-        if( ae_fp_greater(v,s) )
-        {
+        if( ae_fp_greater(v,s) ) {
             cntgreater = cntgreater+1;
         }
     }
-    if( cntless>0&&cntgreater>0 )
-    {
-        
+    if( cntless>0&&cntgreater>0 ) {
+
         /*
          * normal midpoint split
          */
         nearestneighbor_kdtreesplit(kdt, i1, i2, d, s, &i3, _state);
-    }
-    else
-    {
-        
+    } else {
+
         /*
          * sliding midpoint
          */
-        if( cntless==0 )
-        {
-            
+        if( cntless==0 ) {
+
             /*
              * 1. move split to MinV,
              * 2. place one point to the left bin (move to I1),
              *    others - to the right bin
              */
             s = minv;
-            if( minidx!=i1 )
-            {
-                for(i=0; i<=2*kdt->nx+kdt->ny-1; i++)
-                {
+            if( minidx!=i1 ) {
+                for(i=0; i<=2*kdt->nx+kdt->ny-1; i++) {
                     v = kdt->xy.ptr.pp_double[minidx][i];
                     kdt->xy.ptr.pp_double[minidx][i] = kdt->xy.ptr.pp_double[i1][i];
                     kdt->xy.ptr.pp_double[i1][i] = v;
@@ -2759,20 +2575,16 @@ static void nearestneighbor_kdtreegeneratetreerec(kdtree* kdt,
                 kdt->tags.ptr.p_int[i1] = j;
             }
             i3 = i1+1;
-        }
-        else
-        {
-            
+        } else {
+
             /*
              * 1. move split to MaxV,
              * 2. place one point to the right bin (move to I2-1),
              *    others - to the left bin
              */
             s = maxv;
-            if( maxidx!=i2-1 )
-            {
-                for(i=0; i<=2*kdt->nx+kdt->ny-1; i++)
-                {
+            if( maxidx!=i2-1 ) {
+                for(i=0; i<=2*kdt->nx+kdt->ny-1; i++) {
                     v = kdt->xy.ptr.pp_double[maxidx][i];
                     kdt->xy.ptr.pp_double[maxidx][i] = kdt->xy.ptr.pp_double[i2-1][i];
                     kdt->xy.ptr.pp_double[i2-1][i] = v;
@@ -2784,7 +2596,7 @@ static void nearestneighbor_kdtreegeneratetreerec(kdtree* kdt,
             i3 = i2-1;
         }
     }
-    
+
     /*
      * Generate 'split' node
      */
@@ -2795,7 +2607,7 @@ static void nearestneighbor_kdtreegeneratetreerec(kdtree* kdt,
     oldoffs = *nodesoffs;
     *nodesoffs = *nodesoffs+nearestneighbor_splitnodesize;
     *splitsoffs = *splitsoffs+1;
-    
+
     /*
      * Recirsive generation:
      * * update CurBox
@@ -2822,8 +2634,8 @@ Recursive subroutine for NN queries.
      Copyright 28.02.2010 by Bochkanov Sergey
 *************************************************************************/
 static void nearestneighbor_kdtreequerynnrec(kdtree* kdt,
-     ae_int_t offs,
-     ae_state *_state)
+        ae_int_t offs,
+        ae_state *_state)
 {
     double ptdist;
     ae_int_t i;
@@ -2844,90 +2656,73 @@ static void nearestneighbor_kdtreequerynnrec(kdtree* kdt,
     ae_bool updatemin;
 
 
-    
+
     /*
      * Leaf node.
      * Process points.
      */
-    if( kdt->nodes.ptr.p_int[offs]>0 )
-    {
+    if( kdt->nodes.ptr.p_int[offs]>0 ) {
         i1 = kdt->nodes.ptr.p_int[offs+1];
         i2 = i1+kdt->nodes.ptr.p_int[offs];
-        for(i=i1; i<=i2-1; i++)
-        {
-            
+        for(i=i1; i<=i2-1; i++) {
+
             /*
              * Calculate distance
              */
             ptdist = 0;
             nx = kdt->nx;
-            if( kdt->normtype==0 )
-            {
-                for(j=0; j<=nx-1; j++)
-                {
+            if( kdt->normtype==0 ) {
+                for(j=0; j<=nx-1; j++) {
                     ptdist = ae_maxreal(ptdist, ae_fabs(kdt->xy.ptr.pp_double[i][j]-kdt->x.ptr.p_double[j], _state), _state);
                 }
             }
-            if( kdt->normtype==1 )
-            {
-                for(j=0; j<=nx-1; j++)
-                {
+            if( kdt->normtype==1 ) {
+                for(j=0; j<=nx-1; j++) {
                     ptdist = ptdist+ae_fabs(kdt->xy.ptr.pp_double[i][j]-kdt->x.ptr.p_double[j], _state);
                 }
             }
-            if( kdt->normtype==2 )
-            {
-                for(j=0; j<=nx-1; j++)
-                {
+            if( kdt->normtype==2 ) {
+                for(j=0; j<=nx-1; j++) {
                     ptdist = ptdist+ae_sqr(kdt->xy.ptr.pp_double[i][j]-kdt->x.ptr.p_double[j], _state);
                 }
             }
-            
+
             /*
              * Skip points with zero distance if self-matches are turned off
              */
-            if( ae_fp_eq(ptdist,0)&&!kdt->selfmatch )
-            {
+            if( ae_fp_eq(ptdist,0)&&!kdt->selfmatch ) {
                 continue;
             }
-            
+
             /*
              * We CAN'T process point if R-criterion isn't satisfied,
              * i.e. (RNeeded<>0) AND (PtDist>R).
              */
-            if( ae_fp_eq(kdt->rneeded,0)||ae_fp_less_eq(ptdist,kdt->rneeded) )
-            {
-                
+            if( ae_fp_eq(kdt->rneeded,0)||ae_fp_less_eq(ptdist,kdt->rneeded) ) {
+
                 /*
                  * R-criterion is satisfied, we must either:
                  * * replace worst point, if (KNeeded<>0) AND (KCur=KNeeded)
                  *   (or skip, if worst point is better)
                  * * add point without replacement otherwise
                  */
-                if( kdt->kcur<kdt->kneeded||kdt->kneeded==0 )
-                {
-                    
+                if( kdt->kcur<kdt->kneeded||kdt->kneeded==0 ) {
+
                     /*
                      * add current point to heap without replacement
                      */
                     tagheappushi(&kdt->r, &kdt->idx, &kdt->kcur, ptdist, i, _state);
-                }
-                else
-                {
-                    
+                } else {
+
                     /*
                      * New points are added or not, depending on their distance.
                      * If added, they replace element at the top of the heap
                      */
-                    if( ae_fp_less(ptdist,kdt->r.ptr.p_double[0]) )
-                    {
-                        if( kdt->kneeded==1 )
-                        {
+                    if( ae_fp_less(ptdist,kdt->r.ptr.p_double[0]) ) {
+                        if( kdt->kneeded==1 ) {
                             kdt->idx.ptr.p_int[0] = i;
                             kdt->r.ptr.p_double[0] = ptdist;
-                        }
-                        else
-                        {
+                        } else {
                             tagheapreplacetopi(&kdt->r, &kdt->idx, kdt->kneeded, ptdist, i, _state);
                         }
                     }
@@ -2936,13 +2731,12 @@ static void nearestneighbor_kdtreequerynnrec(kdtree* kdt,
         }
         return;
     }
-    
+
     /*
      * Simple split
      */
-    if( kdt->nodes.ptr.p_int[offs]==0 )
-    {
-        
+    if( kdt->nodes.ptr.p_int[offs]==0 ) {
+
         /*
          * Load:
          * * D  dimension to split
@@ -2950,116 +2744,92 @@ static void nearestneighbor_kdtreequerynnrec(kdtree* kdt,
          */
         d = kdt->nodes.ptr.p_int[offs+1];
         s = kdt->splits.ptr.p_double[kdt->nodes.ptr.p_int[offs+2]];
-        
+
         /*
          * Calculate:
          * * ChildBestOffs      child box with best chances
          * * ChildWorstOffs     child box with worst chances
          */
-        if( ae_fp_less_eq(kdt->x.ptr.p_double[d],s) )
-        {
+        if( ae_fp_less_eq(kdt->x.ptr.p_double[d],s) ) {
             childbestoffs = kdt->nodes.ptr.p_int[offs+3];
             childworstoffs = kdt->nodes.ptr.p_int[offs+4];
             bestisleft = ae_true;
-        }
-        else
-        {
+        } else {
             childbestoffs = kdt->nodes.ptr.p_int[offs+4];
             childworstoffs = kdt->nodes.ptr.p_int[offs+3];
             bestisleft = ae_false;
         }
-        
+
         /*
          * Navigate through childs
          */
-        for(i=0; i<=1; i++)
-        {
-            
+        for(i=0; i<=1; i++) {
+
             /*
              * Select child to process:
              * * ChildOffs      current child offset in Nodes[]
              * * UpdateMin      whether minimum or maximum value
              *                  of bounding box is changed on update
              */
-            if( i==0 )
-            {
+            if( i==0 ) {
                 childoffs = childbestoffs;
                 updatemin = !bestisleft;
-            }
-            else
-            {
+            } else {
                 updatemin = bestisleft;
                 childoffs = childworstoffs;
             }
-            
+
             /*
              * Update bounding box and current distance
              */
-            if( updatemin )
-            {
+            if( updatemin ) {
                 prevdist = kdt->curdist;
                 t1 = kdt->x.ptr.p_double[d];
                 v = kdt->curboxmin.ptr.p_double[d];
-                if( ae_fp_less_eq(t1,s) )
-                {
-                    if( kdt->normtype==0 )
-                    {
+                if( ae_fp_less_eq(t1,s) ) {
+                    if( kdt->normtype==0 ) {
                         kdt->curdist = ae_maxreal(kdt->curdist, s-t1, _state);
                     }
-                    if( kdt->normtype==1 )
-                    {
+                    if( kdt->normtype==1 ) {
                         kdt->curdist = kdt->curdist-ae_maxreal(v-t1, 0, _state)+s-t1;
                     }
-                    if( kdt->normtype==2 )
-                    {
+                    if( kdt->normtype==2 ) {
                         kdt->curdist = kdt->curdist-ae_sqr(ae_maxreal(v-t1, 0, _state), _state)+ae_sqr(s-t1, _state);
                     }
                 }
                 kdt->curboxmin.ptr.p_double[d] = s;
-            }
-            else
-            {
+            } else {
                 prevdist = kdt->curdist;
                 t1 = kdt->x.ptr.p_double[d];
                 v = kdt->curboxmax.ptr.p_double[d];
-                if( ae_fp_greater_eq(t1,s) )
-                {
-                    if( kdt->normtype==0 )
-                    {
+                if( ae_fp_greater_eq(t1,s) ) {
+                    if( kdt->normtype==0 ) {
                         kdt->curdist = ae_maxreal(kdt->curdist, t1-s, _state);
                     }
-                    if( kdt->normtype==1 )
-                    {
+                    if( kdt->normtype==1 ) {
                         kdt->curdist = kdt->curdist-ae_maxreal(t1-v, 0, _state)+t1-s;
                     }
-                    if( kdt->normtype==2 )
-                    {
+                    if( kdt->normtype==2 ) {
                         kdt->curdist = kdt->curdist-ae_sqr(ae_maxreal(t1-v, 0, _state), _state)+ae_sqr(t1-s, _state);
                     }
                 }
                 kdt->curboxmax.ptr.p_double[d] = s;
             }
-            
+
             /*
              * Decide: to dive into cell or not to dive
              */
-            if( ae_fp_neq(kdt->rneeded,0)&&ae_fp_greater(kdt->curdist,kdt->rneeded) )
-            {
+            if( ae_fp_neq(kdt->rneeded,0)&&ae_fp_greater(kdt->curdist,kdt->rneeded) ) {
                 todive = ae_false;
-            }
-            else
-            {
-                if( kdt->kcur<kdt->kneeded||kdt->kneeded==0 )
-                {
-                    
+            } else {
+                if( kdt->kcur<kdt->kneeded||kdt->kneeded==0 ) {
+
                     /*
                      * KCur<KNeeded (i.e. not all points are found)
                      */
                     todive = ae_true;
-                }
-                else
-                {
-                    
+                } else {
+
                     /*
                      * KCur=KNeeded, decide to dive or not to dive
                      * using point position relative to bounding box.
@@ -3067,20 +2837,16 @@ static void nearestneighbor_kdtreequerynnrec(kdtree* kdt,
                     todive = ae_fp_less_eq(kdt->curdist,kdt->r.ptr.p_double[0]*kdt->approxf);
                 }
             }
-            if( todive )
-            {
+            if( todive ) {
                 nearestneighbor_kdtreequerynnrec(kdt, childoffs, _state);
             }
-            
+
             /*
              * Restore bounding box and distance
              */
-            if( updatemin )
-            {
+            if( updatemin ) {
                 kdt->curboxmin.ptr.p_double[d] = v;
-            }
-            else
-            {
+            } else {
                 kdt->curboxmax.ptr.p_double[d] = v;
             }
             kdt->curdist = prevdist;
@@ -3099,8 +2865,8 @@ Initializes CurBox[].
      Copyright 28.02.2010 by Bochkanov Sergey
 *************************************************************************/
 static void nearestneighbor_kdtreeinitbox(kdtree* kdt,
-     /* Real    */ ae_vector* x,
-     ae_state *_state)
+        /* Real    */ ae_vector* x,
+        ae_state *_state)
 {
     ae_int_t i;
     double vx;
@@ -3108,75 +2874,57 @@ static void nearestneighbor_kdtreeinitbox(kdtree* kdt,
     double vmax;
 
 
-    
+
     /*
      * calculate distance from point to current bounding box
      */
     kdt->curdist = 0;
-    if( kdt->normtype==0 )
-    {
-        for(i=0; i<=kdt->nx-1; i++)
-        {
+    if( kdt->normtype==0 ) {
+        for(i=0; i<=kdt->nx-1; i++) {
             vx = x->ptr.p_double[i];
             vmin = kdt->boxmin.ptr.p_double[i];
             vmax = kdt->boxmax.ptr.p_double[i];
             kdt->x.ptr.p_double[i] = vx;
             kdt->curboxmin.ptr.p_double[i] = vmin;
             kdt->curboxmax.ptr.p_double[i] = vmax;
-            if( ae_fp_less(vx,vmin) )
-            {
+            if( ae_fp_less(vx,vmin) ) {
                 kdt->curdist = ae_maxreal(kdt->curdist, vmin-vx, _state);
-            }
-            else
-            {
-                if( ae_fp_greater(vx,vmax) )
-                {
+            } else {
+                if( ae_fp_greater(vx,vmax) ) {
                     kdt->curdist = ae_maxreal(kdt->curdist, vx-vmax, _state);
                 }
             }
         }
     }
-    if( kdt->normtype==1 )
-    {
-        for(i=0; i<=kdt->nx-1; i++)
-        {
+    if( kdt->normtype==1 ) {
+        for(i=0; i<=kdt->nx-1; i++) {
             vx = x->ptr.p_double[i];
             vmin = kdt->boxmin.ptr.p_double[i];
             vmax = kdt->boxmax.ptr.p_double[i];
             kdt->x.ptr.p_double[i] = vx;
             kdt->curboxmin.ptr.p_double[i] = vmin;
             kdt->curboxmax.ptr.p_double[i] = vmax;
-            if( ae_fp_less(vx,vmin) )
-            {
+            if( ae_fp_less(vx,vmin) ) {
                 kdt->curdist = kdt->curdist+vmin-vx;
-            }
-            else
-            {
-                if( ae_fp_greater(vx,vmax) )
-                {
+            } else {
+                if( ae_fp_greater(vx,vmax) ) {
                     kdt->curdist = kdt->curdist+vx-vmax;
                 }
             }
         }
     }
-    if( kdt->normtype==2 )
-    {
-        for(i=0; i<=kdt->nx-1; i++)
-        {
+    if( kdt->normtype==2 ) {
+        for(i=0; i<=kdt->nx-1; i++) {
             vx = x->ptr.p_double[i];
             vmin = kdt->boxmin.ptr.p_double[i];
             vmax = kdt->boxmax.ptr.p_double[i];
             kdt->x.ptr.p_double[i] = vx;
             kdt->curboxmin.ptr.p_double[i] = vmin;
             kdt->curboxmax.ptr.p_double[i] = vmax;
-            if( ae_fp_less(vx,vmin) )
-            {
+            if( ae_fp_less(vx,vmin) ) {
                 kdt->curdist = kdt->curdist+ae_sqr(vmin-vx, _state);
-            }
-            else
-            {
-                if( ae_fp_greater(vx,vmax) )
-                {
+            } else {
+                if( ae_fp_greater(vx,vmax) ) {
                     kdt->curdist = kdt->curdist+ae_sqr(vx-vmax, _state);
                 }
             }
@@ -3196,9 +2944,9 @@ This function do not sets KDT.NX or KDT.NY - it just allocates arrays
      Copyright 14.03.2011 by Bochkanov Sergey
 *************************************************************************/
 static void nearestneighbor_kdtreeallocdatasetindependent(kdtree* kdt,
-     ae_int_t nx,
-     ae_int_t ny,
-     ae_state *_state)
+        ae_int_t nx,
+        ae_int_t ny,
+        ae_state *_state)
 {
 
 
@@ -3221,10 +2969,10 @@ it just allocates arrays.
      Copyright 14.03.2011 by Bochkanov Sergey
 *************************************************************************/
 static void nearestneighbor_kdtreeallocdatasetdependent(kdtree* kdt,
-     ae_int_t n,
-     ae_int_t nx,
-     ae_int_t ny,
-     ae_state *_state)
+        ae_int_t n,
+        ae_int_t nx,
+        ae_int_t ny,
+        ae_state *_state)
 {
 
 
@@ -3249,10 +2997,10 @@ it just allocates arrays.
      Copyright 14.03.2011 by Bochkanov Sergey
 *************************************************************************/
 static void nearestneighbor_kdtreealloctemporaries(kdtree* kdt,
-     ae_int_t n,
-     ae_int_t nx,
-     ae_int_t ny,
-     ae_state *_state)
+        ae_int_t n,
+        ae_int_t nx,
+        ae_int_t ny,
+        ae_state *_state)
 {
 
 
@@ -3267,30 +3015,42 @@ static void nearestneighbor_kdtreealloctemporaries(kdtree* kdt,
 
 ae_bool _kdtree_init(kdtree* p, ae_state *_state, ae_bool make_automatic)
 {
-    if( !ae_matrix_init(&p->xy, 0, 0, DT_REAL, _state, make_automatic) )
+    if( !ae_matrix_init(&p->xy, 0, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->tags, 0, DT_INT, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->tags, 0, DT_INT, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->boxmin, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->boxmin, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->boxmax, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->boxmax, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->nodes, 0, DT_INT, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->nodes, 0, DT_INT, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->splits, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->splits, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->x, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->x, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->idx, 0, DT_INT, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->idx, 0, DT_INT, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->r, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->r, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->buf, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->buf, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->curboxmin, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->curboxmin, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->curboxmax, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->curboxmax, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
+    }
     return ae_true;
 }
 
@@ -3301,35 +3061,47 @@ ae_bool _kdtree_init_copy(kdtree* dst, kdtree* src, ae_state *_state, ae_bool ma
     dst->nx = src->nx;
     dst->ny = src->ny;
     dst->normtype = src->normtype;
-    if( !ae_matrix_init_copy(&dst->xy, &src->xy, _state, make_automatic) )
+    if( !ae_matrix_init_copy(&dst->xy, &src->xy, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init_copy(&dst->tags, &src->tags, _state, make_automatic) )
+    }
+    if( !ae_vector_init_copy(&dst->tags, &src->tags, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init_copy(&dst->boxmin, &src->boxmin, _state, make_automatic) )
+    }
+    if( !ae_vector_init_copy(&dst->boxmin, &src->boxmin, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init_copy(&dst->boxmax, &src->boxmax, _state, make_automatic) )
+    }
+    if( !ae_vector_init_copy(&dst->boxmax, &src->boxmax, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init_copy(&dst->nodes, &src->nodes, _state, make_automatic) )
+    }
+    if( !ae_vector_init_copy(&dst->nodes, &src->nodes, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init_copy(&dst->splits, &src->splits, _state, make_automatic) )
+    }
+    if( !ae_vector_init_copy(&dst->splits, &src->splits, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init_copy(&dst->x, &src->x, _state, make_automatic) )
+    }
+    if( !ae_vector_init_copy(&dst->x, &src->x, _state, make_automatic) ) {
         return ae_false;
+    }
     dst->kneeded = src->kneeded;
     dst->rneeded = src->rneeded;
     dst->selfmatch = src->selfmatch;
     dst->approxf = src->approxf;
     dst->kcur = src->kcur;
-    if( !ae_vector_init_copy(&dst->idx, &src->idx, _state, make_automatic) )
+    if( !ae_vector_init_copy(&dst->idx, &src->idx, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init_copy(&dst->r, &src->r, _state, make_automatic) )
+    }
+    if( !ae_vector_init_copy(&dst->r, &src->r, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init_copy(&dst->buf, &src->buf, _state, make_automatic) )
+    }
+    if( !ae_vector_init_copy(&dst->buf, &src->buf, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init_copy(&dst->curboxmin, &src->curboxmin, _state, make_automatic) )
+    }
+    if( !ae_vector_init_copy(&dst->curboxmin, &src->curboxmin, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init_copy(&dst->curboxmax, &src->curboxmax, _state, make_automatic) )
+    }
+    if( !ae_vector_init_copy(&dst->curboxmax, &src->curboxmax, _state, make_automatic) ) {
         return ae_false;
+    }
     dst->curdist = src->curdist;
     dst->debugcounter = src->debugcounter;
     return ae_true;

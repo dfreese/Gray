@@ -32,89 +32,152 @@ class ViewableBase;
 
 //  VisiblePoint is a class storing information about a visible point.
 
-class VisiblePoint {
-	//friend ViewableBase;
-	
+class VisiblePoint
+{
+    //friend ViewableBase;
+
 public:
-	VisiblePoint() { FrontFace = true; MatNeedsFreeing = false; };
-	~VisiblePoint();
+    VisiblePoint()
+    {
+        FrontFace = true;
+        MatNeedsFreeing = false;
+    };
+    ~VisiblePoint();
 
-	void SetPosition( const VectorR3& pos ) { Position = pos;}
-	void SetNormal( const VectorR3& normal ) { Normal = normal; }
-	void SetMaterial( const MaterialBase& material );
-	void SetFrontFace ( bool frontface=true ) { FrontFace = frontface; }
-	void SetBackFace () { FrontFace = false; }
+    void SetPosition( const VectorR3& pos )
+    {
+        Position = pos;
+    }
+    void SetNormal( const VectorR3& normal )
+    {
+        Normal = normal;
+    }
+    void SetMaterial( const MaterialBase& material );
+    void SetFrontFace ( bool frontface=true )
+    {
+        FrontFace = frontface;
+    }
+    void SetBackFace ()
+    {
+        FrontFace = false;
+    }
 
-	bool IsFrontFacing() const { return FrontFace; }
-	bool IsBackFacing() const { return !FrontFace; }
+    bool IsFrontFacing() const
+    {
+        return FrontFace;
+    }
+    bool IsBackFacing() const
+    {
+        return !FrontFace;
+    }
 
-	const VectorR3& GetPosition() const { return Position; }
-	const VectorR3& GetNormal() const { return Normal; }
-	const MaterialBase& GetMaterial() const { return *Mat; }
-	MaterialBase& GetMaterialMutable() { //assert(MatNeedsFreeing); 
-		return *Mat; }
+    const VectorR3& GetPosition() const
+    {
+        return Position;
+    }
+    const VectorR3& GetNormal() const
+    {
+        return Normal;
+    }
+    const MaterialBase& GetMaterial() const
+    {
+        return *Mat;
+    }
+    MaterialBase& GetMaterialMutable()   //assert(MatNeedsFreeing);
+    {
+        return *Mat;
+    }
 
-	void SetUV( double u, double v ) { uvCoords.Set(u,v); }
-	void SetUV( const VectorR2& uv ) { uvCoords = uv; }
+    void SetUV( double u, double v )
+    {
+        uvCoords.Set(u,v);
+    }
+    void SetUV( const VectorR2& uv )
+    {
+        uvCoords = uv;
+    }
 
-	double GetU() const { return uvCoords.x; }
-	double GetV() const { return uvCoords.y; }
-	const VectorR2& GetUV() const { return uvCoords; }
-	VectorR2& GetUV() { return uvCoords; }
+    double GetU() const
+    {
+        return uvCoords.x;
+    }
+    double GetV() const
+    {
+        return uvCoords.y;
+    }
+    const VectorR2& GetUV() const
+    {
+        return uvCoords;
+    }
+    VectorR2& GetUV()
+    {
+        return uvCoords;
+    }
 
-	// Face numbers allow different texture maps to be applied to different faces of an object.
-	// Typically, the front and back side of a face get the same face number.  However, they
-	//  get different texture maps, and also "FrontFace" can be used to distinguish front and back faces.
-	// Face numbers are non-negative integers.  Generally: 0 is the "main" face.
-	void SetFaceNumber( int faceNumber ) { FaceNumber = faceNumber; }	
-	int GetFaceNumber() const { return FaceNumber; }		
-	
-	void SetObject( const ViewableBase *object ) { TheObject = object; }
-	const ViewableBase& GetObject() const { return *TheObject; }
+    // Face numbers allow different texture maps to be applied to different faces of an object.
+    // Typically, the front and back side of a face get the same face number.  However, they
+    //  get different texture maps, and also "FrontFace" can be used to distinguish front and back faces.
+    // Face numbers are non-negative integers.  Generally: 0 is the "main" face.
+    void SetFaceNumber( int faceNumber )
+    {
+        FaceNumber = faceNumber;
+    }
+    int GetFaceNumber() const
+    {
+        return FaceNumber;
+    }
 
-	void MakeMaterialMutable();	
+    void SetObject( const ViewableBase *object )
+    {
+        TheObject = object;
+    }
+    const ViewableBase& GetObject() const
+    {
+        return *TheObject;
+    }
+
+    void MakeMaterialMutable();
 
 private:
-	VectorR3 Position;
-	VectorR3 Normal;		// Outward Normal
-	MaterialBase* Mat;
-	VectorR2 uvCoords;		// (u,v) coordinates for texture mapping & etc.
-	int FaceNumber;			// Index of face number (non-negative).
-	const ViewableBase* TheObject;		// The object from which the visible point came.
-	bool FrontFace;			// Is it being viewed from the front side?
-	
-	bool MatNeedsFreeing;	// true if we are responsible for freeing the material.
+    VectorR3 Position;
+    VectorR3 Normal;		// Outward Normal
+    MaterialBase* Mat;
+    VectorR2 uvCoords;		// (u,v) coordinates for texture mapping & etc.
+    int FaceNumber;			// Index of face number (non-negative).
+    const ViewableBase* TheObject;		// The object from which the visible point came.
+    bool FrontFace;			// Is it being viewed from the front side?
+
+    bool MatNeedsFreeing;	// true if we are responsible for freeing the material.
 
 };
 
-inline VisiblePoint::~VisiblePoint() 
+inline VisiblePoint::~VisiblePoint()
 {
-	if ( MatNeedsFreeing ) {
-		delete Mat;
-		cerr << "Freeing Material\n";
-	}
+    if ( MatNeedsFreeing ) {
+        delete Mat;
+        cerr << "Freeing Material\n";
+    }
 }
 
 inline void VisiblePoint::SetMaterial( const MaterialBase& material )
 {
-	if ( MatNeedsFreeing ) {
-		delete Mat;
-	}
-	Mat = const_cast<MaterialBase*>(&material);
-	MatNeedsFreeing = false;
+    if ( MatNeedsFreeing ) {
+        delete Mat;
+    }
+    Mat = const_cast<MaterialBase*>(&material);
+    MatNeedsFreeing = false;
 }
 
 // Mutable and deletable materials are the same thing (properties not separable)
 
-inline void VisiblePoint::MakeMaterialMutable( ) 
+inline void VisiblePoint::MakeMaterialMutable( )
 {
-	if ( MatNeedsFreeing ) {
-		return;						// Material already mutable.
-	}
-	else {
-		Mat = Mat->Clone();
-		MatNeedsFreeing = true;
-	}
+    if ( MatNeedsFreeing ) {
+        return;						// Material already mutable.
+    } else {
+        Mat = Mat->Clone();
+        MatNeedsFreeing = true;
+    }
 }
 
 

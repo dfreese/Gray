@@ -23,29 +23,28 @@
 
 bool TextureCheckered::InOddSquare(double u, double v ) const	// Compute even/odd ness
 {
-	bool ans = false;
-	if ( u<0.0 ) {
-		ans = true;
-		u = -u;
-	}
-	ans ^= (((long)(u/uWidth))&0x01);
-	if ( v<0.0 ) {
-		ans = !ans;
-		v = -v;
-	}
-	ans ^= (((long)(v/vWidth))&0x01);
-	return ans;
+    bool ans = false;
+    if ( u<0.0 ) {
+        ans = true;
+        u = -u;
+    }
+    ans ^= (((long)(u/uWidth))&0x01);
+    if ( v<0.0 ) {
+        ans = !ans;
+        v = -v;
+    }
+    ans ^= (((long)(v/vWidth))&0x01);
+    return ans;
 }
 
-void TextureCheckered::ApplyTexture( 
-					VisiblePoint& visPoint ) const
+void TextureCheckered::ApplyTexture(
+    VisiblePoint& visPoint ) const
 {
-	if ( InOddSquare( visPoint.GetU(), visPoint.GetV() ) ) {
-		if ( Material1 ) {
-			visPoint.SetMaterial(*Material1);
-		}
-	}
-	else if ( Material2 ) {
-		visPoint.SetMaterial( *Material2 );
-	}
+    if ( InOddSquare( visPoint.GetU(), visPoint.GetV() ) ) {
+        if ( Material1 ) {
+            visPoint.SetMaterial(*Material1);
+        }
+    } else if ( Material2 ) {
+        visPoint.SetMaterial( *Material2 );
+    }
 }

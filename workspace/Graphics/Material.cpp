@@ -25,86 +25,83 @@
 
 const Material Material::Default;
 
-MaterialBase* Material::Clone() const {
-	Material* ret = new Material();
-	*ret = *this;
-	return (MaterialBase*)ret;
+MaterialBase* Material::Clone() const
+{
+    Material* ret = new Material();
+    *ret = *this;
+    return (MaterialBase*)ret;
 }
 
-void Material::CalcLocalLighting( 
-							VectorR3& colorReturned, const Light& light, 
-							const VectorR3& percentLit, double lightAttenuation,
-							const VectorR3& N, const VectorR3& V, 
-							const VectorR3& L, const VectorR3* H ) const
+void Material::CalcLocalLighting(
+    VectorR3& colorReturned, const Light& light,
+    const VectorR3& percentLit, double lightAttenuation,
+    const VectorR3& N, const VectorR3& V,
+    const VectorR3& L, const VectorR3* H ) const
 {
-	VectorR3 LightValue;	// Used to hold light level components
+    VectorR3 LightValue;	// Used to hold light level components
 
-	if ( percentLit.NearZero(1.0e-6) ) {
-		colorReturned.SetZero();	// Light entirely hidden
-	}
-	else {
-		bool facingViewer = ( (N^V)>=0.0 );
-		bool facingLight = ( (N^L)>=0.0 );
-		if ( (facingLight^facingViewer) && !this->IsTransmissive() ) {
-			// Light and viewer on opposite sides and no transmission.
-			colorReturned.SetZero();
-		}
-		else {
-			VectorR3 facingNormal(N);	// The normal facing the light
-			if (!facingLight) {
-				facingNormal.Negate();
-			}
+    if ( percentLit.NearZero(1.0e-6) ) {
+        colorReturned.SetZero();	// Light entirely hidden
+    } else {
+        bool facingViewer = ( (N^V)>=0.0 );
+        bool facingLight = ( (N^L)>=0.0 );
+        if ( (facingLight^facingViewer) && !this->IsTransmissive() ) {
+            // Light and viewer on opposite sides and no transmission.
+            colorReturned.SetZero();
+        } else {
+            VectorR3 facingNormal(N);	// The normal facing the light
+            if (!facingLight) {
+                facingNormal.Negate();
+            }
 
-			// Diffuse light
-			colorReturned = this->GetColorDiffuse();
-			colorReturned.ArrayProd(light.GetColorDiffuse());
-			colorReturned *= (L^facingNormal);
+            // Diffuse light
+            colorReturned = this->GetColorDiffuse();
+            colorReturned.ArrayProd(light.GetColorDiffuse());
+            colorReturned *= (L^facingNormal);
 
-			// Specular light
-			LightValue = this->GetColorSpecular();
-			LightValue.ArrayProd(light.GetColorSpecular());
-			double specularFactor;
-			if ( !(facingLight^facingViewer) ) {	// If view and light on same side
-				if ( H ) {
-					specularFactor = ((*H)^facingNormal);
-				}
-				else {
-					// R = -(L-(L^N)N) + (L^N)N = 2(L^N)N - L  // reflected direction
-					// R^V = 2(L^N)(V^N) - V^L;
-					specularFactor = 2.0*(L^N)*(V^N) - (V^L);	// R^V.
-				}
-			}
-			else { // If viewer and light on opposite sides
-				VectorR3 T;		// Transmission direction
-				facingNormal = V;
-				facingNormal.Negate();		// Use temporarily as incoming vector
-				this->CalcRefractDir(N, facingNormal, T);
-				specularFactor = (T^L);
-			}
-			if ( specularFactor>0.0 ) {
-				if ( this->GetShininess() != 0.0) {
-					specularFactor = pow(specularFactor,this->GetShininess());
-				}
-				LightValue *= specularFactor;
-				colorReturned += LightValue;
-			}
+            // Specular light
+            LightValue = this->GetColorSpecular();
+            LightValue.ArrayProd(light.GetColorSpecular());
+            double specularFactor;
+            if ( !(facingLight^facingViewer) ) {	// If view and light on same side
+                if ( H ) {
+                    specularFactor = ((*H)^facingNormal);
+                } else {
+                    // R = -(L-(L^N)N) + (L^N)N = 2(L^N)N - L  // reflected direction
+                    // R^V = 2(L^N)(V^N) - V^L;
+                    specularFactor = 2.0*(L^N)*(V^N) - (V^L);	// R^V.
+                }
+            } else { // If viewer and light on opposite sides
+                VectorR3 T;		// Transmission direction
+                facingNormal = V;
+                facingNormal.Negate();		// Use temporarily as incoming vector
+                this->CalcRefractDir(N, facingNormal, T);
+                specularFactor = (T^L);
+            }
+            if ( specularFactor>0.0 ) {
+                if ( this->GetShininess() != 0.0) {
+                    specularFactor = pow(specularFactor,this->GetShininess());
+                }
+                LightValue *= specularFactor;
+                colorReturned += LightValue;
+            }
 
-			// Non-ambient light reduced by percentLit
-			colorReturned.ArrayProd(percentLit);
+            // Non-ambient light reduced by percentLit
+            colorReturned.ArrayProd(percentLit);
 
-			if ( (facingLight^facingViewer) ) {		// ^ is "exclusive or"
-				// If on opposite sides
-				colorReturned.ArrayProd(this->GetColorTransmissive());
-			}
-		}
-	}
+            if ( (facingLight^facingViewer) ) {		// ^ is "exclusive or"
+                // If on opposite sides
+                colorReturned.ArrayProd(this->GetColorTransmissive());
+            }
+        }
+    }
 
-	// Ambient light
-	LightValue = this->GetColorAmbient();
-	LightValue.ArrayProd(light.GetColorAmbient());
-	colorReturned += LightValue;
+    // Ambient light
+    LightValue = this->GetColorAmbient();
+    LightValue.ArrayProd(light.GetColorAmbient());
+    colorReturned += LightValue;
 
-	// Scale by attenuation (the ambient part too)
-	colorReturned *= lightAttenuation;
+    // Scale by attenuation (the ambient part too)
+    colorReturned *= lightAttenuation;
 
 }

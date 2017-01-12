@@ -28,15 +28,13 @@ http://www.fsf.org/licensing/licenses
 /////////////////////////////////////////////////////////////////////////
 namespace alglib_impl
 {
-typedef struct
-{
+typedef struct {
     ae_int_t s1;
     ae_int_t s2;
     double v;
     ae_int_t magicv;
 } hqrndstate;
-typedef struct
-{
+typedef struct {
     ae_int_t n;
     ae_int_t nx;
     ae_int_t ny;
@@ -228,17 +226,17 @@ Important properties of s_out:
 * it contains alphanumeric characters, dots, underscores, minus signs
 * these symbols are grouped into words, which are separated by spaces
   and Windows-style (CR+LF) newlines
-* although  serializer  uses  spaces and CR+LF as separators, you can 
+* although  serializer  uses  spaces and CR+LF as separators, you can
   replace any separator character by arbitrary combination of spaces,
   tabs, Windows or Unix newlines. It allows flexible reformatting  of
-  the  string  in  case you want to include it into text or XML file. 
+  the  string  in  case you want to include it into text or XML file.
   But you should not insert separators into the middle of the "words"
   nor you should change case of letters.
 * s_out can be freely moved between 32-bit and 64-bit systems, little
   and big endian machines, and so on. You can serialize structure  on
   32-bit machine and unserialize it on 64-bit one (or vice versa), or
-  serialize  it  on  SPARC  and  unserialize  on  x86.  You  can also 
-  serialize  it  in  C++ version of ALGLIB and unserialize in C# one, 
+  serialize  it  on  SPARC  and  unserialize  on  x86.  You  can also
+  serialize  it  in  C++ version of ALGLIB and unserialize in C# one,
   and vice versa.
 *************************************************************************/
 void kdtreeserialize(kdtree &obj, std::string &s_out);
@@ -632,78 +630,78 @@ namespace alglib_impl
 {
 void hqrndrandomize(hqrndstate* state, ae_state *_state);
 void hqrndseed(ae_int_t s1,
-     ae_int_t s2,
-     hqrndstate* state,
-     ae_state *_state);
+               ae_int_t s2,
+               hqrndstate* state,
+               ae_state *_state);
 double hqrnduniformr(hqrndstate* state, ae_state *_state);
 ae_int_t hqrnduniformi(hqrndstate* state, ae_int_t n, ae_state *_state);
 double hqrndnormal(hqrndstate* state, ae_state *_state);
 void hqrndunit2(hqrndstate* state, double* x, double* y, ae_state *_state);
 void hqrndnormal2(hqrndstate* state,
-     double* x1,
-     double* x2,
-     ae_state *_state);
+                  double* x1,
+                  double* x2,
+                  ae_state *_state);
 double hqrndexponential(hqrndstate* state,
-     double lambdav,
-     ae_state *_state);
+                        double lambdav,
+                        ae_state *_state);
 ae_bool _hqrndstate_init(hqrndstate* p, ae_state *_state, ae_bool make_automatic);
 ae_bool _hqrndstate_init_copy(hqrndstate* dst, hqrndstate* src, ae_state *_state, ae_bool make_automatic);
 void _hqrndstate_clear(hqrndstate* p);
 void kdtreebuild(/* Real    */ ae_matrix* xy,
-     ae_int_t n,
-     ae_int_t nx,
-     ae_int_t ny,
-     ae_int_t normtype,
-     kdtree* kdt,
-     ae_state *_state);
+                               ae_int_t n,
+                               ae_int_t nx,
+                               ae_int_t ny,
+                               ae_int_t normtype,
+                               kdtree* kdt,
+                               ae_state *_state);
 void kdtreebuildtagged(/* Real    */ ae_matrix* xy,
-     /* Integer */ ae_vector* tags,
-     ae_int_t n,
-     ae_int_t nx,
-     ae_int_t ny,
-     ae_int_t normtype,
-     kdtree* kdt,
-     ae_state *_state);
+                                     /* Integer */ ae_vector* tags,
+                                     ae_int_t n,
+                                     ae_int_t nx,
+                                     ae_int_t ny,
+                                     ae_int_t normtype,
+                                     kdtree* kdt,
+                                     ae_state *_state);
 ae_int_t kdtreequeryknn(kdtree* kdt,
-     /* Real    */ ae_vector* x,
-     ae_int_t k,
-     ae_bool selfmatch,
-     ae_state *_state);
+                        /* Real    */ ae_vector* x,
+                        ae_int_t k,
+                        ae_bool selfmatch,
+                        ae_state *_state);
 ae_int_t kdtreequeryrnn(kdtree* kdt,
-     /* Real    */ ae_vector* x,
-     double r,
-     ae_bool selfmatch,
-     ae_state *_state);
+                        /* Real    */ ae_vector* x,
+                        double r,
+                        ae_bool selfmatch,
+                        ae_state *_state);
 ae_int_t kdtreequeryaknn(kdtree* kdt,
-     /* Real    */ ae_vector* x,
-     ae_int_t k,
-     ae_bool selfmatch,
-     double eps,
-     ae_state *_state);
+                         /* Real    */ ae_vector* x,
+                         ae_int_t k,
+                         ae_bool selfmatch,
+                         double eps,
+                         ae_state *_state);
 void kdtreequeryresultsx(kdtree* kdt,
-     /* Real    */ ae_matrix* x,
-     ae_state *_state);
+                         /* Real    */ ae_matrix* x,
+                         ae_state *_state);
 void kdtreequeryresultsxy(kdtree* kdt,
-     /* Real    */ ae_matrix* xy,
-     ae_state *_state);
+                          /* Real    */ ae_matrix* xy,
+                          ae_state *_state);
 void kdtreequeryresultstags(kdtree* kdt,
-     /* Integer */ ae_vector* tags,
-     ae_state *_state);
+                            /* Integer */ ae_vector* tags,
+                            ae_state *_state);
 void kdtreequeryresultsdistances(kdtree* kdt,
-     /* Real    */ ae_vector* r,
-     ae_state *_state);
+                                 /* Real    */ ae_vector* r,
+                                 ae_state *_state);
 void kdtreequeryresultsxi(kdtree* kdt,
-     /* Real    */ ae_matrix* x,
-     ae_state *_state);
+                          /* Real    */ ae_matrix* x,
+                          ae_state *_state);
 void kdtreequeryresultsxyi(kdtree* kdt,
-     /* Real    */ ae_matrix* xy,
-     ae_state *_state);
+                           /* Real    */ ae_matrix* xy,
+                           ae_state *_state);
 void kdtreequeryresultstagsi(kdtree* kdt,
-     /* Integer */ ae_vector* tags,
-     ae_state *_state);
+                             /* Integer */ ae_vector* tags,
+                             ae_state *_state);
 void kdtreequeryresultsdistancesi(kdtree* kdt,
-     /* Real    */ ae_vector* r,
-     ae_state *_state);
+                                  /* Real    */ ae_vector* r,
+                                  ae_state *_state);
 void kdtreealloc(ae_serializer* s, kdtree* tree, ae_state *_state);
 void kdtreeserialize(ae_serializer* s, kdtree* tree, ae_state *_state);
 void kdtreeunserialize(ae_serializer* s, kdtree* tree, ae_state *_state);

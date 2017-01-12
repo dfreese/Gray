@@ -841,157 +841,157 @@ void wilcoxonsignedranktest(const real_1d_array &x, const ae_int_t n, const doub
 namespace alglib_impl
 {
 void samplemoments(/* Real    */ ae_vector* x,
-     ae_int_t n,
-     double* mean,
-     double* variance,
-     double* skewness,
-     double* kurtosis,
-     ae_state *_state);
+                                 ae_int_t n,
+                                 double* mean,
+                                 double* variance,
+                                 double* skewness,
+                                 double* kurtosis,
+                                 ae_state *_state);
 void sampleadev(/* Real    */ ae_vector* x,
-     ae_int_t n,
-     double* adev,
-     ae_state *_state);
+                              ae_int_t n,
+                              double* adev,
+                              ae_state *_state);
 void samplemedian(/* Real    */ ae_vector* x,
-     ae_int_t n,
-     double* median,
-     ae_state *_state);
+                                ae_int_t n,
+                                double* median,
+                                ae_state *_state);
 void samplepercentile(/* Real    */ ae_vector* x,
-     ae_int_t n,
-     double p,
-     double* v,
-     ae_state *_state);
+                                    ae_int_t n,
+                                    double p,
+                                    double* v,
+                                    ae_state *_state);
 double cov2(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_state *_state);
+                          /* Real    */ ae_vector* y,
+                          ae_int_t n,
+                          ae_state *_state);
 double pearsoncorr2(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_state *_state);
+                                  /* Real    */ ae_vector* y,
+                                  ae_int_t n,
+                                  ae_state *_state);
 double spearmancorr2(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_state *_state);
+                                   /* Real    */ ae_vector* y,
+                                   ae_int_t n,
+                                   ae_state *_state);
 void covm(/* Real    */ ae_matrix* x,
-     ae_int_t n,
-     ae_int_t m,
-     /* Real    */ ae_matrix* c,
-     ae_state *_state);
+                        ae_int_t n,
+                        ae_int_t m,
+                        /* Real    */ ae_matrix* c,
+                        ae_state *_state);
 void pearsoncorrm(/* Real    */ ae_matrix* x,
-     ae_int_t n,
-     ae_int_t m,
-     /* Real    */ ae_matrix* c,
-     ae_state *_state);
+                                ae_int_t n,
+                                ae_int_t m,
+                                /* Real    */ ae_matrix* c,
+                                ae_state *_state);
 void spearmancorrm(/* Real    */ ae_matrix* x,
-     ae_int_t n,
-     ae_int_t m,
-     /* Real    */ ae_matrix* c,
-     ae_state *_state);
+                                 ae_int_t n,
+                                 ae_int_t m,
+                                 /* Real    */ ae_matrix* c,
+                                 ae_state *_state);
 void covm2(/* Real    */ ae_matrix* x,
-     /* Real    */ ae_matrix* y,
-     ae_int_t n,
-     ae_int_t m1,
-     ae_int_t m2,
-     /* Real    */ ae_matrix* c,
-     ae_state *_state);
+                         /* Real    */ ae_matrix* y,
+                         ae_int_t n,
+                         ae_int_t m1,
+                         ae_int_t m2,
+                         /* Real    */ ae_matrix* c,
+                         ae_state *_state);
 void pearsoncorrm2(/* Real    */ ae_matrix* x,
-     /* Real    */ ae_matrix* y,
-     ae_int_t n,
-     ae_int_t m1,
-     ae_int_t m2,
-     /* Real    */ ae_matrix* c,
-     ae_state *_state);
+                                 /* Real    */ ae_matrix* y,
+                                 ae_int_t n,
+                                 ae_int_t m1,
+                                 ae_int_t m2,
+                                 /* Real    */ ae_matrix* c,
+                                 ae_state *_state);
 void spearmancorrm2(/* Real    */ ae_matrix* x,
-     /* Real    */ ae_matrix* y,
-     ae_int_t n,
-     ae_int_t m1,
-     ae_int_t m2,
-     /* Real    */ ae_matrix* c,
-     ae_state *_state);
+                                  /* Real    */ ae_matrix* y,
+                                  ae_int_t n,
+                                  ae_int_t m1,
+                                  ae_int_t m2,
+                                  /* Real    */ ae_matrix* c,
+                                  ae_state *_state);
 double pearsoncorrelation(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_state *_state);
+                                        /* Real    */ ae_vector* y,
+                                        ae_int_t n,
+                                        ae_state *_state);
 double spearmanrankcorrelation(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_state *_state);
+        /* Real    */ ae_vector* y,
+        ae_int_t n,
+        ae_state *_state);
 void pearsoncorrelationsignificance(double r,
-     ae_int_t n,
-     double* bothtails,
-     double* lefttail,
-     double* righttail,
-     ae_state *_state);
+                                    ae_int_t n,
+                                    double* bothtails,
+                                    double* lefttail,
+                                    double* righttail,
+                                    ae_state *_state);
 void spearmanrankcorrelationsignificance(double r,
-     ae_int_t n,
-     double* bothtails,
-     double* lefttail,
-     double* righttail,
-     ae_state *_state);
+        ae_int_t n,
+        double* bothtails,
+        double* lefttail,
+        double* righttail,
+        ae_state *_state);
 void jarqueberatest(/* Real    */ ae_vector* x,
-     ae_int_t n,
-     double* p,
-     ae_state *_state);
+                                  ae_int_t n,
+                                  double* p,
+                                  ae_state *_state);
 void mannwhitneyutest(/* Real    */ ae_vector* x,
-     ae_int_t n,
-     /* Real    */ ae_vector* y,
-     ae_int_t m,
-     double* bothtails,
-     double* lefttail,
-     double* righttail,
-     ae_state *_state);
+                                    ae_int_t n,
+                                    /* Real    */ ae_vector* y,
+                                    ae_int_t m,
+                                    double* bothtails,
+                                    double* lefttail,
+                                    double* righttail,
+                                    ae_state *_state);
 void onesamplesigntest(/* Real    */ ae_vector* x,
-     ae_int_t n,
-     double median,
-     double* bothtails,
-     double* lefttail,
-     double* righttail,
-     ae_state *_state);
+                                     ae_int_t n,
+                                     double median,
+                                     double* bothtails,
+                                     double* lefttail,
+                                     double* righttail,
+                                     ae_state *_state);
 void studentttest1(/* Real    */ ae_vector* x,
-     ae_int_t n,
-     double mean,
-     double* bothtails,
-     double* lefttail,
-     double* righttail,
-     ae_state *_state);
+                                 ae_int_t n,
+                                 double mean,
+                                 double* bothtails,
+                                 double* lefttail,
+                                 double* righttail,
+                                 ae_state *_state);
 void studentttest2(/* Real    */ ae_vector* x,
-     ae_int_t n,
-     /* Real    */ ae_vector* y,
-     ae_int_t m,
-     double* bothtails,
-     double* lefttail,
-     double* righttail,
-     ae_state *_state);
+                                 ae_int_t n,
+                                 /* Real    */ ae_vector* y,
+                                 ae_int_t m,
+                                 double* bothtails,
+                                 double* lefttail,
+                                 double* righttail,
+                                 ae_state *_state);
 void unequalvariancettest(/* Real    */ ae_vector* x,
-     ae_int_t n,
-     /* Real    */ ae_vector* y,
-     ae_int_t m,
-     double* bothtails,
-     double* lefttail,
-     double* righttail,
-     ae_state *_state);
+                                        ae_int_t n,
+                                        /* Real    */ ae_vector* y,
+                                        ae_int_t m,
+                                        double* bothtails,
+                                        double* lefttail,
+                                        double* righttail,
+                                        ae_state *_state);
 void ftest(/* Real    */ ae_vector* x,
-     ae_int_t n,
-     /* Real    */ ae_vector* y,
-     ae_int_t m,
-     double* bothtails,
-     double* lefttail,
-     double* righttail,
-     ae_state *_state);
+                         ae_int_t n,
+                         /* Real    */ ae_vector* y,
+                         ae_int_t m,
+                         double* bothtails,
+                         double* lefttail,
+                         double* righttail,
+                         ae_state *_state);
 void onesamplevariancetest(/* Real    */ ae_vector* x,
-     ae_int_t n,
-     double variance,
-     double* bothtails,
-     double* lefttail,
-     double* righttail,
-     ae_state *_state);
+        ae_int_t n,
+        double variance,
+        double* bothtails,
+        double* lefttail,
+        double* righttail,
+        ae_state *_state);
 void wilcoxonsignedranktest(/* Real    */ ae_vector* x,
-     ae_int_t n,
-     double e,
-     double* bothtails,
-     double* lefttail,
-     double* righttail,
-     ae_state *_state);
+        ae_int_t n,
+        double e,
+        double* bothtails,
+        double* lefttail,
+        double* righttail,
+        ae_state *_state);
 
 }
 #endif

@@ -43,28 +43,34 @@ namespace alglib
 _odesolverstate_owner::_odesolverstate_owner()
 {
     p_struct = (alglib_impl::odesolverstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::odesolverstate), NULL);
-    if( p_struct==NULL )
+    if( p_struct==NULL ) {
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_odesolverstate_init(p_struct, NULL, ae_false) )
+    }
+    if( !alglib_impl::_odesolverstate_init(p_struct, NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
 }
 
 _odesolverstate_owner::_odesolverstate_owner(const _odesolverstate_owner &rhs)
 {
     p_struct = (alglib_impl::odesolverstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::odesolverstate), NULL);
-    if( p_struct==NULL )
+    if( p_struct==NULL ) {
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_odesolverstate_init_copy(p_struct, const_cast<alglib_impl::odesolverstate*>(rhs.p_struct), NULL, ae_false) )
+    }
+    if( !alglib_impl::_odesolverstate_init_copy(p_struct, const_cast<alglib_impl::odesolverstate*>(rhs.p_struct), NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
 }
 
 _odesolverstate_owner& _odesolverstate_owner::operator=(const _odesolverstate_owner &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
+    }
     alglib_impl::_odesolverstate_clear(p_struct);
-    if( !alglib_impl::_odesolverstate_init_copy(p_struct, const_cast<alglib_impl::odesolverstate*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_odesolverstate_init_copy(p_struct, const_cast<alglib_impl::odesolverstate*>(rhs.p_struct), NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
     return *this;
 }
 
@@ -93,8 +99,9 @@ odesolverstate::odesolverstate(const odesolverstate &rhs):_odesolverstate_owner(
 
 odesolverstate& odesolverstate::operator=(const odesolverstate &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
+    }
     _odesolverstate_owner::operator=(rhs);
     return *this;
 }
@@ -110,28 +117,34 @@ odesolverstate::~odesolverstate()
 _odesolverreport_owner::_odesolverreport_owner()
 {
     p_struct = (alglib_impl::odesolverreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::odesolverreport), NULL);
-    if( p_struct==NULL )
+    if( p_struct==NULL ) {
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_odesolverreport_init(p_struct, NULL, ae_false) )
+    }
+    if( !alglib_impl::_odesolverreport_init(p_struct, NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
 }
 
 _odesolverreport_owner::_odesolverreport_owner(const _odesolverreport_owner &rhs)
 {
     p_struct = (alglib_impl::odesolverreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::odesolverreport), NULL);
-    if( p_struct==NULL )
+    if( p_struct==NULL ) {
         throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_odesolverreport_init_copy(p_struct, const_cast<alglib_impl::odesolverreport*>(rhs.p_struct), NULL, ae_false) )
+    }
+    if( !alglib_impl::_odesolverreport_init_copy(p_struct, const_cast<alglib_impl::odesolverreport*>(rhs.p_struct), NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
 }
 
 _odesolverreport_owner& _odesolverreport_owner::operator=(const _odesolverreport_owner &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
+    }
     alglib_impl::_odesolverreport_clear(p_struct);
-    if( !alglib_impl::_odesolverreport_init_copy(p_struct, const_cast<alglib_impl::odesolverreport*>(rhs.p_struct), NULL, ae_false) )
+    if( !alglib_impl::_odesolverreport_init_copy(p_struct, const_cast<alglib_impl::odesolverreport*>(rhs.p_struct), NULL, ae_false) ) {
         throw ap_error("ALGLIB: malloc error");
+    }
     return *this;
 }
 
@@ -160,8 +173,9 @@ odesolverreport::odesolverreport(const odesolverreport &rhs):_odesolverreport_ow
 
 odesolverreport& odesolverreport::operator=(const odesolverreport &rhs)
 {
-    if( this==&rhs )
+    if( this==&rhs ) {
         return *this;
+    }
     _odesolverreport_owner::operator=(rhs);
     return *this;
 }
@@ -221,18 +235,13 @@ void odesolverrkck(const real_1d_array &y, const ae_int_t n, const real_1d_array
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::odesolverrkck(const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, const_cast<alglib_impl::ae_vector*>(x.c_ptr()), m, eps, h, const_cast<alglib_impl::odesolverstate*>(state.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -286,26 +295,21 @@ SEE ALSO
 *************************************************************************/
 void odesolverrkck(const real_1d_array &y, const real_1d_array &x, const double eps, const double h, odesolverstate &state)
 {
-    alglib_impl::ae_state _alglib_env_state;    
+    alglib_impl::ae_state _alglib_env_state;
     ae_int_t n;
     ae_int_t m;
 
     n = y.length();
     m = x.length();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::odesolverrkck(const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, const_cast<alglib_impl::ae_vector*>(x.c_ptr()), m, eps, h, const_cast<alglib_impl::odesolverstate*>(state.c_ptr()), &_alglib_env_state);
 
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -319,49 +323,39 @@ bool odesolveriteration(const odesolverstate &state)
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         ae_bool result = alglib_impl::odesolveriteration(const_cast<alglib_impl::odesolverstate*>(state.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return *(reinterpret_cast<bool*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
 
 
 void odesolversolve(odesolverstate &state,
-    void (*diff)(const real_1d_array &y, double x, real_1d_array &dy, void *ptr),
-    void *ptr){
+                    void (*diff)(const real_1d_array &y, double x, real_1d_array &dy, void *ptr),
+                    void *ptr)
+{
     alglib_impl::ae_state _alglib_env_state;
-    if( diff==NULL )
+    if( diff==NULL ) {
         throw ap_error("ALGLIB: error in 'odesolversolve()' (diff is NULL)");
+    }
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        while( alglib_impl::odesolveriteration(state.c_ptr(), &_alglib_env_state) )
-        {
-            if( state.needdy )
-            {
+    try {
+        while( alglib_impl::odesolveriteration(state.c_ptr(), &_alglib_env_state) ) {
+            if( state.needdy ) {
                 diff(state.y, state.x, state.dy, ptr);
                 continue;
             }
             throw ap_error("ALGLIB: unexpected error in 'odesolversolve'");
         }
         alglib_impl::ae_state_clear(&_alglib_env_state);
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -395,18 +389,13 @@ void odesolverresults(const odesolverstate &state, ae_int_t &m, real_1d_array &x
 {
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
+    try {
         alglib_impl::odesolverresults(const_cast<alglib_impl::odesolverstate*>(state.c_ptr()), &m, const_cast<alglib_impl::ae_vector*>(xtbl.c_ptr()), const_cast<alglib_impl::ae_matrix*>(ytbl.c_ptr()), const_cast<alglib_impl::odesolverreport*>(rep.c_ptr()), &_alglib_env_state);
         alglib_impl::ae_state_clear(&_alglib_env_state);
         return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
+    } catch(alglib_impl::ae_error_type) {
         throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
+    } catch(...) {
         throw;
     }
 }
@@ -422,14 +411,14 @@ namespace alglib_impl
 static double odesolver_odesolvermaxgrow = 3.0;
 static double odesolver_odesolvermaxshrink = 10.0;
 static void odesolver_odesolverinit(ae_int_t solvertype,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     /* Real    */ ae_vector* x,
-     ae_int_t m,
-     double eps,
-     double h,
-     odesolverstate* state,
-     ae_state *_state);
+                                    /* Real    */ ae_vector* y,
+                                    ae_int_t n,
+                                    /* Real    */ ae_vector* x,
+                                    ae_int_t m,
+                                    double eps,
+                                    double h,
+                                    odesolverstate* state,
+                                    ae_state *_state);
 
 
 
@@ -483,13 +472,13 @@ SEE ALSO
      Copyright 01.09.2009 by Bochkanov Sergey
 *************************************************************************/
 void odesolverrkck(/* Real    */ ae_vector* y,
-     ae_int_t n,
-     /* Real    */ ae_vector* x,
-     ae_int_t m,
-     double eps,
-     double h,
-     odesolverstate* state,
-     ae_state *_state)
+                                 ae_int_t n,
+                                 /* Real    */ ae_vector* x,
+                                 ae_int_t m,
+                                 double eps,
+                                 double h,
+                                 odesolverstate* state,
+                                 ae_state *_state)
 {
 
     _odesolverstate_clear(state);
@@ -530,7 +519,7 @@ ae_bool odesolveriteration(odesolverstate* state, ae_state *_state)
     ae_bool result;
 
 
-    
+
     /*
      * Reverse communication preparations
      * I know it looks ugly, but it works the same way
@@ -541,8 +530,7 @@ ae_bool odesolveriteration(odesolverstate* state, ae_state *_state)
      *   generation - on first subroutine call
      * * values from previous call - on subsequent calls
      */
-    if( state->rstate.stage>=0 )
-    {
+    if( state->rstate.stage>=0 ) {
         n = state->rstate.ia.ptr.p_int[0];
         m = state->rstate.ia.ptr.p_int[1];
         i = state->rstate.ia.ptr.p_int[2];
@@ -556,9 +544,7 @@ ae_bool odesolveriteration(odesolverstate* state, ae_state *_state)
         h2 = state->rstate.ra.ptr.p_double[3];
         err = state->rstate.ra.ptr.p_double[4];
         maxgrowpow = state->rstate.ra.ptr.p_double[5];
-    }
-    else
-    {
+    } else {
         n = -983;
         m = -989;
         i = -834;
@@ -573,20 +559,18 @@ ae_bool odesolveriteration(odesolverstate* state, ae_state *_state)
         err = 497;
         maxgrowpow = -271;
     }
-    if( state->rstate.stage==0 )
-    {
+    if( state->rstate.stage==0 ) {
         goto lbl_0;
     }
-    
+
     /*
      * Routine body
      */
-    
+
     /*
      * prepare
      */
-    if( state->repterminationtype!=0 )
-    {
+    if( state->repterminationtype!=0 ) {
         result = ae_false;
         return result;
     }
@@ -595,22 +579,21 @@ ae_bool odesolveriteration(odesolverstate* state, ae_state *_state)
     h = state->h;
     maxgrowpow = ae_pow(odesolver_odesolvermaxgrow, 5, _state);
     state->repnfev = 0;
-    
+
     /*
      * some preliminary checks for internal errors
      * after this we assume that H>0 and M>1
      */
     ae_assert(ae_fp_greater(state->h,0), "ODESolver: internal error", _state);
     ae_assert(m>1, "ODESolverIteration: internal error", _state);
-    
+
     /*
      * choose solver
      */
-    if( state->solvertype!=0 )
-    {
+    if( state->solvertype!=0 ) {
         goto lbl_1;
     }
-    
+
     /*
      * Cask-Karp solver
      * Prepare coefficients table.
@@ -654,7 +637,7 @@ ae_bool odesolveriteration(odesolverstate* state, ae_state *_state)
     state->rkcs.ptr.p_double[4] = (double)277/(double)14336;
     state->rkcs.ptr.p_double[5] = (double)1/(double)4;
     ae_matrix_set_length(&state->rkk, 6, n, _state);
-    
+
     /*
      * Main cycle consists of two iterations:
      * * outer where we travel from X[i-1] to X[i]
@@ -666,51 +649,44 @@ ae_bool odesolveriteration(odesolverstate* state, ae_state *_state)
     ae_vector_set_length(&state->yns, n, _state);
     xc = state->xg.ptr.p_double[0];
     ae_v_move(&state->ytbl.ptr.pp_double[0][0], 1, &state->yc.ptr.p_double[0], 1, ae_v_len(0,n-1));
-    for(j=0; j<=n-1; j++)
-    {
+    for(j=0; j<=n-1; j++) {
         state->escale.ptr.p_double[j] = 0;
     }
     i = 1;
 lbl_3:
-    if( i>m-1 )
-    {
+    if( i>m-1 ) {
         goto lbl_5;
     }
-    
+
     /*
      * begin inner iteration
      */
 lbl_6:
-    if( ae_false )
-    {
+    if( ae_false ) {
         goto lbl_7;
     }
-    
+
     /*
      * truncate step if needed (beyond right boundary).
      * determine should we store X or not
      */
-    if( ae_fp_greater_eq(xc+h,state->xg.ptr.p_double[i]) )
-    {
+    if( ae_fp_greater_eq(xc+h,state->xg.ptr.p_double[i]) ) {
         h = state->xg.ptr.p_double[i]-xc;
         gridpoint = ae_true;
-    }
-    else
-    {
+    } else {
         gridpoint = ae_false;
     }
-    
+
     /*
      * Update error scale maximums
      *
      * These maximums are initialized by zeros,
      * then updated every iterations.
      */
-    for(j=0; j<=n-1; j++)
-    {
+    for(j=0; j<=n-1; j++) {
         state->escale.ptr.p_double[j] = ae_maxreal(state->escale.ptr.p_double[j], ae_fabs(state->yc.ptr.p_double[j], _state), _state);
     }
-    
+
     /*
      * make one step:
      * 1. calculate all info needed to do step
@@ -726,18 +702,16 @@ lbl_6:
     ae_v_move(&state->yns.ptr.p_double[0], 1, &state->yc.ptr.p_double[0], 1, ae_v_len(0,n-1));
     k = 0;
 lbl_8:
-    if( k>5 )
-    {
+    if( k>5 ) {
         goto lbl_10;
     }
-    
+
     /*
      * prepare data for the next update of YN/YNS
      */
     state->x = state->xscale*(xc+state->rka.ptr.p_double[k]*h);
     ae_v_move(&state->y.ptr.p_double[0], 1, &state->yc.ptr.p_double[0], 1, ae_v_len(0,n-1));
-    for(j=0; j<=k-1; j++)
-    {
+    for(j=0; j<=k-1; j++) {
         v = state->rkb.ptr.pp_double[k][j];
         ae_v_addd(&state->y.ptr.p_double[0], 1, &state->rkk.ptr.pp_double[j][0], 1, ae_v_len(0,n-1), v);
     }
@@ -749,7 +723,7 @@ lbl_0:
     state->repnfev = state->repnfev+1;
     v = h*state->xscale;
     ae_v_moved(&state->rkk.ptr.pp_double[k][0], 1, &state->dy.ptr.p_double[0], 1, ae_v_len(0,n-1), v);
-    
+
     /*
      * update YN/YNS
      */
@@ -760,78 +734,67 @@ lbl_0:
     k = k+1;
     goto lbl_8;
 lbl_10:
-    
+
     /*
      * estimate error
      */
     err = 0;
-    for(j=0; j<=n-1; j++)
-    {
-        if( !state->fraceps )
-        {
-            
+    for(j=0; j<=n-1; j++) {
+        if( !state->fraceps ) {
+
             /*
              * absolute error is estimated
              */
             err = ae_maxreal(err, ae_fabs(state->yn.ptr.p_double[j]-state->yns.ptr.p_double[j], _state), _state);
-        }
-        else
-        {
-            
+        } else {
+
             /*
              * Relative error is estimated
              */
             v = state->escale.ptr.p_double[j];
-            if( ae_fp_eq(v,0) )
-            {
+            if( ae_fp_eq(v,0) ) {
                 v = 1;
             }
             err = ae_maxreal(err, ae_fabs(state->yn.ptr.p_double[j]-state->yns.ptr.p_double[j], _state)/v, _state);
         }
     }
-    
+
     /*
      * calculate new step, restart if necessary
      */
-    if( ae_fp_less_eq(maxgrowpow*err,state->eps) )
-    {
+    if( ae_fp_less_eq(maxgrowpow*err,state->eps) ) {
         h2 = odesolver_odesolvermaxgrow*h;
-    }
-    else
-    {
+    } else {
         h2 = h*ae_pow(state->eps/err, 0.2, _state);
     }
-    if( ae_fp_less(h2,h/odesolver_odesolvermaxshrink) )
-    {
+    if( ae_fp_less(h2,h/odesolver_odesolvermaxshrink) ) {
         h2 = h/odesolver_odesolvermaxshrink;
     }
-    if( ae_fp_greater(err,state->eps) )
-    {
+    if( ae_fp_greater(err,state->eps) ) {
         h = h2;
         goto lbl_6;
     }
-    
+
     /*
      * advance position
      */
     xc = xc+h;
     ae_v_move(&state->yc.ptr.p_double[0], 1, &state->yn.ptr.p_double[0], 1, ae_v_len(0,n-1));
-    
+
     /*
      * update H
      */
     h = h2;
-    
+
     /*
      * break on grid point
      */
-    if( gridpoint )
-    {
+    if( gridpoint ) {
         goto lbl_7;
     }
     goto lbl_6;
 lbl_7:
-    
+
     /*
      * save result
      */
@@ -845,7 +808,7 @@ lbl_5:
 lbl_1:
     result = ae_false;
     return result;
-    
+
     /*
      * Saving state
      */
@@ -892,11 +855,11 @@ OUTPUT PARAMETERS:
      Copyright 01.09.2009 by Bochkanov Sergey
 *************************************************************************/
 void odesolverresults(odesolverstate* state,
-     ae_int_t* m,
-     /* Real    */ ae_vector* xtbl,
-     /* Real    */ ae_matrix* ytbl,
-     odesolverreport* rep,
-     ae_state *_state)
+                      ae_int_t* m,
+                      /* Real    */ ae_vector* xtbl,
+                      /* Real    */ ae_matrix* ytbl,
+                      odesolverreport* rep,
+                      ae_state *_state)
 {
     double v;
     ae_int_t i;
@@ -907,21 +870,17 @@ void odesolverresults(odesolverstate* state,
     _odesolverreport_clear(rep);
 
     rep->terminationtype = state->repterminationtype;
-    if( rep->terminationtype>0 )
-    {
+    if( rep->terminationtype>0 ) {
         *m = state->m;
         rep->nfev = state->repnfev;
         ae_vector_set_length(xtbl, state->m, _state);
         v = state->xscale;
         ae_v_moved(&xtbl->ptr.p_double[0], 1, &state->xg.ptr.p_double[0], 1, ae_v_len(0,state->m-1), v);
         ae_matrix_set_length(ytbl, state->m, state->n, _state);
-        for(i=0; i<=state->m-1; i++)
-        {
+        for(i=0; i<=state->m-1; i++) {
             ae_v_move(&ytbl->ptr.pp_double[i][0], 1, &state->ytbl.ptr.pp_double[i][0], 1, ae_v_len(0,state->n-1));
         }
-    }
-    else
-    {
+    } else {
         rep->nfev = 0;
     }
 }
@@ -931,21 +890,21 @@ void odesolverresults(odesolverstate* state,
 Internal initialization subroutine
 *************************************************************************/
 static void odesolver_odesolverinit(ae_int_t solvertype,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     /* Real    */ ae_vector* x,
-     ae_int_t m,
-     double eps,
-     double h,
-     odesolverstate* state,
-     ae_state *_state)
+                                    /* Real    */ ae_vector* y,
+                                    ae_int_t n,
+                                    /* Real    */ ae_vector* x,
+                                    ae_int_t m,
+                                    double eps,
+                                    double h,
+                                    odesolverstate* state,
+                                    ae_state *_state)
 {
     ae_int_t i;
     double v;
 
     _odesolverstate_clear(state);
 
-    
+
     /*
      * Prepare RComm
      */
@@ -954,26 +913,23 @@ static void odesolver_odesolverinit(ae_int_t solvertype,
     ae_vector_set_length(&state->rstate.ra, 5+1, _state);
     state->rstate.stage = -1;
     state->needdy = ae_false;
-    
+
     /*
      * check parameters.
      */
-    if( (n<=0||m<1)||ae_fp_eq(eps,0) )
-    {
+    if( (n<=0||m<1)||ae_fp_eq(eps,0) ) {
         state->repterminationtype = -1;
         return;
     }
-    if( ae_fp_less(h,0) )
-    {
+    if( ae_fp_less(h,0) ) {
         h = -h;
     }
-    
+
     /*
      * quick exit if necessary.
      * after this block we assume that M>1
      */
-    if( m==1 )
-    {
+    if( m==1 ) {
         state->repnfev = 0;
         state->repterminationtype = 1;
         ae_matrix_set_length(&state->ytbl, 1, n, _state);
@@ -982,37 +938,32 @@ static void odesolver_odesolverinit(ae_int_t solvertype,
         ae_v_move(&state->xg.ptr.p_double[0], 1, &x->ptr.p_double[0], 1, ae_v_len(0,m-1));
         return;
     }
-    
+
     /*
      * check again: correct order of X[]
      */
-    if( ae_fp_eq(x->ptr.p_double[1],x->ptr.p_double[0]) )
-    {
+    if( ae_fp_eq(x->ptr.p_double[1],x->ptr.p_double[0]) ) {
         state->repterminationtype = -2;
         return;
     }
-    for(i=1; i<=m-1; i++)
-    {
-        if( (ae_fp_greater(x->ptr.p_double[1],x->ptr.p_double[0])&&ae_fp_less_eq(x->ptr.p_double[i],x->ptr.p_double[i-1]))||(ae_fp_less(x->ptr.p_double[1],x->ptr.p_double[0])&&ae_fp_greater_eq(x->ptr.p_double[i],x->ptr.p_double[i-1])) )
-        {
+    for(i=1; i<=m-1; i++) {
+        if( (ae_fp_greater(x->ptr.p_double[1],x->ptr.p_double[0])&&ae_fp_less_eq(x->ptr.p_double[i],x->ptr.p_double[i-1]))||(ae_fp_less(x->ptr.p_double[1],x->ptr.p_double[0])&&ae_fp_greater_eq(x->ptr.p_double[i],x->ptr.p_double[i-1])) ) {
             state->repterminationtype = -2;
             return;
         }
     }
-    
+
     /*
      * auto-select H if necessary
      */
-    if( ae_fp_eq(h,0) )
-    {
+    if( ae_fp_eq(h,0) ) {
         v = ae_fabs(x->ptr.p_double[1]-x->ptr.p_double[0], _state);
-        for(i=2; i<=m-1; i++)
-        {
+        for(i=2; i<=m-1; i++) {
             v = ae_minreal(v, ae_fabs(x->ptr.p_double[i]-x->ptr.p_double[i-1], _state), _state);
         }
         h = 0.001*v;
     }
-    
+
     /*
      * store parameters
      */
@@ -1023,12 +974,9 @@ static void odesolver_odesolverinit(ae_int_t solvertype,
     state->fraceps = ae_fp_less(eps,0);
     ae_vector_set_length(&state->xg, m, _state);
     ae_v_move(&state->xg.ptr.p_double[0], 1, &x->ptr.p_double[0], 1, ae_v_len(0,m-1));
-    if( ae_fp_greater(x->ptr.p_double[1],x->ptr.p_double[0]) )
-    {
+    if( ae_fp_greater(x->ptr.p_double[1],x->ptr.p_double[0]) ) {
         state->xscale = 1;
-    }
-    else
-    {
+    } else {
         state->xscale = -1;
         ae_v_muld(&state->xg.ptr.p_double[0], 1, ae_v_len(0,m-1), -1);
     }
@@ -1036,7 +984,7 @@ static void odesolver_odesolverinit(ae_int_t solvertype,
     ae_v_move(&state->yc.ptr.p_double[0], 1, &y->ptr.p_double[0], 1, ae_v_len(0,n-1));
     state->solvertype = solvertype;
     state->repterminationtype = 0;
-    
+
     /*
      * Allocate arrays
      */
@@ -1047,34 +995,48 @@ static void odesolver_odesolverinit(ae_int_t solvertype,
 
 ae_bool _odesolverstate_init(odesolverstate* p, ae_state *_state, ae_bool make_automatic)
 {
-    if( !ae_vector_init(&p->yc, 0, DT_REAL, _state, make_automatic) )
+    if( !ae_vector_init(&p->yc, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->escale, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->escale, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->xg, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->xg, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->y, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->y, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->dy, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->dy, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_matrix_init(&p->ytbl, 0, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_matrix_init(&p->ytbl, 0, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->yn, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->yn, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->yns, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->yns, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->rka, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->rka, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->rkc, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->rkc, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init(&p->rkcs, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_vector_init(&p->rkcs, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_matrix_init(&p->rkb, 0, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_matrix_init(&p->rkb, 0, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_matrix_init(&p->rkk, 0, 0, DT_REAL, _state, make_automatic) )
+    }
+    if( !ae_matrix_init(&p->rkk, 0, 0, DT_REAL, _state, make_automatic) ) {
         return ae_false;
-    if( !_rcommstate_init(&p->rstate, _state, make_automatic) )
+    }
+    if( !_rcommstate_init(&p->rstate, _state, make_automatic) ) {
         return ae_false;
+    }
     return ae_true;
 }
 
@@ -1087,39 +1049,53 @@ ae_bool _odesolverstate_init_copy(odesolverstate* dst, odesolverstate* src, ae_s
     dst->h = src->h;
     dst->eps = src->eps;
     dst->fraceps = src->fraceps;
-    if( !ae_vector_init_copy(&dst->yc, &src->yc, _state, make_automatic) )
+    if( !ae_vector_init_copy(&dst->yc, &src->yc, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init_copy(&dst->escale, &src->escale, _state, make_automatic) )
+    }
+    if( !ae_vector_init_copy(&dst->escale, &src->escale, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init_copy(&dst->xg, &src->xg, _state, make_automatic) )
+    }
+    if( !ae_vector_init_copy(&dst->xg, &src->xg, _state, make_automatic) ) {
         return ae_false;
+    }
     dst->solvertype = src->solvertype;
     dst->needdy = src->needdy;
     dst->x = src->x;
-    if( !ae_vector_init_copy(&dst->y, &src->y, _state, make_automatic) )
+    if( !ae_vector_init_copy(&dst->y, &src->y, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init_copy(&dst->dy, &src->dy, _state, make_automatic) )
+    }
+    if( !ae_vector_init_copy(&dst->dy, &src->dy, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_matrix_init_copy(&dst->ytbl, &src->ytbl, _state, make_automatic) )
+    }
+    if( !ae_matrix_init_copy(&dst->ytbl, &src->ytbl, _state, make_automatic) ) {
         return ae_false;
+    }
     dst->repterminationtype = src->repterminationtype;
     dst->repnfev = src->repnfev;
-    if( !ae_vector_init_copy(&dst->yn, &src->yn, _state, make_automatic) )
+    if( !ae_vector_init_copy(&dst->yn, &src->yn, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init_copy(&dst->yns, &src->yns, _state, make_automatic) )
+    }
+    if( !ae_vector_init_copy(&dst->yns, &src->yns, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init_copy(&dst->rka, &src->rka, _state, make_automatic) )
+    }
+    if( !ae_vector_init_copy(&dst->rka, &src->rka, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init_copy(&dst->rkc, &src->rkc, _state, make_automatic) )
+    }
+    if( !ae_vector_init_copy(&dst->rkc, &src->rkc, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_vector_init_copy(&dst->rkcs, &src->rkcs, _state, make_automatic) )
+    }
+    if( !ae_vector_init_copy(&dst->rkcs, &src->rkcs, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_matrix_init_copy(&dst->rkb, &src->rkb, _state, make_automatic) )
+    }
+    if( !ae_matrix_init_copy(&dst->rkb, &src->rkb, _state, make_automatic) ) {
         return ae_false;
-    if( !ae_matrix_init_copy(&dst->rkk, &src->rkk, _state, make_automatic) )
+    }
+    if( !ae_matrix_init_copy(&dst->rkk, &src->rkk, _state, make_automatic) ) {
         return ae_false;
-    if( !_rcommstate_init_copy(&dst->rstate, &src->rstate, _state, make_automatic) )
+    }
+    if( !_rcommstate_init_copy(&dst->rstate, &src->rstate, _state, make_automatic) ) {
         return ae_false;
+    }
     return ae_true;
 }
 

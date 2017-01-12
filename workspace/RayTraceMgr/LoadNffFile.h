@@ -41,75 +41,76 @@ bool LoadNffFile( const char* filename, SceneDescription& theScene );
 
 // NffFileLoader are intended for future internal use.
 
-class NffFileLoader {
+class NffFileLoader
+{
 
 public:
-	NffFileLoader();
+    NffFileLoader();
 
-	// The "Load()" routines reads from the file and includes whatever it
-	//	knows how to process into the scene.  (If the scene already includes
-	//  items, they are left unchanged.)
-	bool Load( const char* filename, SceneDescription& theScene );
+    // The "Load()" routines reads from the file and includes whatever it
+    //	knows how to process into the scene.  (If the scene already includes
+    //  items, they are left unchanged.)
+    bool Load( const char* filename, SceneDescription& theScene );
 
-	// By default, the screen resolution is ignored. 
-	// Change IgnoreResolution to false to have the screen resolution
-	//		loaded into the Scene Description
-	bool IgnoreResolution;  
-
-private:
-	bool ReportUnsupportedFeatures;
-	bool UnsupFlagTooManyVerts;
-	bool UnsupFlagTruncatedCone;
-	bool UnsupFlagNormals;
-	bool UnsupFlagConeCylinderWarning;
-	long FileLineNumber;
+    // By default, the screen resolution is ignored.
+    // Change IgnoreResolution to false to have the screen resolution
+    //		loaded into the Scene Description
+    bool IgnoreResolution;
 
 private:
-	SceneDescription* ScenePtr;
-	void Reset();
+    bool ReportUnsupportedFeatures;
+    bool UnsupFlagTooManyVerts;
+    bool UnsupFlagTruncatedCone;
+    bool UnsupFlagNormals;
+    bool UnsupFlagConeCylinderWarning;
+    long FileLineNumber;
 
-	static char* PreparseNff( char* inbuf );
-	static int GetCommandNumber( char *cmd );
+private:
+    SceneDescription* ScenePtr;
+    void Reset();
 
-	void SetCameraViewInfo( CameraView& theView,
-							const VectorR3& viewPos, const VectorR3& lookAtPos, 
-							const VectorR3& upVector, double fovy,
-							int screenWidth, int screenHeight, double nearClipping);
+    static char* PreparseNff( char* inbuf );
+    static int GetCommandNumber( char *cmd );
 
-	bool ProcessFaceNFF( int numVerts, const Material* mat, FILE* infile );
-	void ProcessConeCylNFF( const VectorR3& baseCenter, double baseRadius, 
-							const VectorR3& topCenter, double topRadius );
-	static bool ReadVertexR3( VectorR3& vertReturned, FILE* infile );
+    void SetCameraViewInfo( CameraView& theView,
+                            const VectorR3& viewPos, const VectorR3& lookAtPos,
+                            const VectorR3& upVector, double fovy,
+                            int screenWidth, int screenHeight, double nearClipping);
 
-	//static char* ScanForNonwhite( char* inbuf );
-	//static char* ScanForWhite( char* inbuf );
-	//static char* ScanForWhiteOrSlash( char* inbuf );
-	//static char* ScanForSecondField( char* inbuf );
-	//static bool ReadVectorR4Hg( char* inbuf, VectorR4* theVec );
-	//bool ReadTexCoords( char* inbuf, VectorR2* theVec );
-	//static int NextTriVertIdx( int start, int* step, int totalNum );
+    bool ProcessFaceNFF( int numVerts, const Material* mat, FILE* infile );
+    void ProcessConeCylNFF( const VectorR3& baseCenter, double baseRadius,
+                            const VectorR3& topCenter, double topRadius );
+    static bool ReadVertexR3( VectorR3& vertReturned, FILE* infile );
 
-	void UnsupportedTooManyVerts( int maxVerts );
-	void UnsupportedNormals();
-	void UnsupConeCylinderWarning();
-	void UnsupportedTruncatedCone();
-	void AddUnsupportedCmd( char *cmd );
-	void PrintCmdNotSupportedErrors( FILE* outstream );
+    //static char* ScanForNonwhite( char* inbuf );
+    //static char* ScanForWhite( char* inbuf );
+    //static char* ScanForWhiteOrSlash( char* inbuf );
+    //static char* ScanForSecondField( char* inbuf );
+    //static bool ReadVectorR4Hg( char* inbuf, VectorR4* theVec );
+    //bool ReadTexCoords( char* inbuf, VectorR2* theVec );
+    //static int NextTriVertIdx( int start, int* step, int totalNum );
 
-	Array<char*> UnsupportedCmds;
+    void UnsupportedTooManyVerts( int maxVerts );
+    void UnsupportedNormals();
+    void UnsupConeCylinderWarning();
+    void UnsupportedTruncatedCone();
+    void AddUnsupportedCmd( char *cmd );
+    void PrintCmdNotSupportedErrors( FILE* outstream );
+
+    Array<char*> UnsupportedCmds;
 
 };
 
 inline NffFileLoader::NffFileLoader()
 {
-	IgnoreResolution = true;		// By default, ignore the view resolution specification
+    IgnoreResolution = true;		// By default, ignore the view resolution specification
 
-	ReportUnsupportedFeatures = true;
-	UnsupFlagTooManyVerts = false;
-	UnsupFlagNormals = false;
-	UnsupFlagTruncatedCone = false;
-	UnsupFlagConeCylinderWarning = false;
-	UnsupFlagTruncatedCone = false;
+    ReportUnsupportedFeatures = true;
+    UnsupFlagTooManyVerts = false;
+    UnsupFlagNormals = false;
+    UnsupFlagTruncatedCone = false;
+    UnsupFlagConeCylinderWarning = false;
+    UnsupFlagTruncatedCone = false;
 }
 
 

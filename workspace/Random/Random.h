@@ -20,28 +20,30 @@
 #include "math.h"
 #define FWHM_to_sigma ((double)0.644391971)
 
-class Random {
-	public:
-		double Gaussian();
-	private:
+class Random
+{
+public:
+    double Gaussian();
+private:
 };
 
-double inline Random::Gaussian() {
+double inline Random::Gaussian()
+{
 
-	// FIXME: Improve performance by reusing y2
-	double x1, x2, w, y1, y2;
- 
-         do {
-                 x1 = 2.0 * genrand() - 1.0;
-                 x2 = 2.0 * genrand() - 1.0;
-                 w = x1 * x1 + x2 * x2;
-         } while ( w >= 1.0 );
+    // FIXME: Improve performance by reusing y2
+    double x1, x2, w, y1, y2;
 
-         w = sqrt( (-2.0 * log( w ) ) / w );
-         y1 = x1 * w;
-         // y2 = x2 * w;
+    do {
+        x1 = 2.0 * genrand() - 1.0;
+        x2 = 2.0 * genrand() - 1.0;
+        w = x1 * x1 + x2 * x2;
+    } while ( w >= 1.0 );
 
-	return y1;
+    w = sqrt( (-2.0 * log( w ) ) / w );
+    y1 = x1 * w;
+    // y2 = x2 * w;
+
+    return y1;
 }
 
 #endif /* RANDOM_H */

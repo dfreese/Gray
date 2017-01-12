@@ -21,16 +21,17 @@
 
 using namespace std;
 
-class SphereSource : public Source {
+class SphereSource : public Source
+{
 public:
-	SphereSource();
-	SphereSource(const VectorR3 &pos, double radius, double act);
-	void SetRadius(double r);
+    SphereSource();
+    SphereSource(const VectorR3 &pos, double radius, double act);
+    void SetRadius(double r);
 
-	void virtual Decay(unsigned int photon_number);
-	bool virtual Inside(const VectorR3 & pos) const;
+    void virtual Decay(unsigned int photon_number);
+    bool virtual Inside(const VectorR3 & pos) const;
 private:
-	double radius;
+    double radius;
 };
 
 #endif

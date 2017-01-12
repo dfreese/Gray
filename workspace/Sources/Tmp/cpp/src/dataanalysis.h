@@ -34,24 +34,21 @@ http://www.fsf.org/licensing/licenses
 /////////////////////////////////////////////////////////////////////////
 namespace alglib_impl
 {
-typedef struct
-{
+typedef struct {
     double relclserror;
     double avgce;
     double rmserror;
     double avgerror;
     double avgrelerror;
 } cvreport;
-typedef struct
-{
+typedef struct {
     ae_int_t nvars;
     ae_int_t nclasses;
     ae_int_t ntrees;
     ae_int_t bufsize;
     ae_vector trees;
 } decisionforest;
-typedef struct
-{
+typedef struct {
     double relclserror;
     double avgce;
     double rmserror;
@@ -63,8 +60,7 @@ typedef struct
     double oobavgerror;
     double oobavgrelerror;
 } dfreport;
-typedef struct
-{
+typedef struct {
     ae_vector treebuf;
     ae_vector idxbuf;
     ae_vector tmpbufr;
@@ -78,12 +74,10 @@ typedef struct
     ae_vector evsbin;
     ae_vector evssplits;
 } dfinternalbuffers;
-typedef struct
-{
+typedef struct {
     ae_vector w;
 } linearmodel;
-typedef struct
-{
+typedef struct {
     ae_matrix c;
     double rmserror;
     double avgerror;
@@ -94,8 +88,7 @@ typedef struct
     ae_int_t ncvdefects;
     ae_vector cvdefects;
 } lrreport;
-typedef struct
-{
+typedef struct {
     ae_int_t hlnetworktype;
     ae_int_t hlnormtype;
     ae_vector hllayersizes;
@@ -114,12 +107,10 @@ typedef struct
     ae_vector nwbuf;
     ae_vector integerbuf;
 } multilayerperceptron;
-typedef struct
-{
+typedef struct {
     ae_vector w;
 } logitmodel;
-typedef struct
-{
+typedef struct {
     ae_bool brackt;
     ae_bool stage1;
     ae_int_t infoc;
@@ -146,13 +137,11 @@ typedef struct
     double width1;
     double xtrapf;
 } logitmcstate;
-typedef struct
-{
+typedef struct {
     ae_int_t ngrad;
     ae_int_t nhess;
 } mnlreport;
-typedef struct
-{
+typedef struct {
     ae_int_t n;
     ae_vector states;
     ae_int_t npairs;
@@ -181,29 +170,25 @@ typedef struct
     ae_vector h;
     ae_matrix p;
 } mcpdstate;
-typedef struct
-{
+typedef struct {
     ae_int_t inneriterationscount;
     ae_int_t outeriterationscount;
     ae_int_t nfev;
     ae_int_t terminationtype;
 } mcpdreport;
-typedef struct
-{
+typedef struct {
     ae_int_t ngrad;
     ae_int_t nhess;
     ae_int_t ncholesky;
 } mlpreport;
-typedef struct
-{
+typedef struct {
     double relclserror;
     double avgce;
     double rmserror;
     double avgerror;
     double avgrelerror;
 } mlpcvreport;
-typedef struct
-{
+typedef struct {
     ae_vector structinfo;
     ae_int_t ensemblesize;
     ae_int_t nin;
@@ -677,17 +662,17 @@ Important properties of s_out:
 * it contains alphanumeric characters, dots, underscores, minus signs
 * these symbols are grouped into words, which are separated by spaces
   and Windows-style (CR+LF) newlines
-* although  serializer  uses  spaces and CR+LF as separators, you can 
+* although  serializer  uses  spaces and CR+LF as separators, you can
   replace any separator character by arbitrary combination of spaces,
   tabs, Windows or Unix newlines. It allows flexible reformatting  of
-  the  string  in  case you want to include it into text or XML file. 
+  the  string  in  case you want to include it into text or XML file.
   But you should not insert separators into the middle of the "words"
   nor you should change case of letters.
 * s_out can be freely moved between 32-bit and 64-bit systems, little
   and big endian machines, and so on. You can serialize structure  on
   32-bit machine and unserialize it on 64-bit one (or vice versa), or
-  serialize  it  on  SPARC  and  unserialize  on  x86.  You  can also 
-  serialize  it  in  C++ version of ALGLIB and unserialize in C# one, 
+  serialize  it  on  SPARC  and  unserialize  on  x86.  You  can also
+  serialize  it  in  C++ version of ALGLIB and unserialize in C# one,
   and vice versa.
 *************************************************************************/
 void dfserialize(decisionforest &obj, std::string &s_out);
@@ -1203,17 +1188,17 @@ Important properties of s_out:
 * it contains alphanumeric characters, dots, underscores, minus signs
 * these symbols are grouped into words, which are separated by spaces
   and Windows-style (CR+LF) newlines
-* although  serializer  uses  spaces and CR+LF as separators, you can 
+* although  serializer  uses  spaces and CR+LF as separators, you can
   replace any separator character by arbitrary combination of spaces,
   tabs, Windows or Unix newlines. It allows flexible reformatting  of
-  the  string  in  case you want to include it into text or XML file. 
+  the  string  in  case you want to include it into text or XML file.
   But you should not insert separators into the middle of the "words"
   nor you should change case of letters.
 * s_out can be freely moved between 32-bit and 64-bit systems, little
   and big endian machines, and so on. You can serialize structure  on
   32-bit machine and unserialize it on 64-bit one (or vice versa), or
-  serialize  it  on  SPARC  and  unserialize  on  x86.  You  can also 
-  serialize  it  in  C++ version of ALGLIB and unserialize in C# one, 
+  serialize  it  on  SPARC  and  unserialize  on  x86.  You  can also
+  serialize  it  in  C++ version of ALGLIB and unserialize in C# one,
   and vice versa.
 *************************************************************************/
 void mlpserialize(multilayerperceptron &obj, std::string &s_out);
@@ -3301,163 +3286,163 @@ void pcabuildbasis(const real_2d_array &x, const ae_int_t npoints, const ae_int_
 namespace alglib_impl
 {
 void dserrallocate(ae_int_t nclasses,
-     /* Real    */ ae_vector* buf,
-     ae_state *_state);
+                   /* Real    */ ae_vector* buf,
+                   ae_state *_state);
 void dserraccumulate(/* Real    */ ae_vector* buf,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* desiredy,
-     ae_state *_state);
+                                   /* Real    */ ae_vector* y,
+                                   /* Real    */ ae_vector* desiredy,
+                                   ae_state *_state);
 void dserrfinish(/* Real    */ ae_vector* buf, ae_state *_state);
 void dsnormalize(/* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_int_t nvars,
-     ae_int_t* info,
-     /* Real    */ ae_vector* means,
-     /* Real    */ ae_vector* sigmas,
-     ae_state *_state);
+                               ae_int_t npoints,
+                               ae_int_t nvars,
+                               ae_int_t* info,
+                               /* Real    */ ae_vector* means,
+                               /* Real    */ ae_vector* sigmas,
+                               ae_state *_state);
 void dsnormalizec(/* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_int_t nvars,
-     ae_int_t* info,
-     /* Real    */ ae_vector* means,
-     /* Real    */ ae_vector* sigmas,
-     ae_state *_state);
+                                ae_int_t npoints,
+                                ae_int_t nvars,
+                                ae_int_t* info,
+                                /* Real    */ ae_vector* means,
+                                /* Real    */ ae_vector* sigmas,
+                                ae_state *_state);
 double dsgetmeanmindistance(/* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_int_t nvars,
-     ae_state *_state);
+        ae_int_t npoints,
+        ae_int_t nvars,
+        ae_state *_state);
 void dstie(/* Real    */ ae_vector* a,
-     ae_int_t n,
-     /* Integer */ ae_vector* ties,
-     ae_int_t* tiecount,
-     /* Integer */ ae_vector* p1,
-     /* Integer */ ae_vector* p2,
-     ae_state *_state);
+                         ae_int_t n,
+                         /* Integer */ ae_vector* ties,
+                         ae_int_t* tiecount,
+                         /* Integer */ ae_vector* p1,
+                         /* Integer */ ae_vector* p2,
+                         ae_state *_state);
 void dstiefasti(/* Real    */ ae_vector* a,
-     /* Integer */ ae_vector* b,
-     ae_int_t n,
-     /* Integer */ ae_vector* ties,
-     ae_int_t* tiecount,
-     /* Real    */ ae_vector* bufr,
-     /* Integer */ ae_vector* bufi,
-     ae_state *_state);
+                              /* Integer */ ae_vector* b,
+                              ae_int_t n,
+                              /* Integer */ ae_vector* ties,
+                              ae_int_t* tiecount,
+                              /* Real    */ ae_vector* bufr,
+                              /* Integer */ ae_vector* bufi,
+                              ae_state *_state);
 void dsoptimalsplit2(/* Real    */ ae_vector* a,
-     /* Integer */ ae_vector* c,
-     ae_int_t n,
-     ae_int_t* info,
-     double* threshold,
-     double* pal,
-     double* pbl,
-     double* par,
-     double* pbr,
-     double* cve,
-     ae_state *_state);
+                                   /* Integer */ ae_vector* c,
+                                   ae_int_t n,
+                                   ae_int_t* info,
+                                   double* threshold,
+                                   double* pal,
+                                   double* pbl,
+                                   double* par,
+                                   double* pbr,
+                                   double* cve,
+                                   ae_state *_state);
 void dsoptimalsplit2fast(/* Real    */ ae_vector* a,
-     /* Integer */ ae_vector* c,
-     /* Integer */ ae_vector* tiesbuf,
-     /* Integer */ ae_vector* cntbuf,
-     /* Real    */ ae_vector* bufr,
-     /* Integer */ ae_vector* bufi,
-     ae_int_t n,
-     ae_int_t nc,
-     double alpha,
-     ae_int_t* info,
-     double* threshold,
-     double* rms,
-     double* cvrms,
-     ae_state *_state);
+                                       /* Integer */ ae_vector* c,
+                                       /* Integer */ ae_vector* tiesbuf,
+                                       /* Integer */ ae_vector* cntbuf,
+                                       /* Real    */ ae_vector* bufr,
+                                       /* Integer */ ae_vector* bufi,
+                                       ae_int_t n,
+                                       ae_int_t nc,
+                                       double alpha,
+                                       ae_int_t* info,
+                                       double* threshold,
+                                       double* rms,
+                                       double* cvrms,
+                                       ae_state *_state);
 void dssplitk(/* Real    */ ae_vector* a,
-     /* Integer */ ae_vector* c,
-     ae_int_t n,
-     ae_int_t nc,
-     ae_int_t kmax,
-     ae_int_t* info,
-     /* Real    */ ae_vector* thresholds,
-     ae_int_t* ni,
-     double* cve,
-     ae_state *_state);
+                            /* Integer */ ae_vector* c,
+                            ae_int_t n,
+                            ae_int_t nc,
+                            ae_int_t kmax,
+                            ae_int_t* info,
+                            /* Real    */ ae_vector* thresholds,
+                            ae_int_t* ni,
+                            double* cve,
+                            ae_state *_state);
 void dsoptimalsplitk(/* Real    */ ae_vector* a,
-     /* Integer */ ae_vector* c,
-     ae_int_t n,
-     ae_int_t nc,
-     ae_int_t kmax,
-     ae_int_t* info,
-     /* Real    */ ae_vector* thresholds,
-     ae_int_t* ni,
-     double* cve,
-     ae_state *_state);
+                                   /* Integer */ ae_vector* c,
+                                   ae_int_t n,
+                                   ae_int_t nc,
+                                   ae_int_t kmax,
+                                   ae_int_t* info,
+                                   /* Real    */ ae_vector* thresholds,
+                                   ae_int_t* ni,
+                                   double* cve,
+                                   ae_state *_state);
 ae_bool _cvreport_init(cvreport* p, ae_state *_state, ae_bool make_automatic);
 ae_bool _cvreport_init_copy(cvreport* dst, cvreport* src, ae_state *_state, ae_bool make_automatic);
 void _cvreport_clear(cvreport* p);
 void dfbuildrandomdecisionforest(/* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_int_t nvars,
-     ae_int_t nclasses,
-     ae_int_t ntrees,
-     double r,
-     ae_int_t* info,
-     decisionforest* df,
-     dfreport* rep,
-     ae_state *_state);
+        ae_int_t npoints,
+        ae_int_t nvars,
+        ae_int_t nclasses,
+        ae_int_t ntrees,
+        double r,
+        ae_int_t* info,
+        decisionforest* df,
+        dfreport* rep,
+        ae_state *_state);
 void dfbuildrandomdecisionforestx1(/* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_int_t nvars,
-     ae_int_t nclasses,
-     ae_int_t ntrees,
-     ae_int_t nrndvars,
-     double r,
-     ae_int_t* info,
-     decisionforest* df,
-     dfreport* rep,
-     ae_state *_state);
+        ae_int_t npoints,
+        ae_int_t nvars,
+        ae_int_t nclasses,
+        ae_int_t ntrees,
+        ae_int_t nrndvars,
+        double r,
+        ae_int_t* info,
+        decisionforest* df,
+        dfreport* rep,
+        ae_state *_state);
 void dfbuildinternal(/* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_int_t nvars,
-     ae_int_t nclasses,
-     ae_int_t ntrees,
-     ae_int_t samplesize,
-     ae_int_t nfeatures,
-     ae_int_t flags,
-     ae_int_t* info,
-     decisionforest* df,
-     dfreport* rep,
-     ae_state *_state);
+                                   ae_int_t npoints,
+                                   ae_int_t nvars,
+                                   ae_int_t nclasses,
+                                   ae_int_t ntrees,
+                                   ae_int_t samplesize,
+                                   ae_int_t nfeatures,
+                                   ae_int_t flags,
+                                   ae_int_t* info,
+                                   decisionforest* df,
+                                   dfreport* rep,
+                                   ae_state *_state);
 void dfprocess(decisionforest* df,
-     /* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_state *_state);
+               /* Real    */ ae_vector* x,
+               /* Real    */ ae_vector* y,
+               ae_state *_state);
 void dfprocessi(decisionforest* df,
-     /* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_state *_state);
+                /* Real    */ ae_vector* x,
+                /* Real    */ ae_vector* y,
+                ae_state *_state);
 double dfrelclserror(decisionforest* df,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_state *_state);
+                     /* Real    */ ae_matrix* xy,
+                     ae_int_t npoints,
+                     ae_state *_state);
 double dfavgce(decisionforest* df,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_state *_state);
+               /* Real    */ ae_matrix* xy,
+               ae_int_t npoints,
+               ae_state *_state);
 double dfrmserror(decisionforest* df,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_state *_state);
+                  /* Real    */ ae_matrix* xy,
+                  ae_int_t npoints,
+                  ae_state *_state);
 double dfavgerror(decisionforest* df,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_state *_state);
+                  /* Real    */ ae_matrix* xy,
+                  ae_int_t npoints,
+                  ae_state *_state);
 double dfavgrelerror(decisionforest* df,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_state *_state);
+                     /* Real    */ ae_matrix* xy,
+                     ae_int_t npoints,
+                     ae_state *_state);
 void dfcopy(decisionforest* df1, decisionforest* df2, ae_state *_state);
 void dfalloc(ae_serializer* s, decisionforest* forest, ae_state *_state);
 void dfserialize(ae_serializer* s,
-     decisionforest* forest,
-     ae_state *_state);
+                 decisionforest* forest,
+                 ae_state *_state);
 void dfunserialize(ae_serializer* s,
-     decisionforest* forest,
-     ae_state *_state);
+                   decisionforest* forest,
+                   ae_state *_state);
 ae_bool _decisionforest_init(decisionforest* p, ae_state *_state, ae_bool make_automatic);
 ae_bool _decisionforest_init_copy(decisionforest* dst, decisionforest* src, ae_state *_state, ae_bool make_automatic);
 void _decisionforest_clear(decisionforest* p);
@@ -3468,100 +3453,100 @@ ae_bool _dfinternalbuffers_init(dfinternalbuffers* p, ae_state *_state, ae_bool 
 ae_bool _dfinternalbuffers_init_copy(dfinternalbuffers* dst, dfinternalbuffers* src, ae_state *_state, ae_bool make_automatic);
 void _dfinternalbuffers_clear(dfinternalbuffers* p);
 void kmeansgenerate(/* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_int_t nvars,
-     ae_int_t k,
-     ae_int_t restarts,
-     ae_int_t* info,
-     /* Real    */ ae_matrix* c,
-     /* Integer */ ae_vector* xyc,
-     ae_state *_state);
+                                  ae_int_t npoints,
+                                  ae_int_t nvars,
+                                  ae_int_t k,
+                                  ae_int_t restarts,
+                                  ae_int_t* info,
+                                  /* Real    */ ae_matrix* c,
+                                  /* Integer */ ae_vector* xyc,
+                                  ae_state *_state);
 void fisherlda(/* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_int_t nvars,
-     ae_int_t nclasses,
-     ae_int_t* info,
-     /* Real    */ ae_vector* w,
-     ae_state *_state);
+                             ae_int_t npoints,
+                             ae_int_t nvars,
+                             ae_int_t nclasses,
+                             ae_int_t* info,
+                             /* Real    */ ae_vector* w,
+                             ae_state *_state);
 void fisherldan(/* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_int_t nvars,
-     ae_int_t nclasses,
-     ae_int_t* info,
-     /* Real    */ ae_matrix* w,
-     ae_state *_state);
+                              ae_int_t npoints,
+                              ae_int_t nvars,
+                              ae_int_t nclasses,
+                              ae_int_t* info,
+                              /* Real    */ ae_matrix* w,
+                              ae_state *_state);
 void lrbuild(/* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_int_t nvars,
-     ae_int_t* info,
-     linearmodel* lm,
-     lrreport* ar,
-     ae_state *_state);
+                           ae_int_t npoints,
+                           ae_int_t nvars,
+                           ae_int_t* info,
+                           linearmodel* lm,
+                           lrreport* ar,
+                           ae_state *_state);
 void lrbuilds(/* Real    */ ae_matrix* xy,
-     /* Real    */ ae_vector* s,
-     ae_int_t npoints,
-     ae_int_t nvars,
-     ae_int_t* info,
-     linearmodel* lm,
-     lrreport* ar,
-     ae_state *_state);
+                            /* Real    */ ae_vector* s,
+                            ae_int_t npoints,
+                            ae_int_t nvars,
+                            ae_int_t* info,
+                            linearmodel* lm,
+                            lrreport* ar,
+                            ae_state *_state);
 void lrbuildzs(/* Real    */ ae_matrix* xy,
-     /* Real    */ ae_vector* s,
-     ae_int_t npoints,
-     ae_int_t nvars,
-     ae_int_t* info,
-     linearmodel* lm,
-     lrreport* ar,
-     ae_state *_state);
+                             /* Real    */ ae_vector* s,
+                             ae_int_t npoints,
+                             ae_int_t nvars,
+                             ae_int_t* info,
+                             linearmodel* lm,
+                             lrreport* ar,
+                             ae_state *_state);
 void lrbuildz(/* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_int_t nvars,
-     ae_int_t* info,
-     linearmodel* lm,
-     lrreport* ar,
-     ae_state *_state);
+                            ae_int_t npoints,
+                            ae_int_t nvars,
+                            ae_int_t* info,
+                            linearmodel* lm,
+                            lrreport* ar,
+                            ae_state *_state);
 void lrunpack(linearmodel* lm,
-     /* Real    */ ae_vector* v,
-     ae_int_t* nvars,
-     ae_state *_state);
+              /* Real    */ ae_vector* v,
+              ae_int_t* nvars,
+              ae_state *_state);
 void lrpack(/* Real    */ ae_vector* v,
-     ae_int_t nvars,
-     linearmodel* lm,
-     ae_state *_state);
+                          ae_int_t nvars,
+                          linearmodel* lm,
+                          ae_state *_state);
 double lrprocess(linearmodel* lm,
-     /* Real    */ ae_vector* x,
-     ae_state *_state);
+                 /* Real    */ ae_vector* x,
+                 ae_state *_state);
 double lrrmserror(linearmodel* lm,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_state *_state);
+                  /* Real    */ ae_matrix* xy,
+                  ae_int_t npoints,
+                  ae_state *_state);
 double lravgerror(linearmodel* lm,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_state *_state);
+                  /* Real    */ ae_matrix* xy,
+                  ae_int_t npoints,
+                  ae_state *_state);
 double lravgrelerror(linearmodel* lm,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_state *_state);
+                     /* Real    */ ae_matrix* xy,
+                     ae_int_t npoints,
+                     ae_state *_state);
 void lrcopy(linearmodel* lm1, linearmodel* lm2, ae_state *_state);
 void lrlines(/* Real    */ ae_matrix* xy,
-     /* Real    */ ae_vector* s,
-     ae_int_t n,
-     ae_int_t* info,
-     double* a,
-     double* b,
-     double* vara,
-     double* varb,
-     double* covab,
-     double* corrab,
-     double* p,
-     ae_state *_state);
+                           /* Real    */ ae_vector* s,
+                           ae_int_t n,
+                           ae_int_t* info,
+                           double* a,
+                           double* b,
+                           double* vara,
+                           double* varb,
+                           double* covab,
+                           double* corrab,
+                           double* p,
+                           ae_state *_state);
 void lrline(/* Real    */ ae_matrix* xy,
-     ae_int_t n,
-     ae_int_t* info,
-     double* a,
-     double* b,
-     ae_state *_state);
+                          ae_int_t n,
+                          ae_int_t* info,
+                          double* a,
+                          double* b,
+                          ae_state *_state);
 ae_bool _linearmodel_init(linearmodel* p, ae_state *_state, ae_bool make_automatic);
 ae_bool _linearmodel_init_copy(linearmodel* dst, linearmodel* src, ae_state *_state, ae_bool make_automatic);
 void _linearmodel_clear(linearmodel* p);
@@ -3569,305 +3554,305 @@ ae_bool _lrreport_init(lrreport* p, ae_state *_state, ae_bool make_automatic);
 ae_bool _lrreport_init_copy(lrreport* dst, lrreport* src, ae_state *_state, ae_bool make_automatic);
 void _lrreport_clear(lrreport* p);
 void mlpcreate0(ae_int_t nin,
-     ae_int_t nout,
-     multilayerperceptron* network,
-     ae_state *_state);
+                ae_int_t nout,
+                multilayerperceptron* network,
+                ae_state *_state);
 void mlpcreate1(ae_int_t nin,
-     ae_int_t nhid,
-     ae_int_t nout,
-     multilayerperceptron* network,
-     ae_state *_state);
+                ae_int_t nhid,
+                ae_int_t nout,
+                multilayerperceptron* network,
+                ae_state *_state);
 void mlpcreate2(ae_int_t nin,
-     ae_int_t nhid1,
-     ae_int_t nhid2,
-     ae_int_t nout,
-     multilayerperceptron* network,
-     ae_state *_state);
+                ae_int_t nhid1,
+                ae_int_t nhid2,
+                ae_int_t nout,
+                multilayerperceptron* network,
+                ae_state *_state);
 void mlpcreateb0(ae_int_t nin,
-     ae_int_t nout,
-     double b,
-     double d,
-     multilayerperceptron* network,
-     ae_state *_state);
+                 ae_int_t nout,
+                 double b,
+                 double d,
+                 multilayerperceptron* network,
+                 ae_state *_state);
 void mlpcreateb1(ae_int_t nin,
-     ae_int_t nhid,
-     ae_int_t nout,
-     double b,
-     double d,
-     multilayerperceptron* network,
-     ae_state *_state);
+                 ae_int_t nhid,
+                 ae_int_t nout,
+                 double b,
+                 double d,
+                 multilayerperceptron* network,
+                 ae_state *_state);
 void mlpcreateb2(ae_int_t nin,
-     ae_int_t nhid1,
-     ae_int_t nhid2,
-     ae_int_t nout,
-     double b,
-     double d,
-     multilayerperceptron* network,
-     ae_state *_state);
+                 ae_int_t nhid1,
+                 ae_int_t nhid2,
+                 ae_int_t nout,
+                 double b,
+                 double d,
+                 multilayerperceptron* network,
+                 ae_state *_state);
 void mlpcreater0(ae_int_t nin,
-     ae_int_t nout,
-     double a,
-     double b,
-     multilayerperceptron* network,
-     ae_state *_state);
+                 ae_int_t nout,
+                 double a,
+                 double b,
+                 multilayerperceptron* network,
+                 ae_state *_state);
 void mlpcreater1(ae_int_t nin,
-     ae_int_t nhid,
-     ae_int_t nout,
-     double a,
-     double b,
-     multilayerperceptron* network,
-     ae_state *_state);
+                 ae_int_t nhid,
+                 ae_int_t nout,
+                 double a,
+                 double b,
+                 multilayerperceptron* network,
+                 ae_state *_state);
 void mlpcreater2(ae_int_t nin,
-     ae_int_t nhid1,
-     ae_int_t nhid2,
-     ae_int_t nout,
-     double a,
-     double b,
-     multilayerperceptron* network,
-     ae_state *_state);
+                 ae_int_t nhid1,
+                 ae_int_t nhid2,
+                 ae_int_t nout,
+                 double a,
+                 double b,
+                 multilayerperceptron* network,
+                 ae_state *_state);
 void mlpcreatec0(ae_int_t nin,
-     ae_int_t nout,
-     multilayerperceptron* network,
-     ae_state *_state);
+                 ae_int_t nout,
+                 multilayerperceptron* network,
+                 ae_state *_state);
 void mlpcreatec1(ae_int_t nin,
-     ae_int_t nhid,
-     ae_int_t nout,
-     multilayerperceptron* network,
-     ae_state *_state);
+                 ae_int_t nhid,
+                 ae_int_t nout,
+                 multilayerperceptron* network,
+                 ae_state *_state);
 void mlpcreatec2(ae_int_t nin,
-     ae_int_t nhid1,
-     ae_int_t nhid2,
-     ae_int_t nout,
-     multilayerperceptron* network,
-     ae_state *_state);
+                 ae_int_t nhid1,
+                 ae_int_t nhid2,
+                 ae_int_t nout,
+                 multilayerperceptron* network,
+                 ae_state *_state);
 void mlpcopy(multilayerperceptron* network1,
-     multilayerperceptron* network2,
-     ae_state *_state);
+             multilayerperceptron* network2,
+             ae_state *_state);
 void mlpserializeold(multilayerperceptron* network,
-     /* Real    */ ae_vector* ra,
-     ae_int_t* rlen,
-     ae_state *_state);
+                     /* Real    */ ae_vector* ra,
+                     ae_int_t* rlen,
+                     ae_state *_state);
 void mlpunserializeold(/* Real    */ ae_vector* ra,
-     multilayerperceptron* network,
-     ae_state *_state);
+                                     multilayerperceptron* network,
+                                     ae_state *_state);
 void mlprandomize(multilayerperceptron* network, ae_state *_state);
 void mlprandomizefull(multilayerperceptron* network, ae_state *_state);
 void mlpinitpreprocessor(multilayerperceptron* network,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t ssize,
-     ae_state *_state);
+                         /* Real    */ ae_matrix* xy,
+                         ae_int_t ssize,
+                         ae_state *_state);
 void mlpproperties(multilayerperceptron* network,
-     ae_int_t* nin,
-     ae_int_t* nout,
-     ae_int_t* wcount,
-     ae_state *_state);
+                   ae_int_t* nin,
+                   ae_int_t* nout,
+                   ae_int_t* wcount,
+                   ae_state *_state);
 ae_bool mlpissoftmax(multilayerperceptron* network, ae_state *_state);
 ae_int_t mlpgetlayerscount(multilayerperceptron* network,
-     ae_state *_state);
+                           ae_state *_state);
 ae_int_t mlpgetlayersize(multilayerperceptron* network,
-     ae_int_t k,
-     ae_state *_state);
+                         ae_int_t k,
+                         ae_state *_state);
 void mlpgetinputscaling(multilayerperceptron* network,
-     ae_int_t i,
-     double* mean,
-     double* sigma,
-     ae_state *_state);
+                        ae_int_t i,
+                        double* mean,
+                        double* sigma,
+                        ae_state *_state);
 void mlpgetoutputscaling(multilayerperceptron* network,
-     ae_int_t i,
-     double* mean,
-     double* sigma,
-     ae_state *_state);
+                         ae_int_t i,
+                         double* mean,
+                         double* sigma,
+                         ae_state *_state);
 void mlpgetneuroninfo(multilayerperceptron* network,
-     ae_int_t k,
-     ae_int_t i,
-     ae_int_t* fkind,
-     double* threshold,
-     ae_state *_state);
+                      ae_int_t k,
+                      ae_int_t i,
+                      ae_int_t* fkind,
+                      double* threshold,
+                      ae_state *_state);
 double mlpgetweight(multilayerperceptron* network,
-     ae_int_t k0,
-     ae_int_t i0,
-     ae_int_t k1,
-     ae_int_t i1,
-     ae_state *_state);
+                    ae_int_t k0,
+                    ae_int_t i0,
+                    ae_int_t k1,
+                    ae_int_t i1,
+                    ae_state *_state);
 void mlpsetinputscaling(multilayerperceptron* network,
-     ae_int_t i,
-     double mean,
-     double sigma,
-     ae_state *_state);
+                        ae_int_t i,
+                        double mean,
+                        double sigma,
+                        ae_state *_state);
 void mlpsetoutputscaling(multilayerperceptron* network,
-     ae_int_t i,
-     double mean,
-     double sigma,
-     ae_state *_state);
+                         ae_int_t i,
+                         double mean,
+                         double sigma,
+                         ae_state *_state);
 void mlpsetneuroninfo(multilayerperceptron* network,
-     ae_int_t k,
-     ae_int_t i,
-     ae_int_t fkind,
-     double threshold,
-     ae_state *_state);
+                      ae_int_t k,
+                      ae_int_t i,
+                      ae_int_t fkind,
+                      double threshold,
+                      ae_state *_state);
 void mlpsetweight(multilayerperceptron* network,
-     ae_int_t k0,
-     ae_int_t i0,
-     ae_int_t k1,
-     ae_int_t i1,
-     double w,
-     ae_state *_state);
+                  ae_int_t k0,
+                  ae_int_t i0,
+                  ae_int_t k1,
+                  ae_int_t i1,
+                  double w,
+                  ae_state *_state);
 void mlpactivationfunction(double net,
-     ae_int_t k,
-     double* f,
-     double* df,
-     double* d2f,
-     ae_state *_state);
+                           ae_int_t k,
+                           double* f,
+                           double* df,
+                           double* d2f,
+                           ae_state *_state);
 void mlpprocess(multilayerperceptron* network,
-     /* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_state *_state);
+                /* Real    */ ae_vector* x,
+                /* Real    */ ae_vector* y,
+                ae_state *_state);
 void mlpprocessi(multilayerperceptron* network,
-     /* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_state *_state);
+                 /* Real    */ ae_vector* x,
+                 /* Real    */ ae_vector* y,
+                 ae_state *_state);
 double mlperror(multilayerperceptron* network,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t ssize,
-     ae_state *_state);
+                /* Real    */ ae_matrix* xy,
+                ae_int_t ssize,
+                ae_state *_state);
 double mlperrorn(multilayerperceptron* network,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t ssize,
-     ae_state *_state);
+                 /* Real    */ ae_matrix* xy,
+                 ae_int_t ssize,
+                 ae_state *_state);
 ae_int_t mlpclserror(multilayerperceptron* network,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t ssize,
-     ae_state *_state);
+                     /* Real    */ ae_matrix* xy,
+                     ae_int_t ssize,
+                     ae_state *_state);
 double mlprelclserror(multilayerperceptron* network,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_state *_state);
+                      /* Real    */ ae_matrix* xy,
+                      ae_int_t npoints,
+                      ae_state *_state);
 double mlpavgce(multilayerperceptron* network,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_state *_state);
+                /* Real    */ ae_matrix* xy,
+                ae_int_t npoints,
+                ae_state *_state);
 double mlprmserror(multilayerperceptron* network,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_state *_state);
+                   /* Real    */ ae_matrix* xy,
+                   ae_int_t npoints,
+                   ae_state *_state);
 double mlpavgerror(multilayerperceptron* network,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_state *_state);
+                   /* Real    */ ae_matrix* xy,
+                   ae_int_t npoints,
+                   ae_state *_state);
 double mlpavgrelerror(multilayerperceptron* network,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_state *_state);
+                      /* Real    */ ae_matrix* xy,
+                      ae_int_t npoints,
+                      ae_state *_state);
 void mlpgrad(multilayerperceptron* network,
-     /* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* desiredy,
-     double* e,
-     /* Real    */ ae_vector* grad,
-     ae_state *_state);
+             /* Real    */ ae_vector* x,
+             /* Real    */ ae_vector* desiredy,
+             double* e,
+             /* Real    */ ae_vector* grad,
+             ae_state *_state);
 void mlpgradn(multilayerperceptron* network,
-     /* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* desiredy,
-     double* e,
-     /* Real    */ ae_vector* grad,
-     ae_state *_state);
+              /* Real    */ ae_vector* x,
+              /* Real    */ ae_vector* desiredy,
+              double* e,
+              /* Real    */ ae_vector* grad,
+              ae_state *_state);
 void mlpgradbatch(multilayerperceptron* network,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t ssize,
-     double* e,
-     /* Real    */ ae_vector* grad,
-     ae_state *_state);
+                  /* Real    */ ae_matrix* xy,
+                  ae_int_t ssize,
+                  double* e,
+                  /* Real    */ ae_vector* grad,
+                  ae_state *_state);
 void mlpgradnbatch(multilayerperceptron* network,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t ssize,
-     double* e,
-     /* Real    */ ae_vector* grad,
-     ae_state *_state);
+                   /* Real    */ ae_matrix* xy,
+                   ae_int_t ssize,
+                   double* e,
+                   /* Real    */ ae_vector* grad,
+                   ae_state *_state);
 void mlphessiannbatch(multilayerperceptron* network,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t ssize,
-     double* e,
-     /* Real    */ ae_vector* grad,
-     /* Real    */ ae_matrix* h,
-     ae_state *_state);
+                      /* Real    */ ae_matrix* xy,
+                      ae_int_t ssize,
+                      double* e,
+                      /* Real    */ ae_vector* grad,
+                      /* Real    */ ae_matrix* h,
+                      ae_state *_state);
 void mlphessianbatch(multilayerperceptron* network,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t ssize,
-     double* e,
-     /* Real    */ ae_vector* grad,
-     /* Real    */ ae_matrix* h,
-     ae_state *_state);
+                     /* Real    */ ae_matrix* xy,
+                     ae_int_t ssize,
+                     double* e,
+                     /* Real    */ ae_vector* grad,
+                     /* Real    */ ae_matrix* h,
+                     ae_state *_state);
 void mlpinternalprocessvector(/* Integer */ ae_vector* structinfo,
-     /* Real    */ ae_vector* weights,
-     /* Real    */ ae_vector* columnmeans,
-     /* Real    */ ae_vector* columnsigmas,
-     /* Real    */ ae_vector* neurons,
-     /* Real    */ ae_vector* dfdnet,
-     /* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_state *_state);
+        /* Real    */ ae_vector* weights,
+        /* Real    */ ae_vector* columnmeans,
+        /* Real    */ ae_vector* columnsigmas,
+        /* Real    */ ae_vector* neurons,
+        /* Real    */ ae_vector* dfdnet,
+        /* Real    */ ae_vector* x,
+        /* Real    */ ae_vector* y,
+        ae_state *_state);
 void mlpalloc(ae_serializer* s,
-     multilayerperceptron* network,
-     ae_state *_state);
+              multilayerperceptron* network,
+              ae_state *_state);
 void mlpserialize(ae_serializer* s,
-     multilayerperceptron* network,
-     ae_state *_state);
+                  multilayerperceptron* network,
+                  ae_state *_state);
 void mlpunserialize(ae_serializer* s,
-     multilayerperceptron* network,
-     ae_state *_state);
+                    multilayerperceptron* network,
+                    ae_state *_state);
 ae_bool _multilayerperceptron_init(multilayerperceptron* p, ae_state *_state, ae_bool make_automatic);
 ae_bool _multilayerperceptron_init_copy(multilayerperceptron* dst, multilayerperceptron* src, ae_state *_state, ae_bool make_automatic);
 void _multilayerperceptron_clear(multilayerperceptron* p);
 void mnltrainh(/* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_int_t nvars,
-     ae_int_t nclasses,
-     ae_int_t* info,
-     logitmodel* lm,
-     mnlreport* rep,
-     ae_state *_state);
+                             ae_int_t npoints,
+                             ae_int_t nvars,
+                             ae_int_t nclasses,
+                             ae_int_t* info,
+                             logitmodel* lm,
+                             mnlreport* rep,
+                             ae_state *_state);
 void mnlprocess(logitmodel* lm,
-     /* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_state *_state);
+                /* Real    */ ae_vector* x,
+                /* Real    */ ae_vector* y,
+                ae_state *_state);
 void mnlprocessi(logitmodel* lm,
-     /* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_state *_state);
+                 /* Real    */ ae_vector* x,
+                 /* Real    */ ae_vector* y,
+                 ae_state *_state);
 void mnlunpack(logitmodel* lm,
-     /* Real    */ ae_matrix* a,
-     ae_int_t* nvars,
-     ae_int_t* nclasses,
-     ae_state *_state);
+               /* Real    */ ae_matrix* a,
+               ae_int_t* nvars,
+               ae_int_t* nclasses,
+               ae_state *_state);
 void mnlpack(/* Real    */ ae_matrix* a,
-     ae_int_t nvars,
-     ae_int_t nclasses,
-     logitmodel* lm,
-     ae_state *_state);
+                           ae_int_t nvars,
+                           ae_int_t nclasses,
+                           logitmodel* lm,
+                           ae_state *_state);
 void mnlcopy(logitmodel* lm1, logitmodel* lm2, ae_state *_state);
 double mnlavgce(logitmodel* lm,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_state *_state);
+                /* Real    */ ae_matrix* xy,
+                ae_int_t npoints,
+                ae_state *_state);
 double mnlrelclserror(logitmodel* lm,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_state *_state);
+                      /* Real    */ ae_matrix* xy,
+                      ae_int_t npoints,
+                      ae_state *_state);
 double mnlrmserror(logitmodel* lm,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_state *_state);
+                   /* Real    */ ae_matrix* xy,
+                   ae_int_t npoints,
+                   ae_state *_state);
 double mnlavgerror(logitmodel* lm,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_state *_state);
+                   /* Real    */ ae_matrix* xy,
+                   ae_int_t npoints,
+                   ae_state *_state);
 double mnlavgrelerror(logitmodel* lm,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t ssize,
-     ae_state *_state);
+                      /* Real    */ ae_matrix* xy,
+                      ae_int_t ssize,
+                      ae_state *_state);
 ae_int_t mnlclserror(logitmodel* lm,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_state *_state);
+                     /* Real    */ ae_matrix* xy,
+                     ae_int_t npoints,
+                     ae_state *_state);
 ae_bool _logitmodel_init(logitmodel* p, ae_state *_state, ae_bool make_automatic);
 ae_bool _logitmodel_init_copy(logitmodel* dst, logitmodel* src, ae_state *_state, ae_bool make_automatic);
 void _logitmodel_clear(logitmodel* p);
@@ -3879,57 +3864,57 @@ ae_bool _mnlreport_init_copy(mnlreport* dst, mnlreport* src, ae_state *_state, a
 void _mnlreport_clear(mnlreport* p);
 void mcpdcreate(ae_int_t n, mcpdstate* s, ae_state *_state);
 void mcpdcreateentry(ae_int_t n,
-     ae_int_t entrystate,
-     mcpdstate* s,
-     ae_state *_state);
+                     ae_int_t entrystate,
+                     mcpdstate* s,
+                     ae_state *_state);
 void mcpdcreateexit(ae_int_t n,
-     ae_int_t exitstate,
-     mcpdstate* s,
-     ae_state *_state);
+                    ae_int_t exitstate,
+                    mcpdstate* s,
+                    ae_state *_state);
 void mcpdcreateentryexit(ae_int_t n,
-     ae_int_t entrystate,
-     ae_int_t exitstate,
-     mcpdstate* s,
-     ae_state *_state);
+                         ae_int_t entrystate,
+                         ae_int_t exitstate,
+                         mcpdstate* s,
+                         ae_state *_state);
 void mcpdaddtrack(mcpdstate* s,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t k,
-     ae_state *_state);
+                  /* Real    */ ae_matrix* xy,
+                  ae_int_t k,
+                  ae_state *_state);
 void mcpdsetec(mcpdstate* s,
-     /* Real    */ ae_matrix* ec,
-     ae_state *_state);
+               /* Real    */ ae_matrix* ec,
+               ae_state *_state);
 void mcpdaddec(mcpdstate* s,
-     ae_int_t i,
-     ae_int_t j,
-     double c,
-     ae_state *_state);
+               ae_int_t i,
+               ae_int_t j,
+               double c,
+               ae_state *_state);
 void mcpdsetbc(mcpdstate* s,
-     /* Real    */ ae_matrix* bndl,
-     /* Real    */ ae_matrix* bndu,
-     ae_state *_state);
+               /* Real    */ ae_matrix* bndl,
+               /* Real    */ ae_matrix* bndu,
+               ae_state *_state);
 void mcpdaddbc(mcpdstate* s,
-     ae_int_t i,
-     ae_int_t j,
-     double bndl,
-     double bndu,
-     ae_state *_state);
+               ae_int_t i,
+               ae_int_t j,
+               double bndl,
+               double bndu,
+               ae_state *_state);
 void mcpdsetlc(mcpdstate* s,
-     /* Real    */ ae_matrix* c,
-     /* Integer */ ae_vector* ct,
-     ae_int_t k,
-     ae_state *_state);
+               /* Real    */ ae_matrix* c,
+               /* Integer */ ae_vector* ct,
+               ae_int_t k,
+               ae_state *_state);
 void mcpdsettikhonovregularizer(mcpdstate* s, double v, ae_state *_state);
 void mcpdsetprior(mcpdstate* s,
-     /* Real    */ ae_matrix* pp,
-     ae_state *_state);
+                  /* Real    */ ae_matrix* pp,
+                  ae_state *_state);
 void mcpdsetpredictionweights(mcpdstate* s,
-     /* Real    */ ae_vector* pw,
-     ae_state *_state);
+                              /* Real    */ ae_vector* pw,
+                              ae_state *_state);
 void mcpdsolve(mcpdstate* s, ae_state *_state);
 void mcpdresults(mcpdstate* s,
-     /* Real    */ ae_matrix* p,
-     mcpdreport* rep,
-     ae_state *_state);
+                 /* Real    */ ae_matrix* p,
+                 mcpdreport* rep,
+                 ae_state *_state);
 ae_bool _mcpdstate_init(mcpdstate* p, ae_state *_state, ae_bool make_automatic);
 ae_bool _mcpdstate_init_copy(mcpdstate* dst, mcpdstate* src, ae_state *_state, ae_bool make_automatic);
 void _mcpdstate_clear(mcpdstate* p);
@@ -3937,55 +3922,55 @@ ae_bool _mcpdreport_init(mcpdreport* p, ae_state *_state, ae_bool make_automatic
 ae_bool _mcpdreport_init_copy(mcpdreport* dst, mcpdreport* src, ae_state *_state, ae_bool make_automatic);
 void _mcpdreport_clear(mcpdreport* p);
 void mlptrainlm(multilayerperceptron* network,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     double decay,
-     ae_int_t restarts,
-     ae_int_t* info,
-     mlpreport* rep,
-     ae_state *_state);
+                /* Real    */ ae_matrix* xy,
+                ae_int_t npoints,
+                double decay,
+                ae_int_t restarts,
+                ae_int_t* info,
+                mlpreport* rep,
+                ae_state *_state);
 void mlptrainlbfgs(multilayerperceptron* network,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     double decay,
-     ae_int_t restarts,
-     double wstep,
-     ae_int_t maxits,
-     ae_int_t* info,
-     mlpreport* rep,
-     ae_state *_state);
+                   /* Real    */ ae_matrix* xy,
+                   ae_int_t npoints,
+                   double decay,
+                   ae_int_t restarts,
+                   double wstep,
+                   ae_int_t maxits,
+                   ae_int_t* info,
+                   mlpreport* rep,
+                   ae_state *_state);
 void mlptraines(multilayerperceptron* network,
-     /* Real    */ ae_matrix* trnxy,
-     ae_int_t trnsize,
-     /* Real    */ ae_matrix* valxy,
-     ae_int_t valsize,
-     double decay,
-     ae_int_t restarts,
-     ae_int_t* info,
-     mlpreport* rep,
-     ae_state *_state);
+                /* Real    */ ae_matrix* trnxy,
+                ae_int_t trnsize,
+                /* Real    */ ae_matrix* valxy,
+                ae_int_t valsize,
+                double decay,
+                ae_int_t restarts,
+                ae_int_t* info,
+                mlpreport* rep,
+                ae_state *_state);
 void mlpkfoldcvlbfgs(multilayerperceptron* network,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     double decay,
-     ae_int_t restarts,
-     double wstep,
-     ae_int_t maxits,
-     ae_int_t foldscount,
-     ae_int_t* info,
-     mlpreport* rep,
-     mlpcvreport* cvrep,
-     ae_state *_state);
+                     /* Real    */ ae_matrix* xy,
+                     ae_int_t npoints,
+                     double decay,
+                     ae_int_t restarts,
+                     double wstep,
+                     ae_int_t maxits,
+                     ae_int_t foldscount,
+                     ae_int_t* info,
+                     mlpreport* rep,
+                     mlpcvreport* cvrep,
+                     ae_state *_state);
 void mlpkfoldcvlm(multilayerperceptron* network,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     double decay,
-     ae_int_t restarts,
-     ae_int_t foldscount,
-     ae_int_t* info,
-     mlpreport* rep,
-     mlpcvreport* cvrep,
-     ae_state *_state);
+                  /* Real    */ ae_matrix* xy,
+                  ae_int_t npoints,
+                  double decay,
+                  ae_int_t restarts,
+                  ae_int_t foldscount,
+                  ae_int_t* info,
+                  mlpreport* rep,
+                  mlpcvreport* cvrep,
+                  ae_state *_state);
 ae_bool _mlpreport_init(mlpreport* p, ae_state *_state, ae_bool make_automatic);
 ae_bool _mlpreport_init_copy(mlpreport* dst, mlpreport* src, ae_state *_state, ae_bool make_automatic);
 void _mlpreport_clear(mlpreport* p);
@@ -3993,175 +3978,175 @@ ae_bool _mlpcvreport_init(mlpcvreport* p, ae_state *_state, ae_bool make_automat
 ae_bool _mlpcvreport_init_copy(mlpcvreport* dst, mlpcvreport* src, ae_state *_state, ae_bool make_automatic);
 void _mlpcvreport_clear(mlpcvreport* p);
 void mlpecreate0(ae_int_t nin,
-     ae_int_t nout,
-     ae_int_t ensemblesize,
-     mlpensemble* ensemble,
-     ae_state *_state);
+                 ae_int_t nout,
+                 ae_int_t ensemblesize,
+                 mlpensemble* ensemble,
+                 ae_state *_state);
 void mlpecreate1(ae_int_t nin,
-     ae_int_t nhid,
-     ae_int_t nout,
-     ae_int_t ensemblesize,
-     mlpensemble* ensemble,
-     ae_state *_state);
+                 ae_int_t nhid,
+                 ae_int_t nout,
+                 ae_int_t ensemblesize,
+                 mlpensemble* ensemble,
+                 ae_state *_state);
 void mlpecreate2(ae_int_t nin,
-     ae_int_t nhid1,
-     ae_int_t nhid2,
-     ae_int_t nout,
-     ae_int_t ensemblesize,
-     mlpensemble* ensemble,
-     ae_state *_state);
+                 ae_int_t nhid1,
+                 ae_int_t nhid2,
+                 ae_int_t nout,
+                 ae_int_t ensemblesize,
+                 mlpensemble* ensemble,
+                 ae_state *_state);
 void mlpecreateb0(ae_int_t nin,
-     ae_int_t nout,
-     double b,
-     double d,
-     ae_int_t ensemblesize,
-     mlpensemble* ensemble,
-     ae_state *_state);
+                  ae_int_t nout,
+                  double b,
+                  double d,
+                  ae_int_t ensemblesize,
+                  mlpensemble* ensemble,
+                  ae_state *_state);
 void mlpecreateb1(ae_int_t nin,
-     ae_int_t nhid,
-     ae_int_t nout,
-     double b,
-     double d,
-     ae_int_t ensemblesize,
-     mlpensemble* ensemble,
-     ae_state *_state);
+                  ae_int_t nhid,
+                  ae_int_t nout,
+                  double b,
+                  double d,
+                  ae_int_t ensemblesize,
+                  mlpensemble* ensemble,
+                  ae_state *_state);
 void mlpecreateb2(ae_int_t nin,
-     ae_int_t nhid1,
-     ae_int_t nhid2,
-     ae_int_t nout,
-     double b,
-     double d,
-     ae_int_t ensemblesize,
-     mlpensemble* ensemble,
-     ae_state *_state);
+                  ae_int_t nhid1,
+                  ae_int_t nhid2,
+                  ae_int_t nout,
+                  double b,
+                  double d,
+                  ae_int_t ensemblesize,
+                  mlpensemble* ensemble,
+                  ae_state *_state);
 void mlpecreater0(ae_int_t nin,
-     ae_int_t nout,
-     double a,
-     double b,
-     ae_int_t ensemblesize,
-     mlpensemble* ensemble,
-     ae_state *_state);
+                  ae_int_t nout,
+                  double a,
+                  double b,
+                  ae_int_t ensemblesize,
+                  mlpensemble* ensemble,
+                  ae_state *_state);
 void mlpecreater1(ae_int_t nin,
-     ae_int_t nhid,
-     ae_int_t nout,
-     double a,
-     double b,
-     ae_int_t ensemblesize,
-     mlpensemble* ensemble,
-     ae_state *_state);
+                  ae_int_t nhid,
+                  ae_int_t nout,
+                  double a,
+                  double b,
+                  ae_int_t ensemblesize,
+                  mlpensemble* ensemble,
+                  ae_state *_state);
 void mlpecreater2(ae_int_t nin,
-     ae_int_t nhid1,
-     ae_int_t nhid2,
-     ae_int_t nout,
-     double a,
-     double b,
-     ae_int_t ensemblesize,
-     mlpensemble* ensemble,
-     ae_state *_state);
+                  ae_int_t nhid1,
+                  ae_int_t nhid2,
+                  ae_int_t nout,
+                  double a,
+                  double b,
+                  ae_int_t ensemblesize,
+                  mlpensemble* ensemble,
+                  ae_state *_state);
 void mlpecreatec0(ae_int_t nin,
-     ae_int_t nout,
-     ae_int_t ensemblesize,
-     mlpensemble* ensemble,
-     ae_state *_state);
+                  ae_int_t nout,
+                  ae_int_t ensemblesize,
+                  mlpensemble* ensemble,
+                  ae_state *_state);
 void mlpecreatec1(ae_int_t nin,
-     ae_int_t nhid,
-     ae_int_t nout,
-     ae_int_t ensemblesize,
-     mlpensemble* ensemble,
-     ae_state *_state);
+                  ae_int_t nhid,
+                  ae_int_t nout,
+                  ae_int_t ensemblesize,
+                  mlpensemble* ensemble,
+                  ae_state *_state);
 void mlpecreatec2(ae_int_t nin,
-     ae_int_t nhid1,
-     ae_int_t nhid2,
-     ae_int_t nout,
-     ae_int_t ensemblesize,
-     mlpensemble* ensemble,
-     ae_state *_state);
+                  ae_int_t nhid1,
+                  ae_int_t nhid2,
+                  ae_int_t nout,
+                  ae_int_t ensemblesize,
+                  mlpensemble* ensemble,
+                  ae_state *_state);
 void mlpecreatefromnetwork(multilayerperceptron* network,
-     ae_int_t ensemblesize,
-     mlpensemble* ensemble,
-     ae_state *_state);
+                           ae_int_t ensemblesize,
+                           mlpensemble* ensemble,
+                           ae_state *_state);
 void mlpecopy(mlpensemble* ensemble1,
-     mlpensemble* ensemble2,
-     ae_state *_state);
+              mlpensemble* ensemble2,
+              ae_state *_state);
 void mlpeserialize(mlpensemble* ensemble,
-     /* Real    */ ae_vector* ra,
-     ae_int_t* rlen,
-     ae_state *_state);
+                   /* Real    */ ae_vector* ra,
+                   ae_int_t* rlen,
+                   ae_state *_state);
 void mlpeunserialize(/* Real    */ ae_vector* ra,
-     mlpensemble* ensemble,
-     ae_state *_state);
+                                   mlpensemble* ensemble,
+                                   ae_state *_state);
 void mlperandomize(mlpensemble* ensemble, ae_state *_state);
 void mlpeproperties(mlpensemble* ensemble,
-     ae_int_t* nin,
-     ae_int_t* nout,
-     ae_state *_state);
+                    ae_int_t* nin,
+                    ae_int_t* nout,
+                    ae_state *_state);
 ae_bool mlpeissoftmax(mlpensemble* ensemble, ae_state *_state);
 void mlpeprocess(mlpensemble* ensemble,
-     /* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_state *_state);
+                 /* Real    */ ae_vector* x,
+                 /* Real    */ ae_vector* y,
+                 ae_state *_state);
 void mlpeprocessi(mlpensemble* ensemble,
-     /* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_state *_state);
+                  /* Real    */ ae_vector* x,
+                  /* Real    */ ae_vector* y,
+                  ae_state *_state);
 double mlperelclserror(mlpensemble* ensemble,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_state *_state);
+                       /* Real    */ ae_matrix* xy,
+                       ae_int_t npoints,
+                       ae_state *_state);
 double mlpeavgce(mlpensemble* ensemble,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_state *_state);
+                 /* Real    */ ae_matrix* xy,
+                 ae_int_t npoints,
+                 ae_state *_state);
 double mlpermserror(mlpensemble* ensemble,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_state *_state);
+                    /* Real    */ ae_matrix* xy,
+                    ae_int_t npoints,
+                    ae_state *_state);
 double mlpeavgerror(mlpensemble* ensemble,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_state *_state);
+                    /* Real    */ ae_matrix* xy,
+                    ae_int_t npoints,
+                    ae_state *_state);
 double mlpeavgrelerror(mlpensemble* ensemble,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     ae_state *_state);
+                       /* Real    */ ae_matrix* xy,
+                       ae_int_t npoints,
+                       ae_state *_state);
 void mlpebagginglm(mlpensemble* ensemble,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     double decay,
-     ae_int_t restarts,
-     ae_int_t* info,
-     mlpreport* rep,
-     mlpcvreport* ooberrors,
-     ae_state *_state);
+                   /* Real    */ ae_matrix* xy,
+                   ae_int_t npoints,
+                   double decay,
+                   ae_int_t restarts,
+                   ae_int_t* info,
+                   mlpreport* rep,
+                   mlpcvreport* ooberrors,
+                   ae_state *_state);
 void mlpebagginglbfgs(mlpensemble* ensemble,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     double decay,
-     ae_int_t restarts,
-     double wstep,
-     ae_int_t maxits,
-     ae_int_t* info,
-     mlpreport* rep,
-     mlpcvreport* ooberrors,
-     ae_state *_state);
+                      /* Real    */ ae_matrix* xy,
+                      ae_int_t npoints,
+                      double decay,
+                      ae_int_t restarts,
+                      double wstep,
+                      ae_int_t maxits,
+                      ae_int_t* info,
+                      mlpreport* rep,
+                      mlpcvreport* ooberrors,
+                      ae_state *_state);
 void mlpetraines(mlpensemble* ensemble,
-     /* Real    */ ae_matrix* xy,
-     ae_int_t npoints,
-     double decay,
-     ae_int_t restarts,
-     ae_int_t* info,
-     mlpreport* rep,
-     ae_state *_state);
+                 /* Real    */ ae_matrix* xy,
+                 ae_int_t npoints,
+                 double decay,
+                 ae_int_t restarts,
+                 ae_int_t* info,
+                 mlpreport* rep,
+                 ae_state *_state);
 ae_bool _mlpensemble_init(mlpensemble* p, ae_state *_state, ae_bool make_automatic);
 ae_bool _mlpensemble_init_copy(mlpensemble* dst, mlpensemble* src, ae_state *_state, ae_bool make_automatic);
 void _mlpensemble_clear(mlpensemble* p);
 void pcabuildbasis(/* Real    */ ae_matrix* x,
-     ae_int_t npoints,
-     ae_int_t nvars,
-     ae_int_t* info,
-     /* Real    */ ae_vector* s2,
-     /* Real    */ ae_matrix* v,
-     ae_state *_state);
+                                 ae_int_t npoints,
+                                 ae_int_t nvars,
+                                 ae_int_t* info,
+                                 /* Real    */ ae_vector* s2,
+                                 /* Real    */ ae_matrix* v,
+                                 ae_state *_state);
 
 }
 #endif

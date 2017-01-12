@@ -53,29 +53,29 @@ LinearMapR2 LinearMapR2::Inverse() const			// Returns inverse
 {
 
 
-	register double detInv = 1.0/(m11*m22 - m12*m21) ;
+    register double detInv = 1.0/(m11*m22 - m12*m21) ;
 
-	return( LinearMapR2( m22*detInv, -m21*detInv, -m12*detInv, m11*detInv ) );
+    return( LinearMapR2( m22*detInv, -m21*detInv, -m12*detInv, m11*detInv ) );
 }
 
 LinearMapR2& LinearMapR2::Invert() 			// Converts into inverse.
 {
-	register double detInv = 1.0/(m11*m22 - m12*m21) ;
+    register double detInv = 1.0/(m11*m22 - m12*m21) ;
 
-	double temp;
-	temp = m11*detInv;
-	m11= m22*detInv;
-	m22=temp;
-	m12 = -m12*detInv;
-	m21 = -m22*detInv;
+    double temp;
+    temp = m11*detInv;
+    m11= m22*detInv;
+    m22=temp;
+    m12 = -m12*detInv;
+    m21 = -m22*detInv;
 
-	return ( *this );
+    return ( *this );
 }
 
 VectorR2 LinearMapR2::Solve(const VectorR2& u) const	// Returns solution
-{												
-	// Just uses Inverse() for now.
-	return ( Inverse()*u );
+{
+    // Just uses Inverse() for now.
+    return ( Inverse()*u );
 }
 
 // ******************************************************
@@ -97,7 +97,7 @@ VectorR2 LinearMapR2::Solve(const VectorR2& u) const	// Returns solution
 
 ostream& operator<< ( ostream& os, const VectorR2& u )
 {
-	return (os << "<" << u.x << "," << u.y << ">");
+    return (os << "<" << u.x << "," << u.y << ">");
 }
 
 

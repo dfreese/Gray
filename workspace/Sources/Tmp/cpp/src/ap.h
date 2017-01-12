@@ -38,8 +38,8 @@ http://www.fsf.org/licensing/licenses
 
 /////////////////////////////////////////////////////////////////////////
 //
-// THIS SECTION CONTAINS DECLARATIONS FOR BASIC FUNCTIONALITY 
-// LIKE MEMORY MANAGEMENT FOR VECTORS/MATRICES WHICH IS SHARED 
+// THIS SECTION CONTAINS DECLARATIONS FOR BASIC FUNCTIONALITY
+// LIKE MEMORY MANAGEMENT FOR VECTORS/MATRICES WHICH IS SHARED
 // BETWEEN C++ AND PURE C LIBRARIES
 //
 /////////////////////////////////////////////////////////////////////////
@@ -54,7 +54,7 @@ namespace alglib_impl
 #define AE_SUNC 3
 #define AE_INTEL 1
 #define AE_SPARC 2
- 
+
 /*
  * automatically determine compiler
  */
@@ -70,7 +70,7 @@ namespace alglib_impl
 #ifdef _MSC_VER
 #undef AE_COMPILER
 #define AE_COMPILER AE_MSVC
-#endif 
+#endif
 
 /*
  * if we work under C++ environment, define several conditions
@@ -175,17 +175,19 @@ typedef ptrdiff_t ae_int_t;
 #endif
 
 #ifdef AE_USE_CPP
-namespace alglib_impl { // namespace declaration continued
-#endif
-
-#endif
-#endif
-
-
-typedef struct { double x, y; } ae_complex;
-
-typedef enum
+namespace alglib_impl   // namespace declaration continued
 {
+#endif
+
+#endif
+#endif
+
+
+typedef struct {
+    double x, y;
+} ae_complex;
+
+typedef enum {
     ERR_OK = 0,
     ERR_OUT_OF_MEMORY = 1,
     ERR_XARRAY_TOO_LARGE = 2,
@@ -219,8 +221,7 @@ x-string (zero-terminated):
 
 Members of this structure are ae_int64_t to avoid alignment problems.
 ************************************************************************/
-typedef struct
-{
+typedef struct {
     ae_int64_t     owner;
     ae_int64_t     last_action;
     char *ptr;
@@ -249,8 +250,7 @@ x-vector:
 
 Members of this structure are ae_int64_t to avoid alignment problems.
 ************************************************************************/
-typedef struct
-{
+typedef struct {
     ae_int64_t     cnt;
     ae_int64_t     datatype;
     ae_int64_t     owner;
@@ -286,8 +286,7 @@ x-matrix:
 
 Members of this structure are ae_int64_t to avoid alignment problems.
 ************************************************************************/
-typedef struct
-{
+typedef struct {
     ae_int64_t     rows;
     ae_int64_t     cols;
     ae_int64_t     stride;
@@ -310,8 +309,7 @@ ptr             pointer which should be passed to the deallocator.
                 for "special" blocks (frame/stack boundaries).
 
 ************************************************************************/
-typedef struct ae_dyn_block
-{
+typedef struct ae_dyn_block {
     struct ae_dyn_block * volatile p_next;
     /* void *deallocator; */
     void (*deallocator)(void*);
@@ -321,21 +319,19 @@ typedef struct ae_dyn_block
 /************************************************************************
 frame marker
 ************************************************************************/
-typedef struct ae_frame
-{
+typedef struct ae_frame {
     ae_dyn_block db_marker;
 } ae_frame;
 
 /************************************************************************
 ALGLIB environment state
 ************************************************************************/
-typedef struct
-{
+typedef struct {
     ae_int_t endianness;
     double v_nan;
     double v_posinf;
     double v_neginf;
-    
+
     ae_dyn_block * volatile p_top_block;
     ae_dyn_block last_block;
 #ifndef AE_USE_CPP_ERROR_HANDLING
@@ -348,8 +344,7 @@ typedef struct
 /************************************************************************
 Serializer
 ************************************************************************/
-typedef struct
-{
+typedef struct {
     ae_int_t mode;
     ae_int_t entries_needed;
     ae_int_t entries_saved;
@@ -365,13 +360,11 @@ typedef struct
 
 typedef void(*ae_deallocator)(void*);
 
-typedef struct ae_vector
-{
+typedef struct ae_vector {
     ae_int_t cnt;
     ae_datatype datatype;
     ae_dyn_block data;
-    union
-    {
+    union {
         void *p_ptr;
         ae_bool *p_bool;
         ae_int_t *p_int;
@@ -380,15 +373,13 @@ typedef struct ae_vector
     } ptr;
 } ae_vector;
 
-typedef struct ae_matrix
-{
+typedef struct ae_matrix {
     ae_int_t rows;
     ae_int_t cols;
     ae_int_t stride;
     ae_datatype datatype;
     ae_dyn_block data;
-    union
-    {
+    union {
         void *p_ptr;
         void **pp_void;
         ae_bool **pp_bool;
@@ -397,7 +388,7 @@ typedef struct ae_matrix
         ae_complex **pp_complex;
     } ptr;
 } ae_matrix;
- 
+
 ae_int_t ae_misalignment(const void *ptr, size_t alignment);
 void* ae_align(void *ptr, size_t alignment);
 void* aligned_malloc(size_t size, size_t alignment);
@@ -618,8 +609,7 @@ extern const double ae_pi;
 /************************************************************************
 RComm functions
 ************************************************************************/
-typedef struct rcommstate
-{
+typedef struct rcommstate {
     int stage;
     ae_vector ia;
     ae_vector ba;
@@ -676,7 +666,7 @@ class ap_error
 {
 public:
     std::string msg;
-    
+
     ap_error();
     ap_error(const char *s);
     static void make_assertion(bool bClause);
@@ -709,7 +699,7 @@ public:
 
     alglib_impl::ae_complex*       c_ptr();
     const alglib_impl::ae_complex* c_ptr() const;
-    
+
     std::string tostring(int dps) const;
 
     double x, y;
@@ -741,9 +731,9 @@ Level 1 BLAS functions
 
 NOTES:
 * destination and source should NOT overlap
-* stride is assumed to be positive, but it is not 
+* stride is assumed to be positive, but it is not
   assert'ed within function
-* conj_src parameter specifies whether complex source is conjugated 
+* conj_src parameter specifies whether complex source is conjugated
   before processing or not. Pass string which starts with 'N' or 'n'
   ("No conj", for example) to use unmodified parameter. All other
   values will result in conjugation of input, but it is recommended
@@ -941,7 +931,7 @@ public:
     ae_int_t rows() const;
     ae_int_t cols() const;
     bool isempty() const;
-	ae_int_t getstride() const;
+    ae_int_t getstride() const;
 
     void attach_to(alglib_impl::ae_matrix *ptr);
     void allocate_own(ae_int_t rows, ae_int_t cols, alglib_impl::ae_datatype datatype);
@@ -965,9 +955,9 @@ public:
 
     const ae_bool* operator[](ae_int_t i) const;
     ae_bool* operator[](ae_int_t i);
-    
+
     void setcontent(ae_int_t irows, ae_int_t icols, const bool *pContent );
-    
+
     std::string tostring() const ;
 };
 
@@ -986,7 +976,7 @@ public:
     ae_int_t* operator[](ae_int_t i);
 
     void setcontent(ae_int_t irows, ae_int_t icols, const ae_int_t *pContent );
-    
+
     std::string tostring() const;
 };
 
@@ -1130,123 +1120,123 @@ void _ialglib_mcopyblock_complex(ae_int_t m, ae_int_t n, const ae_complex *a, ae
 void _ialglib_mcopyunblock_complex(ae_int_t m, ae_int_t n, const double *a, ae_int_t op, ae_complex* b, ae_int_t stride);
 
 ae_bool _ialglib_i_rmatrixgemmf(ae_int_t m,
-     ae_int_t n,
-     ae_int_t k,
-     double alpha,
-     ae_matrix *a,
-     ae_int_t ia,
-     ae_int_t ja,
-     ae_int_t optypea,
-     ae_matrix *b,
-     ae_int_t ib,
-     ae_int_t jb,
-     ae_int_t optypeb,
-     double beta,
-     ae_matrix *c,
-     ae_int_t ic,
-     ae_int_t jc);
+                                ae_int_t n,
+                                ae_int_t k,
+                                double alpha,
+                                ae_matrix *a,
+                                ae_int_t ia,
+                                ae_int_t ja,
+                                ae_int_t optypea,
+                                ae_matrix *b,
+                                ae_int_t ib,
+                                ae_int_t jb,
+                                ae_int_t optypeb,
+                                double beta,
+                                ae_matrix *c,
+                                ae_int_t ic,
+                                ae_int_t jc);
 ae_bool _ialglib_i_cmatrixgemmf(ae_int_t m,
-     ae_int_t n,
-     ae_int_t k,
-     ae_complex alpha,
-     ae_matrix *a,
-     ae_int_t ia,
-     ae_int_t ja,
-     ae_int_t optypea,
-     ae_matrix *b,
-     ae_int_t ib,
-     ae_int_t jb,
-     ae_int_t optypeb,
-     ae_complex beta,
-     ae_matrix *c,
-     ae_int_t ic,
-     ae_int_t jc);
+                                ae_int_t n,
+                                ae_int_t k,
+                                ae_complex alpha,
+                                ae_matrix *a,
+                                ae_int_t ia,
+                                ae_int_t ja,
+                                ae_int_t optypea,
+                                ae_matrix *b,
+                                ae_int_t ib,
+                                ae_int_t jb,
+                                ae_int_t optypeb,
+                                ae_complex beta,
+                                ae_matrix *c,
+                                ae_int_t ic,
+                                ae_int_t jc);
 ae_bool _ialglib_i_cmatrixrighttrsmf(ae_int_t m,
-     ae_int_t n,
-     ae_matrix *a,
-     ae_int_t i1,
-     ae_int_t j1,
-     ae_bool isupper,
-     ae_bool isunit,
-     ae_int_t optype,
-     ae_matrix *x,
-     ae_int_t i2,
-     ae_int_t j2);
+                                     ae_int_t n,
+                                     ae_matrix *a,
+                                     ae_int_t i1,
+                                     ae_int_t j1,
+                                     ae_bool isupper,
+                                     ae_bool isunit,
+                                     ae_int_t optype,
+                                     ae_matrix *x,
+                                     ae_int_t i2,
+                                     ae_int_t j2);
 ae_bool _ialglib_i_rmatrixrighttrsmf(ae_int_t m,
-     ae_int_t n,
-     ae_matrix *a,
-     ae_int_t i1,
-     ae_int_t j1,
-     ae_bool isupper,
-     ae_bool isunit,
-     ae_int_t optype,
-     ae_matrix *x,
-     ae_int_t i2,
-     ae_int_t j2);
+                                     ae_int_t n,
+                                     ae_matrix *a,
+                                     ae_int_t i1,
+                                     ae_int_t j1,
+                                     ae_bool isupper,
+                                     ae_bool isunit,
+                                     ae_int_t optype,
+                                     ae_matrix *x,
+                                     ae_int_t i2,
+                                     ae_int_t j2);
 ae_bool _ialglib_i_cmatrixlefttrsmf(ae_int_t m,
-     ae_int_t n,
-     ae_matrix *a,
-     ae_int_t i1,
-     ae_int_t j1,
-     ae_bool isupper,
-     ae_bool isunit,
-     ae_int_t optype,
-     ae_matrix *x,
-     ae_int_t i2,
-     ae_int_t j2);
+                                    ae_int_t n,
+                                    ae_matrix *a,
+                                    ae_int_t i1,
+                                    ae_int_t j1,
+                                    ae_bool isupper,
+                                    ae_bool isunit,
+                                    ae_int_t optype,
+                                    ae_matrix *x,
+                                    ae_int_t i2,
+                                    ae_int_t j2);
 ae_bool _ialglib_i_rmatrixlefttrsmf(ae_int_t m,
-     ae_int_t n,
-     ae_matrix *a,
-     ae_int_t i1,
-     ae_int_t j1,
-     ae_bool isupper,
-     ae_bool isunit,
-     ae_int_t optype,
-     ae_matrix *x,
-     ae_int_t i2,
-     ae_int_t j2);
+                                    ae_int_t n,
+                                    ae_matrix *a,
+                                    ae_int_t i1,
+                                    ae_int_t j1,
+                                    ae_bool isupper,
+                                    ae_bool isunit,
+                                    ae_int_t optype,
+                                    ae_matrix *x,
+                                    ae_int_t i2,
+                                    ae_int_t j2);
 ae_bool _ialglib_i_cmatrixsyrkf(ae_int_t n,
-     ae_int_t k,
-     double alpha,
-     ae_matrix *a,
-     ae_int_t ia,
-     ae_int_t ja,
-     ae_int_t optypea,
-     double beta,
-     ae_matrix *c,
-     ae_int_t ic,
-     ae_int_t jc,
-     ae_bool isupper);
+                                ae_int_t k,
+                                double alpha,
+                                ae_matrix *a,
+                                ae_int_t ia,
+                                ae_int_t ja,
+                                ae_int_t optypea,
+                                double beta,
+                                ae_matrix *c,
+                                ae_int_t ic,
+                                ae_int_t jc,
+                                ae_bool isupper);
 ae_bool _ialglib_i_rmatrixsyrkf(ae_int_t n,
-     ae_int_t k,
-     double alpha,
-     ae_matrix *a,
-     ae_int_t ia,
-     ae_int_t ja,
-     ae_int_t optypea,
-     double beta,
-     ae_matrix *c,
-     ae_int_t ic,
-     ae_int_t jc,
-     ae_bool isupper);
+                                ae_int_t k,
+                                double alpha,
+                                ae_matrix *a,
+                                ae_int_t ia,
+                                ae_int_t ja,
+                                ae_int_t optypea,
+                                double beta,
+                                ae_matrix *c,
+                                ae_int_t ic,
+                                ae_int_t jc,
+                                ae_bool isupper);
 ae_bool _ialglib_i_cmatrixrank1f(ae_int_t m,
-     ae_int_t n,
-     ae_matrix *a,
-     ae_int_t ia,
-     ae_int_t ja,
-     ae_vector *u,
-     ae_int_t uoffs,
-     ae_vector *v,
-     ae_int_t voffs);
+                                 ae_int_t n,
+                                 ae_matrix *a,
+                                 ae_int_t ia,
+                                 ae_int_t ja,
+                                 ae_vector *u,
+                                 ae_int_t uoffs,
+                                 ae_vector *v,
+                                 ae_int_t voffs);
 ae_bool _ialglib_i_rmatrixrank1f(ae_int_t m,
-     ae_int_t n,
-     ae_matrix *a,
-     ae_int_t ia,
-     ae_int_t ja,
-     ae_vector *u,
-     ae_int_t uoffs,
-     ae_vector *v,
-     ae_int_t voffs);
+                                 ae_int_t n,
+                                 ae_matrix *a,
+                                 ae_int_t ia,
+                                 ae_int_t ja,
+                                 ae_vector *u,
+                                 ae_int_t uoffs,
+                                 ae_vector *v,
+                                 ae_int_t voffs);
 
 }
 

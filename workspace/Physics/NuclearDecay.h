@@ -33,56 +33,66 @@ using namespace std;
 
 enum DECAY_TYPE {DECAY_ERROR, POSITRON, GAMMA};
 
-class NuclearDecay {
+class NuclearDecay
+{
 public:
-	NuclearDecay();
-	void SetTime(const double t) { time = t; };
-	double Random();
-	friend ostream& operator<< ( ostream& os, const NuclearDecay& n );
-	MaterialBase * GetMaterial();
-	void SetMaterial(MaterialBase * mat);
-	void SetBeam(const VectorR3 &axis, const double angle);
-        int GetSourceNum(void) { return source_num;};
-	virtual void SetPosition(const VectorR3 & p) = 0;
-	virtual void Decay(unsigned int photon_number) = 0;
-	virtual void Reset() = 0;
-	virtual ostream & print_on(ostream &) const = 0;
-	virtual DECAY_TYPE GetType() const = 0;
+    NuclearDecay();
+    void SetTime(const double t)
+    {
+        time = t;
+    };
+    double Random();
+    friend ostream& operator<< ( ostream& os, const NuclearDecay& n );
+    MaterialBase * GetMaterial();
+    void SetMaterial(MaterialBase * mat);
+    void SetBeam(const VectorR3 &axis, const double angle);
+    int GetSourceNum(void)
+    {
+        return source_num;
+    };
+    virtual void SetPosition(const VectorR3 & p) = 0;
+    virtual void Decay(unsigned int photon_number) = 0;
+    virtual void Reset() = 0;
+    virtual ostream & print_on(ostream &) const = 0;
+    virtual DECAY_TYPE GetType() const = 0;
 
 
 public:
-	double time;
-	bool beamDecay;
-	double energy;
-	VectorR3 pos;
-	unsigned int decay_number;
-	int source_num;
-	
+    double time;
+    bool beamDecay;
+    double energy;
+    VectorR3 pos;
+    unsigned int decay_number;
+    int source_num;
+
 protected:
-	double beam_angle;
-	void BeamCone();
+    double beam_angle;
+    void BeamCone();
 
-	VectorR3 beam_axis;	
-	void RandomHemiCube(VectorR3 & p);
-	void Gaussian();
-	double getGaussian();
-	void UniformSphere(VectorR3 & p);
-    	bool gaussAccess;
-    	double g1, g2;
+    VectorR3 beam_axis;
+    void RandomHemiCube(VectorR3 & p);
+    void Gaussian();
+    double getGaussian();
+    void UniformSphere(VectorR3 & p);
+    bool gaussAccess;
+    double g1, g2;
 
-	MaterialBase * material;
+    MaterialBase * material;
 
-	inline friend ostream& operator<< (ostream&os,const NuclearDecay &n) {
-		return n.print_on(os);
-	}
+    inline friend ostream& operator<< (ostream&os,const NuclearDecay &n)
+    {
+        return n.print_on(os);
+    }
 };
 
-inline MaterialBase * NuclearDecay::GetMaterial() {
-	return material;
+inline MaterialBase * NuclearDecay::GetMaterial()
+{
+    return material;
 }
 
-inline void NuclearDecay::SetMaterial(MaterialBase * mat) {
-	material = mat;
+inline void NuclearDecay::SetMaterial(MaterialBase * mat)
+{
+    material = mat;
 }
 
 #endif /* NUCLEARDECAY_H */

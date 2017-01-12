@@ -27,7 +27,7 @@
 #include <assert.h>
 
 
-// Stores a parallelepiped in terms of 
+// Stores a parallelepiped in terms of
 //		(a) base point
 //		(b) three edge vectors
 
@@ -37,63 +37,75 @@ class Parallelepiped
 {
 public:
 
-	Parallelepiped();
-	Parallelepiped( const VectorR3& basePt, const VectorR3& edgeA, 
-						const VectorR3& edgeB, const VectorR3& edgeC );
+    Parallelepiped();
+    Parallelepiped( const VectorR3& basePt, const VectorR3& edgeA,
+                    const VectorR3& edgeB, const VectorR3& edgeC );
 
-	void Set( const VectorR3& basePt, const VectorR3& edgeA, 
-						const VectorR3& edgeB, const VectorR3& edgeC );
+    void Set( const VectorR3& basePt, const VectorR3& edgeA,
+              const VectorR3& edgeB, const VectorR3& edgeC );
 
-	const VectorR3& GetBasePt() const { return BasePoint; }
-	const VectorR3& GetEdgeA() const { return EdgeA; }
-	const VectorR3& GetEdgeB() const { return EdgeB; }
-	const VectorR3& GetEdgeC() const { return EdgeC; }
+    const VectorR3& GetBasePt() const
+    {
+        return BasePoint;
+    }
+    const VectorR3& GetEdgeA() const
+    {
+        return EdgeA;
+    }
+    const VectorR3& GetEdgeB() const
+    {
+        return EdgeB;
+    }
+    const VectorR3& GetEdgeC() const
+    {
+        return EdgeC;
+    }
 
-	VectorR3 GetNormalFront() const;
-	VectorR3 GetNormalLeft() const;
-	VectorR3 GetNormalBottom() const;
+    VectorR3 GetNormalFront() const;
+    VectorR3 GetNormalLeft() const;
+    VectorR3 GetNormalBottom() const;
 
-	// The six GetFace functions return the fours vertices of the face
-	//		in counterclockwise order as seen from outside the parallelepiped
-	// "Front" means bounded by edges A and B.
-	// "Left" means bounded by edges B and C.
-	// "Bottom" means bounded by edges C and A.
-	// The base point lies at the bottom left front corner.
-	void GetFrontFace( VectorR3 *retVerts ) const;
-	void GetBackFace( VectorR3 *retVerts ) const;
-	void GetRightFace( VectorR3 *retVerts ) const;
-	void GetLeftFace( VectorR3 *retVerts ) const;
-	void GetTopFace( VectorR3 *retVerts ) const;
-	void GetBottomFace( VectorR3 *retVerts ) const;
+    // The six GetFace functions return the fours vertices of the face
+    //		in counterclockwise order as seen from outside the parallelepiped
+    // "Front" means bounded by edges A and B.
+    // "Left" means bounded by edges B and C.
+    // "Bottom" means bounded by edges C and A.
+    // The base point lies at the bottom left front corner.
+    void GetFrontFace( VectorR3 *retVerts ) const;
+    void GetBackFace( VectorR3 *retVerts ) const;
+    void GetRightFace( VectorR3 *retVerts ) const;
+    void GetLeftFace( VectorR3 *retVerts ) const;
+    void GetTopFace( VectorR3 *retVerts ) const;
+    void GetBottomFace( VectorR3 *retVerts ) const;
 
 private:
-	VectorR3 BasePoint;
-	VectorR3 EdgeA;
-	VectorR3 EdgeB;
-	VectorR3 EdgeC;
+    VectorR3 BasePoint;
+    VectorR3 EdgeA;
+    VectorR3 EdgeB;
+    VectorR3 EdgeC;
 };
 
-inline Parallelepiped::Parallelepiped() 
+inline Parallelepiped::Parallelepiped()
 {
-	BasePoint.SetZero();
-	EdgeA.SetUnitX();
-	EdgeB.SetUnitY();
-	EdgeC.SetUnitZ();
+    BasePoint.SetZero();
+    EdgeA.SetUnitX();
+    EdgeB.SetUnitY();
+    EdgeC.SetUnitZ();
 }
 
-inline Parallelepiped::Parallelepiped( const VectorR3& basePt, const VectorR3& edgeA, 
-										const VectorR3& edgeB, const VectorR3& edgeC ) 
-: BasePoint(basePt), EdgeA(edgeA), EdgeB(edgeB), EdgeC(edgeC)
+inline Parallelepiped::Parallelepiped( const VectorR3& basePt, const VectorR3& edgeA,
+                                       const VectorR3& edgeB, const VectorR3& edgeC )
+    : BasePoint(basePt), EdgeA(edgeA), EdgeB(edgeB), EdgeC(edgeC)
 {
 }
 
-inline void Parallelepiped::Set( const VectorR3& basePt, const VectorR3& edgeA, 
-								 const VectorR3& edgeB, const VectorR3& edgeC )
+inline void Parallelepiped::Set( const VectorR3& basePt, const VectorR3& edgeA,
+                                 const VectorR3& edgeB, const VectorR3& edgeC )
 {
-	BasePoint = basePt;
-	EdgeA = edgeA;
-	EdgeB = edgeB;
-	EdgeC = edgeC;
+    BasePoint = basePt;
+    EdgeA = edgeA;
+    EdgeB = edgeB;
+    EdgeC = edgeC;
 }
 
 

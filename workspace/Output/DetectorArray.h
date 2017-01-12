@@ -5,17 +5,18 @@
 #include "../VrMath/LinearR3.h"
 #include "../VrMath/LinearR4.h"
 
-class DetectorArray {
+class DetectorArray
+{
 public:
-	DetectorArray();
-	~DetectorArray();
+    DetectorArray();
+    ~DetectorArray();
 
-	// returns detector_id
-	unsigned AddDetector(const VectorR3 & pos, const VectorR3 &size, const RigidMapR3 & map, const double time_res, const double eres,unsigned x, unsigned y, unsigned z, unsigned bl);
-	void OutputDetectorArray();
-	friend ostream& operator<< ( ostream& os, const DetectorArray& d );
+    // returns detector_id
+    unsigned AddDetector(const VectorR3 & pos, const VectorR3 &size, const RigidMapR3 & map, const double time_res, const double eres,unsigned x, unsigned y, unsigned z, unsigned bl);
+    void OutputDetectorArray();
+    friend ostream& operator<< ( ostream& os, const DetectorArray& d );
 public:
-	Array<Detector*> d;
+    Array<Detector*> d;
 };
 
 #endif /*DETECTORARRAY_H_*/

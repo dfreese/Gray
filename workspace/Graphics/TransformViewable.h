@@ -21,7 +21,7 @@
 #ifndef TRANSFORM_VIEWABLE
 #define TRANSFORM_VIEWABLE
 
-// The routines in TransformViewable.cpp and .h allow you to transform 
+// The routines in TransformViewable.cpp and .h allow you to transform
 //	  a viewable object with a rigid transformation.  It does this by
 //    replacing the data in the viewable object appropriately.
 //

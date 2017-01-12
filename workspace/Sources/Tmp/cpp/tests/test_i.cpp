@@ -16,10 +16,14 @@
 using namespace alglib;
 
 bool doc_test_bool(bool v, bool t)
-{ return (v && t) || (!v && !t); }
+{
+    return (v && t) || (!v && !t);
+}
 
 bool doc_test_int(ae_int_t v, ae_int_t t)
-{ return v==t; }
+{
+    return v==t;
+}
 
 bool doc_test_real(double v, double t, double _threshold)
 {
@@ -39,64 +43,75 @@ bool doc_test_complex(alglib::complex v, alglib::complex t, double _threshold)
 bool doc_test_bool_vector(const boolean_1d_array &v, const boolean_1d_array &t)
 {
     ae_int_t i;
-    if( v.length()!=t.length() )
+    if( v.length()!=t.length() ) {
         return false;
+    }
     for(i=0; i<v.length(); i++)
-        if( v(i)!=t(i) )
+        if( v(i)!=t(i) ) {
             return false;
+        }
     return true;
 }
 
 bool doc_test_bool_matrix(const boolean_2d_array &v, const boolean_2d_array &t)
 {
     ae_int_t i, j;
-    if( v.rows()!=t.rows() )
+    if( v.rows()!=t.rows() ) {
         return false;
-    if( v.cols()!=t.cols() )
+    }
+    if( v.cols()!=t.cols() ) {
         return false;
+    }
     for(i=0; i<v.rows(); i++)
         for(j=0; j<v.cols(); j++)
-            if( v(i,j)!=t(i,j) )
+            if( v(i,j)!=t(i,j) ) {
                 return false;
+            }
     return true;
 }
 
 bool doc_test_int_vector(const integer_1d_array &v, const integer_1d_array &t)
 {
     ae_int_t i;
-    if( v.length()!=t.length() )
+    if( v.length()!=t.length() ) {
         return false;
+    }
     for(i=0; i<v.length(); i++)
-        if( v(i)!=t(i) )
+        if( v(i)!=t(i) ) {
             return false;
+        }
     return true;
 }
 
 bool doc_test_int_matrix(const integer_2d_array &v, const integer_2d_array &t)
 {
     ae_int_t i, j;
-    if( v.rows()!=t.rows() )
+    if( v.rows()!=t.rows() ) {
         return false;
-    if( v.cols()!=t.cols() )
+    }
+    if( v.cols()!=t.cols() ) {
         return false;
+    }
     for(i=0; i<v.rows(); i++)
         for(j=0; j<v.cols(); j++)
-            if( v(i,j)!=t(i,j) )
+            if( v(i,j)!=t(i,j) ) {
                 return false;
+            }
     return true;
 }
 
 bool doc_test_real_vector(const real_1d_array &v, const real_1d_array &t, double _threshold)
 {
     ae_int_t i;
-    if( v.length()!=t.length() )
+    if( v.length()!=t.length() ) {
         return false;
-    for(i=0; i<v.length(); i++)
-    {
+    }
+    for(i=0; i<v.length(); i++) {
         double s = _threshold>=0 ? 1.0 : fabs(t(i));
         double threshold = fabs(_threshold);
-        if( fabs(v(i)-t(i))/s>threshold )
+        if( fabs(v(i)-t(i))/s>threshold ) {
             return false;
+        }
     }
     return true;
 }
@@ -104,17 +119,19 @@ bool doc_test_real_vector(const real_1d_array &v, const real_1d_array &t, double
 bool doc_test_real_matrix(const real_2d_array &v, const real_2d_array &t, double _threshold)
 {
     ae_int_t i, j;
-    if( v.rows()!=t.rows() )
+    if( v.rows()!=t.rows() ) {
         return false;
-    if( v.cols()!=t.cols() )
+    }
+    if( v.cols()!=t.cols() ) {
         return false;
+    }
     for(i=0; i<v.rows(); i++)
-        for(j=0; j<v.cols(); j++)
-        {
+        for(j=0; j<v.cols(); j++) {
             double s = _threshold>=0 ? 1.0 : fabs(t(i,j));
             double threshold = fabs(_threshold);
-            if( fabs(v(i,j)-t(i,j))/s>threshold )
+            if( fabs(v(i,j)-t(i,j))/s>threshold ) {
                 return false;
+            }
         }
     return true;
 }
@@ -122,14 +139,15 @@ bool doc_test_real_matrix(const real_2d_array &v, const real_2d_array &t, double
 bool doc_test_complex_vector(const complex_1d_array &v, const complex_1d_array &t, double _threshold)
 {
     ae_int_t i;
-    if( v.length()!=t.length() )
+    if( v.length()!=t.length() ) {
         return false;
-    for(i=0; i<v.length(); i++)
-    {
+    }
+    for(i=0; i<v.length(); i++) {
         double s = _threshold>=0 ? 1.0 : alglib::abscomplex(t(i));
         double threshold = fabs(_threshold);
-        if( abscomplex(v(i)-t(i))/s>threshold )
+        if( abscomplex(v(i)-t(i))/s>threshold ) {
             return false;
+        }
     }
     return true;
 }
@@ -137,17 +155,19 @@ bool doc_test_complex_vector(const complex_1d_array &v, const complex_1d_array &
 bool doc_test_complex_matrix(const complex_2d_array &v, const complex_2d_array &t, double _threshold)
 {
     ae_int_t i, j;
-    if( v.rows()!=t.rows() )
+    if( v.rows()!=t.rows() ) {
         return false;
-    if( v.cols()!=t.cols() )
+    }
+    if( v.cols()!=t.cols() ) {
         return false;
+    }
     for(i=0; i<v.rows(); i++)
-        for(j=0; j<v.cols(); j++)
-        {
+        for(j=0; j<v.cols(); j++) {
             double s = _threshold>=0 ? 1.0 : alglib::abscomplex(t(i,j));
             double threshold = fabs(_threshold);
-            if( abscomplex(v(i,j)-t(i,j))/s>threshold )
+            if( abscomplex(v(i,j)-t(i,j))/s>threshold ) {
                 return false;
+            }
         }
     return true;
 }
@@ -158,8 +178,9 @@ void spoil_vector_by_adding_element(T &x)
     ae_int_t i;
     T y = x;
     x.setlength(y.length()+1);
-    for(i=0; i<y.length(); i++)
+    for(i=0; i<y.length(); i++) {
         x(i) = y(i);
+    }
     x(y.length()) = 0;
 }
 
@@ -169,8 +190,9 @@ void spoil_vector_by_deleting_element(T &x)
     ae_int_t i;
     T y = x;
     x.setlength(y.length()-1);
-    for(i=0; i<y.length()-1; i++)
+    for(i=0; i<y.length()-1; i++) {
         x(i) = y(i);
+    }
 }
 
 template<class T>
@@ -180,10 +202,12 @@ void spoil_matrix_by_adding_row(T &x)
     T y = x;
     x.setlength(y.rows()+1, y.cols());
     for(i=0; i<y.rows(); i++)
-        for(j=0; j<y.cols(); j++)
+        for(j=0; j<y.cols(); j++) {
             x(i,j) = y(i,j);
-    for(j=0; j<y.cols(); j++)
+        }
+    for(j=0; j<y.cols(); j++) {
         x(y.rows(),j) = 0;
+    }
 }
 
 template<class T>
@@ -193,8 +217,9 @@ void spoil_matrix_by_deleting_row(T &x)
     T y = x;
     x.setlength(y.rows()-1, y.cols());
     for(i=0; i<y.rows()-1; i++)
-        for(j=0; j<y.cols(); j++)
+        for(j=0; j<y.cols(); j++) {
             x(i,j) = y(i,j);
+        }
 }
 
 template<class T>
@@ -204,10 +229,12 @@ void spoil_matrix_by_adding_col(T &x)
     T y = x;
     x.setlength(y.rows(), y.cols()+1);
     for(i=0; i<y.rows(); i++)
-        for(j=0; j<y.cols(); j++)
+        for(j=0; j<y.cols(); j++) {
             x(i,j) = y(i,j);
-    for(i=0; i<y.rows(); i++)
+        }
+    for(i=0; i<y.rows(); i++) {
         x(i,y.cols()) = 0;
+    }
 }
 
 template<class T>
@@ -217,29 +244,33 @@ void spoil_matrix_by_deleting_col(T &x)
     T y = x;
     x.setlength(y.rows(), y.cols()-1);
     for(i=0; i<y.rows(); i++)
-        for(j=0; j<y.cols()-1; j++)
+        for(j=0; j<y.cols()-1; j++) {
             x(i,j) = y(i,j);
+        }
 }
 
 template<class T>
 void spoil_vector_by_nan(T &x)
 {
-    if( x.length()!=0 )
+    if( x.length()!=0 ) {
         x(randominteger(x.length())) = fp_nan;
+    }
 }
 
 template<class T>
 void spoil_vector_by_posinf(T &x)
 {
-    if( x.length()!=0 )
+    if( x.length()!=0 ) {
         x(randominteger(x.length())) = fp_posinf;
+    }
 }
 
 template<class T>
 void spoil_vector_by_neginf(T &x)
 {
-    if( x.length()!=0 )
+    if( x.length()!=0 ) {
         x(randominteger(x.length())) = fp_neginf;
+    }
 }
 
 
@@ -247,22 +278,25 @@ void spoil_vector_by_neginf(T &x)
 template<class T>
 void spoil_matrix_by_nan(T &x)
 {
-    if( x.rows()!=0 && x.cols()!=0 )
+    if( x.rows()!=0 && x.cols()!=0 ) {
         x(randominteger(x.rows()),randominteger(x.cols())) = fp_nan;
+    }
 }
 
 template<class T>
 void spoil_matrix_by_posinf(T &x)
 {
-    if( x.rows()!=0 && x.cols()!=0 )
+    if( x.rows()!=0 && x.cols()!=0 ) {
         x(randominteger(x.rows()),randominteger(x.cols())) = fp_posinf;
+    }
 }
 
 template<class T>
 void spoil_matrix_by_neginf(T &x)
 {
-    if( x.rows()!=0 && x.cols()!=0 )
+    if( x.rows()!=0 && x.cols()!=0 ) {
         x(randominteger(x.rows()),randominteger(x.cols())) = fp_neginf;
+    }
 }
 
 void function1_func(const real_1d_array &x, double &func, void *ptr)
@@ -272,7 +306,7 @@ void function1_func(const real_1d_array &x, double &func, void *ptr)
     //
     func = 100*pow(x[0]+3,4) + pow(x[1]-3,4);
 }
-void function1_grad(const real_1d_array &x, double &func, real_1d_array &grad, void *ptr) 
+void function1_grad(const real_1d_array &x, double &func, real_1d_array &grad, void *ptr)
 {
     //
     // this callback calculates f(x0,x1) = 100*(x0+3)^4 + (x1-3)^4
@@ -329,7 +363,7 @@ void function2_func(const real_1d_array &x, double &func, void *ptr)
     //
     func = pow(x[0]*x[0]+1,2) + pow(x[1]-1,2);
 }
-void function2_grad(const real_1d_array &x, double &func, real_1d_array &grad, void *ptr) 
+void function2_grad(const real_1d_array &x, double &func, real_1d_array &grad, void *ptr)
 {
     //
     // this callback calculates f(x0,x1) = (x0^2+1)^2 + (x1-1)^2
@@ -386,7 +420,7 @@ void bad_func(const real_1d_array &x, double &func, void *ptr)
     //
     func = 100*pow(x[0]+3,4) + pow(x[1]-3,4);
 }
-void bad_grad(const real_1d_array &x, double &func, real_1d_array &grad, void *ptr) 
+void bad_grad(const real_1d_array &x, double &func, real_1d_array &grad, void *ptr)
 {
     //
     // this callback calculates 'bad' function,
@@ -432,13 +466,13 @@ void  bad_jac(const real_1d_array &x, real_1d_array &fi, real_2d_array &jac, voi
     jac[1][0] = 0;
     jac[1][1] = 20*(x[1]-3);
 }
-void function_cx_1_func(const real_1d_array &c, const real_1d_array &x, double &func, void *ptr) 
+void function_cx_1_func(const real_1d_array &c, const real_1d_array &x, double &func, void *ptr)
 {
     // this callback calculates f(c,x)=exp(-c0*sqr(x0))
     // where x is a position on X-axis and c is adjustable parameter
     func = exp(-c[0]*pow(x[0],2));
 }
-void function_cx_1_grad(const real_1d_array &c, const real_1d_array &x, double &func, real_1d_array &grad, void *ptr) 
+void function_cx_1_grad(const real_1d_array &c, const real_1d_array &x, double &func, real_1d_array &grad, void *ptr)
 {
     // this callback calculates f(c,x)=exp(-c0*sqr(x0)) and gradient G={df/dc[i]}
     // where x is a position on X-axis and c is adjustable parameter.
@@ -446,7 +480,7 @@ void function_cx_1_grad(const real_1d_array &c, const real_1d_array &x, double &
     func = exp(-c[0]*pow(x[0],2));
     grad[0] = -pow(x[0],2)*func;
 }
-void function_cx_1_hess(const real_1d_array &c, const real_1d_array &x, double &func, real_1d_array &grad, real_2d_array &hess, void *ptr) 
+void function_cx_1_hess(const real_1d_array &c, const real_1d_array &x, double &func, real_1d_array &grad, real_2d_array &hess, void *ptr)
 {
     // this callback calculates f(c,x)=exp(-c0*sqr(x0)), gradient G={df/dc[i]} and Hessian H={d2f/(dc[i]*dc[j])}
     // where x is a position on X-axis and c is adjustable parameter.
@@ -455,17 +489,17 @@ void function_cx_1_hess(const real_1d_array &c, const real_1d_array &x, double &
     grad[0] = -pow(x[0],2)*func;
     hess[0][0] = pow(x[0],4)*func;
 }
-void ode_function_1_diff(const real_1d_array &y, double x, real_1d_array &dy, void *ptr) 
+void ode_function_1_diff(const real_1d_array &y, double x, real_1d_array &dy, void *ptr)
 {
     // this callback calculates f(y[],x)=-y[0]
     dy[0] = -y[0];
 }
-void int_function_1_func(double x, double xminusa, double bminusx, double &y, void *ptr) 
+void int_function_1_func(double x, double xminusa, double bminusx, double &y, void *ptr)
 {
     // this callback calculates f(x)=exp(x)
     y = exp(x);
 }
-void function_debt_func(const real_1d_array &c, const real_1d_array &x, double &func, void *ptr) 
+void function_debt_func(const real_1d_array &c, const real_1d_array &x, double &func, void *ptr)
 {
     //
     // this callback calculates f(c,x)=c[0]*(1+c[1]*(pow(x[0]-1999,c[2])-1))
@@ -480,8 +514,7 @@ void s1_grad(const real_1d_array &x, double &func, real_1d_array &grad, void *pt
     // function is trimmed when we calculate it near the singular points or outside of the [-1,+1].
     // Note that we do NOT calculate gradient in this case.
     //
-    if( (x[0]<=-0.999999999999) || (x[0]>=+0.999999999999) )
-    {
+    if( (x[0]<=-0.999999999999) || (x[0]>=+0.999999999999) ) {
         func = 1.0E+300;
         return;
     }
@@ -496,31 +529,30 @@ int main()
     int _spoil_scenario;
     printf("C++ tests. Please wait...\n");
 #ifdef AE_USE_ALLOC_COUNTER
-    if( alglib_impl::_alloc_counter!=0 )
-    {
+    if( alglib_impl::_alloc_counter!=0 ) {
         _TotalResult = false;
         printf("FAILURE: alloc_counter is non-zero on start!\n");
     }
 #endif
-    try
-    {
+    try {
         //
         // TEST nneighbor_d_1
         //      Nearest neighbor search, KNN queries
         //
         printf("0/91\n");
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<3; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<3; _spoil_scenario++) {
+            try {
                 real_2d_array a = "[[0,0],[0,1],[1,0],[1,1]]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_matrix_by_nan(a);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_matrix_by_posinf(a);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_matrix_by_neginf(a);
+                }
                 ae_int_t nx = 2;
                 ae_int_t ny = 0;
                 ae_int_t normtype = 2;
@@ -535,14 +567,13 @@ int main()
                 kdtreequeryresultsx(kdt, r);
                 _TestResult = _TestResult && doc_test_real_matrix(r, "[[0,0]]", 0.05);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "nneighbor_d_1");
             fflush(stdout);
         }
@@ -554,17 +585,18 @@ int main()
         //      Subsequent queries; buffered functions must use previously allocated storage (if large enough), so buffer may contain some info from previous call
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<3; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<3; _spoil_scenario++) {
+            try {
                 real_2d_array a = "[[0,0],[0,1],[1,0],[1,1]]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_matrix_by_nan(a);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_matrix_by_posinf(a);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_matrix_by_neginf(a);
+                }
                 ae_int_t nx = 2;
                 ae_int_t ny = 0;
                 ae_int_t normtype = 2;
@@ -584,14 +616,13 @@ int main()
                 kdtreequeryresultsx(kdt, rx);
                 _TestResult = _TestResult && doc_test_real_matrix(rx, "[[0,0],[1,1]]", 0.05);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "nneighbor_t_2");
             fflush(stdout);
         }
@@ -603,17 +634,18 @@ int main()
         //      Serialization of KD-trees
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<3; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<3; _spoil_scenario++) {
+            try {
                 real_2d_array a = "[[0,0],[0,1],[1,0],[1,1]]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_matrix_by_nan(a);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_matrix_by_posinf(a);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_matrix_by_neginf(a);
+                }
                 ae_int_t nx = 2;
                 ae_int_t ny = 0;
                 ae_int_t normtype = 2;
@@ -642,14 +674,13 @@ int main()
                 _TestResult = _TestResult && doc_test_real_matrix(r0, "[[0,0]]", 0.05);
                 _TestResult = _TestResult && doc_test_real_matrix(r1, "[[0,0]]", 0.05);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "nneighbor_d_2");
             fflush(stdout);
         }
@@ -661,17 +692,18 @@ int main()
         //      Basic functionality (moments, adev, median, percentile)
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<6; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<6; _spoil_scenario++) {
+            try {
                 real_1d_array x = "[0,1,4,9,16,25,36,49,64,81]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
+                }
                 double mean;
                 double variance;
                 double skewness;
@@ -702,23 +734,25 @@ int main()
                 samplemedian(x, v);
                 _TestResult = _TestResult && doc_test_real(v, 20.5, 0.01);
                 p = 0.5;
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     p = fp_nan;
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     p = fp_posinf;
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     p = fp_neginf;
+                }
                 samplepercentile(x, p, v);
                 _TestResult = _TestResult && doc_test_real(v, 20.5, 0.01);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "basestat_d_base");
             fflush(stdout);
         }
@@ -730,35 +764,43 @@ int main()
         //      Correlation (covariance) between two random variables
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<10; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<10; _spoil_scenario++) {
+            try {
                 //
                 // We have two samples - x and y, and want to measure dependency between them
                 //
                 real_1d_array x = "[0,1,4,9,16,25,36,49,64,81]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_vector_by_adding_element(x);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_vector_by_deleting_element(x);
+                }
                 real_1d_array y = "[0,1,2,3,4,5,6,7,8,9]";
-                if( _spoil_scenario==5 )
+                if( _spoil_scenario==5 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     spoil_vector_by_neginf(y);
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     spoil_vector_by_adding_element(y);
-                if( _spoil_scenario==9 )
+                }
+                if( _spoil_scenario==9 ) {
                     spoil_vector_by_deleting_element(y);
+                }
                 double v;
 
                 //
@@ -774,14 +816,13 @@ int main()
                 v = spearmancorr2(x, y);
                 _TestResult = _TestResult && doc_test_real(v, 1.000, 0.001);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "basestat_d_c2");
             fflush(stdout);
         }
@@ -793,22 +834,23 @@ int main()
         //      Correlation (covariance) between components of random vector
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<3; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<3; _spoil_scenario++) {
+            try {
                 //
                 // X is a sample matrix:
                 // * I-th row corresponds to I-th observation
                 // * J-th column corresponds to J-th variable
                 //
                 real_2d_array x = "[[1,0,1],[1,1,0],[-1,1,0],[-2,-1,1],[-1,0,9]]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_matrix_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_matrix_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_matrix_by_neginf(x);
+                }
                 real_2d_array c;
 
                 //
@@ -827,14 +869,13 @@ int main()
                 spearmancorrm(x, c);
                 _TestResult = _TestResult && doc_test_real_matrix(c, "[[1.000,0.556,-0.306],[0.556,1.000,-0.750],[-0.306,-0.750,1.000]]", 0.01);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "basestat_d_cm");
             fflush(stdout);
         }
@@ -846,29 +887,33 @@ int main()
         //      Correlation (covariance) between two random vectors
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<6; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<6; _spoil_scenario++) {
+            try {
                 //
                 // X and Y are sample matrices:
                 // * I-th row corresponds to I-th observation
                 // * J-th column corresponds to J-th variable
                 //
                 real_2d_array x = "[[1,0,1],[1,1,0],[-1,1,0],[-2,-1,1],[-1,0,9]]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_matrix_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_matrix_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_matrix_by_neginf(x);
+                }
                 real_2d_array y = "[[2,3],[2,1],[-1,6],[-9,9],[7,1]]";
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     spoil_matrix_by_nan(y);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_matrix_by_posinf(y);
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     spoil_matrix_by_neginf(y);
+                }
                 real_2d_array c;
 
                 //
@@ -887,14 +932,13 @@ int main()
                 spearmancorrm2(x, y, c);
                 _TestResult = _TestResult && doc_test_real_matrix(c, "[[0.541,-0.649],[0.216,-0.433],[0.433,-0.135]]", 0.01);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "basestat_d_cm2");
             fflush(stdout);
         }
@@ -906,10 +950,8 @@ int main()
         //      Tests ability to detect errors in inputs
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<34; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<34; _spoil_scenario++) {
+            try {
                 double mean;
                 double variance;
                 double skewness;
@@ -922,104 +964,137 @@ int main()
                 // first, we test short form of functions
                 //
                 real_1d_array x1 = "[0,1,4,9,16,25,36,49,64,81]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x1);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x1);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x1);
+                }
                 samplemoments(x1, mean, variance, skewness, kurtosis);
                 real_1d_array x2 = "[0,1,4,9,16,25,36,49,64,81]";
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     spoil_vector_by_nan(x2);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_vector_by_posinf(x2);
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     spoil_vector_by_neginf(x2);
+                }
                 sampleadev(x2, adev);
                 real_1d_array x3 = "[0,1,4,9,16,25,36,49,64,81]";
-                if( _spoil_scenario==6 )
+                if( _spoil_scenario==6 ) {
                     spoil_vector_by_nan(x3);
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     spoil_vector_by_posinf(x3);
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     spoil_vector_by_neginf(x3);
+                }
                 samplemedian(x3, v);
                 real_1d_array x4 = "[0,1,4,9,16,25,36,49,64,81]";
-                if( _spoil_scenario==9 )
+                if( _spoil_scenario==9 ) {
                     spoil_vector_by_nan(x4);
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     spoil_vector_by_posinf(x4);
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     spoil_vector_by_neginf(x4);
+                }
                 p = 0.5;
-                if( _spoil_scenario==12 )
+                if( _spoil_scenario==12 ) {
                     p = fp_nan;
-                if( _spoil_scenario==13 )
+                }
+                if( _spoil_scenario==13 ) {
                     p = fp_posinf;
-                if( _spoil_scenario==14 )
+                }
+                if( _spoil_scenario==14 ) {
                     p = fp_neginf;
+                }
                 samplepercentile(x4, p, v);
 
                 //
                 // and then we test full form
                 //
                 real_1d_array x5 = "[0,1,4,9,16,25,36,49,64,81]";
-                if( _spoil_scenario==15 )
+                if( _spoil_scenario==15 ) {
                     spoil_vector_by_nan(x5);
-                if( _spoil_scenario==16 )
+                }
+                if( _spoil_scenario==16 ) {
                     spoil_vector_by_posinf(x5);
-                if( _spoil_scenario==17 )
+                }
+                if( _spoil_scenario==17 ) {
                     spoil_vector_by_neginf(x5);
-                if( _spoil_scenario==18 )
+                }
+                if( _spoil_scenario==18 ) {
                     spoil_vector_by_deleting_element(x5);
+                }
                 samplemoments(x5, 10, mean, variance, skewness, kurtosis);
                 real_1d_array x6 = "[0,1,4,9,16,25,36,49,64,81]";
-                if( _spoil_scenario==19 )
+                if( _spoil_scenario==19 ) {
                     spoil_vector_by_nan(x6);
-                if( _spoil_scenario==20 )
+                }
+                if( _spoil_scenario==20 ) {
                     spoil_vector_by_posinf(x6);
-                if( _spoil_scenario==21 )
+                }
+                if( _spoil_scenario==21 ) {
                     spoil_vector_by_neginf(x6);
-                if( _spoil_scenario==22 )
+                }
+                if( _spoil_scenario==22 ) {
                     spoil_vector_by_deleting_element(x6);
+                }
                 sampleadev(x6, 10, adev);
                 real_1d_array x7 = "[0,1,4,9,16,25,36,49,64,81]";
-                if( _spoil_scenario==23 )
+                if( _spoil_scenario==23 ) {
                     spoil_vector_by_nan(x7);
-                if( _spoil_scenario==24 )
+                }
+                if( _spoil_scenario==24 ) {
                     spoil_vector_by_posinf(x7);
-                if( _spoil_scenario==25 )
+                }
+                if( _spoil_scenario==25 ) {
                     spoil_vector_by_neginf(x7);
-                if( _spoil_scenario==26 )
+                }
+                if( _spoil_scenario==26 ) {
                     spoil_vector_by_deleting_element(x7);
+                }
                 samplemedian(x7, 10, v);
                 real_1d_array x8 = "[0,1,4,9,16,25,36,49,64,81]";
-                if( _spoil_scenario==27 )
+                if( _spoil_scenario==27 ) {
                     spoil_vector_by_nan(x8);
-                if( _spoil_scenario==28 )
+                }
+                if( _spoil_scenario==28 ) {
                     spoil_vector_by_posinf(x8);
-                if( _spoil_scenario==29 )
+                }
+                if( _spoil_scenario==29 ) {
                     spoil_vector_by_neginf(x8);
-                if( _spoil_scenario==30 )
+                }
+                if( _spoil_scenario==30 ) {
                     spoil_vector_by_deleting_element(x8);
+                }
                 p = 0.5;
-                if( _spoil_scenario==31 )
+                if( _spoil_scenario==31 ) {
                     p = fp_nan;
-                if( _spoil_scenario==32 )
+                }
+                if( _spoil_scenario==32 ) {
                     p = fp_posinf;
-                if( _spoil_scenario==33 )
+                }
+                if( _spoil_scenario==33 ) {
                     p = fp_neginf;
+                }
                 samplepercentile(x8, 10, p, v);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "basestat_t_base");
             fflush(stdout);
         }
@@ -1031,10 +1106,8 @@ int main()
         //      Tests ability to detect errors in inputs
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<126; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<126; _spoil_scenario++) {
+            try {
                 double v;
                 real_2d_array c;
 
@@ -1042,334 +1115,459 @@ int main()
                 // 2-sample short-form cov/corr are tested
                 //
                 real_1d_array x1 = "[0,1,4,9,16,25,36,49,64,81]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x1);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x1);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x1);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_vector_by_adding_element(x1);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_vector_by_deleting_element(x1);
+                }
                 real_1d_array y1 = "[0,1,2,3,4,5,6,7,8,9]";
-                if( _spoil_scenario==5 )
+                if( _spoil_scenario==5 ) {
                     spoil_vector_by_nan(y1);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_vector_by_posinf(y1);
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     spoil_vector_by_neginf(y1);
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     spoil_vector_by_adding_element(y1);
-                if( _spoil_scenario==9 )
+                }
+                if( _spoil_scenario==9 ) {
                     spoil_vector_by_deleting_element(y1);
+                }
                 v = cov2(x1, y1);
                 real_1d_array x2 = "[0,1,4,9,16,25,36,49,64,81]";
-                if( _spoil_scenario==10 )
+                if( _spoil_scenario==10 ) {
                     spoil_vector_by_nan(x2);
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     spoil_vector_by_posinf(x2);
-                if( _spoil_scenario==12 )
+                }
+                if( _spoil_scenario==12 ) {
                     spoil_vector_by_neginf(x2);
-                if( _spoil_scenario==13 )
+                }
+                if( _spoil_scenario==13 ) {
                     spoil_vector_by_adding_element(x2);
-                if( _spoil_scenario==14 )
+                }
+                if( _spoil_scenario==14 ) {
                     spoil_vector_by_deleting_element(x2);
+                }
                 real_1d_array y2 = "[0,1,2,3,4,5,6,7,8,9]";
-                if( _spoil_scenario==15 )
+                if( _spoil_scenario==15 ) {
                     spoil_vector_by_nan(y2);
-                if( _spoil_scenario==16 )
+                }
+                if( _spoil_scenario==16 ) {
                     spoil_vector_by_posinf(y2);
-                if( _spoil_scenario==17 )
+                }
+                if( _spoil_scenario==17 ) {
                     spoil_vector_by_neginf(y2);
-                if( _spoil_scenario==18 )
+                }
+                if( _spoil_scenario==18 ) {
                     spoil_vector_by_adding_element(y2);
-                if( _spoil_scenario==19 )
+                }
+                if( _spoil_scenario==19 ) {
                     spoil_vector_by_deleting_element(y2);
+                }
                 v = pearsoncorr2(x2, y2);
                 real_1d_array x3 = "[0,1,4,9,16,25,36,49,64,81]";
-                if( _spoil_scenario==20 )
+                if( _spoil_scenario==20 ) {
                     spoil_vector_by_nan(x3);
-                if( _spoil_scenario==21 )
+                }
+                if( _spoil_scenario==21 ) {
                     spoil_vector_by_posinf(x3);
-                if( _spoil_scenario==22 )
+                }
+                if( _spoil_scenario==22 ) {
                     spoil_vector_by_neginf(x3);
-                if( _spoil_scenario==23 )
+                }
+                if( _spoil_scenario==23 ) {
                     spoil_vector_by_adding_element(x3);
-                if( _spoil_scenario==24 )
+                }
+                if( _spoil_scenario==24 ) {
                     spoil_vector_by_deleting_element(x3);
+                }
                 real_1d_array y3 = "[0,1,2,3,4,5,6,7,8,9]";
-                if( _spoil_scenario==25 )
+                if( _spoil_scenario==25 ) {
                     spoil_vector_by_nan(y3);
-                if( _spoil_scenario==26 )
+                }
+                if( _spoil_scenario==26 ) {
                     spoil_vector_by_posinf(y3);
-                if( _spoil_scenario==27 )
+                }
+                if( _spoil_scenario==27 ) {
                     spoil_vector_by_neginf(y3);
-                if( _spoil_scenario==28 )
+                }
+                if( _spoil_scenario==28 ) {
                     spoil_vector_by_adding_element(y3);
-                if( _spoil_scenario==29 )
+                }
+                if( _spoil_scenario==29 ) {
                     spoil_vector_by_deleting_element(y3);
+                }
                 v = spearmancorr2(x3, y3);
 
                 //
                 // 2-sample full-form cov/corr are tested
                 //
                 real_1d_array x1a = "[0,1,4,9,16,25,36,49,64,81]";
-                if( _spoil_scenario==30 )
+                if( _spoil_scenario==30 ) {
                     spoil_vector_by_nan(x1a);
-                if( _spoil_scenario==31 )
+                }
+                if( _spoil_scenario==31 ) {
                     spoil_vector_by_posinf(x1a);
-                if( _spoil_scenario==32 )
+                }
+                if( _spoil_scenario==32 ) {
                     spoil_vector_by_neginf(x1a);
-                if( _spoil_scenario==33 )
+                }
+                if( _spoil_scenario==33 ) {
                     spoil_vector_by_deleting_element(x1a);
+                }
                 real_1d_array y1a = "[0,1,2,3,4,5,6,7,8,9]";
-                if( _spoil_scenario==34 )
+                if( _spoil_scenario==34 ) {
                     spoil_vector_by_nan(y1a);
-                if( _spoil_scenario==35 )
+                }
+                if( _spoil_scenario==35 ) {
                     spoil_vector_by_posinf(y1a);
-                if( _spoil_scenario==36 )
+                }
+                if( _spoil_scenario==36 ) {
                     spoil_vector_by_neginf(y1a);
-                if( _spoil_scenario==37 )
+                }
+                if( _spoil_scenario==37 ) {
                     spoil_vector_by_deleting_element(y1a);
+                }
                 v = cov2(x1a, y1a, 10);
                 real_1d_array x2a = "[0,1,4,9,16,25,36,49,64,81]";
-                if( _spoil_scenario==38 )
+                if( _spoil_scenario==38 ) {
                     spoil_vector_by_nan(x2a);
-                if( _spoil_scenario==39 )
+                }
+                if( _spoil_scenario==39 ) {
                     spoil_vector_by_posinf(x2a);
-                if( _spoil_scenario==40 )
+                }
+                if( _spoil_scenario==40 ) {
                     spoil_vector_by_neginf(x2a);
-                if( _spoil_scenario==41 )
+                }
+                if( _spoil_scenario==41 ) {
                     spoil_vector_by_deleting_element(x2a);
+                }
                 real_1d_array y2a = "[0,1,2,3,4,5,6,7,8,9]";
-                if( _spoil_scenario==42 )
+                if( _spoil_scenario==42 ) {
                     spoil_vector_by_nan(y2a);
-                if( _spoil_scenario==43 )
+                }
+                if( _spoil_scenario==43 ) {
                     spoil_vector_by_posinf(y2a);
-                if( _spoil_scenario==44 )
+                }
+                if( _spoil_scenario==44 ) {
                     spoil_vector_by_neginf(y2a);
-                if( _spoil_scenario==45 )
+                }
+                if( _spoil_scenario==45 ) {
                     spoil_vector_by_deleting_element(y2a);
+                }
                 v = pearsoncorr2(x2a, y2a, 10);
                 real_1d_array x3a = "[0,1,4,9,16,25,36,49,64,81]";
-                if( _spoil_scenario==46 )
+                if( _spoil_scenario==46 ) {
                     spoil_vector_by_nan(x3a);
-                if( _spoil_scenario==47 )
+                }
+                if( _spoil_scenario==47 ) {
                     spoil_vector_by_posinf(x3a);
-                if( _spoil_scenario==48 )
+                }
+                if( _spoil_scenario==48 ) {
                     spoil_vector_by_neginf(x3a);
-                if( _spoil_scenario==49 )
+                }
+                if( _spoil_scenario==49 ) {
                     spoil_vector_by_deleting_element(x3a);
+                }
                 real_1d_array y3a = "[0,1,2,3,4,5,6,7,8,9]";
-                if( _spoil_scenario==50 )
+                if( _spoil_scenario==50 ) {
                     spoil_vector_by_nan(y3a);
-                if( _spoil_scenario==51 )
+                }
+                if( _spoil_scenario==51 ) {
                     spoil_vector_by_posinf(y3a);
-                if( _spoil_scenario==52 )
+                }
+                if( _spoil_scenario==52 ) {
                     spoil_vector_by_neginf(y3a);
-                if( _spoil_scenario==53 )
+                }
+                if( _spoil_scenario==53 ) {
                     spoil_vector_by_deleting_element(y3a);
+                }
                 v = spearmancorr2(x3a, y3a, 10);
 
                 //
                 // vector short-form cov/corr are tested.
                 //
                 real_2d_array x4 = "[[1,0,1],[1,1,0],[-1,1,0],[-2,-1,1],[-1,0,9]]";
-                if( _spoil_scenario==54 )
+                if( _spoil_scenario==54 ) {
                     spoil_matrix_by_nan(x4);
-                if( _spoil_scenario==55 )
+                }
+                if( _spoil_scenario==55 ) {
                     spoil_matrix_by_posinf(x4);
-                if( _spoil_scenario==56 )
+                }
+                if( _spoil_scenario==56 ) {
                     spoil_matrix_by_neginf(x4);
+                }
                 covm(x4, c);
                 real_2d_array x5 = "[[1,0,1],[1,1,0],[-1,1,0],[-2,-1,1],[-1,0,9]]";
-                if( _spoil_scenario==57 )
+                if( _spoil_scenario==57 ) {
                     spoil_matrix_by_nan(x5);
-                if( _spoil_scenario==58 )
+                }
+                if( _spoil_scenario==58 ) {
                     spoil_matrix_by_posinf(x5);
-                if( _spoil_scenario==59 )
+                }
+                if( _spoil_scenario==59 ) {
                     spoil_matrix_by_neginf(x5);
+                }
                 pearsoncorrm(x5, c);
                 real_2d_array x6 = "[[1,0,1],[1,1,0],[-1,1,0],[-2,-1,1],[-1,0,9]]";
-                if( _spoil_scenario==60 )
+                if( _spoil_scenario==60 ) {
                     spoil_matrix_by_nan(x6);
-                if( _spoil_scenario==61 )
+                }
+                if( _spoil_scenario==61 ) {
                     spoil_matrix_by_posinf(x6);
-                if( _spoil_scenario==62 )
+                }
+                if( _spoil_scenario==62 ) {
                     spoil_matrix_by_neginf(x6);
+                }
                 spearmancorrm(x6, c);
 
                 //
                 // vector full-form cov/corr are tested.
                 //
                 real_2d_array x7 = "[[1,0,1],[1,1,0],[-1,1,0],[-2,-1,1],[-1,0,9]]";
-                if( _spoil_scenario==63 )
+                if( _spoil_scenario==63 ) {
                     spoil_matrix_by_nan(x7);
-                if( _spoil_scenario==64 )
+                }
+                if( _spoil_scenario==64 ) {
                     spoil_matrix_by_posinf(x7);
-                if( _spoil_scenario==65 )
+                }
+                if( _spoil_scenario==65 ) {
                     spoil_matrix_by_neginf(x7);
-                if( _spoil_scenario==66 )
+                }
+                if( _spoil_scenario==66 ) {
                     spoil_matrix_by_deleting_row(x7);
-                if( _spoil_scenario==67 )
+                }
+                if( _spoil_scenario==67 ) {
                     spoil_matrix_by_deleting_col(x7);
+                }
                 covm(x7, 5, 3, c);
                 real_2d_array x8 = "[[1,0,1],[1,1,0],[-1,1,0],[-2,-1,1],[-1,0,9]]";
-                if( _spoil_scenario==68 )
+                if( _spoil_scenario==68 ) {
                     spoil_matrix_by_nan(x8);
-                if( _spoil_scenario==69 )
+                }
+                if( _spoil_scenario==69 ) {
                     spoil_matrix_by_posinf(x8);
-                if( _spoil_scenario==70 )
+                }
+                if( _spoil_scenario==70 ) {
                     spoil_matrix_by_neginf(x8);
-                if( _spoil_scenario==71 )
+                }
+                if( _spoil_scenario==71 ) {
                     spoil_matrix_by_deleting_row(x8);
-                if( _spoil_scenario==72 )
+                }
+                if( _spoil_scenario==72 ) {
                     spoil_matrix_by_deleting_col(x8);
+                }
                 pearsoncorrm(x8, 5, 3, c);
                 real_2d_array x9 = "[[1,0,1],[1,1,0],[-1,1,0],[-2,-1,1],[-1,0,9]]";
-                if( _spoil_scenario==73 )
+                if( _spoil_scenario==73 ) {
                     spoil_matrix_by_nan(x9);
-                if( _spoil_scenario==74 )
+                }
+                if( _spoil_scenario==74 ) {
                     spoil_matrix_by_posinf(x9);
-                if( _spoil_scenario==75 )
+                }
+                if( _spoil_scenario==75 ) {
                     spoil_matrix_by_neginf(x9);
-                if( _spoil_scenario==76 )
+                }
+                if( _spoil_scenario==76 ) {
                     spoil_matrix_by_deleting_row(x9);
-                if( _spoil_scenario==77 )
+                }
+                if( _spoil_scenario==77 ) {
                     spoil_matrix_by_deleting_col(x9);
+                }
                 spearmancorrm(x9, 5, 3, c);
 
                 //
                 // cross-vector short-form cov/corr are tested.
                 //
                 real_2d_array x10 = "[[1,0,1],[1,1,0],[-1,1,0],[-2,-1,1],[-1,0,9]]";
-                if( _spoil_scenario==78 )
+                if( _spoil_scenario==78 ) {
                     spoil_matrix_by_nan(x10);
-                if( _spoil_scenario==79 )
+                }
+                if( _spoil_scenario==79 ) {
                     spoil_matrix_by_posinf(x10);
-                if( _spoil_scenario==80 )
+                }
+                if( _spoil_scenario==80 ) {
                     spoil_matrix_by_neginf(x10);
+                }
                 real_2d_array y10 = "[[2,3],[2,1],[-1,6],[-9,9],[7,1]]";
-                if( _spoil_scenario==81 )
+                if( _spoil_scenario==81 ) {
                     spoil_matrix_by_nan(y10);
-                if( _spoil_scenario==82 )
+                }
+                if( _spoil_scenario==82 ) {
                     spoil_matrix_by_posinf(y10);
-                if( _spoil_scenario==83 )
+                }
+                if( _spoil_scenario==83 ) {
                     spoil_matrix_by_neginf(y10);
+                }
                 covm2(x10, y10, c);
                 real_2d_array x11 = "[[1,0,1],[1,1,0],[-1,1,0],[-2,-1,1],[-1,0,9]]";
-                if( _spoil_scenario==84 )
+                if( _spoil_scenario==84 ) {
                     spoil_matrix_by_nan(x11);
-                if( _spoil_scenario==85 )
+                }
+                if( _spoil_scenario==85 ) {
                     spoil_matrix_by_posinf(x11);
-                if( _spoil_scenario==86 )
+                }
+                if( _spoil_scenario==86 ) {
                     spoil_matrix_by_neginf(x11);
+                }
                 real_2d_array y11 = "[[2,3],[2,1],[-1,6],[-9,9],[7,1]]";
-                if( _spoil_scenario==87 )
+                if( _spoil_scenario==87 ) {
                     spoil_matrix_by_nan(y11);
-                if( _spoil_scenario==88 )
+                }
+                if( _spoil_scenario==88 ) {
                     spoil_matrix_by_posinf(y11);
-                if( _spoil_scenario==89 )
+                }
+                if( _spoil_scenario==89 ) {
                     spoil_matrix_by_neginf(y11);
+                }
                 pearsoncorrm2(x11, y11, c);
                 real_2d_array x12 = "[[1,0,1],[1,1,0],[-1,1,0],[-2,-1,1],[-1,0,9]]";
-                if( _spoil_scenario==90 )
+                if( _spoil_scenario==90 ) {
                     spoil_matrix_by_nan(x12);
-                if( _spoil_scenario==91 )
+                }
+                if( _spoil_scenario==91 ) {
                     spoil_matrix_by_posinf(x12);
-                if( _spoil_scenario==92 )
+                }
+                if( _spoil_scenario==92 ) {
                     spoil_matrix_by_neginf(x12);
+                }
                 real_2d_array y12 = "[[2,3],[2,1],[-1,6],[-9,9],[7,1]]";
-                if( _spoil_scenario==93 )
+                if( _spoil_scenario==93 ) {
                     spoil_matrix_by_nan(y12);
-                if( _spoil_scenario==94 )
+                }
+                if( _spoil_scenario==94 ) {
                     spoil_matrix_by_posinf(y12);
-                if( _spoil_scenario==95 )
+                }
+                if( _spoil_scenario==95 ) {
                     spoil_matrix_by_neginf(y12);
+                }
                 spearmancorrm2(x12, y12, c);
 
                 //
                 // cross-vector full-form cov/corr are tested.
                 //
                 real_2d_array x13 = "[[1,0,1],[1,1,0],[-1,1,0],[-2,-1,1],[-1,0,9]]";
-                if( _spoil_scenario==96 )
+                if( _spoil_scenario==96 ) {
                     spoil_matrix_by_nan(x13);
-                if( _spoil_scenario==97 )
+                }
+                if( _spoil_scenario==97 ) {
                     spoil_matrix_by_posinf(x13);
-                if( _spoil_scenario==98 )
+                }
+                if( _spoil_scenario==98 ) {
                     spoil_matrix_by_neginf(x13);
-                if( _spoil_scenario==99 )
+                }
+                if( _spoil_scenario==99 ) {
                     spoil_matrix_by_deleting_row(x13);
-                if( _spoil_scenario==100 )
+                }
+                if( _spoil_scenario==100 ) {
                     spoil_matrix_by_deleting_col(x13);
+                }
                 real_2d_array y13 = "[[2,3],[2,1],[-1,6],[-9,9],[7,1]]";
-                if( _spoil_scenario==101 )
+                if( _spoil_scenario==101 ) {
                     spoil_matrix_by_nan(y13);
-                if( _spoil_scenario==102 )
+                }
+                if( _spoil_scenario==102 ) {
                     spoil_matrix_by_posinf(y13);
-                if( _spoil_scenario==103 )
+                }
+                if( _spoil_scenario==103 ) {
                     spoil_matrix_by_neginf(y13);
-                if( _spoil_scenario==104 )
+                }
+                if( _spoil_scenario==104 ) {
                     spoil_matrix_by_deleting_row(y13);
-                if( _spoil_scenario==105 )
+                }
+                if( _spoil_scenario==105 ) {
                     spoil_matrix_by_deleting_col(y13);
+                }
                 covm2(x13, y13, 5, 3, 2, c);
                 real_2d_array x14 = "[[1,0,1],[1,1,0],[-1,1,0],[-2,-1,1],[-1,0,9]]";
-                if( _spoil_scenario==106 )
+                if( _spoil_scenario==106 ) {
                     spoil_matrix_by_nan(x14);
-                if( _spoil_scenario==107 )
+                }
+                if( _spoil_scenario==107 ) {
                     spoil_matrix_by_posinf(x14);
-                if( _spoil_scenario==108 )
+                }
+                if( _spoil_scenario==108 ) {
                     spoil_matrix_by_neginf(x14);
-                if( _spoil_scenario==109 )
+                }
+                if( _spoil_scenario==109 ) {
                     spoil_matrix_by_deleting_row(x14);
-                if( _spoil_scenario==110 )
+                }
+                if( _spoil_scenario==110 ) {
                     spoil_matrix_by_deleting_col(x14);
+                }
                 real_2d_array y14 = "[[2,3],[2,1],[-1,6],[-9,9],[7,1]]";
-                if( _spoil_scenario==111 )
+                if( _spoil_scenario==111 ) {
                     spoil_matrix_by_nan(y14);
-                if( _spoil_scenario==112 )
+                }
+                if( _spoil_scenario==112 ) {
                     spoil_matrix_by_posinf(y14);
-                if( _spoil_scenario==113 )
+                }
+                if( _spoil_scenario==113 ) {
                     spoil_matrix_by_neginf(y14);
-                if( _spoil_scenario==114 )
+                }
+                if( _spoil_scenario==114 ) {
                     spoil_matrix_by_deleting_row(y14);
-                if( _spoil_scenario==115 )
+                }
+                if( _spoil_scenario==115 ) {
                     spoil_matrix_by_deleting_col(y14);
+                }
                 pearsoncorrm2(x14, y14, 5, 3, 2, c);
                 real_2d_array x15 = "[[1,0,1],[1,1,0],[-1,1,0],[-2,-1,1],[-1,0,9]]";
-                if( _spoil_scenario==116 )
+                if( _spoil_scenario==116 ) {
                     spoil_matrix_by_nan(x15);
-                if( _spoil_scenario==117 )
+                }
+                if( _spoil_scenario==117 ) {
                     spoil_matrix_by_posinf(x15);
-                if( _spoil_scenario==118 )
+                }
+                if( _spoil_scenario==118 ) {
                     spoil_matrix_by_neginf(x15);
-                if( _spoil_scenario==119 )
+                }
+                if( _spoil_scenario==119 ) {
                     spoil_matrix_by_deleting_row(x15);
-                if( _spoil_scenario==120 )
+                }
+                if( _spoil_scenario==120 ) {
                     spoil_matrix_by_deleting_col(x15);
+                }
                 real_2d_array y15 = "[[2,3],[2,1],[-1,6],[-9,9],[7,1]]";
-                if( _spoil_scenario==121 )
+                if( _spoil_scenario==121 ) {
                     spoil_matrix_by_nan(y15);
-                if( _spoil_scenario==122 )
+                }
+                if( _spoil_scenario==122 ) {
                     spoil_matrix_by_posinf(y15);
-                if( _spoil_scenario==123 )
+                }
+                if( _spoil_scenario==123 ) {
                     spoil_matrix_by_neginf(y15);
-                if( _spoil_scenario==124 )
+                }
+                if( _spoil_scenario==124 ) {
                     spoil_matrix_by_deleting_row(y15);
-                if( _spoil_scenario==125 )
+                }
+                if( _spoil_scenario==125 ) {
                     spoil_matrix_by_deleting_col(y15);
+                }
                 spearmancorrm2(x15, y15, 5, 3, 2, c);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "basestat_t_covcorr");
             fflush(stdout);
         }
@@ -1381,25 +1579,30 @@ int main()
         //      Real matrix inverse
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<7; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<7; _spoil_scenario++) {
+            try {
                 real_2d_array a = "[[1,-1],[1,1]]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_matrix_by_nan(a);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_matrix_by_posinf(a);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_matrix_by_neginf(a);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_matrix_by_adding_row(a);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_matrix_by_adding_col(a);
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     spoil_matrix_by_deleting_row(a);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_matrix_by_deleting_col(a);
+                }
                 ae_int_t info;
                 matinvreport rep;
                 rmatrixinverse(a, info, rep);
@@ -1408,14 +1611,13 @@ int main()
                 _TestResult = _TestResult && doc_test_real(rep.r1, 0.5, 0.00005);
                 _TestResult = _TestResult && doc_test_real(rep.rinf, 0.5, 0.00005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "matinv_d_r1");
             fflush(stdout);
         }
@@ -1427,25 +1629,30 @@ int main()
         //      Complex matrix inverse
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<7; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<7; _spoil_scenario++) {
+            try {
                 complex_2d_array a = "[[1i,-1],[1i,1]]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_matrix_by_nan(a);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_matrix_by_posinf(a);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_matrix_by_neginf(a);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_matrix_by_adding_row(a);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_matrix_by_adding_col(a);
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     spoil_matrix_by_deleting_row(a);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_matrix_by_deleting_col(a);
+                }
                 ae_int_t info;
                 matinvreport rep;
                 cmatrixinverse(a, info, rep);
@@ -1454,14 +1661,13 @@ int main()
                 _TestResult = _TestResult && doc_test_real(rep.r1, 0.5, 0.00005);
                 _TestResult = _TestResult && doc_test_real(rep.rinf, 0.5, 0.00005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "matinv_d_c1");
             fflush(stdout);
         }
@@ -1473,39 +1679,43 @@ int main()
         //      SPD matrix inverse
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<7; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<7; _spoil_scenario++) {
+            try {
                 real_2d_array a = "[[2,1],[1,2]]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_matrix_by_nan(a);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_matrix_by_posinf(a);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_matrix_by_neginf(a);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_matrix_by_adding_row(a);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_matrix_by_adding_col(a);
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     spoil_matrix_by_deleting_row(a);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_matrix_by_deleting_col(a);
+                }
                 ae_int_t info;
                 matinvreport rep;
                 spdmatrixinverse(a, info, rep);
                 _TestResult = _TestResult && doc_test_int(info, 1);
                 _TestResult = _TestResult && doc_test_real_matrix(a, "[[0.666666,-0.333333],[-0.333333,0.666666]]", 0.00005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "matinv_d_spd1");
             fflush(stdout);
         }
@@ -1517,39 +1727,43 @@ int main()
         //      HPD matrix inverse
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<7; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<7; _spoil_scenario++) {
+            try {
                 complex_2d_array a = "[[2,1],[1,2]]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_matrix_by_nan(a);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_matrix_by_posinf(a);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_matrix_by_neginf(a);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_matrix_by_adding_row(a);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_matrix_by_adding_col(a);
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     spoil_matrix_by_deleting_row(a);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_matrix_by_deleting_col(a);
+                }
                 ae_int_t info;
                 matinvreport rep;
                 hpdmatrixinverse(a, info, rep);
                 _TestResult = _TestResult && doc_test_int(info, 1);
                 _TestResult = _TestResult && doc_test_complex_matrix(a, "[[0.666666,-0.333333],[-0.333333,0.666666]]", 0.00005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "matinv_d_hpd1");
             fflush(stdout);
         }
@@ -1561,8 +1775,7 @@ int main()
         //      Real matrix inverse: singular matrix
         //
         _TestResult = true;
-        try
-        {
+        try {
             real_2d_array a = "[[1,-1],[-2,2]]";
             ae_int_t info;
             matinvreport rep;
@@ -1570,13 +1783,12 @@ int main()
             _TestResult = _TestResult && doc_test_int(info, -3);
             _TestResult = _TestResult && doc_test_real(rep.r1, 0.0, 0.00005);
             _TestResult = _TestResult && doc_test_real(rep.rinf, 0.0, 0.00005);
+        } catch(ap_error e) {
+            _TestResult = false;
+        } catch(...) {
+            throw;
         }
-        catch(ap_error e)
-        { _TestResult = false; }
-        catch(...)
-        { throw; }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "matinv_t_r1");
             fflush(stdout);
         }
@@ -1588,8 +1800,7 @@ int main()
         //      Complex matrix inverse: singular matrix
         //
         _TestResult = true;
-        try
-        {
+        try {
             complex_2d_array a = "[[1i,-1i],[-2,2]]";
             ae_int_t info;
             matinvreport rep;
@@ -1597,13 +1808,12 @@ int main()
             _TestResult = _TestResult && doc_test_int(info, -3);
             _TestResult = _TestResult && doc_test_real(rep.r1, 0.0, 0.00005);
             _TestResult = _TestResult && doc_test_real(rep.rinf, 0.0, 0.00005);
+        } catch(ap_error e) {
+            _TestResult = false;
+        } catch(...) {
+            throw;
         }
-        catch(ap_error e)
-        { _TestResult = false; }
-        catch(...)
-        { throw; }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "matinv_t_c1");
             fflush(stdout);
         }
@@ -1615,20 +1825,17 @@ int main()
         //      Attempt to use SPD function on nonsymmetrix matrix
         //
         _TestResult = true;
-        try
-        {
+        try {
             real_2d_array a = "[[1,0],[1,1]]";
             ae_int_t info;
             matinvreport rep;
             spdmatrixinverse(a, info, rep);
             _TestResult = false;
+        } catch(ap_error e) {
+        } catch(...) {
+            throw;
         }
-        catch(ap_error e)
-        {}
-        catch(...)
-        { throw; }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "matinv_e_spd1");
             fflush(stdout);
         }
@@ -1640,20 +1847,17 @@ int main()
         //      Attempt to use SPD function on nonsymmetrix matrix
         //
         _TestResult = true;
-        try
-        {
+        try {
             complex_2d_array a = "[[1,0],[1,1]]";
             ae_int_t info;
             matinvreport rep;
             hpdmatrixinverse(a, info, rep);
             _TestResult = false;
+        } catch(ap_error e) {
+        } catch(...) {
+            throw;
         }
-        catch(ap_error e)
-        {}
-        catch(...)
-        { throw; }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "matinv_e_hpd1");
             fflush(stdout);
         }
@@ -1665,42 +1869,52 @@ int main()
         //      Nonlinear optimization by CG
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<12; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<12; _spoil_scenario++) {
+            try {
                 //
                 // This example demonstrates minimization of f(x,y) = 100*(x+3)^4+(y-3)^4
                 // with nonlinear conjugate gradient method.
                 //
                 real_1d_array x = "[0,0]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
+                }
                 double epsg = 0.0000000001;
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     epsg = fp_nan;
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     epsg = fp_posinf;
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     epsg = fp_neginf;
+                }
                 double epsf = 0;
-                if( _spoil_scenario==6 )
+                if( _spoil_scenario==6 ) {
                     epsf = fp_nan;
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     epsf = fp_posinf;
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     epsf = fp_neginf;
+                }
                 double epsx = 0;
-                if( _spoil_scenario==9 )
+                if( _spoil_scenario==9 ) {
                     epsx = fp_nan;
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     epsx = fp_posinf;
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     epsx = fp_neginf;
+                }
                 ae_int_t maxits = 0;
                 mincgstate state;
                 mincgreport rep;
@@ -1713,14 +1927,13 @@ int main()
                 _TestResult = _TestResult && doc_test_int(rep.terminationtype, 4);
                 _TestResult = _TestResult && doc_test_real_vector(x, "[-3,3]", 0.005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "mincg_d_1");
             fflush(stdout);
         }
@@ -1732,10 +1945,8 @@ int main()
         //      Nonlinear optimization with additional settings and restarts
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<18; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<18; _spoil_scenario++) {
+            try {
                 //
                 // This example demonstrates minimization of f(x,y) = 100*(x+3)^4+(y-3)^4
                 // with nonlinear conjugate gradient method.
@@ -1745,40 +1956,55 @@ int main()
                 // * restart from new point
                 //
                 real_1d_array x = "[0,0]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
+                }
                 double epsg = 0.0000000001;
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     epsg = fp_nan;
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     epsg = fp_posinf;
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     epsg = fp_neginf;
+                }
                 double epsf = 0;
-                if( _spoil_scenario==6 )
+                if( _spoil_scenario==6 ) {
                     epsf = fp_nan;
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     epsf = fp_posinf;
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     epsf = fp_neginf;
+                }
                 double epsx = 0;
-                if( _spoil_scenario==9 )
+                if( _spoil_scenario==9 ) {
                     epsx = fp_nan;
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     epsx = fp_posinf;
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     epsx = fp_neginf;
+                }
                 double stpmax = 0.1;
-                if( _spoil_scenario==12 )
+                if( _spoil_scenario==12 ) {
                     stpmax = fp_nan;
-                if( _spoil_scenario==13 )
+                }
+                if( _spoil_scenario==13 ) {
                     stpmax = fp_posinf;
-                if( _spoil_scenario==14 )
+                }
+                if( _spoil_scenario==14 ) {
                     stpmax = fp_neginf;
+                }
                 ae_int_t maxits = 0;
                 mincgstate state;
                 mincgreport rep;
@@ -1794,12 +2020,15 @@ int main()
 
                 // second run - algorithm is restarted with mincgrestartfrom()
                 x = "[10,10]";
-                if( _spoil_scenario==15 )
+                if( _spoil_scenario==15 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==16 )
+                }
+                if( _spoil_scenario==16 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==17 )
+                }
+                if( _spoil_scenario==17 ) {
                     spoil_vector_by_neginf(x);
+                }
                 mincgrestartfrom(state, x);
                 alglib::mincgoptimize(state, function1_grad);
                 mincgresults(state, x, rep);
@@ -1807,14 +2036,13 @@ int main()
                 _TestResult = _TestResult && doc_test_int(rep.terminationtype, 4);
                 _TestResult = _TestResult && doc_test_real_vector(x, "[-3,3]", 0.005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "mincg_d_2");
             fflush(stdout);
         }
@@ -1826,49 +2054,62 @@ int main()
         //      Nonlinear optimization by CG with numerical differentiation
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<15; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<15; _spoil_scenario++) {
+            try {
                 //
                 // This example demonstrates minimization of f(x,y) = 100*(x+3)^4+(y-3)^4
                 // using numerical differentiation to calculate gradient.
                 //
                 real_1d_array x = "[0,0]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
+                }
                 double epsg = 0.0000000001;
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     epsg = fp_nan;
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     epsg = fp_posinf;
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     epsg = fp_neginf;
+                }
                 double epsf = 0;
-                if( _spoil_scenario==6 )
+                if( _spoil_scenario==6 ) {
                     epsf = fp_nan;
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     epsf = fp_posinf;
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     epsf = fp_neginf;
+                }
                 double epsx = 0;
-                if( _spoil_scenario==9 )
+                if( _spoil_scenario==9 ) {
                     epsx = fp_nan;
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     epsx = fp_posinf;
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     epsx = fp_neginf;
+                }
                 double diffstep = 1.0e-6;
-                if( _spoil_scenario==12 )
+                if( _spoil_scenario==12 ) {
                     diffstep = fp_nan;
-                if( _spoil_scenario==13 )
+                }
+                if( _spoil_scenario==13 ) {
                     diffstep = fp_posinf;
-                if( _spoil_scenario==14 )
+                }
+                if( _spoil_scenario==14 ) {
                     diffstep = fp_neginf;
+                }
                 ae_int_t maxits = 0;
                 mincgstate state;
                 mincgreport rep;
@@ -1881,14 +2122,13 @@ int main()
                 _TestResult = _TestResult && doc_test_int(rep.terminationtype, 4);
                 _TestResult = _TestResult && doc_test_real_vector(x, "[-3,3]", 0.005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "mincg_numdiff");
             fflush(stdout);
         }
@@ -1900,10 +2140,8 @@ int main()
         //      Nonlinear optimization by CG, function with singularities
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<12; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<12; _spoil_scenario++) {
+            try {
                 //
                 // This example demonstrates minimization of f(x) = (1+x)^(-0.2) + (1-x)^(-0.3) + 1000*x.
                 // This function has singularities at the boundary of the [-1,+1], but technique called
@@ -1913,33 +2151,45 @@ int main()
                 // on this subject.
                 //
                 real_1d_array x = "[0]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
+                }
                 double epsg = 1.0e-6;
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     epsg = fp_nan;
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     epsg = fp_posinf;
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     epsg = fp_neginf;
+                }
                 double epsf = 0;
-                if( _spoil_scenario==6 )
+                if( _spoil_scenario==6 ) {
                     epsf = fp_nan;
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     epsf = fp_posinf;
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     epsf = fp_neginf;
+                }
                 double epsx = 0;
-                if( _spoil_scenario==9 )
+                if( _spoil_scenario==9 ) {
                     epsx = fp_nan;
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     epsx = fp_posinf;
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     epsx = fp_neginf;
+                }
                 ae_int_t maxits = 0;
                 mincgstate state;
                 mincgreport rep;
@@ -1951,14 +2201,13 @@ int main()
 
                 _TestResult = _TestResult && doc_test_real_vector(x, "[-0.99917305]", 0.000005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "mincg_ftrim");
             fflush(stdout);
         }
@@ -1970,31 +2219,36 @@ int main()
         //      Nonlinear optimization with bound constraints
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<22; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<22; _spoil_scenario++) {
+            try {
                 //
                 // This example demonstrates minimization of f(x,y) = 100*(x+3)^4+(y-3)^4
                 // subject to bound constraints -1<=x<=+1, -1<=y<=+1, using BLEIC optimizer.
                 //
                 real_1d_array x = "[0,0]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
+                }
                 real_1d_array bndl = "[-1,-1]";
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     spoil_vector_by_nan(bndl);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_vector_by_deleting_element(bndl);
+                }
                 real_1d_array bndu = "[+1,+1]";
-                if( _spoil_scenario==5 )
+                if( _spoil_scenario==5 ) {
                     spoil_vector_by_nan(bndu);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_vector_by_deleting_element(bndu);
+                }
                 minbleicstate state;
                 minbleicreport rep;
 
@@ -2006,26 +2260,35 @@ int main()
                 // We use very simple condition - |g|<=epsg
                 //
                 double epsg = 0.000001;
-                if( _spoil_scenario==7 )
+                if( _spoil_scenario==7 ) {
                     epsg = fp_nan;
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     epsg = fp_posinf;
-                if( _spoil_scenario==9 )
+                }
+                if( _spoil_scenario==9 ) {
                     epsg = fp_neginf;
+                }
                 double epsf = 0;
-                if( _spoil_scenario==10 )
+                if( _spoil_scenario==10 ) {
                     epsf = fp_nan;
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     epsf = fp_posinf;
-                if( _spoil_scenario==12 )
+                }
+                if( _spoil_scenario==12 ) {
                     epsf = fp_neginf;
+                }
                 double epsx = 0;
-                if( _spoil_scenario==13 )
+                if( _spoil_scenario==13 ) {
                     epsx = fp_nan;
-                if( _spoil_scenario==14 )
+                }
+                if( _spoil_scenario==14 ) {
                     epsx = fp_posinf;
-                if( _spoil_scenario==15 )
+                }
+                if( _spoil_scenario==15 ) {
                     epsx = fp_neginf;
+                }
 
                 //
                 // These variables define stopping conditions for the outer iterations:
@@ -2035,19 +2298,25 @@ int main()
                 // * epsi controls amount of infeasibility allowed in the final solution
                 //
                 double epso = 0.00001;
-                if( _spoil_scenario==16 )
+                if( _spoil_scenario==16 ) {
                     epso = fp_nan;
-                if( _spoil_scenario==17 )
+                }
+                if( _spoil_scenario==17 ) {
                     epso = fp_posinf;
-                if( _spoil_scenario==18 )
+                }
+                if( _spoil_scenario==18 ) {
                     epso = fp_neginf;
+                }
                 double epsi = 0.00001;
-                if( _spoil_scenario==19 )
+                if( _spoil_scenario==19 ) {
                     epsi = fp_nan;
-                if( _spoil_scenario==20 )
+                }
+                if( _spoil_scenario==20 ) {
                     epsi = fp_posinf;
-                if( _spoil_scenario==21 )
+                }
+                if( _spoil_scenario==21 ) {
                     epsi = fp_neginf;
+                }
 
                 //
                 // Now we are ready to actually optimize something:
@@ -2069,14 +2338,13 @@ int main()
                 _TestResult = _TestResult && doc_test_int(rep.terminationtype, 4);
                 _TestResult = _TestResult && doc_test_real_vector(x, "[-1,1]", 0.005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "minbleic_d_1");
             fflush(stdout);
         }
@@ -2088,10 +2356,8 @@ int main()
         //      Nonlinear optimization with linear inequality constraints
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<24; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<24; _spoil_scenario++) {
+            try {
                 //
                 // This example demonstrates minimization of f(x,y) = 100*(x+3)^4+(y-3)^4
                 // subject to inequality constraints:
@@ -2100,26 +2366,35 @@ int main()
                 // using BLEIC optimizer.
                 //
                 real_1d_array x = "[5,5]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
+                }
                 real_2d_array c = "[[1,0,2],[1,1,6]]";
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     spoil_matrix_by_nan(c);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_matrix_by_posinf(c);
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     spoil_matrix_by_neginf(c);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_matrix_by_deleting_row(c);
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     spoil_matrix_by_deleting_col(c);
+                }
                 integer_1d_array ct = "[1,1]";
-                if( _spoil_scenario==8 )
+                if( _spoil_scenario==8 ) {
                     spoil_vector_by_deleting_element(ct);
+                }
                 minbleicstate state;
                 minbleicreport rep;
 
@@ -2131,26 +2406,35 @@ int main()
                 // We use very simple condition - |g|<=epsg
                 //
                 double epsg = 0.000001;
-                if( _spoil_scenario==9 )
+                if( _spoil_scenario==9 ) {
                     epsg = fp_nan;
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     epsg = fp_posinf;
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     epsg = fp_neginf;
+                }
                 double epsf = 0;
-                if( _spoil_scenario==12 )
+                if( _spoil_scenario==12 ) {
                     epsf = fp_nan;
-                if( _spoil_scenario==13 )
+                }
+                if( _spoil_scenario==13 ) {
                     epsf = fp_posinf;
-                if( _spoil_scenario==14 )
+                }
+                if( _spoil_scenario==14 ) {
                     epsf = fp_neginf;
+                }
                 double epsx = 0;
-                if( _spoil_scenario==15 )
+                if( _spoil_scenario==15 ) {
                     epsx = fp_nan;
-                if( _spoil_scenario==16 )
+                }
+                if( _spoil_scenario==16 ) {
                     epsx = fp_posinf;
-                if( _spoil_scenario==17 )
+                }
+                if( _spoil_scenario==17 ) {
                     epsx = fp_neginf;
+                }
 
                 //
                 // These variables define stopping conditions for the outer iterations:
@@ -2160,19 +2444,25 @@ int main()
                 // * epsi controls amount of infeasibility allowed in the final solution
                 //
                 double epso = 0.00001;
-                if( _spoil_scenario==18 )
+                if( _spoil_scenario==18 ) {
                     epso = fp_nan;
-                if( _spoil_scenario==19 )
+                }
+                if( _spoil_scenario==19 ) {
                     epso = fp_posinf;
-                if( _spoil_scenario==20 )
+                }
+                if( _spoil_scenario==20 ) {
                     epso = fp_neginf;
+                }
                 double epsi = 0.00001;
-                if( _spoil_scenario==21 )
+                if( _spoil_scenario==21 ) {
                     epsi = fp_nan;
-                if( _spoil_scenario==22 )
+                }
+                if( _spoil_scenario==22 ) {
                     epsi = fp_posinf;
-                if( _spoil_scenario==23 )
+                }
+                if( _spoil_scenario==23 ) {
                     epsi = fp_neginf;
+                }
 
                 //
                 // Now we are ready to actually optimize something:
@@ -2194,14 +2484,13 @@ int main()
                 _TestResult = _TestResult && doc_test_int(rep.terminationtype, 4);
                 _TestResult = _TestResult && doc_test_real_vector(x, "[2,4]", 0.005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "minbleic_d_2");
             fflush(stdout);
         }
@@ -2213,31 +2502,36 @@ int main()
         //      Nonlinear optimization with bound constraints and numerical differentiation
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<25; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<25; _spoil_scenario++) {
+            try {
                 //
                 // This example demonstrates minimization of f(x,y) = 100*(x+3)^4+(y-3)^4
                 // subject to bound constraints -1<=x<=+1, -1<=y<=+1, using BLEIC optimizer.
                 //
                 real_1d_array x = "[0,0]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
+                }
                 real_1d_array bndl = "[-1,-1]";
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     spoil_vector_by_nan(bndl);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_vector_by_deleting_element(bndl);
+                }
                 real_1d_array bndu = "[+1,+1]";
-                if( _spoil_scenario==5 )
+                if( _spoil_scenario==5 ) {
                     spoil_vector_by_nan(bndu);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_vector_by_deleting_element(bndu);
+                }
                 minbleicstate state;
                 minbleicreport rep;
 
@@ -2249,26 +2543,35 @@ int main()
                 // We use very simple condition - |g|<=epsg
                 //
                 double epsg = 0.000001;
-                if( _spoil_scenario==7 )
+                if( _spoil_scenario==7 ) {
                     epsg = fp_nan;
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     epsg = fp_posinf;
-                if( _spoil_scenario==9 )
+                }
+                if( _spoil_scenario==9 ) {
                     epsg = fp_neginf;
+                }
                 double epsf = 0;
-                if( _spoil_scenario==10 )
+                if( _spoil_scenario==10 ) {
                     epsf = fp_nan;
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     epsf = fp_posinf;
-                if( _spoil_scenario==12 )
+                }
+                if( _spoil_scenario==12 ) {
                     epsf = fp_neginf;
+                }
                 double epsx = 0;
-                if( _spoil_scenario==13 )
+                if( _spoil_scenario==13 ) {
                     epsx = fp_nan;
-                if( _spoil_scenario==14 )
+                }
+                if( _spoil_scenario==14 ) {
                     epsx = fp_posinf;
-                if( _spoil_scenario==15 )
+                }
+                if( _spoil_scenario==15 ) {
                     epsx = fp_neginf;
+                }
 
                 //
                 // These variables define stopping conditions for the outer iterations:
@@ -2278,30 +2581,39 @@ int main()
                 // * epsi controls amount of infeasibility allowed in the final solution
                 //
                 double epso = 0.00001;
-                if( _spoil_scenario==16 )
+                if( _spoil_scenario==16 ) {
                     epso = fp_nan;
-                if( _spoil_scenario==17 )
+                }
+                if( _spoil_scenario==17 ) {
                     epso = fp_posinf;
-                if( _spoil_scenario==18 )
+                }
+                if( _spoil_scenario==18 ) {
                     epso = fp_neginf;
+                }
                 double epsi = 0.00001;
-                if( _spoil_scenario==19 )
+                if( _spoil_scenario==19 ) {
                     epsi = fp_nan;
-                if( _spoil_scenario==20 )
+                }
+                if( _spoil_scenario==20 ) {
                     epsi = fp_posinf;
-                if( _spoil_scenario==21 )
+                }
+                if( _spoil_scenario==21 ) {
                     epsi = fp_neginf;
+                }
 
                 //
                 // This variable contains differentiation step
                 //
                 double diffstep = 1.0e-6;
-                if( _spoil_scenario==22 )
+                if( _spoil_scenario==22 ) {
                     diffstep = fp_nan;
-                if( _spoil_scenario==23 )
+                }
+                if( _spoil_scenario==23 ) {
                     diffstep = fp_posinf;
-                if( _spoil_scenario==24 )
+                }
+                if( _spoil_scenario==24 ) {
                     diffstep = fp_neginf;
+                }
 
                 //
                 // Now we are ready to actually optimize something:
@@ -2323,14 +2635,13 @@ int main()
                 _TestResult = _TestResult && doc_test_int(rep.terminationtype, 4);
                 _TestResult = _TestResult && doc_test_real_vector(x, "[-1,1]", 0.005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "minbleic_numdiff");
             fflush(stdout);
         }
@@ -2342,62 +2653,78 @@ int main()
         //      Nonlinear optimization by BLEIC, function with singularities
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<18; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<18; _spoil_scenario++) {
+            try {
                 //
                 // This example demonstrates minimization of f(x) = (1+x)^(-0.2) + (1-x)^(-0.3) + 1000*x.
                 //
                 // This function is undefined outside of (-1,+1) and has singularities at x=-1 and x=+1.
-                // Special technique called "function trimming" allows us to solve this optimization problem 
+                // Special technique called "function trimming" allows us to solve this optimization problem
                 // - without using boundary constraints!
                 //
                 // See http://www.alglib.net/optimization/tipsandtricks.php#ftrimming for more information
                 // on this subject.
                 //
                 real_1d_array x = "[0]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
+                }
                 double epsg = 1.0e-6;
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     epsg = fp_nan;
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     epsg = fp_posinf;
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     epsg = fp_neginf;
+                }
                 double epsf = 0;
-                if( _spoil_scenario==6 )
+                if( _spoil_scenario==6 ) {
                     epsf = fp_nan;
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     epsf = fp_posinf;
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     epsf = fp_neginf;
+                }
                 double epsx = 0;
-                if( _spoil_scenario==9 )
+                if( _spoil_scenario==9 ) {
                     epsx = fp_nan;
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     epsx = fp_posinf;
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     epsx = fp_neginf;
+                }
                 double epso = 1.0e-6;
-                if( _spoil_scenario==12 )
+                if( _spoil_scenario==12 ) {
                     epso = fp_nan;
-                if( _spoil_scenario==13 )
+                }
+                if( _spoil_scenario==13 ) {
                     epso = fp_posinf;
-                if( _spoil_scenario==14 )
+                }
+                if( _spoil_scenario==14 ) {
                     epso = fp_neginf;
+                }
                 double epsi = 1.0e-6;
-                if( _spoil_scenario==15 )
+                if( _spoil_scenario==15 ) {
                     epsi = fp_nan;
-                if( _spoil_scenario==16 )
+                }
+                if( _spoil_scenario==16 ) {
                     epsi = fp_posinf;
-                if( _spoil_scenario==17 )
+                }
+                if( _spoil_scenario==17 ) {
                     epsi = fp_neginf;
+                }
                 minbleicstate state;
                 minbleicreport rep;
 
@@ -2409,14 +2736,13 @@ int main()
 
                 _TestResult = _TestResult && doc_test_real_vector(x, "[-0.99917305]", 0.000005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "minbleic_ftrim");
             fflush(stdout);
         }
@@ -2428,10 +2754,8 @@ int main()
         //      Simple unconstrained MCPD model (no entry/exit states)
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<6; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<6; _spoil_scenario++) {
+            try {
                 //
                 // The very simple MCPD example
                 //
@@ -2440,8 +2764,8 @@ int main()
                 // * past due loans ("bad" ones)
                 //
                 // We assume that:
-                // * loans can transition from any state to any other state. In 
-                //   particular, past due loan can become "good" one at any moment 
+                // * loans can transition from any state to any other state. In
+                //   particular, past due loan can become "good" one at any moment
                 //   with same (fixed) probability. Not realistic, but it is toy example :)
                 // * portfolio size does not change over time
                 //
@@ -2456,11 +2780,11 @@ int main()
                 // approach (Markov Chains for Proportional/Population Data), i.e.
                 // to restore hidden transition matrix P using actual portfolio data.
                 // We have:
-                // * poportional data, i.e. proportion of loans in the normal and past 
-                //   due states (not portfolio size measured in some currency, although 
+                // * poportional data, i.e. proportion of loans in the normal and past
+                //   due states (not portfolio size measured in some currency, although
                 //   it is possible to work with population data too)
                 // * two tracks, i.e. two sequences which describe portfolio
-                //   evolution from two different starting states: [1,0] (all loans 
+                //   evolution from two different starting states: [1,0] (all loans
                 //   are "good") and [0.8,0.2] (only 80% of portfolio is in the "good"
                 //   state)
                 //
@@ -2468,19 +2792,25 @@ int main()
                 mcpdreport rep;
                 real_2d_array p;
                 real_2d_array track0 = "[[1.00000,0.00000],[0.95000,0.05000],[0.92750,0.07250],[0.91738,0.08263],[0.91282,0.08718]]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_matrix_by_nan(track0);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_matrix_by_posinf(track0);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_matrix_by_neginf(track0);
+                }
                 real_2d_array track1 = "[[0.80000,0.20000],[0.86000,0.14000],[0.88700,0.11300],[0.89915,0.10085]]";
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     spoil_matrix_by_nan(track1);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_matrix_by_posinf(track1);
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     spoil_matrix_by_neginf(track1);
+                }
 
                 mcpdcreate(2, s);
                 mcpdaddtrack(s, track0);
@@ -2493,19 +2823,18 @@ int main()
                 //         ( 0.95  0.50 )
                 //         (            )
                 //         ( 0.05  0.50 )
-                // which means that "good" loans can become "bad" with 5% probability, 
+                // which means that "good" loans can become "bad" with 5% probability,
                 // while "bad" loans will return to good state with 50% probability.
                 //
                 _TestResult = _TestResult && doc_test_real_matrix(p, "[[0.95,0.50],[0.05,0.50]]", 0.005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "mcpd_simple1");
             fflush(stdout);
         }
@@ -2517,10 +2846,8 @@ int main()
         //      Simple MCPD model (no entry/exit states) with equality constraints
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<6; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<6; _spoil_scenario++) {
+            try {
                 //
                 // Simple MCPD example
                 //
@@ -2544,18 +2871,18 @@ int main()
                 //         (      p21  1 )
                 // i.e. four elements of P are known a priori.
                 //
-                // Although it is possible (given enough data) to In order to enforce 
+                // Although it is possible (given enough data) to In order to enforce
                 // this property we set equality constraints on these elements.
                 //
                 // We want to model transitions between these two states using MCPD
                 // approach (Markov Chains for Proportional/Population Data), i.e.
                 // to restore hidden transition matrix P using actual portfolio data.
                 // We have:
-                // * poportional data, i.e. proportion of loans in the current and past 
-                //   due states (not portfolio size measured in some currency, although 
+                // * poportional data, i.e. proportion of loans in the current and past
+                //   due states (not portfolio size measured in some currency, although
                 //   it is possible to work with population data too)
                 // * two tracks, i.e. two sequences which describe portfolio
-                //   evolution from two different starting states: [1,0,0] (all loans 
+                //   evolution from two different starting states: [1,0,0] (all loans
                 //   are "good") and [0.8,0.2,0.0] (only 80% of portfolio is in the "good"
                 //   state)
                 //
@@ -2563,19 +2890,25 @@ int main()
                 mcpdreport rep;
                 real_2d_array p;
                 real_2d_array track0 = "[[1.000000,0.000000,0.000000],[0.950000,0.050000,0.000000],[0.927500,0.060000,0.012500],[0.911125,0.061375,0.027500],[0.896256,0.060900,0.042844]]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_matrix_by_nan(track0);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_matrix_by_posinf(track0);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_matrix_by_neginf(track0);
+                }
                 real_2d_array track1 = "[[0.800000,0.200000,0.000000],[0.860000,0.090000,0.050000],[0.862000,0.065500,0.072500],[0.851650,0.059475,0.088875],[0.838805,0.057451,0.103744]]";
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     spoil_matrix_by_nan(track1);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_matrix_by_posinf(track1);
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     spoil_matrix_by_neginf(track1);
+                }
 
                 mcpdcreate(3, s);
                 mcpdaddtrack(s, track0);
@@ -2591,21 +2924,20 @@ int main()
                 // Hidden matrix P is equal to
                 //         ( 0.95 0.50      )
                 //         ( 0.05 0.25      )
-                //         (      0.25 1.00 ) 
-                // which means that "good" loans can become past due with 5% probability, 
+                //         (      0.25 1.00 )
+                // which means that "good" loans can become past due with 5% probability,
                 // while past due loans will become charged off with 25% probability or
                 // return back to normal state with 50% probability.
                 //
                 _TestResult = _TestResult && doc_test_real_matrix(p, "[[0.95,0.50,0.00],[0.05,0.25,0.00],[0.00,0.25,1.00]]", 0.005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "mcpd_simple2");
             fflush(stdout);
         }
@@ -2617,42 +2949,52 @@ int main()
         //      Nonlinear optimization by L-BFGS
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<12; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<12; _spoil_scenario++) {
+            try {
                 //
                 // This example demonstrates minimization of f(x,y) = 100*(x+3)^4+(y-3)^4
                 // using LBFGS method.
                 //
                 real_1d_array x = "[0,0]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
+                }
                 double epsg = 0.0000000001;
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     epsg = fp_nan;
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     epsg = fp_posinf;
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     epsg = fp_neginf;
+                }
                 double epsf = 0;
-                if( _spoil_scenario==6 )
+                if( _spoil_scenario==6 ) {
                     epsf = fp_nan;
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     epsf = fp_posinf;
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     epsf = fp_neginf;
+                }
                 double epsx = 0;
-                if( _spoil_scenario==9 )
+                if( _spoil_scenario==9 ) {
                     epsx = fp_nan;
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     epsx = fp_posinf;
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     epsx = fp_neginf;
+                }
                 ae_int_t maxits = 0;
                 minlbfgsstate state;
                 minlbfgsreport rep;
@@ -2665,14 +3007,13 @@ int main()
                 _TestResult = _TestResult && doc_test_int(rep.terminationtype, 4);
                 _TestResult = _TestResult && doc_test_real_vector(x, "[-3,3]", 0.005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "minlbfgs_d_1");
             fflush(stdout);
         }
@@ -2684,10 +3025,8 @@ int main()
         //      Nonlinear optimization with additional settings and restarts
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<18; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<18; _spoil_scenario++) {
+            try {
                 //
                 // This example demonstrates minimization of f(x,y) = 100*(x+3)^4+(y-3)^4
                 // using LBFGS method.
@@ -2697,40 +3036,55 @@ int main()
                 // * restart from new point
                 //
                 real_1d_array x = "[0,0]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
+                }
                 double epsg = 0.0000000001;
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     epsg = fp_nan;
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     epsg = fp_posinf;
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     epsg = fp_neginf;
+                }
                 double epsf = 0;
-                if( _spoil_scenario==6 )
+                if( _spoil_scenario==6 ) {
                     epsf = fp_nan;
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     epsf = fp_posinf;
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     epsf = fp_neginf;
+                }
                 double epsx = 0;
-                if( _spoil_scenario==9 )
+                if( _spoil_scenario==9 ) {
                     epsx = fp_nan;
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     epsx = fp_posinf;
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     epsx = fp_neginf;
+                }
                 double stpmax = 0.1;
-                if( _spoil_scenario==12 )
+                if( _spoil_scenario==12 ) {
                     stpmax = fp_nan;
-                if( _spoil_scenario==13 )
+                }
+                if( _spoil_scenario==13 ) {
                     stpmax = fp_posinf;
-                if( _spoil_scenario==14 )
+                }
+                if( _spoil_scenario==14 ) {
                     stpmax = fp_neginf;
+                }
                 ae_int_t maxits = 0;
                 minlbfgsstate state;
                 minlbfgsreport rep;
@@ -2746,12 +3100,15 @@ int main()
 
                 // second run - algorithm is restarted
                 x = "[10,10]";
-                if( _spoil_scenario==15 )
+                if( _spoil_scenario==15 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==16 )
+                }
+                if( _spoil_scenario==16 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==17 )
+                }
+                if( _spoil_scenario==17 ) {
                     spoil_vector_by_neginf(x);
+                }
                 minlbfgsrestartfrom(state, x);
                 alglib::minlbfgsoptimize(state, function1_grad);
                 minlbfgsresults(state, x, rep);
@@ -2759,14 +3116,13 @@ int main()
                 _TestResult = _TestResult && doc_test_int(rep.terminationtype, 4);
                 _TestResult = _TestResult && doc_test_real_vector(x, "[-3,3]", 0.005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "minlbfgs_d_2");
             fflush(stdout);
         }
@@ -2778,49 +3134,62 @@ int main()
         //      Nonlinear optimization by L-BFGS with numerical differentiation
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<15; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<15; _spoil_scenario++) {
+            try {
                 //
                 // This example demonstrates minimization of f(x,y) = 100*(x+3)^4+(y-3)^4
                 // using numerical differentiation to calculate gradient.
                 //
                 real_1d_array x = "[0,0]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
+                }
                 double epsg = 0.0000000001;
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     epsg = fp_nan;
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     epsg = fp_posinf;
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     epsg = fp_neginf;
+                }
                 double epsf = 0;
-                if( _spoil_scenario==6 )
+                if( _spoil_scenario==6 ) {
                     epsf = fp_nan;
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     epsf = fp_posinf;
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     epsf = fp_neginf;
+                }
                 double epsx = 0;
-                if( _spoil_scenario==9 )
+                if( _spoil_scenario==9 ) {
                     epsx = fp_nan;
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     epsx = fp_posinf;
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     epsx = fp_neginf;
+                }
                 double diffstep = 1.0e-6;
-                if( _spoil_scenario==12 )
+                if( _spoil_scenario==12 ) {
                     diffstep = fp_nan;
-                if( _spoil_scenario==13 )
+                }
+                if( _spoil_scenario==13 ) {
                     diffstep = fp_posinf;
-                if( _spoil_scenario==14 )
+                }
+                if( _spoil_scenario==14 ) {
                     diffstep = fp_neginf;
+                }
                 ae_int_t maxits = 0;
                 minlbfgsstate state;
                 minlbfgsreport rep;
@@ -2833,14 +3202,13 @@ int main()
                 _TestResult = _TestResult && doc_test_int(rep.terminationtype, 4);
                 _TestResult = _TestResult && doc_test_real_vector(x, "[-3,3]", 0.005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "minlbfgs_numdiff");
             fflush(stdout);
         }
@@ -2852,10 +3220,8 @@ int main()
         //      Nonlinear optimization by LBFGS, function with singularities
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<12; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<12; _spoil_scenario++) {
+            try {
                 //
                 // This example demonstrates minimization of f(x) = (1+x)^(-0.2) + (1-x)^(-0.3) + 1000*x.
                 // This function has singularities at the boundary of the [-1,+1], but technique called
@@ -2865,33 +3231,45 @@ int main()
                 // on this subject.
                 //
                 real_1d_array x = "[0]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
+                }
                 double epsg = 1.0e-6;
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     epsg = fp_nan;
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     epsg = fp_posinf;
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     epsg = fp_neginf;
+                }
                 double epsf = 0;
-                if( _spoil_scenario==6 )
+                if( _spoil_scenario==6 ) {
                     epsf = fp_nan;
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     epsf = fp_posinf;
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     epsf = fp_neginf;
+                }
                 double epsx = 0;
-                if( _spoil_scenario==9 )
+                if( _spoil_scenario==9 ) {
                     epsx = fp_nan;
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     epsx = fp_posinf;
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     epsx = fp_neginf;
+                }
                 ae_int_t maxits = 0;
                 minlbfgsstate state;
                 minlbfgsreport rep;
@@ -2903,14 +3281,13 @@ int main()
 
                 _TestResult = _TestResult && doc_test_real_vector(x, "[-0.99917305]", 0.000005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "minlbfgs_ftrim");
             fflush(stdout);
         }
@@ -2922,40 +3299,51 @@ int main()
         //      Solving y'=-y with ODE solver
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<13; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<13; _spoil_scenario++) {
+            try {
                 real_1d_array y = "[1]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(y);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_vector_by_deleting_element(y);
+                }
                 real_1d_array x = "[0, 1, 2, 3]";
-                if( _spoil_scenario==4 )
+                if( _spoil_scenario==4 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_vector_by_neginf(x);
+                }
                 double eps = 0.00001;
-                if( _spoil_scenario==7 )
+                if( _spoil_scenario==7 ) {
                     eps = fp_nan;
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     eps = fp_posinf;
-                if( _spoil_scenario==9 )
+                }
+                if( _spoil_scenario==9 ) {
                     eps = fp_neginf;
+                }
                 double h = 0;
-                if( _spoil_scenario==10 )
+                if( _spoil_scenario==10 ) {
                     h = fp_nan;
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     h = fp_posinf;
-                if( _spoil_scenario==12 )
+                }
+                if( _spoil_scenario==12 ) {
                     h = fp_neginf;
+                }
                 odesolverstate s;
                 ae_int_t m;
                 real_1d_array xtbl;
@@ -2968,14 +3356,13 @@ int main()
                 _TestResult = _TestResult && doc_test_real_vector(xtbl, "[0, 1, 2, 3]", 0.005);
                 _TestResult = _TestResult && doc_test_real_matrix(ytbl, "[[1], [0.367], [0.135], [0.050]]", 0.005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "odesolver_d1");
             fflush(stdout);
         }
@@ -2987,21 +3374,22 @@ int main()
         //      Complex FFT: simple example
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<3; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<3; _spoil_scenario++) {
+            try {
                 //
                 // first we demonstrate forward FFT:
                 // [1i,1i,1i,1i] is converted to [4i, 0, 0, 0]
                 //
                 complex_1d_array z = "[1i,1i,1i,1i]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(z);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(z);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(z);
+                }
                 fftc1d(z);
                 _TestResult = _TestResult && doc_test_complex_vector(z, "[4i,0,0,0]", 0.0001);
 
@@ -3012,14 +3400,13 @@ int main()
                 fftc1dinv(z);
                 _TestResult = _TestResult && doc_test_complex_vector(z, "[1i,1i,1i,1i]", 0.0001);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "fft_complex_d1");
             fflush(stdout);
         }
@@ -3031,21 +3418,22 @@ int main()
         //      Complex FFT: advanced example
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<3; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<3; _spoil_scenario++) {
+            try {
                 //
                 // first we demonstrate forward FFT:
                 // [0,1,0,1i] is converted to [1+1i, -1-1i, -1-1i, 1+1i]
                 //
                 complex_1d_array z = "[0,1,0,1i]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(z);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(z);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(z);
+                }
                 fftc1d(z);
                 _TestResult = _TestResult && doc_test_complex_vector(z, "[1+1i, -1-1i, -1-1i, 1+1i]", 0.0001);
 
@@ -3055,14 +3443,13 @@ int main()
                 fftc1dinv(z);
                 _TestResult = _TestResult && doc_test_complex_vector(z, "[0,1,0,1i]", 0.0001);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "fft_complex_d2");
             fflush(stdout);
         }
@@ -3074,21 +3461,22 @@ int main()
         //      Real FFT: simple example
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<3; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<3; _spoil_scenario++) {
+            try {
                 //
                 // first we demonstrate forward FFT:
                 // [1,1,1,1] is converted to [4, 0, 0, 0]
                 //
                 real_1d_array x = "[1,1,1,1]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
+                }
                 complex_1d_array f;
                 real_1d_array x2;
                 fftr1d(x, f);
@@ -3101,14 +3489,13 @@ int main()
                 fftr1dinv(f, x2);
                 _TestResult = _TestResult && doc_test_real_vector(x2, "[1,1,1,1]", 0.0001);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "fft_real_d1");
             fflush(stdout);
         }
@@ -3120,10 +3507,8 @@ int main()
         //      Real FFT: advanced example
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<3; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<3; _spoil_scenario++) {
+            try {
                 //
                 // first we demonstrate forward FFT:
                 // [1,2,3,4] is converted to [10, -2+2i, -2, -2-2i]
@@ -3134,12 +3519,15 @@ int main()
                 // * f[2] = conj(f[2])
                 //
                 real_1d_array x = "[1,2,3,4]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
+                }
                 complex_1d_array f;
                 real_1d_array x2;
                 fftr1d(x, f);
@@ -3165,14 +3553,13 @@ int main()
                 fftr1dinv(f, 4, x2);
                 _TestResult = _TestResult && doc_test_real_vector(x2, "[1,2,3,4]", 0.0001);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "fft_real_d2");
             fflush(stdout);
         }
@@ -3184,28 +3571,28 @@ int main()
         //      error detection in backward FFT
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<3; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<3; _spoil_scenario++) {
+            try {
                 complex_1d_array z = "[0,2,0,-2]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(z);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(z);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(z);
+                }
                 fftc1dinv(z);
                 _TestResult = _TestResult && doc_test_complex_vector(z, "[0,1i,0,-1i]", 0.0001);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "fft_complex_e1");
             fflush(stdout);
         }
@@ -3217,10 +3604,8 @@ int main()
         //      Integrating f=exp(x) by adaptive integrator
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<6; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<6; _spoil_scenario++) {
+            try {
                 //
                 // This example demonstrates integration of f=exp(x) on [0,1]:
                 // * first, autogkstate is initialized
@@ -3228,19 +3613,25 @@ int main()
                 // * and finally we obtain results with autogkresults() call
                 //
                 double a = 0;
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     a = fp_nan;
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     a = fp_posinf;
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     a = fp_neginf;
+                }
                 double b = 1;
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     b = fp_nan;
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     b = fp_posinf;
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     b = fp_neginf;
+                }
                 autogkstate s;
                 double v;
                 autogkreport rep;
@@ -3251,14 +3642,13 @@ int main()
 
                 _TestResult = _TestResult && doc_test_real(v, 1.7182, 0.005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "autogk_d1");
             fflush(stdout);
         }
@@ -3270,41 +3660,51 @@ int main()
         //      Interpolation and differentiation using barycentric representation
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<12; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<12; _spoil_scenario++) {
+            try {
                 //
                 // Here we demonstrate polynomial interpolation and differentiation
                 // of y=x^2-x sampled at [0,1,2]. Barycentric representation of polynomial is used.
                 //
                 real_1d_array x = "[0,1,2]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_vector_by_adding_element(x);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_vector_by_deleting_element(x);
+                }
                 real_1d_array y = "[0,0,2]";
-                if( _spoil_scenario==5 )
+                if( _spoil_scenario==5 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     spoil_vector_by_neginf(y);
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     spoil_vector_by_adding_element(y);
-                if( _spoil_scenario==9 )
+                }
+                if( _spoil_scenario==9 ) {
                     spoil_vector_by_deleting_element(y);
+                }
                 double t = -1;
-                if( _spoil_scenario==10 )
+                if( _spoil_scenario==10 ) {
                     t = fp_posinf;
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     t = fp_neginf;
+                }
                 double v;
                 double dv;
                 double d2v;
@@ -3331,14 +3731,13 @@ int main()
                 _TestResult = _TestResult && doc_test_real(dv, -3.0, 0.00005);
                 _TestResult = _TestResult && doc_test_real(d2v, 2.0, 0.00005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "polint_d_calcdiff");
             fflush(stdout);
         }
@@ -3350,26 +3749,29 @@ int main()
         //      Conversion between power basis and barycentric representation
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<5; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<5; _spoil_scenario++) {
+            try {
                 //
                 // Here we demonstrate conversion of y=x^2-x
                 // between power basis and barycentric representation.
                 //
                 real_1d_array a = "[0,-1,+1]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(a);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(a);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(a);
+                }
                 double t = 2;
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     t = fp_posinf;
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     t = fp_neginf;
+                }
                 real_1d_array a2;
                 double v;
                 barycentricinterpolant p;
@@ -3391,14 +3793,13 @@ int main()
                 polynomialbar2pow(p, a2);
                 _TestResult = _TestResult && doc_test_real_vector(a2, "[0,-1,+1]", 0.005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "polint_d_conv");
             fflush(stdout);
         }
@@ -3410,10 +3811,8 @@ int main()
         //      Polynomial interpolation on special grids (equidistant, Chebyshev I/II)
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<11; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<11; _spoil_scenario++) {
+            try {
                 //
                 // Temporaries:
                 // * values of y=x^2-x sampled at three special grids:
@@ -3424,26 +3823,35 @@ int main()
                 // * vectors to store coefficients of quadratic representation
                 //
                 real_1d_array y_eqdist = "[0,0,2]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(y_eqdist);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(y_eqdist);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(y_eqdist);
+                }
                 real_1d_array y_cheb1 = "[-0.116025,0.000000,1.616025]";
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     spoil_vector_by_nan(y_cheb1);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_vector_by_posinf(y_cheb1);
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     spoil_vector_by_neginf(y_cheb1);
+                }
                 real_1d_array y_cheb2 = "[0,0,2]";
-                if( _spoil_scenario==6 )
+                if( _spoil_scenario==6 ) {
                     spoil_vector_by_nan(y_cheb2);
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     spoil_vector_by_posinf(y_cheb2);
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     spoil_vector_by_neginf(y_cheb2);
+                }
                 barycentricinterpolant p_eqdist;
                 barycentricinterpolant p_cheb1;
                 barycentricinterpolant p_cheb2;
@@ -3471,17 +3879,19 @@ int main()
                 _TestResult = _TestResult && doc_test_real_vector(a_cheb2, "[0,-1,+1]", 0.00005);
 
                 //
-                // Now we demonstrate polynomial interpolation without construction 
+                // Now we demonstrate polynomial interpolation without construction
                 // of the barycentricinterpolant structure.
                 //
                 // We calculate interpolant value at x=-2.
                 // In all three cases we should get same f=6
                 //
                 double t = -2;
-                if( _spoil_scenario==9 )
+                if( _spoil_scenario==9 ) {
                     t = fp_posinf;
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     t = fp_neginf;
+                }
                 double v;
                 v = polynomialcalceqdist(0.0, 2.0, y_eqdist, t);
                 _TestResult = _TestResult && doc_test_real(v, 6.0, 0.00005);
@@ -3492,14 +3902,13 @@ int main()
                 v = polynomialcalccheb2(-1, +1, y_cheb2, t);
                 _TestResult = _TestResult && doc_test_real(v, 6.0, 0.00005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "polint_d_spec");
             fflush(stdout);
         }
@@ -3511,47 +3920,54 @@ int main()
         //      Polynomial interpolation, full list of parameters.
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<10; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<10; _spoil_scenario++) {
+            try {
                 real_1d_array x = "[0,1,2]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_vector_by_deleting_element(x);
+                }
                 real_1d_array y = "[0,0,2]";
-                if( _spoil_scenario==4 )
+                if( _spoil_scenario==4 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_vector_by_neginf(y);
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     spoil_vector_by_deleting_element(y);
+                }
                 double t = -1;
-                if( _spoil_scenario==8 )
+                if( _spoil_scenario==8 ) {
                     t = fp_posinf;
-                if( _spoil_scenario==9 )
+                }
+                if( _spoil_scenario==9 ) {
                     t = fp_neginf;
+                }
                 barycentricinterpolant p;
                 double v;
                 polynomialbuild(x, y, 3, p);
                 v = barycentriccalc(p, t);
                 _TestResult = _TestResult && doc_test_real(v, 2.0, 0.00005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "polint_t_1");
             fflush(stdout);
         }
@@ -3563,38 +3979,41 @@ int main()
         //      Polynomial interpolation, full list of parameters.
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<6; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<6; _spoil_scenario++) {
+            try {
                 real_1d_array y = "[0,0,2]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(y);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_vector_by_deleting_element(y);
+                }
                 double t = -1;
-                if( _spoil_scenario==4 )
+                if( _spoil_scenario==4 ) {
                     t = fp_posinf;
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     t = fp_neginf;
+                }
                 barycentricinterpolant p;
                 double v;
                 polynomialbuildeqdist(0.0, 2.0, y, 3, p);
                 v = barycentriccalc(p, t);
                 _TestResult = _TestResult && doc_test_real(v, 2.0, 0.00005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "polint_t_2");
             fflush(stdout);
         }
@@ -3606,38 +4025,41 @@ int main()
         //      Polynomial interpolation, full list of parameters.
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<6; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<6; _spoil_scenario++) {
+            try {
                 real_1d_array y = "[-0.116025,0.000000,1.616025]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(y);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_vector_by_deleting_element(y);
+                }
                 double t = -1;
-                if( _spoil_scenario==4 )
+                if( _spoil_scenario==4 ) {
                     t = fp_posinf;
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     t = fp_neginf;
+                }
                 barycentricinterpolant p;
                 double v;
                 polynomialbuildcheb1(-1.0, +1.0, y, 3, p);
                 v = barycentriccalc(p, t);
                 _TestResult = _TestResult && doc_test_real(v, 2.0, 0.00005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "polint_t_3");
             fflush(stdout);
         }
@@ -3649,52 +4071,61 @@ int main()
         //      Polynomial interpolation, full list of parameters.
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<12; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<12; _spoil_scenario++) {
+            try {
                 real_1d_array y = "[0,0,2]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(y);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_vector_by_deleting_element(y);
+                }
                 double t = -2;
-                if( _spoil_scenario==4 )
+                if( _spoil_scenario==4 ) {
                     t = fp_posinf;
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     t = fp_neginf;
+                }
                 double a = -1;
-                if( _spoil_scenario==6 )
+                if( _spoil_scenario==6 ) {
                     a = fp_nan;
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     a = fp_posinf;
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     a = fp_neginf;
+                }
                 double b = +1;
-                if( _spoil_scenario==9 )
+                if( _spoil_scenario==9 ) {
                     b = fp_nan;
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     b = fp_posinf;
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     b = fp_neginf;
+                }
                 barycentricinterpolant p;
                 double v;
                 polynomialbuildcheb2(a, b, y, 3, p);
                 v = barycentriccalc(p, t);
                 _TestResult = _TestResult && doc_test_real(v, 6.0, 0.00005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "polint_t_4");
             fflush(stdout);
         }
@@ -3706,36 +4137,39 @@ int main()
         //      Polynomial interpolation, full list of parameters.
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<6; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<6; _spoil_scenario++) {
+            try {
                 real_1d_array y = "[0,0,2]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(y);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_vector_by_deleting_element(y);
+                }
                 double t = -1;
-                if( _spoil_scenario==4 )
+                if( _spoil_scenario==4 ) {
                     t = fp_posinf;
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     t = fp_neginf;
+                }
                 double v;
                 v = polynomialcalceqdist(0.0, 2.0, y, 3, t);
                 _TestResult = _TestResult && doc_test_real(v, 2.0, 0.00005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "polint_t_5");
             fflush(stdout);
         }
@@ -3747,50 +4181,59 @@ int main()
         //      Polynomial interpolation, full list of parameters.
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<12; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<12; _spoil_scenario++) {
+            try {
                 real_1d_array y = "[-0.116025,0.000000,1.616025]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(y);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_vector_by_deleting_element(y);
+                }
                 double t = -1;
-                if( _spoil_scenario==4 )
+                if( _spoil_scenario==4 ) {
                     t = fp_posinf;
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     t = fp_neginf;
+                }
                 double a = -1;
-                if( _spoil_scenario==6 )
+                if( _spoil_scenario==6 ) {
                     a = fp_nan;
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     a = fp_posinf;
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     a = fp_neginf;
+                }
                 double b = +1;
-                if( _spoil_scenario==9 )
+                if( _spoil_scenario==9 ) {
                     b = fp_nan;
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     b = fp_posinf;
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     b = fp_neginf;
+                }
                 double v;
                 v = polynomialcalccheb1(a, b, y, 3, t);
                 _TestResult = _TestResult && doc_test_real(v, 2.0, 0.00005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "polint_t_6");
             fflush(stdout);
         }
@@ -3802,50 +4245,59 @@ int main()
         //      Polynomial interpolation, full list of parameters.
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<12; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<12; _spoil_scenario++) {
+            try {
                 real_1d_array y = "[0,0,2]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(y);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_vector_by_deleting_element(y);
+                }
                 double t = -2;
-                if( _spoil_scenario==4 )
+                if( _spoil_scenario==4 ) {
                     t = fp_posinf;
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     t = fp_neginf;
+                }
                 double a = -1;
-                if( _spoil_scenario==6 )
+                if( _spoil_scenario==6 ) {
                     a = fp_nan;
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     a = fp_posinf;
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     a = fp_neginf;
+                }
                 double b = +1;
-                if( _spoil_scenario==9 )
+                if( _spoil_scenario==9 ) {
                     b = fp_nan;
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     b = fp_posinf;
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     b = fp_neginf;
+                }
                 double v;
                 v = polynomialcalccheb2(a, b, y, 3, t);
                 _TestResult = _TestResult && doc_test_real(v, 6.0, 0.00005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "polint_t_7");
             fflush(stdout);
         }
@@ -3857,36 +4309,38 @@ int main()
         //      Polynomial interpolation: y=x^2-x, equidistant grid, barycentric form
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<5; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<5; _spoil_scenario++) {
+            try {
                 real_1d_array y = "[0,0,2]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(y);
+                }
                 double t = -1;
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     t = fp_posinf;
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     t = fp_neginf;
+                }
                 barycentricinterpolant p;
                 double v;
                 polynomialbuildeqdist(0.0, 2.0, y, p);
                 v = barycentriccalc(p, t);
                 _TestResult = _TestResult && doc_test_real(v, 2.0, 0.00005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "polint_t_8");
             fflush(stdout);
         }
@@ -3898,50 +4352,58 @@ int main()
         //      Polynomial interpolation: y=x^2-x, Chebyshev grid (first kind), barycentric form
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<11; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<11; _spoil_scenario++) {
+            try {
                 real_1d_array y = "[-0.116025,0.000000,1.616025]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(y);
+                }
                 double t = -1;
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     t = fp_posinf;
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     t = fp_neginf;
+                }
                 double a = -1;
-                if( _spoil_scenario==5 )
+                if( _spoil_scenario==5 ) {
                     a = fp_nan;
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     a = fp_posinf;
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     a = fp_neginf;
+                }
                 double b = +1;
-                if( _spoil_scenario==8 )
+                if( _spoil_scenario==8 ) {
                     b = fp_nan;
-                if( _spoil_scenario==9 )
+                }
+                if( _spoil_scenario==9 ) {
                     b = fp_posinf;
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     b = fp_neginf;
+                }
                 barycentricinterpolant p;
                 double v;
                 polynomialbuildcheb1(a, b, y, p);
                 v = barycentriccalc(p, t);
                 _TestResult = _TestResult && doc_test_real(v, 2.0, 0.00005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "polint_t_9");
             fflush(stdout);
         }
@@ -3954,50 +4416,58 @@ int main()
         //
         printf("50/91\n");
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<11; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<11; _spoil_scenario++) {
+            try {
                 real_1d_array y = "[0,0,2]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(y);
+                }
                 double t = -2;
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     t = fp_posinf;
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     t = fp_neginf;
+                }
                 double a = -1;
-                if( _spoil_scenario==5 )
+                if( _spoil_scenario==5 ) {
                     a = fp_nan;
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     a = fp_posinf;
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     a = fp_neginf;
+                }
                 double b = +1;
-                if( _spoil_scenario==8 )
+                if( _spoil_scenario==8 ) {
                     b = fp_nan;
-                if( _spoil_scenario==9 )
+                }
+                if( _spoil_scenario==9 ) {
                     b = fp_posinf;
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     b = fp_neginf;
+                }
                 barycentricinterpolant p;
                 double v;
                 polynomialbuildcheb2(a, b, y, p);
                 v = barycentriccalc(p, t);
                 _TestResult = _TestResult && doc_test_real(v, 6.0, 0.00005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "polint_t_10");
             fflush(stdout);
         }
@@ -4009,34 +4479,36 @@ int main()
         //      Polynomial interpolation: y=x^2-x, equidistant grid
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<5; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<5; _spoil_scenario++) {
+            try {
                 real_1d_array y = "[0,0,2]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(y);
+                }
                 double t = -1;
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     t = fp_posinf;
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     t = fp_neginf;
+                }
                 double v;
                 v = polynomialcalceqdist(0.0, 2.0, y, t);
                 _TestResult = _TestResult && doc_test_real(v, 2.0, 0.00005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "polint_t_11");
             fflush(stdout);
         }
@@ -4048,48 +4520,56 @@ int main()
         //      Polynomial interpolation: y=x^2-x, Chebyshev grid (first kind)
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<11; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<11; _spoil_scenario++) {
+            try {
                 real_1d_array y = "[-0.116025,0.000000,1.616025]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(y);
+                }
                 double t = -1;
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     t = fp_posinf;
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     t = fp_neginf;
+                }
                 double a = -1;
-                if( _spoil_scenario==5 )
+                if( _spoil_scenario==5 ) {
                     a = fp_nan;
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     a = fp_posinf;
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     a = fp_neginf;
+                }
                 double b = +1;
-                if( _spoil_scenario==8 )
+                if( _spoil_scenario==8 ) {
                     b = fp_nan;
-                if( _spoil_scenario==9 )
+                }
+                if( _spoil_scenario==9 ) {
                     b = fp_posinf;
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     b = fp_neginf;
+                }
                 double v;
                 v = polynomialcalccheb1(a, b, y, t);
                 _TestResult = _TestResult && doc_test_real(v, 2.0, 0.00005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "polint_t_12");
             fflush(stdout);
         }
@@ -4101,48 +4581,56 @@ int main()
         //      Polynomial interpolation: y=x^2-x, Chebyshev grid (second kind)
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<11; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<11; _spoil_scenario++) {
+            try {
                 real_1d_array y = "[0,0,2]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(y);
+                }
                 double t = -2;
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     t = fp_posinf;
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     t = fp_neginf;
+                }
                 double a = -1;
-                if( _spoil_scenario==5 )
+                if( _spoil_scenario==5 ) {
                     a = fp_nan;
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     a = fp_posinf;
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     a = fp_neginf;
+                }
                 double b = +1;
-                if( _spoil_scenario==8 )
+                if( _spoil_scenario==8 ) {
                     b = fp_nan;
-                if( _spoil_scenario==9 )
+                }
+                if( _spoil_scenario==9 ) {
                     b = fp_posinf;
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     b = fp_neginf;
+                }
                 double v;
                 v = polynomialcalccheb2(a, b, y, t);
                 _TestResult = _TestResult && doc_test_real(v, 6.0, 0.00005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "polint_t_13");
             fflush(stdout);
         }
@@ -4154,41 +4642,51 @@ int main()
         //      Piecewise linear spline interpolation
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<12; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<12; _spoil_scenario++) {
+            try {
                 //
-                // We use piecewise linear spline to interpolate f(x)=x^2 sampled 
+                // We use piecewise linear spline to interpolate f(x)=x^2 sampled
                 // at 5 equidistant nodes on [-1,+1].
                 //
                 real_1d_array x = "[-1.0,-0.5,0.0,+0.5,+1.0]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_vector_by_adding_element(x);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_vector_by_deleting_element(x);
+                }
                 real_1d_array y = "[+1.0,0.25,0.0,0.25,+1.0]";
-                if( _spoil_scenario==5 )
+                if( _spoil_scenario==5 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     spoil_vector_by_neginf(y);
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     spoil_vector_by_adding_element(y);
-                if( _spoil_scenario==9 )
+                }
+                if( _spoil_scenario==9 ) {
                     spoil_vector_by_deleting_element(y);
+                }
                 double t = 0.25;
-                if( _spoil_scenario==10 )
+                if( _spoil_scenario==10 ) {
                     t = fp_posinf;
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     t = fp_neginf;
+                }
                 double v;
                 spline1dinterpolant s;
 
@@ -4199,14 +4697,13 @@ int main()
                 v = spline1dcalc(s, t);
                 _TestResult = _TestResult && doc_test_real(v, 0.125, 0.00005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "spline1d_d_linear");
             fflush(stdout);
         }
@@ -4218,16 +4715,14 @@ int main()
         //      Cubic spline interpolation
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<10; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<10; _spoil_scenario++) {
+            try {
                 //
-                // We use cubic spline to interpolate f(x)=x^2 sampled 
+                // We use cubic spline to interpolate f(x)=x^2 sampled
                 // at 5 equidistant nodes on [-1,+1].
                 //
                 // First, we use default boundary conditions ("parabolically terminated
-                // spline") because cubic spline built with such boundary conditions 
+                // spline") because cubic spline built with such boundary conditions
                 // will exactly reproduce any quadratic f(x).
                 //
                 // Then we try to use natural boundary conditions
@@ -4236,28 +4731,38 @@ int main()
                 // and see that such spline interpolated f(x) with small error.
                 //
                 real_1d_array x = "[-1.0,-0.5,0.0,+0.5,+1.0]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_vector_by_deleting_element(x);
+                }
                 real_1d_array y = "[+1.0,0.25,0.0,0.25,+1.0]";
-                if( _spoil_scenario==4 )
+                if( _spoil_scenario==4 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_vector_by_neginf(y);
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     spoil_vector_by_deleting_element(y);
+                }
                 double t = 0.25;
-                if( _spoil_scenario==8 )
+                if( _spoil_scenario==8 ) {
                     t = fp_posinf;
-                if( _spoil_scenario==9 )
+                }
+                if( _spoil_scenario==9 ) {
                     t = fp_neginf;
+                }
                 double v;
                 spline1dinterpolant s;
                 ae_int_t natural_bound_type = 2;
@@ -4277,14 +4782,13 @@ int main()
                 v = spline1dcalc(s, t);
                 _TestResult = _TestResult && doc_test_real(v, 0.0580, 0.0001);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "spline1d_d_cubic");
             fflush(stdout);
         }
@@ -4296,10 +4800,8 @@ int main()
         //      Differentiation on the grid using cubic splines
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<10; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<10; _spoil_scenario++) {
+            try {
                 //
                 // We use cubic spline to do grid differentiation, i.e. having
                 // values of f(x)=x^2 sampled at 5 equidistant nodes on [-1,+1]
@@ -4310,35 +4812,45 @@ int main()
                 // spline1dgriddiff2cubic() for such calculations.
                 //
                 // We use default boundary conditions ("parabolically terminated
-                // spline") because cubic spline built with such boundary conditions 
+                // spline") because cubic spline built with such boundary conditions
                 // will exactly reproduce any quadratic f(x).
                 //
-                // Actually, we could use natural conditions, but we feel that 
-                // spline which exactly reproduces f() will show us more 
+                // Actually, we could use natural conditions, but we feel that
+                // spline which exactly reproduces f() will show us more
                 // understandable results.
                 //
                 real_1d_array x = "[-1.0,-0.5,0.0,+0.5,+1.0]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_vector_by_adding_element(x);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_vector_by_deleting_element(x);
+                }
                 real_1d_array y = "[+1.0,0.25,0.0,0.25,+1.0]";
-                if( _spoil_scenario==5 )
+                if( _spoil_scenario==5 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     spoil_vector_by_neginf(y);
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     spoil_vector_by_adding_element(y);
-                if( _spoil_scenario==9 )
+                }
+                if( _spoil_scenario==9 ) {
                     spoil_vector_by_deleting_element(y);
+                }
                 real_1d_array d1;
                 real_1d_array d2;
 
@@ -4356,14 +4868,13 @@ int main()
                 _TestResult = _TestResult && doc_test_real_vector(d1, "[-2.0, -1.0, 0.0, +1.0, +2.0]", 0.0001);
                 _TestResult = _TestResult && doc_test_real_vector(d2, "[ 2.0,  2.0, 2.0,  2.0,  2.0]", 0.0001);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "spline1d_d_griddiff");
             fflush(stdout);
         }
@@ -4375,54 +4886,63 @@ int main()
         //      Resampling using cubic splines
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<11; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<11; _spoil_scenario++) {
+            try {
                 //
                 // We use cubic spline to do resampling, i.e. having
                 // values of f(x)=x^2 sampled at 5 equidistant nodes on [-1,+1]
-                // we calculate values/derivatives of cubic spline on 
+                // we calculate values/derivatives of cubic spline on
                 // another grid (equidistant with 9 nodes on [-1,+1])
                 // WITHOUT CONSTRUCTION OF SPLINE OBJECT.
                 //
                 // There are efficient functions spline1dconvcubic(),
-                // spline1dconvdiffcubic() and spline1dconvdiff2cubic() 
+                // spline1dconvdiffcubic() and spline1dconvdiff2cubic()
                 // for such calculations.
                 //
                 // We use default boundary conditions ("parabolically terminated
-                // spline") because cubic spline built with such boundary conditions 
+                // spline") because cubic spline built with such boundary conditions
                 // will exactly reproduce any quadratic f(x).
                 //
-                // Actually, we could use natural conditions, but we feel that 
-                // spline which exactly reproduces f() will show us more 
+                // Actually, we could use natural conditions, but we feel that
+                // spline which exactly reproduces f() will show us more
                 // understandable results.
                 //
                 real_1d_array x_old = "[-1.0,-0.5,0.0,+0.5,+1.0]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x_old);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x_old);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x_old);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_vector_by_deleting_element(x_old);
+                }
                 real_1d_array y_old = "[+1.0,0.25,0.0,0.25,+1.0]";
-                if( _spoil_scenario==4 )
+                if( _spoil_scenario==4 ) {
                     spoil_vector_by_nan(y_old);
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     spoil_vector_by_posinf(y_old);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_vector_by_neginf(y_old);
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     spoil_vector_by_deleting_element(y_old);
+                }
                 real_1d_array x_new = "[-1.00,-0.75,-0.50,-0.25,0.00,+0.25,+0.50,+0.75,+1.00]";
-                if( _spoil_scenario==8 )
+                if( _spoil_scenario==8 ) {
                     spoil_vector_by_nan(x_new);
-                if( _spoil_scenario==9 )
+                }
+                if( _spoil_scenario==9 ) {
                     spoil_vector_by_posinf(x_new);
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     spoil_vector_by_neginf(x_new);
+                }
                 real_1d_array y_new;
                 real_1d_array d1_new;
                 real_1d_array d2_new;
@@ -4451,14 +4971,13 @@ int main()
                 _TestResult = _TestResult && doc_test_real_vector(d1_new, "[-2.0, -1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0]", 0.0001);
                 _TestResult = _TestResult && doc_test_real_vector(d2_new, "[2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]", 0.0001);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "spline1d_d_convdiff");
             fflush(stdout);
         }
@@ -4470,10 +4989,8 @@ int main()
         //      Unconstrained dense quadratic programming
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<13; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<13; _spoil_scenario++) {
+            try {
                 //
                 // This example demonstrates minimization of F(x0,x1) = x0^2 + x1^2 -6*x0 - 4*x1
                 //
@@ -4487,39 +5004,52 @@ int main()
                 // Note that quadratic term has 0.5 before it. So if you want to minimize
                 // quadratic function, you should rewrite it in such way that quadratic term
                 // is multiplied by 0.5 too.
-                // For example, our function is f(x)=x0^2+x1^2+..., but we rewrite it as 
+                // For example, our function is f(x)=x0^2+x1^2+..., but we rewrite it as
                 //     f(x) = 0.5*(2*x0^2+2*x1^2) + ....
                 // and pass diag(2,2) as quadratic term - NOT diag(1,1)!
                 //
                 real_2d_array a = "[[2,0],[0,2]]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_matrix_by_nan(a);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_matrix_by_posinf(a);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_matrix_by_neginf(a);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_matrix_by_deleting_row(a);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_matrix_by_deleting_col(a);
+                }
                 real_1d_array b = "[-6,-4]";
-                if( _spoil_scenario==5 )
+                if( _spoil_scenario==5 ) {
                     spoil_vector_by_nan(b);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_vector_by_posinf(b);
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     spoil_vector_by_neginf(b);
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     spoil_vector_by_deleting_element(b);
+                }
                 real_1d_array x0 = "[0,1]";
-                if( _spoil_scenario==9 )
+                if( _spoil_scenario==9 ) {
                     spoil_vector_by_nan(x0);
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     spoil_vector_by_posinf(x0);
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     spoil_vector_by_neginf(x0);
-                if( _spoil_scenario==12 )
+                }
+                if( _spoil_scenario==12 ) {
                     spoil_vector_by_deleting_element(x0);
+                }
                 real_1d_array x;
                 minqpstate state;
                 minqpreport rep;
@@ -4534,14 +5064,13 @@ int main()
                 _TestResult = _TestResult && doc_test_int(rep.terminationtype, 4);
                 _TestResult = _TestResult && doc_test_real_vector(x, "[3,2]", 0.005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "minqp_d_u1");
             fflush(stdout);
         }
@@ -4553,10 +5082,8 @@ int main()
         //      Constrained dense quadratic programming
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<17; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<17; _spoil_scenario++) {
+            try {
                 //
                 // This example demonstrates minimization of F(x0,x1) = x0^2 + x1^2 -6*x0 - 4*x1
                 // subject to bound constraints 0<=x0<=2.5, 0<=x1<=2.5
@@ -4572,49 +5099,66 @@ int main()
                 // Note that quadratic term has 0.5 before it. So if you want to minimize
                 // quadratic function, you should rewrite it in such way that quadratic term
                 // is multiplied by 0.5 too.
-                // For example, our function is f(x)=x0^2+x1^2+..., but we rewrite it as 
+                // For example, our function is f(x)=x0^2+x1^2+..., but we rewrite it as
                 //     f(x) = 0.5*(2*x0^2+2*x1^2) + ....
                 // and pass diag(2,2) as quadratic term - NOT diag(1,1)!
                 //
                 real_2d_array a = "[[2,0],[0,2]]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_matrix_by_nan(a);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_matrix_by_posinf(a);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_matrix_by_neginf(a);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_matrix_by_deleting_row(a);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_matrix_by_deleting_col(a);
+                }
                 real_1d_array b = "[-6,-4]";
-                if( _spoil_scenario==5 )
+                if( _spoil_scenario==5 ) {
                     spoil_vector_by_nan(b);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_vector_by_posinf(b);
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     spoil_vector_by_neginf(b);
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     spoil_vector_by_deleting_element(b);
+                }
                 real_1d_array x0 = "[0,1]";
-                if( _spoil_scenario==9 )
+                if( _spoil_scenario==9 ) {
                     spoil_vector_by_nan(x0);
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     spoil_vector_by_posinf(x0);
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     spoil_vector_by_neginf(x0);
-                if( _spoil_scenario==12 )
+                }
+                if( _spoil_scenario==12 ) {
                     spoil_vector_by_deleting_element(x0);
+                }
                 real_1d_array bndl = "[0.0,0.0]";
-                if( _spoil_scenario==13 )
+                if( _spoil_scenario==13 ) {
                     spoil_vector_by_nan(bndl);
-                if( _spoil_scenario==14 )
+                }
+                if( _spoil_scenario==14 ) {
                     spoil_vector_by_deleting_element(bndl);
+                }
                 real_1d_array bndu = "[2.5,2.5]";
-                if( _spoil_scenario==15 )
+                if( _spoil_scenario==15 ) {
                     spoil_vector_by_nan(bndu);
-                if( _spoil_scenario==16 )
+                }
+                if( _spoil_scenario==16 ) {
                     spoil_vector_by_deleting_element(bndu);
+                }
                 real_1d_array x;
                 minqpstate state;
                 minqpreport rep;
@@ -4630,14 +5174,13 @@ int main()
                 _TestResult = _TestResult && doc_test_int(rep.terminationtype, 4);
                 _TestResult = _TestResult && doc_test_real_vector(x, "[2.5,2]", 0.005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "minqp_d_bc1");
             fflush(stdout);
         }
@@ -4649,12 +5192,10 @@ int main()
         //      Nonlinear least squares optimization using function vector only
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<12; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<12; _spoil_scenario++) {
+            try {
                 //
-                // This example demonstrates minimization of F(x0,x1) = f0^2+f1^2, where 
+                // This example demonstrates minimization of F(x0,x1) = f0^2+f1^2, where
                 //
                 //     f0(x0,x1) = 10*(x0+3)^2
                 //     f1(x0,x1) = (x1-3)^2
@@ -4667,33 +5208,45 @@ int main()
                 // No other information (Jacobian, gradient, etc.) is needed.
                 //
                 real_1d_array x = "[0,0]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
+                }
                 double epsg = 0.0000000001;
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     epsg = fp_nan;
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     epsg = fp_posinf;
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     epsg = fp_neginf;
+                }
                 double epsf = 0;
-                if( _spoil_scenario==6 )
+                if( _spoil_scenario==6 ) {
                     epsf = fp_nan;
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     epsf = fp_posinf;
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     epsf = fp_neginf;
+                }
                 double epsx = 0;
-                if( _spoil_scenario==9 )
+                if( _spoil_scenario==9 ) {
                     epsx = fp_nan;
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     epsx = fp_posinf;
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     epsx = fp_neginf;
+                }
                 ae_int_t maxits = 0;
                 minlmstate state;
                 minlmreport rep;
@@ -4706,14 +5259,13 @@ int main()
                 _TestResult = _TestResult && doc_test_int(rep.terminationtype, 4);
                 _TestResult = _TestResult && doc_test_real_vector(x, "[-3,+3]", 0.005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "minlm_d_v");
             fflush(stdout);
         }
@@ -4725,12 +5277,10 @@ int main()
         //      Nonlinear least squares optimization using function vector and Jacobian
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<12; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<12; _spoil_scenario++) {
+            try {
                 //
-                // This example demonstrates minimization of F(x0,x1) = f0^2+f1^2, where 
+                // This example demonstrates minimization of F(x0,x1) = f0^2+f1^2, where
                 //
                 //     f0(x0,x1) = 10*(x0+3)^2
                 //     f1(x0,x1) = (x1-3)^2
@@ -4742,33 +5292,45 @@ int main()
                 // * Jacobian matrix J = {dfi/dxj}.
                 //
                 real_1d_array x = "[0,0]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
+                }
                 double epsg = 0.0000000001;
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     epsg = fp_nan;
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     epsg = fp_posinf;
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     epsg = fp_neginf;
+                }
                 double epsf = 0;
-                if( _spoil_scenario==6 )
+                if( _spoil_scenario==6 ) {
                     epsf = fp_nan;
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     epsf = fp_posinf;
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     epsf = fp_neginf;
+                }
                 double epsx = 0;
-                if( _spoil_scenario==9 )
+                if( _spoil_scenario==9 ) {
                     epsx = fp_nan;
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     epsx = fp_posinf;
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     epsx = fp_neginf;
+                }
                 ae_int_t maxits = 0;
                 minlmstate state;
                 minlmreport rep;
@@ -4781,14 +5343,13 @@ int main()
                 _TestResult = _TestResult && doc_test_int(rep.terminationtype, 4);
                 _TestResult = _TestResult && doc_test_real_vector(x, "[-3,+3]", 0.005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "minlm_d_vj");
             fflush(stdout);
         }
@@ -4800,10 +5361,8 @@ int main()
         //      Nonlinear Hessian-based optimization for general functions
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<12; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<12; _spoil_scenario++) {
+            try {
                 //
                 // This example demonstrates minimization of F(x0,x1) = 100*(x0+3)^4+(x1-3)^4
                 // using "FGH" mode of the Levenberg-Marquardt optimizer.
@@ -4817,33 +5376,45 @@ int main()
                 // * Hessian H={d2F/(dxi*dxj)}
                 //
                 real_1d_array x = "[0,0]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
+                }
                 double epsg = 0.0000000001;
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     epsg = fp_nan;
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     epsg = fp_posinf;
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     epsg = fp_neginf;
+                }
                 double epsf = 0;
-                if( _spoil_scenario==6 )
+                if( _spoil_scenario==6 ) {
                     epsf = fp_nan;
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     epsf = fp_posinf;
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     epsf = fp_neginf;
+                }
                 double epsx = 0;
-                if( _spoil_scenario==9 )
+                if( _spoil_scenario==9 ) {
                     epsx = fp_nan;
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     epsx = fp_posinf;
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     epsx = fp_neginf;
+                }
                 ae_int_t maxits = 0;
                 minlmstate state;
                 minlmreport rep;
@@ -4856,14 +5427,13 @@ int main()
                 _TestResult = _TestResult && doc_test_int(rep.terminationtype, 4);
                 _TestResult = _TestResult && doc_test_real_vector(x, "[-3,+3]", 0.005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "minlm_d_fgh");
             fflush(stdout);
         }
@@ -4875,12 +5445,10 @@ int main()
         //      Bound constrained nonlinear least squares optimization
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<16; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<16; _spoil_scenario++) {
+            try {
                 //
-                // This example demonstrates minimization of F(x0,x1) = f0^2+f1^2, where 
+                // This example demonstrates minimization of F(x0,x1) = f0^2+f1^2, where
                 //
                 //     f0(x0,x1) = 10*(x0+3)^2
                 //     f1(x0,x1) = (x1-3)^2
@@ -4898,43 +5466,59 @@ int main()
                 // No other information (Jacobian, gradient, etc.) is needed.
                 //
                 real_1d_array x = "[0,0]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
+                }
                 real_1d_array bndl = "[-1,-1]";
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     spoil_vector_by_nan(bndl);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_vector_by_deleting_element(bndl);
+                }
                 real_1d_array bndu = "[+1,+1]";
-                if( _spoil_scenario==5 )
+                if( _spoil_scenario==5 ) {
                     spoil_vector_by_nan(bndu);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_vector_by_deleting_element(bndu);
+                }
                 double epsg = 0.0000000001;
-                if( _spoil_scenario==7 )
+                if( _spoil_scenario==7 ) {
                     epsg = fp_nan;
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     epsg = fp_posinf;
-                if( _spoil_scenario==9 )
+                }
+                if( _spoil_scenario==9 ) {
                     epsg = fp_neginf;
+                }
                 double epsf = 0;
-                if( _spoil_scenario==10 )
+                if( _spoil_scenario==10 ) {
                     epsf = fp_nan;
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     epsf = fp_posinf;
-                if( _spoil_scenario==12 )
+                }
+                if( _spoil_scenario==12 ) {
                     epsf = fp_neginf;
+                }
                 double epsx = 0;
-                if( _spoil_scenario==13 )
+                if( _spoil_scenario==13 ) {
                     epsx = fp_nan;
-                if( _spoil_scenario==14 )
+                }
+                if( _spoil_scenario==14 ) {
                     epsx = fp_posinf;
-                if( _spoil_scenario==15 )
+                }
+                if( _spoil_scenario==15 ) {
                     epsx = fp_neginf;
+                }
                 ae_int_t maxits = 0;
                 minlmstate state;
                 minlmreport rep;
@@ -4948,14 +5532,13 @@ int main()
                 _TestResult = _TestResult && doc_test_int(rep.terminationtype, 4);
                 _TestResult = _TestResult && doc_test_real_vector(x, "[-1,+1]", 0.005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "minlm_d_vb");
             fflush(stdout);
         }
@@ -4967,12 +5550,10 @@ int main()
         //      Efficient restarts of LM optimizer
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<15; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<15; _spoil_scenario++) {
+            try {
                 //
-                // This example demonstrates minimization of F(x0,x1) = f0^2+f1^2, where 
+                // This example demonstrates minimization of F(x0,x1) = f0^2+f1^2, where
                 //
                 //     f0(x0,x1) = 10*(x0+3)^2
                 //     f1(x0,x1) = (x1-3)^2
@@ -4981,26 +5562,35 @@ int main()
                 //
                 real_1d_array x;
                 double epsg = 0.0000000001;
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     epsg = fp_nan;
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     epsg = fp_posinf;
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     epsg = fp_neginf;
+                }
                 double epsf = 0;
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     epsf = fp_nan;
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     epsf = fp_posinf;
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     epsf = fp_neginf;
+                }
                 double epsx = 0;
-                if( _spoil_scenario==6 )
+                if( _spoil_scenario==6 ) {
                     epsx = fp_nan;
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     epsx = fp_posinf;
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     epsx = fp_neginf;
+                }
                 ae_int_t maxits = 0;
                 minlmstate state;
                 minlmreport rep;
@@ -5009,12 +5599,15 @@ int main()
                 // create optimizer using minlmcreatev()
                 //
                 x = "[10,10]";
-                if( _spoil_scenario==9 )
+                if( _spoil_scenario==9 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     spoil_vector_by_neginf(x);
+                }
                 minlmcreatev(2, x, 0.0001, state);
                 minlmsetcond(state, epsg, epsf, epsx, maxits);
                 alglib::minlmoptimize(state, function1_fvec);
@@ -5029,25 +5622,27 @@ int main()
                 // must remain unchanged.
                 //
                 x = "[4,4]";
-                if( _spoil_scenario==12 )
+                if( _spoil_scenario==12 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==13 )
+                }
+                if( _spoil_scenario==13 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==14 )
+                }
+                if( _spoil_scenario==14 ) {
                     spoil_vector_by_neginf(x);
+                }
                 minlmrestartfrom(state, x);
                 alglib::minlmoptimize(state, function2_fvec);
                 minlmresults(state, x, rep);
                 _TestResult = _TestResult && doc_test_real_vector(x, "[0,1]", 0.005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "minlm_d_restarts");
             fflush(stdout);
         }
@@ -5059,38 +5654,48 @@ int main()
         //      Nonlinear least squares optimization, FJ scheme (obsolete, but supported)
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<12; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<12; _spoil_scenario++) {
+            try {
                 real_1d_array x = "[0,0]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
+                }
                 double epsg = 0.0000000001;
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     epsg = fp_nan;
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     epsg = fp_posinf;
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     epsg = fp_neginf;
+                }
                 double epsf = 0;
-                if( _spoil_scenario==6 )
+                if( _spoil_scenario==6 ) {
                     epsf = fp_nan;
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     epsf = fp_posinf;
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     epsf = fp_neginf;
+                }
                 double epsx = 0;
-                if( _spoil_scenario==9 )
+                if( _spoil_scenario==9 ) {
                     epsx = fp_nan;
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     epsx = fp_posinf;
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     epsx = fp_neginf;
+                }
                 ae_int_t maxits = 0;
                 minlmstate state;
                 minlmreport rep;
@@ -5101,14 +5706,13 @@ int main()
                 _TestResult = _TestResult && doc_test_int(rep.terminationtype, 4);
                 _TestResult = _TestResult && doc_test_real_vector(x, "[-3,+3]", 0.005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "minlm_t_1");
             fflush(stdout);
         }
@@ -5120,38 +5724,48 @@ int main()
         //      Nonlinear least squares optimization, FGJ scheme (obsolete, but supported)
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<12; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<12; _spoil_scenario++) {
+            try {
                 real_1d_array x = "[0,0]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
+                }
                 double epsg = 0.0000000001;
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     epsg = fp_nan;
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     epsg = fp_posinf;
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     epsg = fp_neginf;
+                }
                 double epsf = 0;
-                if( _spoil_scenario==6 )
+                if( _spoil_scenario==6 ) {
                     epsf = fp_nan;
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     epsf = fp_posinf;
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     epsf = fp_neginf;
+                }
                 double epsx = 0;
-                if( _spoil_scenario==9 )
+                if( _spoil_scenario==9 ) {
                     epsx = fp_nan;
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     epsx = fp_posinf;
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     epsx = fp_neginf;
+                }
                 ae_int_t maxits = 0;
                 minlmstate state;
                 minlmreport rep;
@@ -5162,14 +5776,13 @@ int main()
                 _TestResult = _TestResult && doc_test_int(rep.terminationtype, 4);
                 _TestResult = _TestResult && doc_test_real_vector(x, "[-3,+3]", 0.005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "minlm_t_2");
             fflush(stdout);
         }
@@ -5181,73 +5794,93 @@ int main()
         //      Nonlinear fitting using function value only
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<27; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<27; _spoil_scenario++) {
+            try {
                 //
                 // In this example we demonstrate exponential fitting
                 // by f(x) = exp(-c*x^2)
                 // using function value only.
                 //
                 // Gradient is estimated using combination of numerical differences
-                // and secant updates. diffstep variable stores differentiation step 
+                // and secant updates. diffstep variable stores differentiation step
                 // (we have to tell algorithm what step to use).
                 //
                 real_2d_array x = "[[-1],[-0.8],[-0.6],[-0.4],[-0.2],[0],[0.2],[0.4],[0.6],[0.8],[1.0]]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_matrix_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_matrix_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_matrix_by_neginf(x);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_matrix_by_deleting_row(x);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_matrix_by_deleting_col(x);
+                }
                 real_1d_array y = "[0.223130, 0.382893, 0.582748, 0.786628, 0.941765, 1.000000, 0.941765, 0.786628, 0.582748, 0.382893, 0.223130]";
-                if( _spoil_scenario==5 )
+                if( _spoil_scenario==5 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     spoil_vector_by_neginf(y);
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     spoil_vector_by_adding_element(y);
-                if( _spoil_scenario==9 )
+                }
+                if( _spoil_scenario==9 ) {
                     spoil_vector_by_deleting_element(y);
+                }
                 real_1d_array c = "[0.3]";
-                if( _spoil_scenario==10 )
+                if( _spoil_scenario==10 ) {
                     spoil_vector_by_nan(c);
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     spoil_vector_by_posinf(c);
-                if( _spoil_scenario==12 )
+                }
+                if( _spoil_scenario==12 ) {
                     spoil_vector_by_neginf(c);
+                }
                 double epsf = 0;
-                if( _spoil_scenario==13 )
+                if( _spoil_scenario==13 ) {
                     epsf = fp_nan;
-                if( _spoil_scenario==14 )
+                }
+                if( _spoil_scenario==14 ) {
                     epsf = fp_posinf;
-                if( _spoil_scenario==15 )
+                }
+                if( _spoil_scenario==15 ) {
                     epsf = fp_neginf;
+                }
                 double epsx = 0.000001;
-                if( _spoil_scenario==16 )
+                if( _spoil_scenario==16 ) {
                     epsx = fp_nan;
-                if( _spoil_scenario==17 )
+                }
+                if( _spoil_scenario==17 ) {
                     epsx = fp_posinf;
-                if( _spoil_scenario==18 )
+                }
+                if( _spoil_scenario==18 ) {
                     epsx = fp_neginf;
+                }
                 ae_int_t maxits = 0;
                 ae_int_t info;
                 lsfitstate state;
                 lsfitreport rep;
                 double diffstep = 0.0001;
-                if( _spoil_scenario==19 )
+                if( _spoil_scenario==19 ) {
                     diffstep = fp_nan;
-                if( _spoil_scenario==20 )
+                }
+                if( _spoil_scenario==20 ) {
                     diffstep = fp_posinf;
-                if( _spoil_scenario==21 )
+                }
+                if( _spoil_scenario==21 ) {
                     diffstep = fp_neginf;
+                }
 
                 //
                 // Fitting without weights
@@ -5264,16 +5897,21 @@ int main()
                 // (you can change weights and see how it changes result)
                 //
                 real_1d_array w = "[1,1,1,1,1,1,1,1,1,1,1]";
-                if( _spoil_scenario==22 )
+                if( _spoil_scenario==22 ) {
                     spoil_vector_by_nan(w);
-                if( _spoil_scenario==23 )
+                }
+                if( _spoil_scenario==23 ) {
                     spoil_vector_by_posinf(w);
-                if( _spoil_scenario==24 )
+                }
+                if( _spoil_scenario==24 ) {
                     spoil_vector_by_neginf(w);
-                if( _spoil_scenario==25 )
+                }
+                if( _spoil_scenario==25 ) {
                     spoil_vector_by_adding_element(w);
-                if( _spoil_scenario==26 )
+                }
+                if( _spoil_scenario==26 ) {
                     spoil_vector_by_deleting_element(w);
+                }
                 lsfitcreatewf(x, y, w, c, diffstep, state);
                 lsfitsetcond(state, epsf, epsx, maxits);
                 alglib::lsfitfit(state, function_cx_1_func);
@@ -5281,14 +5919,13 @@ int main()
                 _TestResult = _TestResult && doc_test_int(info, 2);
                 _TestResult = _TestResult && doc_test_real_vector(c, "[1.5]", 0.05);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "lsfit_d_nlf");
             fflush(stdout);
         }
@@ -5300,58 +5937,75 @@ int main()
         //      Nonlinear fitting using gradient
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<24; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<24; _spoil_scenario++) {
+            try {
                 //
                 // In this example we demonstrate exponential fitting
                 // by f(x) = exp(-c*x^2)
                 // using function value and gradient (with respect to c).
                 //
                 real_2d_array x = "[[-1],[-0.8],[-0.6],[-0.4],[-0.2],[0],[0.2],[0.4],[0.6],[0.8],[1.0]]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_matrix_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_matrix_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_matrix_by_neginf(x);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_matrix_by_deleting_row(x);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_matrix_by_deleting_col(x);
+                }
                 real_1d_array y = "[0.223130, 0.382893, 0.582748, 0.786628, 0.941765, 1.000000, 0.941765, 0.786628, 0.582748, 0.382893, 0.223130]";
-                if( _spoil_scenario==5 )
+                if( _spoil_scenario==5 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     spoil_vector_by_neginf(y);
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     spoil_vector_by_adding_element(y);
-                if( _spoil_scenario==9 )
+                }
+                if( _spoil_scenario==9 ) {
                     spoil_vector_by_deleting_element(y);
+                }
                 real_1d_array c = "[0.3]";
-                if( _spoil_scenario==10 )
+                if( _spoil_scenario==10 ) {
                     spoil_vector_by_nan(c);
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     spoil_vector_by_posinf(c);
-                if( _spoil_scenario==12 )
+                }
+                if( _spoil_scenario==12 ) {
                     spoil_vector_by_neginf(c);
+                }
                 double epsf = 0;
-                if( _spoil_scenario==13 )
+                if( _spoil_scenario==13 ) {
                     epsf = fp_nan;
-                if( _spoil_scenario==14 )
+                }
+                if( _spoil_scenario==14 ) {
                     epsf = fp_posinf;
-                if( _spoil_scenario==15 )
+                }
+                if( _spoil_scenario==15 ) {
                     epsf = fp_neginf;
+                }
                 double epsx = 0.000001;
-                if( _spoil_scenario==16 )
+                if( _spoil_scenario==16 ) {
                     epsx = fp_nan;
-                if( _spoil_scenario==17 )
+                }
+                if( _spoil_scenario==17 ) {
                     epsx = fp_posinf;
-                if( _spoil_scenario==18 )
+                }
+                if( _spoil_scenario==18 ) {
                     epsx = fp_neginf;
+                }
                 ae_int_t maxits = 0;
                 ae_int_t info;
                 lsfitstate state;
@@ -5372,16 +6026,21 @@ int main()
                 // (you can change weights and see how it changes result)
                 //
                 real_1d_array w = "[1,1,1,1,1,1,1,1,1,1,1]";
-                if( _spoil_scenario==19 )
+                if( _spoil_scenario==19 ) {
                     spoil_vector_by_nan(w);
-                if( _spoil_scenario==20 )
+                }
+                if( _spoil_scenario==20 ) {
                     spoil_vector_by_posinf(w);
-                if( _spoil_scenario==21 )
+                }
+                if( _spoil_scenario==21 ) {
                     spoil_vector_by_neginf(w);
-                if( _spoil_scenario==22 )
+                }
+                if( _spoil_scenario==22 ) {
                     spoil_vector_by_adding_element(w);
-                if( _spoil_scenario==23 )
+                }
+                if( _spoil_scenario==23 ) {
                     spoil_vector_by_deleting_element(w);
+                }
                 lsfitcreatewfg(x, y, w, c, true, state);
                 lsfitsetcond(state, epsf, epsx, maxits);
                 alglib::lsfitfit(state, function_cx_1_func, function_cx_1_grad);
@@ -5389,14 +6048,13 @@ int main()
                 _TestResult = _TestResult && doc_test_int(info, 2);
                 _TestResult = _TestResult && doc_test_real_vector(c, "[1.5]", 0.05);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "lsfit_d_nlfg");
             fflush(stdout);
         }
@@ -5408,58 +6066,75 @@ int main()
         //      Nonlinear fitting using gradient and Hessian
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<24; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<24; _spoil_scenario++) {
+            try {
                 //
                 // In this example we demonstrate exponential fitting
                 // by f(x) = exp(-c*x^2)
                 // using function value, gradient and Hessian (with respect to c)
                 //
                 real_2d_array x = "[[-1],[-0.8],[-0.6],[-0.4],[-0.2],[0],[0.2],[0.4],[0.6],[0.8],[1.0]]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_matrix_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_matrix_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_matrix_by_neginf(x);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_matrix_by_deleting_row(x);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_matrix_by_deleting_col(x);
+                }
                 real_1d_array y = "[0.223130, 0.382893, 0.582748, 0.786628, 0.941765, 1.000000, 0.941765, 0.786628, 0.582748, 0.382893, 0.223130]";
-                if( _spoil_scenario==5 )
+                if( _spoil_scenario==5 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     spoil_vector_by_neginf(y);
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     spoil_vector_by_adding_element(y);
-                if( _spoil_scenario==9 )
+                }
+                if( _spoil_scenario==9 ) {
                     spoil_vector_by_deleting_element(y);
+                }
                 real_1d_array c = "[0.3]";
-                if( _spoil_scenario==10 )
+                if( _spoil_scenario==10 ) {
                     spoil_vector_by_nan(c);
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     spoil_vector_by_posinf(c);
-                if( _spoil_scenario==12 )
+                }
+                if( _spoil_scenario==12 ) {
                     spoil_vector_by_neginf(c);
+                }
                 double epsf = 0;
-                if( _spoil_scenario==13 )
+                if( _spoil_scenario==13 ) {
                     epsf = fp_nan;
-                if( _spoil_scenario==14 )
+                }
+                if( _spoil_scenario==14 ) {
                     epsf = fp_posinf;
-                if( _spoil_scenario==15 )
+                }
+                if( _spoil_scenario==15 ) {
                     epsf = fp_neginf;
+                }
                 double epsx = 0.000001;
-                if( _spoil_scenario==16 )
+                if( _spoil_scenario==16 ) {
                     epsx = fp_nan;
-                if( _spoil_scenario==17 )
+                }
+                if( _spoil_scenario==17 ) {
                     epsx = fp_posinf;
-                if( _spoil_scenario==18 )
+                }
+                if( _spoil_scenario==18 ) {
                     epsx = fp_neginf;
+                }
                 ae_int_t maxits = 0;
                 ae_int_t info;
                 lsfitstate state;
@@ -5480,16 +6155,21 @@ int main()
                 // (you can change weights and see how it changes result)
                 //
                 real_1d_array w = "[1,1,1,1,1,1,1,1,1,1,1]";
-                if( _spoil_scenario==19 )
+                if( _spoil_scenario==19 ) {
                     spoil_vector_by_nan(w);
-                if( _spoil_scenario==20 )
+                }
+                if( _spoil_scenario==20 ) {
                     spoil_vector_by_posinf(w);
-                if( _spoil_scenario==21 )
+                }
+                if( _spoil_scenario==21 ) {
                     spoil_vector_by_neginf(w);
-                if( _spoil_scenario==22 )
+                }
+                if( _spoil_scenario==22 ) {
                     spoil_vector_by_adding_element(w);
-                if( _spoil_scenario==23 )
+                }
+                if( _spoil_scenario==23 ) {
                     spoil_vector_by_deleting_element(w);
+                }
                 lsfitcreatewfgh(x, y, w, c, state);
                 lsfitsetcond(state, epsf, epsx, maxits);
                 alglib::lsfitfit(state, function_cx_1_func, function_cx_1_grad, function_cx_1_hess);
@@ -5497,14 +6177,13 @@ int main()
                 _TestResult = _TestResult && doc_test_int(info, 2);
                 _TestResult = _TestResult && doc_test_real_vector(c, "[1.5]", 0.05);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "lsfit_d_nlfgh");
             fflush(stdout);
         }
@@ -5516,10 +6195,8 @@ int main()
         //      Bound contstrained nonlinear fitting using function value only
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<26; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<26; _spoil_scenario++) {
+            try {
                 //
                 // In this example we demonstrate exponential fitting by
                 //     f(x) = exp(-c*x^2)
@@ -5528,76 +6205,102 @@ int main()
                 // using function value only.
                 //
                 // Gradient is estimated using combination of numerical differences
-                // and secant updates. diffstep variable stores differentiation step 
+                // and secant updates. diffstep variable stores differentiation step
                 // (we have to tell algorithm what step to use).
                 //
                 // Unconstrained solution is c=1.5, but because of constraints we should
                 // get c=1.0 (at the boundary).
                 //
                 real_2d_array x = "[[-1],[-0.8],[-0.6],[-0.4],[-0.2],[0],[0.2],[0.4],[0.6],[0.8],[1.0]]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_matrix_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_matrix_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_matrix_by_neginf(x);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_matrix_by_deleting_row(x);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_matrix_by_deleting_col(x);
+                }
                 real_1d_array y = "[0.223130, 0.382893, 0.582748, 0.786628, 0.941765, 1.000000, 0.941765, 0.786628, 0.582748, 0.382893, 0.223130]";
-                if( _spoil_scenario==5 )
+                if( _spoil_scenario==5 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     spoil_vector_by_neginf(y);
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     spoil_vector_by_adding_element(y);
-                if( _spoil_scenario==9 )
+                }
+                if( _spoil_scenario==9 ) {
                     spoil_vector_by_deleting_element(y);
+                }
                 real_1d_array c = "[0.3]";
-                if( _spoil_scenario==10 )
+                if( _spoil_scenario==10 ) {
                     spoil_vector_by_nan(c);
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     spoil_vector_by_posinf(c);
-                if( _spoil_scenario==12 )
+                }
+                if( _spoil_scenario==12 ) {
                     spoil_vector_by_neginf(c);
+                }
                 real_1d_array bndl = "[0.0]";
-                if( _spoil_scenario==13 )
+                if( _spoil_scenario==13 ) {
                     spoil_vector_by_nan(bndl);
-                if( _spoil_scenario==14 )
+                }
+                if( _spoil_scenario==14 ) {
                     spoil_vector_by_deleting_element(bndl);
+                }
                 real_1d_array bndu = "[1.0]";
-                if( _spoil_scenario==15 )
+                if( _spoil_scenario==15 ) {
                     spoil_vector_by_nan(bndu);
-                if( _spoil_scenario==16 )
+                }
+                if( _spoil_scenario==16 ) {
                     spoil_vector_by_deleting_element(bndu);
+                }
                 double epsf = 0;
-                if( _spoil_scenario==17 )
+                if( _spoil_scenario==17 ) {
                     epsf = fp_nan;
-                if( _spoil_scenario==18 )
+                }
+                if( _spoil_scenario==18 ) {
                     epsf = fp_posinf;
-                if( _spoil_scenario==19 )
+                }
+                if( _spoil_scenario==19 ) {
                     epsf = fp_neginf;
+                }
                 double epsx = 0.000001;
-                if( _spoil_scenario==20 )
+                if( _spoil_scenario==20 ) {
                     epsx = fp_nan;
-                if( _spoil_scenario==21 )
+                }
+                if( _spoil_scenario==21 ) {
                     epsx = fp_posinf;
-                if( _spoil_scenario==22 )
+                }
+                if( _spoil_scenario==22 ) {
                     epsx = fp_neginf;
+                }
                 ae_int_t maxits = 0;
                 ae_int_t info;
                 lsfitstate state;
                 lsfitreport rep;
                 double diffstep = 0.0001;
-                if( _spoil_scenario==23 )
+                if( _spoil_scenario==23 ) {
                     diffstep = fp_nan;
-                if( _spoil_scenario==24 )
+                }
+                if( _spoil_scenario==24 ) {
                     diffstep = fp_posinf;
-                if( _spoil_scenario==25 )
+                }
+                if( _spoil_scenario==25 ) {
                     diffstep = fp_neginf;
+                }
 
                 lsfitcreatef(x, y, c, diffstep, state);
                 lsfitsetbc(state, bndl, bndu);
@@ -5606,14 +6309,13 @@ int main()
                 lsfitresults(state, info, c, rep);
                 _TestResult = _TestResult && doc_test_real_vector(c, "[1.0]", 0.05);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "lsfit_d_nlfb");
             fflush(stdout);
         }
@@ -5625,10 +6327,8 @@ int main()
         //      Nonlinear fitting with custom scaling and bound constraints
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<30; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<30; _spoil_scenario++) {
+            try {
                 //
                 // In this example we demonstrate fitting by
                 //     f(x) = c[0]*(1+c[1]*((x-1999)^c[2]-1))
@@ -5644,90 +6344,120 @@ int main()
                 //     c[0] - debt value at initial moment (2000),
                 //     c[1] - direction coefficient (growth or decrease),
                 //     c[2] - curvature coefficient.
-                // You may see that our variables are badly scaled - first one 
-                // is order of 10^12, and next two are somewhere about 1 in 
+                // You may see that our variables are badly scaled - first one
+                // is order of 10^12, and next two are somewhere about 1 in
                 // magnitude. Such problem is difficult to solve without some
                 // kind of scaling.
                 // That is exactly where lsfitsetscale() function can be used.
                 // We set scale of our variables to [1.0E12, 1, 1], which allows
                 // us to easily solve this problem.
                 //
-                // You can try commenting out lsfitsetscale() call - and you will 
+                // You can try commenting out lsfitsetscale() call - and you will
                 // see that algorithm will fail to converge.
                 //
                 real_2d_array x = "[[2000],[2001],[2002],[2003],[2004],[2005],[2006],[2007],[2008]]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_matrix_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_matrix_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_matrix_by_neginf(x);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_matrix_by_deleting_row(x);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_matrix_by_deleting_col(x);
+                }
                 real_1d_array y = "[4323239600000.0, 4560913100000.0, 5564091500000.0, 6743189300000.0, 7284064600000.0, 7050129600000.0, 7092221500000.0, 8483907600000.0, 8625804400000.0]";
-                if( _spoil_scenario==5 )
+                if( _spoil_scenario==5 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     spoil_vector_by_neginf(y);
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     spoil_vector_by_adding_element(y);
-                if( _spoil_scenario==9 )
+                }
+                if( _spoil_scenario==9 ) {
                     spoil_vector_by_deleting_element(y);
+                }
                 real_1d_array c = "[1.0e+13, 1, 1]";
-                if( _spoil_scenario==10 )
+                if( _spoil_scenario==10 ) {
                     spoil_vector_by_nan(c);
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     spoil_vector_by_posinf(c);
-                if( _spoil_scenario==12 )
+                }
+                if( _spoil_scenario==12 ) {
                     spoil_vector_by_neginf(c);
+                }
                 double epsf = 0;
-                if( _spoil_scenario==13 )
+                if( _spoil_scenario==13 ) {
                     epsf = fp_nan;
-                if( _spoil_scenario==14 )
+                }
+                if( _spoil_scenario==14 ) {
                     epsf = fp_posinf;
-                if( _spoil_scenario==15 )
+                }
+                if( _spoil_scenario==15 ) {
                     epsf = fp_neginf;
+                }
                 double epsx = 1.0e-5;
-                if( _spoil_scenario==16 )
+                if( _spoil_scenario==16 ) {
                     epsx = fp_nan;
-                if( _spoil_scenario==17 )
+                }
+                if( _spoil_scenario==17 ) {
                     epsx = fp_posinf;
-                if( _spoil_scenario==18 )
+                }
+                if( _spoil_scenario==18 ) {
                     epsx = fp_neginf;
+                }
                 real_1d_array bndl = "[-inf, -10, 0.1]";
-                if( _spoil_scenario==19 )
+                if( _spoil_scenario==19 ) {
                     spoil_vector_by_nan(bndl);
-                if( _spoil_scenario==20 )
+                }
+                if( _spoil_scenario==20 ) {
                     spoil_vector_by_deleting_element(bndl);
+                }
                 real_1d_array bndu = "[+inf, +10, 2.0]";
-                if( _spoil_scenario==21 )
+                if( _spoil_scenario==21 ) {
                     spoil_vector_by_nan(bndu);
-                if( _spoil_scenario==22 )
+                }
+                if( _spoil_scenario==22 ) {
                     spoil_vector_by_deleting_element(bndu);
+                }
                 real_1d_array s = "[1.0e+12, 1, 1]";
-                if( _spoil_scenario==23 )
+                if( _spoil_scenario==23 ) {
                     spoil_vector_by_nan(s);
-                if( _spoil_scenario==24 )
+                }
+                if( _spoil_scenario==24 ) {
                     spoil_vector_by_posinf(s);
-                if( _spoil_scenario==25 )
+                }
+                if( _spoil_scenario==25 ) {
                     spoil_vector_by_neginf(s);
-                if( _spoil_scenario==26 )
+                }
+                if( _spoil_scenario==26 ) {
                     spoil_vector_by_deleting_element(s);
+                }
                 ae_int_t maxits = 0;
                 ae_int_t info;
                 lsfitstate state;
                 lsfitreport rep;
                 double diffstep = 1.0e-5;
-                if( _spoil_scenario==27 )
+                if( _spoil_scenario==27 ) {
                     diffstep = fp_nan;
-                if( _spoil_scenario==28 )
+                }
+                if( _spoil_scenario==28 ) {
                     diffstep = fp_posinf;
-                if( _spoil_scenario==29 )
+                }
+                if( _spoil_scenario==29 ) {
                     diffstep = fp_neginf;
+                }
 
                 lsfitcreatef(x, y, c, diffstep, state);
                 lsfitsetcond(state, epsf, epsx, maxits);
@@ -5738,14 +6468,13 @@ int main()
                 _TestResult = _TestResult && doc_test_int(info, 2);
                 _TestResult = _TestResult && doc_test_real_vector(c, "[4.142560e+12, 0.434240, 0.565376]", -0.005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "lsfit_d_nlscale");
             fflush(stdout);
         }
@@ -5757,10 +6486,8 @@ int main()
         //      Unconstrained (general) linear least squares fitting with and without weights
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<13; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<13; _spoil_scenario++) {
+            try {
                 //
                 // In this example we demonstrate linear fitting by f(x|a) = a*exp(0.5*x).
                 //
@@ -5770,23 +6497,31 @@ int main()
                 //              Actually, we have only one basis function F0 = exp(0.5*x).
                 //
                 real_2d_array fmatrix = "[[0.606531],[0.670320],[0.740818],[0.818731],[0.904837],[1.000000],[1.105171],[1.221403],[1.349859],[1.491825],[1.648721]]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_matrix_by_nan(fmatrix);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_matrix_by_posinf(fmatrix);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_matrix_by_neginf(fmatrix);
+                }
                 real_1d_array y = "[1.133719, 1.306522, 1.504604, 1.554663, 1.884638, 2.072436, 2.257285, 2.534068, 2.622017, 2.897713, 3.219371]";
-                if( _spoil_scenario==3 )
+                if( _spoil_scenario==3 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     spoil_vector_by_neginf(y);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_vector_by_adding_element(y);
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     spoil_vector_by_deleting_element(y);
+                }
                 ae_int_t info;
                 real_1d_array c;
                 lsfitreport rep;
@@ -5803,28 +6538,32 @@ int main()
                 // Slightly different result is returned.
                 //
                 real_1d_array w = "[1.414213, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]";
-                if( _spoil_scenario==8 )
+                if( _spoil_scenario==8 ) {
                     spoil_vector_by_nan(w);
-                if( _spoil_scenario==9 )
+                }
+                if( _spoil_scenario==9 ) {
                     spoil_vector_by_posinf(w);
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     spoil_vector_by_neginf(w);
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     spoil_vector_by_adding_element(w);
-                if( _spoil_scenario==12 )
+                }
+                if( _spoil_scenario==12 ) {
                     spoil_vector_by_deleting_element(w);
+                }
                 lsfitlinearw(y, w, fmatrix, info, c, rep);
                 _TestResult = _TestResult && doc_test_int(info, 1);
                 _TestResult = _TestResult && doc_test_real_vector(c, "[1.983354]", 0.00005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "lsfit_d_lin");
             fflush(stdout);
         }
@@ -5836,10 +6575,8 @@ int main()
         //      Constrained (general) linear least squares fitting with and without weights
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<20; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<20; _spoil_scenario++) {
+            try {
                 //
                 // In this example we demonstrate linear fitting by f(x|a,b) = a*x+b
                 // with simple constraint f(0)=0.
@@ -5859,41 +6596,56 @@ int main()
                 //                  [ 1.0  0.0  0.0 ]
                 //              first two columns contain coefficients before basis functions,
                 //              last column contains desired value of their sum.
-                //              So [1,0,0] means "1*constant_term + 0*linear_term = 0" 
+                //              So [1,0,0] means "1*constant_term + 0*linear_term = 0"
                 //
                 real_1d_array y = "[0.072436,0.246944,0.491263,0.522300,0.714064,0.921929]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(y);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_vector_by_adding_element(y);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_vector_by_deleting_element(y);
+                }
                 real_2d_array fmatrix = "[[1,0.0],[1,0.2],[1,0.4],[1,0.6],[1,0.8],[1,1.0]]";
-                if( _spoil_scenario==5 )
+                if( _spoil_scenario==5 ) {
                     spoil_matrix_by_nan(fmatrix);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_matrix_by_posinf(fmatrix);
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     spoil_matrix_by_neginf(fmatrix);
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     spoil_matrix_by_adding_row(fmatrix);
-                if( _spoil_scenario==9 )
+                }
+                if( _spoil_scenario==9 ) {
                     spoil_matrix_by_adding_col(fmatrix);
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     spoil_matrix_by_deleting_row(fmatrix);
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     spoil_matrix_by_deleting_col(fmatrix);
+                }
                 real_2d_array cmatrix = "[[1,0,0]]";
-                if( _spoil_scenario==12 )
+                if( _spoil_scenario==12 ) {
                     spoil_matrix_by_nan(cmatrix);
-                if( _spoil_scenario==13 )
+                }
+                if( _spoil_scenario==13 ) {
                     spoil_matrix_by_posinf(cmatrix);
-                if( _spoil_scenario==14 )
+                }
+                if( _spoil_scenario==14 ) {
                     spoil_matrix_by_neginf(cmatrix);
+                }
                 ae_int_t info;
                 real_1d_array c;
                 lsfitreport rep;
@@ -5909,28 +6661,32 @@ int main()
                 // Constrained fitting with individual weights
                 //
                 real_1d_array w = "[1, 1.414213, 1, 1, 1, 1]";
-                if( _spoil_scenario==15 )
+                if( _spoil_scenario==15 ) {
                     spoil_vector_by_nan(w);
-                if( _spoil_scenario==16 )
+                }
+                if( _spoil_scenario==16 ) {
                     spoil_vector_by_posinf(w);
-                if( _spoil_scenario==17 )
+                }
+                if( _spoil_scenario==17 ) {
                     spoil_vector_by_neginf(w);
-                if( _spoil_scenario==18 )
+                }
+                if( _spoil_scenario==18 ) {
                     spoil_vector_by_adding_element(w);
-                if( _spoil_scenario==19 )
+                }
+                if( _spoil_scenario==19 ) {
                     spoil_vector_by_deleting_element(w);
+                }
                 lsfitlinearwc(y, w, fmatrix, cmatrix, info, c, rep);
                 _TestResult = _TestResult && doc_test_int(info, 1);
                 _TestResult = _TestResult && doc_test_real_vector(c, "[0,0.938322]", 0.0005);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "lsfit_d_linc");
             fflush(stdout);
         }
@@ -5942,10 +6698,8 @@ int main()
         //      Unconstrained polynomial fitting
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<20; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<20; _spoil_scenario++) {
+            try {
                 //
                 // This example demonstrates polynomial fitting.
                 //
@@ -5964,33 +6718,45 @@ int main()
                 // more weight than other ones.
                 //
                 real_1d_array x = "[0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_vector_by_adding_element(x);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_vector_by_deleting_element(x);
+                }
                 real_1d_array y = "[0.00,0.05,0.26,0.32,0.33,0.43,0.60,0.60,0.77,0.98,1.02]";
-                if( _spoil_scenario==5 )
+                if( _spoil_scenario==5 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     spoil_vector_by_neginf(y);
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     spoil_vector_by_adding_element(y);
-                if( _spoil_scenario==9 )
+                }
+                if( _spoil_scenario==9 ) {
                     spoil_vector_by_deleting_element(y);
+                }
                 ae_int_t m = 2;
                 double t = 2;
-                if( _spoil_scenario==10 )
+                if( _spoil_scenario==10 ) {
                     t = fp_posinf;
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     t = fp_neginf;
+                }
                 ae_int_t info;
                 barycentricinterpolant p;
                 polynomialfitreport rep;
@@ -6002,7 +6768,7 @@ int main()
                 // NOTE: result is returned as barycentricinterpolant structure.
                 //       if you want to get representation in the power basis,
                 //       you can use barycentricbar2pow() function to convert
-                //       from barycentric to power representation (see docs for 
+                //       from barycentric to power representation (see docs for
                 //       POLINT subpackage for more info).
                 //
                 polynomialfit(x, y, m, info, p, rep);
@@ -6015,37 +6781,44 @@ int main()
                 // NOTE: slightly different result is returned
                 //
                 real_1d_array w = "[1,1.414213562,1,1,1,1,1,1,1,1,1]";
-                if( _spoil_scenario==12 )
+                if( _spoil_scenario==12 ) {
                     spoil_vector_by_nan(w);
-                if( _spoil_scenario==13 )
+                }
+                if( _spoil_scenario==13 ) {
                     spoil_vector_by_posinf(w);
-                if( _spoil_scenario==14 )
+                }
+                if( _spoil_scenario==14 ) {
                     spoil_vector_by_neginf(w);
-                if( _spoil_scenario==15 )
+                }
+                if( _spoil_scenario==15 ) {
                     spoil_vector_by_adding_element(w);
-                if( _spoil_scenario==16 )
+                }
+                if( _spoil_scenario==16 ) {
                     spoil_vector_by_deleting_element(w);
+                }
                 real_1d_array xc = "[]";
-                if( _spoil_scenario==17 )
+                if( _spoil_scenario==17 ) {
                     spoil_vector_by_adding_element(xc);
+                }
                 real_1d_array yc = "[]";
-                if( _spoil_scenario==18 )
+                if( _spoil_scenario==18 ) {
                     spoil_vector_by_adding_element(yc);
+                }
                 integer_1d_array dc = "[]";
-                if( _spoil_scenario==19 )
+                if( _spoil_scenario==19 ) {
                     spoil_vector_by_adding_element(dc);
+                }
                 polynomialfitwc(x, y, w, xc, yc, dc, m, info, p, rep);
                 v = barycentriccalc(p, t);
                 _TestResult = _TestResult && doc_test_real(v, 2.023, 0.002);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "lsfit_d_pol");
             fflush(stdout);
         }
@@ -6057,10 +6830,8 @@ int main()
         //      Constrained polynomial fitting
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<29; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<29; _spoil_scenario++) {
+            try {
                 //
                 // This example demonstrates polynomial fitting.
                 //
@@ -6082,70 +6853,99 @@ int main()
                 //          (0 means function itself, 1 means first derivative)
                 //
                 real_1d_array x = "[1.0,1.0]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_vector_by_adding_element(x);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_vector_by_deleting_element(x);
+                }
                 real_1d_array y = "[0.9,1.1]";
-                if( _spoil_scenario==5 )
+                if( _spoil_scenario==5 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     spoil_vector_by_neginf(y);
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     spoil_vector_by_adding_element(y);
-                if( _spoil_scenario==9 )
+                }
+                if( _spoil_scenario==9 ) {
                     spoil_vector_by_deleting_element(y);
+                }
                 real_1d_array w = "[1,1]";
-                if( _spoil_scenario==10 )
+                if( _spoil_scenario==10 ) {
                     spoil_vector_by_nan(w);
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     spoil_vector_by_posinf(w);
-                if( _spoil_scenario==12 )
+                }
+                if( _spoil_scenario==12 ) {
                     spoil_vector_by_neginf(w);
-                if( _spoil_scenario==13 )
+                }
+                if( _spoil_scenario==13 ) {
                     spoil_vector_by_adding_element(w);
-                if( _spoil_scenario==14 )
+                }
+                if( _spoil_scenario==14 ) {
                     spoil_vector_by_deleting_element(w);
+                }
                 real_1d_array xc = "[0]";
-                if( _spoil_scenario==15 )
+                if( _spoil_scenario==15 ) {
                     spoil_vector_by_nan(xc);
-                if( _spoil_scenario==16 )
+                }
+                if( _spoil_scenario==16 ) {
                     spoil_vector_by_posinf(xc);
-                if( _spoil_scenario==17 )
+                }
+                if( _spoil_scenario==17 ) {
                     spoil_vector_by_neginf(xc);
-                if( _spoil_scenario==18 )
+                }
+                if( _spoil_scenario==18 ) {
                     spoil_vector_by_adding_element(xc);
-                if( _spoil_scenario==19 )
+                }
+                if( _spoil_scenario==19 ) {
                     spoil_vector_by_deleting_element(xc);
+                }
                 real_1d_array yc = "[0]";
-                if( _spoil_scenario==20 )
+                if( _spoil_scenario==20 ) {
                     spoil_vector_by_nan(yc);
-                if( _spoil_scenario==21 )
+                }
+                if( _spoil_scenario==21 ) {
                     spoil_vector_by_posinf(yc);
-                if( _spoil_scenario==22 )
+                }
+                if( _spoil_scenario==22 ) {
                     spoil_vector_by_neginf(yc);
-                if( _spoil_scenario==23 )
+                }
+                if( _spoil_scenario==23 ) {
                     spoil_vector_by_adding_element(yc);
-                if( _spoil_scenario==24 )
+                }
+                if( _spoil_scenario==24 ) {
                     spoil_vector_by_deleting_element(yc);
+                }
                 integer_1d_array dc = "[0]";
-                if( _spoil_scenario==25 )
+                if( _spoil_scenario==25 ) {
                     spoil_vector_by_adding_element(dc);
-                if( _spoil_scenario==26 )
+                }
+                if( _spoil_scenario==26 ) {
                     spoil_vector_by_deleting_element(dc);
+                }
                 double t = 2;
-                if( _spoil_scenario==27 )
+                if( _spoil_scenario==27 ) {
                     t = fp_posinf;
-                if( _spoil_scenario==28 )
+                }
+                if( _spoil_scenario==28 ) {
                     t = fp_neginf;
+                }
                 ae_int_t m = 2;
                 ae_int_t info;
                 barycentricinterpolant p;
@@ -6156,14 +6956,13 @@ int main()
                 v = barycentriccalc(p, t);
                 _TestResult = _TestResult && doc_test_real(v, 2.000, 0.001);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "lsfit_d_polc");
             fflush(stdout);
         }
@@ -6175,10 +6974,8 @@ int main()
         //      Unconstrained fitting by penalized regression spline
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<19; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<19; _spoil_scenario++) {
+            try {
                 //
                 // In this example we demonstrate penalized spline fitting of noisy data
                 //
@@ -6187,27 +6984,37 @@ int main()
                 // * y - vector of experimental data, straight line with small noise
                 //
                 real_1d_array x = "[0.00,0.10,0.20,0.30,0.40,0.50,0.60,0.70,0.80,0.90]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_vector_by_adding_element(x);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_vector_by_deleting_element(x);
+                }
                 real_1d_array y = "[0.10,0.00,0.30,0.40,0.30,0.40,0.62,0.68,0.75,0.95]";
-                if( _spoil_scenario==5 )
+                if( _spoil_scenario==5 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     spoil_vector_by_neginf(y);
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     spoil_vector_by_adding_element(y);
-                if( _spoil_scenario==9 )
+                }
+                if( _spoil_scenario==9 ) {
                     spoil_vector_by_deleting_element(y);
+                }
                 ae_int_t info;
                 double v;
                 spline1dinterpolant s;
@@ -6221,12 +7028,15 @@ int main()
                 // With such small regularization penalized spline almost fully reproduces function values
                 //
                 rho = -5.0;
-                if( _spoil_scenario==10 )
+                if( _spoil_scenario==10 ) {
                     rho = fp_nan;
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     rho = fp_posinf;
-                if( _spoil_scenario==12 )
+                }
+                if( _spoil_scenario==12 ) {
                     rho = fp_neginf;
+                }
                 spline1dfitpenalized(x, y, 50, rho, info, s, rep);
                 _TestResult = _TestResult && doc_test_int(info, 1);
                 v = spline1dcalc(s, 0.0);
@@ -6240,12 +7050,15 @@ int main()
                 // We will compare its value in x=1.0 with results obtained from such fit.
                 //
                 rho = +10.0;
-                if( _spoil_scenario==13 )
+                if( _spoil_scenario==13 ) {
                     rho = fp_nan;
-                if( _spoil_scenario==14 )
+                }
+                if( _spoil_scenario==14 ) {
                     rho = fp_posinf;
-                if( _spoil_scenario==15 )
+                }
+                if( _spoil_scenario==15 ) {
                     rho = fp_neginf;
+                }
                 spline1dfitpenalized(x, y, 50, rho, info, s, rep);
                 _TestResult = _TestResult && doc_test_int(info, 1);
                 v = spline1dcalc(s, 1.0);
@@ -6256,23 +7069,25 @@ int main()
                 // so we try to fit once more with rho=3.0.
                 //
                 rho = +3.0;
-                if( _spoil_scenario==16 )
+                if( _spoil_scenario==16 ) {
                     rho = fp_nan;
-                if( _spoil_scenario==17 )
+                }
+                if( _spoil_scenario==17 ) {
                     rho = fp_posinf;
-                if( _spoil_scenario==18 )
+                }
+                if( _spoil_scenario==18 ) {
                     rho = fp_neginf;
+                }
                 spline1dfitpenalized(x, y, 50, rho, info, s, rep);
                 _TestResult = _TestResult && doc_test_int(info, 1);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "lsfit_d_spline");
             fflush(stdout);
         }
@@ -6284,34 +7099,42 @@ int main()
         //      Polynomial fitting, full list of parameters.
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<10; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<10; _spoil_scenario++) {
+            try {
                 real_1d_array x = "[0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_vector_by_deleting_element(x);
+                }
                 real_1d_array y = "[0.00,0.05,0.26,0.32,0.33,0.43,0.60,0.60,0.77,0.98,1.02]";
-                if( _spoil_scenario==4 )
+                if( _spoil_scenario==4 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_vector_by_neginf(y);
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     spoil_vector_by_deleting_element(y);
+                }
                 ae_int_t m = 2;
                 double t = 2;
-                if( _spoil_scenario==8 )
+                if( _spoil_scenario==8 ) {
                     t = fp_posinf;
-                if( _spoil_scenario==9 )
+                }
+                if( _spoil_scenario==9 ) {
                     t = fp_neginf;
+                }
                 ae_int_t info;
                 barycentricinterpolant p;
                 polynomialfitreport rep;
@@ -6320,14 +7143,13 @@ int main()
                 v = barycentriccalc(p, t);
                 _TestResult = _TestResult && doc_test_real(v, 2.011, 0.002);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "lsfit_t_polfit_1");
             fflush(stdout);
         }
@@ -6339,46 +7161,58 @@ int main()
         //      Polynomial fitting, full list of parameters.
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<14; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<14; _spoil_scenario++) {
+            try {
                 real_1d_array x = "[0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_vector_by_deleting_element(x);
+                }
                 real_1d_array y = "[0.00,0.05,0.26,0.32,0.33,0.43,0.60,0.60,0.77,0.98,1.02]";
-                if( _spoil_scenario==4 )
+                if( _spoil_scenario==4 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_vector_by_neginf(y);
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     spoil_vector_by_deleting_element(y);
+                }
                 real_1d_array w = "[1,1.414213562,1,1,1,1,1,1,1,1,1]";
-                if( _spoil_scenario==8 )
+                if( _spoil_scenario==8 ) {
                     spoil_vector_by_nan(w);
-                if( _spoil_scenario==9 )
+                }
+                if( _spoil_scenario==9 ) {
                     spoil_vector_by_posinf(w);
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     spoil_vector_by_neginf(w);
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     spoil_vector_by_deleting_element(w);
+                }
                 real_1d_array xc = "[]";
                 real_1d_array yc = "[]";
                 integer_1d_array dc = "[]";
                 ae_int_t m = 2;
                 double t = 2;
-                if( _spoil_scenario==12 )
+                if( _spoil_scenario==12 ) {
                     t = fp_posinf;
-                if( _spoil_scenario==13 )
+                }
+                if( _spoil_scenario==13 ) {
                     t = fp_neginf;
+                }
                 ae_int_t info;
                 barycentricinterpolant p;
                 polynomialfitreport rep;
@@ -6387,14 +7221,13 @@ int main()
                 v = barycentriccalc(p, t);
                 _TestResult = _TestResult && doc_test_real(v, 2.023, 0.002);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "lsfit_t_polfit_2");
             fflush(stdout);
         }
@@ -6406,64 +7239,85 @@ int main()
         //      Polynomial fitting, full list of parameters.
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<23; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<23; _spoil_scenario++) {
+            try {
                 real_1d_array x = "[1.0,1.0]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_vector_by_nan(x);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_vector_by_posinf(x);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_vector_by_neginf(x);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_vector_by_deleting_element(x);
+                }
                 real_1d_array y = "[0.9,1.1]";
-                if( _spoil_scenario==4 )
+                if( _spoil_scenario==4 ) {
                     spoil_vector_by_nan(y);
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     spoil_vector_by_posinf(y);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_vector_by_neginf(y);
-                if( _spoil_scenario==7 )
+                }
+                if( _spoil_scenario==7 ) {
                     spoil_vector_by_deleting_element(y);
+                }
                 real_1d_array w = "[1,1]";
-                if( _spoil_scenario==8 )
+                if( _spoil_scenario==8 ) {
                     spoil_vector_by_nan(w);
-                if( _spoil_scenario==9 )
+                }
+                if( _spoil_scenario==9 ) {
                     spoil_vector_by_posinf(w);
-                if( _spoil_scenario==10 )
+                }
+                if( _spoil_scenario==10 ) {
                     spoil_vector_by_neginf(w);
-                if( _spoil_scenario==11 )
+                }
+                if( _spoil_scenario==11 ) {
                     spoil_vector_by_deleting_element(w);
+                }
                 real_1d_array xc = "[0]";
-                if( _spoil_scenario==12 )
+                if( _spoil_scenario==12 ) {
                     spoil_vector_by_nan(xc);
-                if( _spoil_scenario==13 )
+                }
+                if( _spoil_scenario==13 ) {
                     spoil_vector_by_posinf(xc);
-                if( _spoil_scenario==14 )
+                }
+                if( _spoil_scenario==14 ) {
                     spoil_vector_by_neginf(xc);
-                if( _spoil_scenario==15 )
+                }
+                if( _spoil_scenario==15 ) {
                     spoil_vector_by_deleting_element(xc);
+                }
                 real_1d_array yc = "[0]";
-                if( _spoil_scenario==16 )
+                if( _spoil_scenario==16 ) {
                     spoil_vector_by_nan(yc);
-                if( _spoil_scenario==17 )
+                }
+                if( _spoil_scenario==17 ) {
                     spoil_vector_by_posinf(yc);
-                if( _spoil_scenario==18 )
+                }
+                if( _spoil_scenario==18 ) {
                     spoil_vector_by_neginf(yc);
-                if( _spoil_scenario==19 )
+                }
+                if( _spoil_scenario==19 ) {
                     spoil_vector_by_deleting_element(yc);
+                }
                 integer_1d_array dc = "[0]";
-                if( _spoil_scenario==20 )
+                if( _spoil_scenario==20 ) {
                     spoil_vector_by_deleting_element(dc);
+                }
                 ae_int_t m = 2;
                 double t = 2;
-                if( _spoil_scenario==21 )
+                if( _spoil_scenario==21 ) {
                     t = fp_posinf;
-                if( _spoil_scenario==22 )
+                }
+                if( _spoil_scenario==22 ) {
                     t = fp_neginf;
+                }
                 ae_int_t info;
                 barycentricinterpolant p;
                 polynomialfitreport rep;
@@ -6472,14 +7326,13 @@ int main()
                 v = barycentriccalc(p, t);
                 _TestResult = _TestResult && doc_test_real(v, 2.000, 0.001);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "lsfit_t_polfit_3");
             fflush(stdout);
         }
@@ -6491,37 +7344,41 @@ int main()
         //      Determinant calculation, real matrix, short form
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<7; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<7; _spoil_scenario++) {
+            try {
                 real_2d_array b = "[[1,2],[2,1]]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_matrix_by_nan(b);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_matrix_by_posinf(b);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_matrix_by_neginf(b);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_matrix_by_adding_row(b);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_matrix_by_adding_col(b);
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     spoil_matrix_by_deleting_row(b);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_matrix_by_deleting_col(b);
+                }
                 double a;
                 a = rmatrixdet(b);
                 _TestResult = _TestResult && doc_test_real(a, -3, 0.0001);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "matdet_d_1");
             fflush(stdout);
         }
@@ -6533,33 +7390,35 @@ int main()
         //      Determinant calculation, real matrix, full form
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<5; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<5; _spoil_scenario++) {
+            try {
                 real_2d_array b = "[[5,4],[4,5]]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_matrix_by_nan(b);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_matrix_by_posinf(b);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_matrix_by_neginf(b);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_matrix_by_deleting_row(b);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_matrix_by_deleting_col(b);
+                }
                 double a;
                 a = rmatrixdet(b, 2);
                 _TestResult = _TestResult && doc_test_real(a, 9, 0.0001);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "matdet_d_2");
             fflush(stdout);
         }
@@ -6571,37 +7430,41 @@ int main()
         //      Determinant calculation, complex matrix, short form
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<7; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<7; _spoil_scenario++) {
+            try {
                 complex_2d_array b = "[[1+1i,2],[2,1-1i]]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_matrix_by_nan(b);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_matrix_by_posinf(b);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_matrix_by_neginf(b);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_matrix_by_adding_row(b);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_matrix_by_adding_col(b);
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     spoil_matrix_by_deleting_row(b);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_matrix_by_deleting_col(b);
+                }
                 alglib::complex a;
                 a = cmatrixdet(b);
                 _TestResult = _TestResult && doc_test_complex(a, -2, 0.0001);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "matdet_d_3");
             fflush(stdout);
         }
@@ -6613,33 +7476,35 @@ int main()
         //      Determinant calculation, complex matrix, full form
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<5; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<5; _spoil_scenario++) {
+            try {
                 alglib::complex a;
                 complex_2d_array b = "[[5i,4],[4i,5]]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_matrix_by_nan(b);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_matrix_by_posinf(b);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_matrix_by_neginf(b);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_matrix_by_deleting_row(b);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_matrix_by_deleting_col(b);
+                }
                 a = cmatrixdet(b, 2);
                 _TestResult = _TestResult && doc_test_complex(a, alglib::complex(0,9), 0.0001);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "matdet_d_4");
             fflush(stdout);
         }
@@ -6651,37 +7516,41 @@ int main()
         //      Determinant calculation, complex matrix with zero imaginary part, short form
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<7; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<7; _spoil_scenario++) {
+            try {
                 alglib::complex a;
                 complex_2d_array b = "[[9,1],[2,1]]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_matrix_by_nan(b);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_matrix_by_posinf(b);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_matrix_by_neginf(b);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_matrix_by_adding_row(b);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_matrix_by_adding_col(b);
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     spoil_matrix_by_deleting_row(b);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_matrix_by_deleting_col(b);
+                }
                 a = cmatrixdet(b);
                 _TestResult = _TestResult && doc_test_complex(a, 7, 0.0001);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "matdet_d_5");
             fflush(stdout);
         }
@@ -6693,33 +7562,35 @@ int main()
         //      Determinant calculation, real matrix, full form
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<5; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<5; _spoil_scenario++) {
+            try {
                 double a;
                 real_2d_array b = "[[3,4],[-4,3]]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_matrix_by_nan(b);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_matrix_by_posinf(b);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_matrix_by_neginf(b);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_matrix_by_deleting_row(b);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_matrix_by_deleting_col(b);
+                }
                 a = rmatrixdet(b, 2);
                 _TestResult = _TestResult && doc_test_real(a, 25, 0.0001);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "matdet_t_0");
             fflush(stdout);
         }
@@ -6731,42 +7602,48 @@ int main()
         //      Determinant calculation, real matrix, LU, short form
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<9; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<9; _spoil_scenario++) {
+            try {
                 double a;
                 real_2d_array b = "[[1,2],[2,5]]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_matrix_by_nan(b);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_matrix_by_posinf(b);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_matrix_by_neginf(b);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_matrix_by_adding_row(b);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_matrix_by_adding_col(b);
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     spoil_matrix_by_deleting_row(b);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_matrix_by_deleting_col(b);
+                }
                 integer_1d_array p = "[1,1]";
-                if( _spoil_scenario==7 )
+                if( _spoil_scenario==7 ) {
                     spoil_vector_by_adding_element(p);
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     spoil_vector_by_deleting_element(p);
+                }
                 a = rmatrixludet(b, p);
                 _TestResult = _TestResult && doc_test_real(a, -5, 0.0001);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "matdet_t_1");
             fflush(stdout);
         }
@@ -6778,36 +7655,39 @@ int main()
         //      Determinant calculation, real matrix, LU, full form
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<6; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<6; _spoil_scenario++) {
+            try {
                 double a;
                 real_2d_array b = "[[5,4],[4,5]]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_matrix_by_nan(b);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_matrix_by_posinf(b);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_matrix_by_neginf(b);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_matrix_by_deleting_row(b);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_matrix_by_deleting_col(b);
+                }
                 integer_1d_array p = "[0,1]";
-                if( _spoil_scenario==5 )
+                if( _spoil_scenario==5 ) {
                     spoil_vector_by_deleting_element(p);
+                }
                 a = rmatrixludet(b, p, 2);
                 _TestResult = _TestResult && doc_test_real(a, 25, 0.0001);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "matdet_t_2");
             fflush(stdout);
         }
@@ -6819,33 +7699,35 @@ int main()
         //      Determinant calculation, complex matrix, full form
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<5; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<5; _spoil_scenario++) {
+            try {
                 alglib::complex a;
                 complex_2d_array b = "[[5i,4],[-4,5i]]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_matrix_by_nan(b);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_matrix_by_posinf(b);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_matrix_by_neginf(b);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_matrix_by_deleting_row(b);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_matrix_by_deleting_col(b);
+                }
                 a = cmatrixdet(b, 2);
                 _TestResult = _TestResult && doc_test_complex(a, -9, 0.0001);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "matdet_t_3");
             fflush(stdout);
         }
@@ -6857,42 +7739,48 @@ int main()
         //      Determinant calculation, complex matrix, LU, short form
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<9; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<9; _spoil_scenario++) {
+            try {
                 alglib::complex a;
                 complex_2d_array b = "[[1,2],[2,5i]]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_matrix_by_nan(b);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_matrix_by_posinf(b);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_matrix_by_neginf(b);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_matrix_by_adding_row(b);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_matrix_by_adding_col(b);
-                if( _spoil_scenario==5 )
+                }
+                if( _spoil_scenario==5 ) {
                     spoil_matrix_by_deleting_row(b);
-                if( _spoil_scenario==6 )
+                }
+                if( _spoil_scenario==6 ) {
                     spoil_matrix_by_deleting_col(b);
+                }
                 integer_1d_array p = "[1,1]";
-                if( _spoil_scenario==7 )
+                if( _spoil_scenario==7 ) {
                     spoil_vector_by_adding_element(p);
-                if( _spoil_scenario==8 )
+                }
+                if( _spoil_scenario==8 ) {
                     spoil_vector_by_deleting_element(p);
+                }
                 a = cmatrixludet(b, p);
                 _TestResult = _TestResult && doc_test_complex(a, alglib::complex(0,-5), 0.0001);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "matdet_t_4");
             fflush(stdout);
         }
@@ -6904,36 +7792,39 @@ int main()
         //      Determinant calculation, complex matrix, LU, full form
         //
         _TestResult = true;
-        for(_spoil_scenario=-1; _spoil_scenario<6; _spoil_scenario++)
-        {
-            try
-            {
+        for(_spoil_scenario=-1; _spoil_scenario<6; _spoil_scenario++) {
+            try {
                 alglib::complex a;
                 complex_2d_array b = "[[5,4i],[4,5]]";
-                if( _spoil_scenario==0 )
+                if( _spoil_scenario==0 ) {
                     spoil_matrix_by_nan(b);
-                if( _spoil_scenario==1 )
+                }
+                if( _spoil_scenario==1 ) {
                     spoil_matrix_by_posinf(b);
-                if( _spoil_scenario==2 )
+                }
+                if( _spoil_scenario==2 ) {
                     spoil_matrix_by_neginf(b);
-                if( _spoil_scenario==3 )
+                }
+                if( _spoil_scenario==3 ) {
                     spoil_matrix_by_deleting_row(b);
-                if( _spoil_scenario==4 )
+                }
+                if( _spoil_scenario==4 ) {
                     spoil_matrix_by_deleting_col(b);
+                }
                 integer_1d_array p = "[0,1]";
-                if( _spoil_scenario==5 )
+                if( _spoil_scenario==5 ) {
                     spoil_vector_by_deleting_element(p);
+                }
                 a = cmatrixludet(b, p, 2);
                 _TestResult = _TestResult && doc_test_complex(a, 25, 0.0001);
                 _TestResult = _TestResult && (_spoil_scenario==-1);
+            } catch(ap_error e) {
+                _TestResult = _TestResult && (_spoil_scenario!=-1);
+            } catch(...) {
+                throw;
             }
-            catch(ap_error e)
-            { _TestResult = _TestResult && (_spoil_scenario!=-1); }
-            catch(...)
-            { throw; }
         }
-        if( !_TestResult)
-        {
+        if( !_TestResult) {
             printf("%-32s FAILED\n", "matdet_t_5");
             fflush(stdout);
         }
@@ -6941,15 +7832,12 @@ int main()
 
 
         printf("91/91\n");
-    }
-    catch(...)
-    {
+    } catch(...) {
         printf("Unhandled exception was raised!\n");
         return 1;
     }
 #ifdef AE_USE_ALLOC_COUNTER
-    if( alglib_impl::_alloc_counter!=0 )
-    {
+    if( alglib_impl::_alloc_counter!=0 ) {
         _TotalResult = false;
         printf("FAILURE: alloc_counter is non-zero on end!\n");
     }

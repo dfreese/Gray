@@ -29,16 +29,17 @@
 
 using namespace std;
 
-class RectSource : public Source {
+class RectSource : public Source
+{
 public:
-	RectSource();
-	RectSource(const VectorR3 &pos, const VectorR3 &sz, double act);
-	void SetSize(const VectorR3 &size);
+    RectSource();
+    RectSource(const VectorR3 &pos, const VectorR3 &sz, double act);
+    void SetSize(const VectorR3 &size);
 
-	void virtual Decay(unsigned int photon_number);
-	bool virtual Inside(const VectorR3 & pos) const;
+    void virtual Decay(unsigned int photon_number);
+    bool virtual Inside(const VectorR3 & pos) const;
 private:
-	VectorR3 size;
+    VectorR3 size;
 };
 
 #endif /*GRAYSOURCE_H_*/

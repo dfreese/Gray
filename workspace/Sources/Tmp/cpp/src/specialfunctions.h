@@ -1860,11 +1860,11 @@ double incompletegamma(double a, double x, ae_state *_state);
 double incompletegammac(double a, double x, ae_state *_state);
 double invincompletegammac(double a, double y0, ae_state *_state);
 void airy(double x,
-     double* ai,
-     double* aip,
-     double* bi,
-     double* bip,
-     ae_state *_state);
+          double* ai,
+          double* aip,
+          double* bi,
+          double* bip,
+          ae_state *_state);
 double besselj0(double x, ae_state *_state);
 double besselj1(double x, ae_state *_state);
 double besseljn(ae_int_t n, double x, ae_state *_state);
@@ -1880,33 +1880,33 @@ double beta(double a, double b, ae_state *_state);
 double incompletebeta(double a, double b, double x, ae_state *_state);
 double invincompletebeta(double a, double b, double y, ae_state *_state);
 double binomialdistribution(ae_int_t k,
-     ae_int_t n,
-     double p,
-     ae_state *_state);
+                            ae_int_t n,
+                            double p,
+                            ae_state *_state);
 double binomialcdistribution(ae_int_t k,
-     ae_int_t n,
-     double p,
-     ae_state *_state);
+                             ae_int_t n,
+                             double p,
+                             ae_state *_state);
 double invbinomialdistribution(ae_int_t k,
-     ae_int_t n,
-     double y,
-     ae_state *_state);
+                               ae_int_t n,
+                               double y,
+                               ae_state *_state);
 double chebyshevcalculate(ae_int_t r,
-     ae_int_t n,
-     double x,
-     ae_state *_state);
+                          ae_int_t n,
+                          double x,
+                          ae_state *_state);
 double chebyshevsum(/* Real    */ ae_vector* c,
-     ae_int_t r,
-     ae_int_t n,
-     double x,
-     ae_state *_state);
+                                  ae_int_t r,
+                                  ae_int_t n,
+                                  double x,
+                                  ae_state *_state);
 void chebyshevcoefficients(ae_int_t n,
-     /* Real    */ ae_vector* c,
-     ae_state *_state);
+                           /* Real    */ ae_vector* c,
+                           ae_state *_state);
 void fromchebyshev(/* Real    */ ae_vector* a,
-     ae_int_t n,
-     /* Real    */ ae_vector* b,
-     ae_state *_state);
+                                 ae_int_t n,
+                                 /* Real    */ ae_vector* b,
+                                 ae_state *_state);
 double chisquaredistribution(double v, double x, ae_state *_state);
 double chisquarecdistribution(double v, double x, ae_state *_state);
 double invchisquaredistribution(double v, double y, ae_state *_state);
@@ -1921,41 +1921,41 @@ double exponentialintegralen(double x, ae_int_t n, ae_state *_state);
 double fdistribution(ae_int_t a, ae_int_t b, double x, ae_state *_state);
 double fcdistribution(ae_int_t a, ae_int_t b, double x, ae_state *_state);
 double invfdistribution(ae_int_t a,
-     ae_int_t b,
-     double y,
-     ae_state *_state);
+                        ae_int_t b,
+                        double y,
+                        ae_state *_state);
 void fresnelintegral(double x, double* c, double* s, ae_state *_state);
 double hermitecalculate(ae_int_t n, double x, ae_state *_state);
 double hermitesum(/* Real    */ ae_vector* c,
-     ae_int_t n,
-     double x,
-     ae_state *_state);
+                                ae_int_t n,
+                                double x,
+                                ae_state *_state);
 void hermitecoefficients(ae_int_t n,
-     /* Real    */ ae_vector* c,
-     ae_state *_state);
+                         /* Real    */ ae_vector* c,
+                         ae_state *_state);
 void jacobianellipticfunctions(double u,
-     double m,
-     double* sn,
-     double* cn,
-     double* dn,
-     double* ph,
-     ae_state *_state);
+                               double m,
+                               double* sn,
+                               double* cn,
+                               double* dn,
+                               double* ph,
+                               ae_state *_state);
 double laguerrecalculate(ae_int_t n, double x, ae_state *_state);
 double laguerresum(/* Real    */ ae_vector* c,
-     ae_int_t n,
-     double x,
-     ae_state *_state);
+                                 ae_int_t n,
+                                 double x,
+                                 ae_state *_state);
 void laguerrecoefficients(ae_int_t n,
-     /* Real    */ ae_vector* c,
-     ae_state *_state);
+                          /* Real    */ ae_vector* c,
+                          ae_state *_state);
 double legendrecalculate(ae_int_t n, double x, ae_state *_state);
 double legendresum(/* Real    */ ae_vector* c,
-     ae_int_t n,
-     double x,
-     ae_state *_state);
+                                 ae_int_t n,
+                                 double x,
+                                 ae_state *_state);
 void legendrecoefficients(ae_int_t n,
-     /* Real    */ ae_vector* c,
-     ae_state *_state);
+                          /* Real    */ ae_vector* c,
+                          ae_state *_state);
 double poissondistribution(ae_int_t k, double m, ae_state *_state);
 double poissoncdistribution(ae_int_t k, double m, ae_state *_state);
 double invpoissondistribution(ae_int_t k, double y, ae_state *_state);
@@ -1963,13 +1963,13 @@ double psi(double x, ae_state *_state);
 double studenttdistribution(ae_int_t k, double t, ae_state *_state);
 double invstudenttdistribution(ae_int_t k, double p, ae_state *_state);
 void sinecosineintegrals(double x,
-     double* si,
-     double* ci,
-     ae_state *_state);
+                         double* si,
+                         double* ci,
+                         ae_state *_state);
 void hyperbolicsinecosineintegrals(double x,
-     double* shi,
-     double* chi,
-     ae_state *_state);
+                                   double* shi,
+                                   double* chi,
+                                   ae_state *_state);
 
 }
 #endif

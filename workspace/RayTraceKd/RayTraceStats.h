@@ -38,102 +38,105 @@ class KdTree;
 class RayTraceStats
 {
 public:
-	RayTraceStats() { Init(); }
-	~RayTraceStats() {}
+    RayTraceStats()
+    {
+        Init();
+    }
+    ~RayTraceStats() {}
 
-	void Init();
+    void Init();
 
-	void PrintStats( FILE* out = stdout );
+    void PrintStats( FILE* out = stdout );
 
-	void AddRayTraced();
-	void AddReflectionRay();
-	void AddXmitRay();
-	void AddShadowFeeler();
-	void AddIsectTest();
-	void AddSuccessIsectTest();
-	
-	void AddKdNodeTraversed();
-	void AddKdLeavesTraversed();
-	void AddKdObjectsInLeavesTraversed( int numObjects = 1 );
+    void AddRayTraced();
+    void AddReflectionRay();
+    void AddXmitRay();
+    void AddShadowFeeler();
+    void AddIsectTest();
+    void AddSuccessIsectTest();
+
+    void AddKdNodeTraversed();
+    void AddKdLeavesTraversed();
+    void AddKdObjectsInLeavesTraversed( int numObjects = 1 );
 
 public:
-	void GetKdRunData( const KdTree& kdTree );
-	static void PrintKdStats( const KdTree& kdTree, FILE* out = stdout );
+    void GetKdRunData( const KdTree& kdTree );
+    static void PrintKdStats( const KdTree& kdTree, FILE* out = stdout );
 
 private:
-	long NumberRaysTraced;
-	long NumberReflectionRays;
-	long NumberXmitRays;
-	long NumberShadowFeelers;
-	long NumberIsectTests;
-	long NumberSuccessIsectTests;
+    long NumberRaysTraced;
+    long NumberReflectionRays;
+    long NumberXmitRays;
+    long NumberShadowFeelers;
+    long NumberIsectTests;
+    long NumberSuccessIsectTests;
 
-	// KdTree operations
-	long NumberKdNodesTraversed;
-	long NumberKdLeavesTraversed;
-	long NumberKdObjectsInLeaves;
+    // KdTree operations
+    long NumberKdNodesTraversed;
+    long NumberKdLeavesTraversed;
+    long NumberKdObjectsInLeaves;
 
 };
 
 inline void RayTraceStats::AddRayTraced()
 {
 #if TrackRaysTraced
-	NumberRaysTraced++;
+    NumberRaysTraced++;
 #endif
 }
 
 inline void RayTraceStats::AddReflectionRay()
 {
 #if TrackReflectionRays
-	NumberReflectionRays++;
+    NumberReflectionRays++;
 #endif
 }
 
 inline void RayTraceStats::AddXmitRay()
 {
 #if TrackXmitRays
-	NumberXmitRays++;
+    NumberXmitRays++;
 #endif
 }
 
 inline void RayTraceStats::AddShadowFeeler()
 {
 #if TrackShadowFeelers
-	NumberShadowFeelers++;
+    NumberShadowFeelers++;
 #endif
 }
 
 inline void RayTraceStats::AddIsectTest()
 {
 #if TrackIsectTests
-	NumberIsectTests++;
+    NumberIsectTests++;
 #endif
 }
 
 inline void RayTraceStats::AddSuccessIsectTest()
 {
 #if TrackSuccessIsectTests
-	NumberSuccessIsectTests++;
+    NumberSuccessIsectTests++;
 #endif
 }
 
 inline void RayTraceStats::AddKdNodeTraversed()
 {
 #if TrackKdTraversals
-	NumberKdNodesTraversed++;
+    NumberKdNodesTraversed++;
 #endif
 }
 
 inline void RayTraceStats::AddKdLeavesTraversed()
 {
 #if TrackKdTraversals
-	NumberKdNodesTraversed++;
+    NumberKdNodesTraversed++;
 #endif
 }
 
 inline void RayTraceStats::AddKdObjectsInLeavesTraversed( int numObjects )
 {
 #if TrackKdTraversals
-	NumberKdNodesTraversed += numObjects;
+    NumberKdNodesTraversed += numObjects;
 #endif
 }

@@ -34,8 +34,7 @@ http://www.fsf.org/licensing/licenses
 /////////////////////////////////////////////////////////////////////////
 namespace alglib_impl
 {
-typedef struct
-{
+typedef struct {
     ae_int_t n;
     ae_int_t nx;
     ae_int_t d;
@@ -52,32 +51,28 @@ typedef struct
     double debugworstrcond;
     double debugbestrcond;
 } idwinterpolant;
-typedef struct
-{
+typedef struct {
     ae_int_t n;
     double sy;
     ae_vector x;
     ae_vector y;
     ae_vector w;
 } barycentricinterpolant;
-typedef struct
-{
+typedef struct {
     ae_bool periodic;
     ae_int_t n;
     ae_int_t k;
     ae_vector x;
     ae_vector c;
 } spline1dinterpolant;
-typedef struct
-{
+typedef struct {
     double taskrcond;
     double rmserror;
     double avgerror;
     double avgrelerror;
     double maxerror;
 } polynomialfitreport;
-typedef struct
-{
+typedef struct {
     double taskrcond;
     ae_int_t dbest;
     double rmserror;
@@ -85,16 +80,14 @@ typedef struct
     double avgrelerror;
     double maxerror;
 } barycentricfitreport;
-typedef struct
-{
+typedef struct {
     double taskrcond;
     double rmserror;
     double avgerror;
     double avgrelerror;
     double maxerror;
 } spline1dfitreport;
-typedef struct
-{
+typedef struct {
     double taskrcond;
     ae_int_t iterationscount;
     double rmserror;
@@ -103,8 +96,7 @@ typedef struct
     double maxerror;
     double wrmserror;
 } lsfitreport;
-typedef struct
-{
+typedef struct {
     ae_int_t optalgo;
     ae_int_t m;
     ae_int_t k;
@@ -146,16 +138,14 @@ typedef struct
     ae_int_t prevalgo;
     rcommstate rstate;
 } lsfitstate;
-typedef struct
-{
+typedef struct {
     ae_int_t n;
     ae_bool periodic;
     ae_vector p;
     spline1dinterpolant x;
     spline1dinterpolant y;
 } pspline2interpolant;
-typedef struct
-{
+typedef struct {
     ae_int_t n;
     ae_bool periodic;
     ae_vector p;
@@ -163,8 +153,7 @@ typedef struct
     spline1dinterpolant y;
     spline1dinterpolant z;
 } pspline3interpolant;
-typedef struct
-{
+typedef struct {
     ae_int_t k;
     ae_vector c;
 } spline2dinterpolant;
@@ -3030,20 +3019,20 @@ NOTES:
 
 *************************************************************************/
 void lsfitfit(lsfitstate &state,
-    void (*func)(const real_1d_array &c, const real_1d_array &x, double &func, void *ptr),
-    void  (*rep)(const real_1d_array &c, double func, void *ptr) = NULL,
-    void *ptr = NULL);
+              void (*func)(const real_1d_array &c, const real_1d_array &x, double &func, void *ptr),
+              void  (*rep)(const real_1d_array &c, double func, void *ptr) = NULL,
+              void *ptr = NULL);
 void lsfitfit(lsfitstate &state,
-    void (*func)(const real_1d_array &c, const real_1d_array &x, double &func, void *ptr),
-    void (*grad)(const real_1d_array &c, const real_1d_array &x, double &func, real_1d_array &grad, void *ptr),
-    void  (*rep)(const real_1d_array &c, double func, void *ptr) = NULL,
-    void *ptr = NULL);
+              void (*func)(const real_1d_array &c, const real_1d_array &x, double &func, void *ptr),
+              void (*grad)(const real_1d_array &c, const real_1d_array &x, double &func, real_1d_array &grad, void *ptr),
+              void  (*rep)(const real_1d_array &c, double func, void *ptr) = NULL,
+              void *ptr = NULL);
 void lsfitfit(lsfitstate &state,
-    void (*func)(const real_1d_array &c, const real_1d_array &x, double &func, void *ptr),
-    void (*grad)(const real_1d_array &c, const real_1d_array &x, double &func, real_1d_array &grad, void *ptr),
-    void (*hess)(const real_1d_array &c, const real_1d_array &x, double &func, real_1d_array &grad, real_2d_array &hess, void *ptr),
-    void  (*rep)(const real_1d_array &c, double func, void *ptr) = NULL,
-    void *ptr = NULL);
+              void (*func)(const real_1d_array &c, const real_1d_array &x, double &func, void *ptr),
+              void (*grad)(const real_1d_array &c, const real_1d_array &x, double &func, real_1d_array &grad, void *ptr),
+              void (*hess)(const real_1d_array &c, const real_1d_array &x, double &func, real_1d_array &grad, real_2d_array &hess, void *ptr),
+              void  (*rep)(const real_1d_array &c, double func, void *ptr) = NULL,
+              void *ptr = NULL);
 
 
 /*************************************************************************
@@ -3660,506 +3649,506 @@ void spline2dresamplebilinear(const real_2d_array &a, const ae_int_t oldheight, 
 namespace alglib_impl
 {
 double idwcalc(idwinterpolant* z,
-     /* Real    */ ae_vector* x,
-     ae_state *_state);
+               /* Real    */ ae_vector* x,
+               ae_state *_state);
 void idwbuildmodifiedshepard(/* Real    */ ae_matrix* xy,
-     ae_int_t n,
-     ae_int_t nx,
-     ae_int_t d,
-     ae_int_t nq,
-     ae_int_t nw,
-     idwinterpolant* z,
-     ae_state *_state);
+        ae_int_t n,
+        ae_int_t nx,
+        ae_int_t d,
+        ae_int_t nq,
+        ae_int_t nw,
+        idwinterpolant* z,
+        ae_state *_state);
 void idwbuildmodifiedshepardr(/* Real    */ ae_matrix* xy,
-     ae_int_t n,
-     ae_int_t nx,
-     double r,
-     idwinterpolant* z,
-     ae_state *_state);
+        ae_int_t n,
+        ae_int_t nx,
+        double r,
+        idwinterpolant* z,
+        ae_state *_state);
 void idwbuildnoisy(/* Real    */ ae_matrix* xy,
-     ae_int_t n,
-     ae_int_t nx,
-     ae_int_t d,
-     ae_int_t nq,
-     ae_int_t nw,
-     idwinterpolant* z,
-     ae_state *_state);
+                                 ae_int_t n,
+                                 ae_int_t nx,
+                                 ae_int_t d,
+                                 ae_int_t nq,
+                                 ae_int_t nw,
+                                 idwinterpolant* z,
+                                 ae_state *_state);
 ae_bool _idwinterpolant_init(idwinterpolant* p, ae_state *_state, ae_bool make_automatic);
 ae_bool _idwinterpolant_init_copy(idwinterpolant* dst, idwinterpolant* src, ae_state *_state, ae_bool make_automatic);
 void _idwinterpolant_clear(idwinterpolant* p);
 double barycentriccalc(barycentricinterpolant* b,
-     double t,
-     ae_state *_state);
+                       double t,
+                       ae_state *_state);
 void barycentricdiff1(barycentricinterpolant* b,
-     double t,
-     double* f,
-     double* df,
-     ae_state *_state);
+                      double t,
+                      double* f,
+                      double* df,
+                      ae_state *_state);
 void barycentricdiff2(barycentricinterpolant* b,
-     double t,
-     double* f,
-     double* df,
-     double* d2f,
-     ae_state *_state);
+                      double t,
+                      double* f,
+                      double* df,
+                      double* d2f,
+                      ae_state *_state);
 void barycentriclintransx(barycentricinterpolant* b,
-     double ca,
-     double cb,
-     ae_state *_state);
+                          double ca,
+                          double cb,
+                          ae_state *_state);
 void barycentriclintransy(barycentricinterpolant* b,
-     double ca,
-     double cb,
-     ae_state *_state);
+                          double ca,
+                          double cb,
+                          ae_state *_state);
 void barycentricunpack(barycentricinterpolant* b,
-     ae_int_t* n,
-     /* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     ae_state *_state);
+                       ae_int_t* n,
+                       /* Real    */ ae_vector* x,
+                       /* Real    */ ae_vector* y,
+                       /* Real    */ ae_vector* w,
+                       ae_state *_state);
 void barycentricbuildxyw(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     ae_int_t n,
-     barycentricinterpolant* b,
-     ae_state *_state);
+                                       /* Real    */ ae_vector* y,
+                                       /* Real    */ ae_vector* w,
+                                       ae_int_t n,
+                                       barycentricinterpolant* b,
+                                       ae_state *_state);
 void barycentricbuildfloaterhormann(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_int_t d,
-     barycentricinterpolant* b,
-     ae_state *_state);
+        /* Real    */ ae_vector* y,
+        ae_int_t n,
+        ae_int_t d,
+        barycentricinterpolant* b,
+        ae_state *_state);
 void barycentriccopy(barycentricinterpolant* b,
-     barycentricinterpolant* b2,
-     ae_state *_state);
+                     barycentricinterpolant* b2,
+                     ae_state *_state);
 ae_bool _barycentricinterpolant_init(barycentricinterpolant* p, ae_state *_state, ae_bool make_automatic);
 ae_bool _barycentricinterpolant_init_copy(barycentricinterpolant* dst, barycentricinterpolant* src, ae_state *_state, ae_bool make_automatic);
 void _barycentricinterpolant_clear(barycentricinterpolant* p);
 void polynomialbar2cheb(barycentricinterpolant* p,
-     double a,
-     double b,
-     /* Real    */ ae_vector* t,
-     ae_state *_state);
+                        double a,
+                        double b,
+                        /* Real    */ ae_vector* t,
+                        ae_state *_state);
 void polynomialcheb2bar(/* Real    */ ae_vector* t,
-     ae_int_t n,
-     double a,
-     double b,
-     barycentricinterpolant* p,
-     ae_state *_state);
+                                      ae_int_t n,
+                                      double a,
+                                      double b,
+                                      barycentricinterpolant* p,
+                                      ae_state *_state);
 void polynomialbar2pow(barycentricinterpolant* p,
-     double c,
-     double s,
-     /* Real    */ ae_vector* a,
-     ae_state *_state);
+                       double c,
+                       double s,
+                       /* Real    */ ae_vector* a,
+                       ae_state *_state);
 void polynomialpow2bar(/* Real    */ ae_vector* a,
-     ae_int_t n,
-     double c,
-     double s,
-     barycentricinterpolant* p,
-     ae_state *_state);
+                                     ae_int_t n,
+                                     double c,
+                                     double s,
+                                     barycentricinterpolant* p,
+                                     ae_state *_state);
 void polynomialbuild(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     barycentricinterpolant* p,
-     ae_state *_state);
+                                   /* Real    */ ae_vector* y,
+                                   ae_int_t n,
+                                   barycentricinterpolant* p,
+                                   ae_state *_state);
 void polynomialbuildeqdist(double a,
-     double b,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     barycentricinterpolant* p,
-     ae_state *_state);
+                           double b,
+                           /* Real    */ ae_vector* y,
+                           ae_int_t n,
+                           barycentricinterpolant* p,
+                           ae_state *_state);
 void polynomialbuildcheb1(double a,
-     double b,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     barycentricinterpolant* p,
-     ae_state *_state);
+                          double b,
+                          /* Real    */ ae_vector* y,
+                          ae_int_t n,
+                          barycentricinterpolant* p,
+                          ae_state *_state);
 void polynomialbuildcheb2(double a,
-     double b,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     barycentricinterpolant* p,
-     ae_state *_state);
+                          double b,
+                          /* Real    */ ae_vector* y,
+                          ae_int_t n,
+                          barycentricinterpolant* p,
+                          ae_state *_state);
 double polynomialcalceqdist(double a,
-     double b,
-     /* Real    */ ae_vector* f,
-     ae_int_t n,
-     double t,
-     ae_state *_state);
+                            double b,
+                            /* Real    */ ae_vector* f,
+                            ae_int_t n,
+                            double t,
+                            ae_state *_state);
 double polynomialcalccheb1(double a,
-     double b,
-     /* Real    */ ae_vector* f,
-     ae_int_t n,
-     double t,
-     ae_state *_state);
+                           double b,
+                           /* Real    */ ae_vector* f,
+                           ae_int_t n,
+                           double t,
+                           ae_state *_state);
 double polynomialcalccheb2(double a,
-     double b,
-     /* Real    */ ae_vector* f,
-     ae_int_t n,
-     double t,
-     ae_state *_state);
+                           double b,
+                           /* Real    */ ae_vector* f,
+                           ae_int_t n,
+                           double t,
+                           ae_state *_state);
 void spline1dbuildlinear(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     spline1dinterpolant* c,
-     ae_state *_state);
+                                       /* Real    */ ae_vector* y,
+                                       ae_int_t n,
+                                       spline1dinterpolant* c,
+                                       ae_state *_state);
 void spline1dbuildcubic(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_int_t boundltype,
-     double boundl,
-     ae_int_t boundrtype,
-     double boundr,
-     spline1dinterpolant* c,
-     ae_state *_state);
+                                      /* Real    */ ae_vector* y,
+                                      ae_int_t n,
+                                      ae_int_t boundltype,
+                                      double boundl,
+                                      ae_int_t boundrtype,
+                                      double boundr,
+                                      spline1dinterpolant* c,
+                                      ae_state *_state);
 void spline1dgriddiffcubic(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_int_t boundltype,
-     double boundl,
-     ae_int_t boundrtype,
-     double boundr,
-     /* Real    */ ae_vector* d,
-     ae_state *_state);
+        /* Real    */ ae_vector* y,
+        ae_int_t n,
+        ae_int_t boundltype,
+        double boundl,
+        ae_int_t boundrtype,
+        double boundr,
+        /* Real    */ ae_vector* d,
+        ae_state *_state);
 void spline1dgriddiff2cubic(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_int_t boundltype,
-     double boundl,
-     ae_int_t boundrtype,
-     double boundr,
-     /* Real    */ ae_vector* d1,
-     /* Real    */ ae_vector* d2,
-     ae_state *_state);
+        /* Real    */ ae_vector* y,
+        ae_int_t n,
+        ae_int_t boundltype,
+        double boundl,
+        ae_int_t boundrtype,
+        double boundr,
+        /* Real    */ ae_vector* d1,
+        /* Real    */ ae_vector* d2,
+        ae_state *_state);
 void spline1dconvcubic(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_int_t boundltype,
-     double boundl,
-     ae_int_t boundrtype,
-     double boundr,
-     /* Real    */ ae_vector* x2,
-     ae_int_t n2,
-     /* Real    */ ae_vector* y2,
-     ae_state *_state);
+                                     /* Real    */ ae_vector* y,
+                                     ae_int_t n,
+                                     ae_int_t boundltype,
+                                     double boundl,
+                                     ae_int_t boundrtype,
+                                     double boundr,
+                                     /* Real    */ ae_vector* x2,
+                                     ae_int_t n2,
+                                     /* Real    */ ae_vector* y2,
+                                     ae_state *_state);
 void spline1dconvdiffcubic(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_int_t boundltype,
-     double boundl,
-     ae_int_t boundrtype,
-     double boundr,
-     /* Real    */ ae_vector* x2,
-     ae_int_t n2,
-     /* Real    */ ae_vector* y2,
-     /* Real    */ ae_vector* d2,
-     ae_state *_state);
+        /* Real    */ ae_vector* y,
+        ae_int_t n,
+        ae_int_t boundltype,
+        double boundl,
+        ae_int_t boundrtype,
+        double boundr,
+        /* Real    */ ae_vector* x2,
+        ae_int_t n2,
+        /* Real    */ ae_vector* y2,
+        /* Real    */ ae_vector* d2,
+        ae_state *_state);
 void spline1dconvdiff2cubic(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_int_t boundltype,
-     double boundl,
-     ae_int_t boundrtype,
-     double boundr,
-     /* Real    */ ae_vector* x2,
-     ae_int_t n2,
-     /* Real    */ ae_vector* y2,
-     /* Real    */ ae_vector* d2,
-     /* Real    */ ae_vector* dd2,
-     ae_state *_state);
+        /* Real    */ ae_vector* y,
+        ae_int_t n,
+        ae_int_t boundltype,
+        double boundl,
+        ae_int_t boundrtype,
+        double boundr,
+        /* Real    */ ae_vector* x2,
+        ae_int_t n2,
+        /* Real    */ ae_vector* y2,
+        /* Real    */ ae_vector* d2,
+        /* Real    */ ae_vector* dd2,
+        ae_state *_state);
 void spline1dbuildcatmullrom(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_int_t boundtype,
-     double tension,
-     spline1dinterpolant* c,
-     ae_state *_state);
+        /* Real    */ ae_vector* y,
+        ae_int_t n,
+        ae_int_t boundtype,
+        double tension,
+        spline1dinterpolant* c,
+        ae_state *_state);
 void spline1dbuildhermite(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* d,
-     ae_int_t n,
-     spline1dinterpolant* c,
-     ae_state *_state);
+                                        /* Real    */ ae_vector* y,
+                                        /* Real    */ ae_vector* d,
+                                        ae_int_t n,
+                                        spline1dinterpolant* c,
+                                        ae_state *_state);
 void spline1dbuildakima(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     spline1dinterpolant* c,
-     ae_state *_state);
+                                      /* Real    */ ae_vector* y,
+                                      ae_int_t n,
+                                      spline1dinterpolant* c,
+                                      ae_state *_state);
 double spline1dcalc(spline1dinterpolant* c, double x, ae_state *_state);
 void spline1ddiff(spline1dinterpolant* c,
-     double x,
-     double* s,
-     double* ds,
-     double* d2s,
-     ae_state *_state);
+                  double x,
+                  double* s,
+                  double* ds,
+                  double* d2s,
+                  ae_state *_state);
 void spline1dcopy(spline1dinterpolant* c,
-     spline1dinterpolant* cc,
-     ae_state *_state);
+                  spline1dinterpolant* cc,
+                  ae_state *_state);
 void spline1dunpack(spline1dinterpolant* c,
-     ae_int_t* n,
-     /* Real    */ ae_matrix* tbl,
-     ae_state *_state);
+                    ae_int_t* n,
+                    /* Real    */ ae_matrix* tbl,
+                    ae_state *_state);
 void spline1dlintransx(spline1dinterpolant* c,
-     double a,
-     double b,
-     ae_state *_state);
+                       double a,
+                       double b,
+                       ae_state *_state);
 void spline1dlintransy(spline1dinterpolant* c,
-     double a,
-     double b,
-     ae_state *_state);
+                       double a,
+                       double b,
+                       ae_state *_state);
 double spline1dintegrate(spline1dinterpolant* c,
-     double x,
-     ae_state *_state);
+                         double x,
+                         ae_state *_state);
 void spline1dconvdiffinternal(/* Real    */ ae_vector* xold,
-     /* Real    */ ae_vector* yold,
-     /* Real    */ ae_vector* dold,
-     ae_int_t n,
-     /* Real    */ ae_vector* x2,
-     ae_int_t n2,
-     /* Real    */ ae_vector* y,
-     ae_bool needy,
-     /* Real    */ ae_vector* d1,
-     ae_bool needd1,
-     /* Real    */ ae_vector* d2,
-     ae_bool needd2,
-     ae_state *_state);
+        /* Real    */ ae_vector* yold,
+        /* Real    */ ae_vector* dold,
+        ae_int_t n,
+        /* Real    */ ae_vector* x2,
+        ae_int_t n2,
+        /* Real    */ ae_vector* y,
+        ae_bool needy,
+        /* Real    */ ae_vector* d1,
+        ae_bool needd1,
+        /* Real    */ ae_vector* d2,
+        ae_bool needd2,
+        ae_state *_state);
 void heapsortdpoints(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* d,
-     ae_int_t n,
-     ae_state *_state);
+                                   /* Real    */ ae_vector* y,
+                                   /* Real    */ ae_vector* d,
+                                   ae_int_t n,
+                                   ae_state *_state);
 ae_bool _spline1dinterpolant_init(spline1dinterpolant* p, ae_state *_state, ae_bool make_automatic);
 ae_bool _spline1dinterpolant_init_copy(spline1dinterpolant* dst, spline1dinterpolant* src, ae_state *_state, ae_bool make_automatic);
 void _spline1dinterpolant_clear(spline1dinterpolant* p);
 void polynomialfit(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t* info,
-     barycentricinterpolant* p,
-     polynomialfitreport* rep,
-     ae_state *_state);
+                                 /* Real    */ ae_vector* y,
+                                 ae_int_t n,
+                                 ae_int_t m,
+                                 ae_int_t* info,
+                                 barycentricinterpolant* p,
+                                 polynomialfitreport* rep,
+                                 ae_state *_state);
 void polynomialfitwc(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     ae_int_t n,
-     /* Real    */ ae_vector* xc,
-     /* Real    */ ae_vector* yc,
-     /* Integer */ ae_vector* dc,
-     ae_int_t k,
-     ae_int_t m,
-     ae_int_t* info,
-     barycentricinterpolant* p,
-     polynomialfitreport* rep,
-     ae_state *_state);
+                                   /* Real    */ ae_vector* y,
+                                   /* Real    */ ae_vector* w,
+                                   ae_int_t n,
+                                   /* Real    */ ae_vector* xc,
+                                   /* Real    */ ae_vector* yc,
+                                   /* Integer */ ae_vector* dc,
+                                   ae_int_t k,
+                                   ae_int_t m,
+                                   ae_int_t* info,
+                                   barycentricinterpolant* p,
+                                   polynomialfitreport* rep,
+                                   ae_state *_state);
 void barycentricfitfloaterhormannwc(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     ae_int_t n,
-     /* Real    */ ae_vector* xc,
-     /* Real    */ ae_vector* yc,
-     /* Integer */ ae_vector* dc,
-     ae_int_t k,
-     ae_int_t m,
-     ae_int_t* info,
-     barycentricinterpolant* b,
-     barycentricfitreport* rep,
-     ae_state *_state);
+        /* Real    */ ae_vector* y,
+        /* Real    */ ae_vector* w,
+        ae_int_t n,
+        /* Real    */ ae_vector* xc,
+        /* Real    */ ae_vector* yc,
+        /* Integer */ ae_vector* dc,
+        ae_int_t k,
+        ae_int_t m,
+        ae_int_t* info,
+        barycentricinterpolant* b,
+        barycentricfitreport* rep,
+        ae_state *_state);
 void barycentricfitfloaterhormann(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t* info,
-     barycentricinterpolant* b,
-     barycentricfitreport* rep,
-     ae_state *_state);
+        /* Real    */ ae_vector* y,
+        ae_int_t n,
+        ae_int_t m,
+        ae_int_t* info,
+        barycentricinterpolant* b,
+        barycentricfitreport* rep,
+        ae_state *_state);
 void spline1dfitpenalized(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_int_t m,
-     double rho,
-     ae_int_t* info,
-     spline1dinterpolant* s,
-     spline1dfitreport* rep,
-     ae_state *_state);
+                                        /* Real    */ ae_vector* y,
+                                        ae_int_t n,
+                                        ae_int_t m,
+                                        double rho,
+                                        ae_int_t* info,
+                                        spline1dinterpolant* s,
+                                        spline1dfitreport* rep,
+                                        ae_state *_state);
 void spline1dfitpenalizedw(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     ae_int_t n,
-     ae_int_t m,
-     double rho,
-     ae_int_t* info,
-     spline1dinterpolant* s,
-     spline1dfitreport* rep,
-     ae_state *_state);
+        /* Real    */ ae_vector* y,
+        /* Real    */ ae_vector* w,
+        ae_int_t n,
+        ae_int_t m,
+        double rho,
+        ae_int_t* info,
+        spline1dinterpolant* s,
+        spline1dfitreport* rep,
+        ae_state *_state);
 void spline1dfitcubicwc(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     ae_int_t n,
-     /* Real    */ ae_vector* xc,
-     /* Real    */ ae_vector* yc,
-     /* Integer */ ae_vector* dc,
-     ae_int_t k,
-     ae_int_t m,
-     ae_int_t* info,
-     spline1dinterpolant* s,
-     spline1dfitreport* rep,
-     ae_state *_state);
+                                      /* Real    */ ae_vector* y,
+                                      /* Real    */ ae_vector* w,
+                                      ae_int_t n,
+                                      /* Real    */ ae_vector* xc,
+                                      /* Real    */ ae_vector* yc,
+                                      /* Integer */ ae_vector* dc,
+                                      ae_int_t k,
+                                      ae_int_t m,
+                                      ae_int_t* info,
+                                      spline1dinterpolant* s,
+                                      spline1dfitreport* rep,
+                                      ae_state *_state);
 void spline1dfithermitewc(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     ae_int_t n,
-     /* Real    */ ae_vector* xc,
-     /* Real    */ ae_vector* yc,
-     /* Integer */ ae_vector* dc,
-     ae_int_t k,
-     ae_int_t m,
-     ae_int_t* info,
-     spline1dinterpolant* s,
-     spline1dfitreport* rep,
-     ae_state *_state);
+                                        /* Real    */ ae_vector* y,
+                                        /* Real    */ ae_vector* w,
+                                        ae_int_t n,
+                                        /* Real    */ ae_vector* xc,
+                                        /* Real    */ ae_vector* yc,
+                                        /* Integer */ ae_vector* dc,
+                                        ae_int_t k,
+                                        ae_int_t m,
+                                        ae_int_t* info,
+                                        spline1dinterpolant* s,
+                                        spline1dfitreport* rep,
+                                        ae_state *_state);
 void spline1dfitcubic(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t* info,
-     spline1dinterpolant* s,
-     spline1dfitreport* rep,
-     ae_state *_state);
+                                    /* Real    */ ae_vector* y,
+                                    ae_int_t n,
+                                    ae_int_t m,
+                                    ae_int_t* info,
+                                    spline1dinterpolant* s,
+                                    spline1dfitreport* rep,
+                                    ae_state *_state);
 void spline1dfithermite(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t* info,
-     spline1dinterpolant* s,
-     spline1dfitreport* rep,
-     ae_state *_state);
+                                      /* Real    */ ae_vector* y,
+                                      ae_int_t n,
+                                      ae_int_t m,
+                                      ae_int_t* info,
+                                      spline1dinterpolant* s,
+                                      spline1dfitreport* rep,
+                                      ae_state *_state);
 void lsfitlinearw(/* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     /* Real    */ ae_matrix* fmatrix,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t* info,
-     /* Real    */ ae_vector* c,
-     lsfitreport* rep,
-     ae_state *_state);
+                                /* Real    */ ae_vector* w,
+                                /* Real    */ ae_matrix* fmatrix,
+                                ae_int_t n,
+                                ae_int_t m,
+                                ae_int_t* info,
+                                /* Real    */ ae_vector* c,
+                                lsfitreport* rep,
+                                ae_state *_state);
 void lsfitlinearwc(/* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     /* Real    */ ae_matrix* fmatrix,
-     /* Real    */ ae_matrix* cmatrix,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t k,
-     ae_int_t* info,
-     /* Real    */ ae_vector* c,
-     lsfitreport* rep,
-     ae_state *_state);
+                                 /* Real    */ ae_vector* w,
+                                 /* Real    */ ae_matrix* fmatrix,
+                                 /* Real    */ ae_matrix* cmatrix,
+                                 ae_int_t n,
+                                 ae_int_t m,
+                                 ae_int_t k,
+                                 ae_int_t* info,
+                                 /* Real    */ ae_vector* c,
+                                 lsfitreport* rep,
+                                 ae_state *_state);
 void lsfitlinear(/* Real    */ ae_vector* y,
-     /* Real    */ ae_matrix* fmatrix,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t* info,
-     /* Real    */ ae_vector* c,
-     lsfitreport* rep,
-     ae_state *_state);
+                               /* Real    */ ae_matrix* fmatrix,
+                               ae_int_t n,
+                               ae_int_t m,
+                               ae_int_t* info,
+                               /* Real    */ ae_vector* c,
+                               lsfitreport* rep,
+                               ae_state *_state);
 void lsfitlinearc(/* Real    */ ae_vector* y,
-     /* Real    */ ae_matrix* fmatrix,
-     /* Real    */ ae_matrix* cmatrix,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t k,
-     ae_int_t* info,
-     /* Real    */ ae_vector* c,
-     lsfitreport* rep,
-     ae_state *_state);
+                                /* Real    */ ae_matrix* fmatrix,
+                                /* Real    */ ae_matrix* cmatrix,
+                                ae_int_t n,
+                                ae_int_t m,
+                                ae_int_t k,
+                                ae_int_t* info,
+                                /* Real    */ ae_vector* c,
+                                lsfitreport* rep,
+                                ae_state *_state);
 void lsfitcreatewf(/* Real    */ ae_matrix* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     /* Real    */ ae_vector* c,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t k,
-     double diffstep,
-     lsfitstate* state,
-     ae_state *_state);
+                                 /* Real    */ ae_vector* y,
+                                 /* Real    */ ae_vector* w,
+                                 /* Real    */ ae_vector* c,
+                                 ae_int_t n,
+                                 ae_int_t m,
+                                 ae_int_t k,
+                                 double diffstep,
+                                 lsfitstate* state,
+                                 ae_state *_state);
 void lsfitcreatef(/* Real    */ ae_matrix* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* c,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t k,
-     double diffstep,
-     lsfitstate* state,
-     ae_state *_state);
+                                /* Real    */ ae_vector* y,
+                                /* Real    */ ae_vector* c,
+                                ae_int_t n,
+                                ae_int_t m,
+                                ae_int_t k,
+                                double diffstep,
+                                lsfitstate* state,
+                                ae_state *_state);
 void lsfitcreatewfg(/* Real    */ ae_matrix* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     /* Real    */ ae_vector* c,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t k,
-     ae_bool cheapfg,
-     lsfitstate* state,
-     ae_state *_state);
+                                  /* Real    */ ae_vector* y,
+                                  /* Real    */ ae_vector* w,
+                                  /* Real    */ ae_vector* c,
+                                  ae_int_t n,
+                                  ae_int_t m,
+                                  ae_int_t k,
+                                  ae_bool cheapfg,
+                                  lsfitstate* state,
+                                  ae_state *_state);
 void lsfitcreatefg(/* Real    */ ae_matrix* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* c,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t k,
-     ae_bool cheapfg,
-     lsfitstate* state,
-     ae_state *_state);
+                                 /* Real    */ ae_vector* y,
+                                 /* Real    */ ae_vector* c,
+                                 ae_int_t n,
+                                 ae_int_t m,
+                                 ae_int_t k,
+                                 ae_bool cheapfg,
+                                 lsfitstate* state,
+                                 ae_state *_state);
 void lsfitcreatewfgh(/* Real    */ ae_matrix* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     /* Real    */ ae_vector* c,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t k,
-     lsfitstate* state,
-     ae_state *_state);
+                                   /* Real    */ ae_vector* y,
+                                   /* Real    */ ae_vector* w,
+                                   /* Real    */ ae_vector* c,
+                                   ae_int_t n,
+                                   ae_int_t m,
+                                   ae_int_t k,
+                                   lsfitstate* state,
+                                   ae_state *_state);
 void lsfitcreatefgh(/* Real    */ ae_matrix* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* c,
-     ae_int_t n,
-     ae_int_t m,
-     ae_int_t k,
-     lsfitstate* state,
-     ae_state *_state);
+                                  /* Real    */ ae_vector* y,
+                                  /* Real    */ ae_vector* c,
+                                  ae_int_t n,
+                                  ae_int_t m,
+                                  ae_int_t k,
+                                  lsfitstate* state,
+                                  ae_state *_state);
 void lsfitsetcond(lsfitstate* state,
-     double epsf,
-     double epsx,
-     ae_int_t maxits,
-     ae_state *_state);
+                  double epsf,
+                  double epsx,
+                  ae_int_t maxits,
+                  ae_state *_state);
 void lsfitsetstpmax(lsfitstate* state, double stpmax, ae_state *_state);
 void lsfitsetxrep(lsfitstate* state, ae_bool needxrep, ae_state *_state);
 void lsfitsetscale(lsfitstate* state,
-     /* Real    */ ae_vector* s,
-     ae_state *_state);
+                   /* Real    */ ae_vector* s,
+                   ae_state *_state);
 void lsfitsetbc(lsfitstate* state,
-     /* Real    */ ae_vector* bndl,
-     /* Real    */ ae_vector* bndu,
-     ae_state *_state);
+                /* Real    */ ae_vector* bndl,
+                /* Real    */ ae_vector* bndu,
+                ae_state *_state);
 ae_bool lsfititeration(lsfitstate* state, ae_state *_state);
 void lsfitresults(lsfitstate* state,
-     ae_int_t* info,
-     /* Real    */ ae_vector* c,
-     lsfitreport* rep,
-     ae_state *_state);
+                  ae_int_t* info,
+                  /* Real    */ ae_vector* c,
+                  lsfitreport* rep,
+                  ae_state *_state);
 void lsfitscalexy(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_vector* w,
-     ae_int_t n,
-     /* Real    */ ae_vector* xc,
-     /* Real    */ ae_vector* yc,
-     /* Integer */ ae_vector* dc,
-     ae_int_t k,
-     double* xa,
-     double* xb,
-     double* sa,
-     double* sb,
-     /* Real    */ ae_vector* xoriginal,
-     /* Real    */ ae_vector* yoriginal,
-     ae_state *_state);
+                                /* Real    */ ae_vector* y,
+                                /* Real    */ ae_vector* w,
+                                ae_int_t n,
+                                /* Real    */ ae_vector* xc,
+                                /* Real    */ ae_vector* yc,
+                                /* Integer */ ae_vector* dc,
+                                ae_int_t k,
+                                double* xa,
+                                double* xb,
+                                double* sa,
+                                double* sb,
+                                /* Real    */ ae_vector* xoriginal,
+                                /* Real    */ ae_vector* yoriginal,
+                                ae_state *_state);
 ae_bool _polynomialfitreport_init(polynomialfitreport* p, ae_state *_state, ae_bool make_automatic);
 ae_bool _polynomialfitreport_init_copy(polynomialfitreport* dst, polynomialfitreport* src, ae_state *_state, ae_bool make_automatic);
 void _polynomialfitreport_clear(polynomialfitreport* p);
@@ -4176,104 +4165,104 @@ ae_bool _lsfitstate_init(lsfitstate* p, ae_state *_state, ae_bool make_automatic
 ae_bool _lsfitstate_init_copy(lsfitstate* dst, lsfitstate* src, ae_state *_state, ae_bool make_automatic);
 void _lsfitstate_clear(lsfitstate* p);
 void pspline2build(/* Real    */ ae_matrix* xy,
-     ae_int_t n,
-     ae_int_t st,
-     ae_int_t pt,
-     pspline2interpolant* p,
-     ae_state *_state);
+                                 ae_int_t n,
+                                 ae_int_t st,
+                                 ae_int_t pt,
+                                 pspline2interpolant* p,
+                                 ae_state *_state);
 void pspline3build(/* Real    */ ae_matrix* xy,
-     ae_int_t n,
-     ae_int_t st,
-     ae_int_t pt,
-     pspline3interpolant* p,
-     ae_state *_state);
+                                 ae_int_t n,
+                                 ae_int_t st,
+                                 ae_int_t pt,
+                                 pspline3interpolant* p,
+                                 ae_state *_state);
 void pspline2buildperiodic(/* Real    */ ae_matrix* xy,
-     ae_int_t n,
-     ae_int_t st,
-     ae_int_t pt,
-     pspline2interpolant* p,
-     ae_state *_state);
+        ae_int_t n,
+        ae_int_t st,
+        ae_int_t pt,
+        pspline2interpolant* p,
+        ae_state *_state);
 void pspline3buildperiodic(/* Real    */ ae_matrix* xy,
-     ae_int_t n,
-     ae_int_t st,
-     ae_int_t pt,
-     pspline3interpolant* p,
-     ae_state *_state);
+        ae_int_t n,
+        ae_int_t st,
+        ae_int_t pt,
+        pspline3interpolant* p,
+        ae_state *_state);
 void pspline2parametervalues(pspline2interpolant* p,
-     ae_int_t* n,
-     /* Real    */ ae_vector* t,
-     ae_state *_state);
+                             ae_int_t* n,
+                             /* Real    */ ae_vector* t,
+                             ae_state *_state);
 void pspline3parametervalues(pspline3interpolant* p,
-     ae_int_t* n,
-     /* Real    */ ae_vector* t,
-     ae_state *_state);
+                             ae_int_t* n,
+                             /* Real    */ ae_vector* t,
+                             ae_state *_state);
 void pspline2calc(pspline2interpolant* p,
-     double t,
-     double* x,
-     double* y,
-     ae_state *_state);
+                  double t,
+                  double* x,
+                  double* y,
+                  ae_state *_state);
 void pspline3calc(pspline3interpolant* p,
-     double t,
-     double* x,
-     double* y,
-     double* z,
-     ae_state *_state);
+                  double t,
+                  double* x,
+                  double* y,
+                  double* z,
+                  ae_state *_state);
 void pspline2tangent(pspline2interpolant* p,
-     double t,
-     double* x,
-     double* y,
-     ae_state *_state);
+                     double t,
+                     double* x,
+                     double* y,
+                     ae_state *_state);
 void pspline3tangent(pspline3interpolant* p,
-     double t,
-     double* x,
-     double* y,
-     double* z,
-     ae_state *_state);
+                     double t,
+                     double* x,
+                     double* y,
+                     double* z,
+                     ae_state *_state);
 void pspline2diff(pspline2interpolant* p,
-     double t,
-     double* x,
-     double* dx,
-     double* y,
-     double* dy,
-     ae_state *_state);
+                  double t,
+                  double* x,
+                  double* dx,
+                  double* y,
+                  double* dy,
+                  ae_state *_state);
 void pspline3diff(pspline3interpolant* p,
-     double t,
-     double* x,
-     double* dx,
-     double* y,
-     double* dy,
-     double* z,
-     double* dz,
-     ae_state *_state);
+                  double t,
+                  double* x,
+                  double* dx,
+                  double* y,
+                  double* dy,
+                  double* z,
+                  double* dz,
+                  ae_state *_state);
 void pspline2diff2(pspline2interpolant* p,
-     double t,
-     double* x,
-     double* dx,
-     double* d2x,
-     double* y,
-     double* dy,
-     double* d2y,
-     ae_state *_state);
+                   double t,
+                   double* x,
+                   double* dx,
+                   double* d2x,
+                   double* y,
+                   double* dy,
+                   double* d2y,
+                   ae_state *_state);
 void pspline3diff2(pspline3interpolant* p,
-     double t,
-     double* x,
-     double* dx,
-     double* d2x,
-     double* y,
-     double* dy,
-     double* d2y,
-     double* z,
-     double* dz,
-     double* d2z,
-     ae_state *_state);
+                   double t,
+                   double* x,
+                   double* dx,
+                   double* d2x,
+                   double* y,
+                   double* dy,
+                   double* d2y,
+                   double* z,
+                   double* dz,
+                   double* d2z,
+                   ae_state *_state);
 double pspline2arclength(pspline2interpolant* p,
-     double a,
-     double b,
-     ae_state *_state);
+                         double a,
+                         double b,
+                         ae_state *_state);
 double pspline3arclength(pspline3interpolant* p,
-     double a,
-     double b,
-     ae_state *_state);
+                         double a,
+                         double b,
+                         ae_state *_state);
 ae_bool _pspline2interpolant_init(pspline2interpolant* p, ae_state *_state, ae_bool make_automatic);
 ae_bool _pspline2interpolant_init_copy(pspline2interpolant* dst, pspline2interpolant* src, ae_state *_state, ae_bool make_automatic);
 void _pspline2interpolant_clear(pspline2interpolant* p);
@@ -4281,63 +4270,63 @@ ae_bool _pspline3interpolant_init(pspline3interpolant* p, ae_state *_state, ae_b
 ae_bool _pspline3interpolant_init_copy(pspline3interpolant* dst, pspline3interpolant* src, ae_state *_state, ae_bool make_automatic);
 void _pspline3interpolant_clear(pspline3interpolant* p);
 void spline2dbuildbilinear(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_matrix* f,
-     ae_int_t m,
-     ae_int_t n,
-     spline2dinterpolant* c,
-     ae_state *_state);
+        /* Real    */ ae_vector* y,
+        /* Real    */ ae_matrix* f,
+        ae_int_t m,
+        ae_int_t n,
+        spline2dinterpolant* c,
+        ae_state *_state);
 void spline2dbuildbicubic(/* Real    */ ae_vector* x,
-     /* Real    */ ae_vector* y,
-     /* Real    */ ae_matrix* f,
-     ae_int_t m,
-     ae_int_t n,
-     spline2dinterpolant* c,
-     ae_state *_state);
+                                        /* Real    */ ae_vector* y,
+                                        /* Real    */ ae_matrix* f,
+                                        ae_int_t m,
+                                        ae_int_t n,
+                                        spline2dinterpolant* c,
+                                        ae_state *_state);
 double spline2dcalc(spline2dinterpolant* c,
-     double x,
-     double y,
-     ae_state *_state);
+                    double x,
+                    double y,
+                    ae_state *_state);
 void spline2ddiff(spline2dinterpolant* c,
-     double x,
-     double y,
-     double* f,
-     double* fx,
-     double* fy,
-     double* fxy,
-     ae_state *_state);
+                  double x,
+                  double y,
+                  double* f,
+                  double* fx,
+                  double* fy,
+                  double* fxy,
+                  ae_state *_state);
 void spline2dunpack(spline2dinterpolant* c,
-     ae_int_t* m,
-     ae_int_t* n,
-     /* Real    */ ae_matrix* tbl,
-     ae_state *_state);
+                    ae_int_t* m,
+                    ae_int_t* n,
+                    /* Real    */ ae_matrix* tbl,
+                    ae_state *_state);
 void spline2dlintransxy(spline2dinterpolant* c,
-     double ax,
-     double bx,
-     double ay,
-     double by,
-     ae_state *_state);
+                        double ax,
+                        double bx,
+                        double ay,
+                        double by,
+                        ae_state *_state);
 void spline2dlintransf(spline2dinterpolant* c,
-     double a,
-     double b,
-     ae_state *_state);
+                       double a,
+                       double b,
+                       ae_state *_state);
 void spline2dcopy(spline2dinterpolant* c,
-     spline2dinterpolant* cc,
-     ae_state *_state);
+                  spline2dinterpolant* cc,
+                  ae_state *_state);
 void spline2dresamplebicubic(/* Real    */ ae_matrix* a,
-     ae_int_t oldheight,
-     ae_int_t oldwidth,
-     /* Real    */ ae_matrix* b,
-     ae_int_t newheight,
-     ae_int_t newwidth,
-     ae_state *_state);
+        ae_int_t oldheight,
+        ae_int_t oldwidth,
+        /* Real    */ ae_matrix* b,
+        ae_int_t newheight,
+        ae_int_t newwidth,
+        ae_state *_state);
 void spline2dresamplebilinear(/* Real    */ ae_matrix* a,
-     ae_int_t oldheight,
-     ae_int_t oldwidth,
-     /* Real    */ ae_matrix* b,
-     ae_int_t newheight,
-     ae_int_t newwidth,
-     ae_state *_state);
+        ae_int_t oldheight,
+        ae_int_t oldwidth,
+        /* Real    */ ae_matrix* b,
+        ae_int_t newheight,
+        ae_int_t newwidth,
+        ae_state *_state);
 ae_bool _spline2dinterpolant_init(spline2dinterpolant* p, ae_state *_state, ae_bool make_automatic);
 ae_bool _spline2dinterpolant_init_copy(spline2dinterpolant* dst, spline2dinterpolant* src, ae_state *_state, ae_bool make_automatic);
 void _spline2dinterpolant_clear(spline2dinterpolant* p);

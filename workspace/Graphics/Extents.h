@@ -33,7 +33,7 @@ class ViewableTriangle;
 #include "../VrMath/LinearR3.h"
 
 // This is a file for collecting routines that find bounding box extents
-//  of ViewableBase objects intersected with bounding boxes.  
+//  of ViewableBase objects intersected with bounding boxes.
 // So far, implemented for only:
 //		ViewableParallelogram,
 //		ViewableParallelopiped,
@@ -53,23 +53,23 @@ class ViewableTriangle;
 //  If returns false, the extentsMin/Max values are not set.
 // **********************************************************************
 bool CalcExtentsInBox( const ViewableParallelogram& parallelogram,
-						   const VectorR3& boxBoundMin, const VectorR3& boxBoundMax,
-						   VectorR3* extentsMin, VectorR3* extentsMax );
+                       const VectorR3& boxBoundMin, const VectorR3& boxBoundMax,
+                       VectorR3* extentsMin, VectorR3* extentsMax );
 
 bool CalcExtentsInBox( const ViewableParallelepiped& ppiped,
-						   const VectorR3& boxBoundMin, const VectorR3& boxBoundMax,
-						   VectorR3* extentsMin, VectorR3* extentsMax );
+                       const VectorR3& boxBoundMin, const VectorR3& boxBoundMax,
+                       VectorR3* extentsMin, VectorR3* extentsMax );
 
 bool CalcExtentsInBox( const ViewableSphere& sphere,
-						   const VectorR3& boxBoundMin, const VectorR3& boxBoundMax,
-						   VectorR3* extentsMin, VectorR3* extentsMax );
+                       const VectorR3& boxBoundMin, const VectorR3& boxBoundMax,
+                       VectorR3* extentsMin, VectorR3* extentsMax );
 
 bool CalcExtentsInBox( const ViewableTriangle& tri,
-						   const VectorR3& boxBoundMin, const VectorR3& boxBoundMax,
-						   VectorR3* extentsMin, VectorR3* extentsMax );
+                       const VectorR3& boxBoundMin, const VectorR3& boxBoundMax,
+                       VectorR3* extentsMin, VectorR3* extentsMax );
 
 // **********************************************************************
-// CalcSolidExtentsInBox. Consider the intersection of a solid geometric 
+// CalcSolidExtentsInBox. Consider the intersection of a solid geometric
 //		object with the bounding box defined by boundBoxMax/Min.
 //		This intersection is inside the bounding box given by
 //		the values extentsMin/Max.
@@ -79,14 +79,14 @@ bool CalcExtentsInBox( const ViewableTriangle& tri,
 // **********************************************************************
 
 bool CalcExtentsInBox( const Parallelepiped& ppiped,
-						   const VectorR3& boxBoundMin, const VectorR3& boxBoundMax,
-						   VectorR3* extentsMin, VectorR3* extentsMax );
+                       const VectorR3& boxBoundMin, const VectorR3& boxBoundMax,
+                       VectorR3* extentsMin, VectorR3* extentsMax );
 
 
-// CalcBoundingBox intended for internal use. 
+// CalcBoundingBox intended for internal use.
 //	Finds the bounding box of a set of points.
 bool CalcBoundingBox( int numPoints, const VectorR3* vertArray,
-						   VectorR3* extentsMin, VectorR3* extentsMax );
+                      VectorR3* extentsMin, VectorR3* extentsMax );
 
 // Functions below are helper functions, intended for internal use.
 
@@ -95,26 +95,25 @@ bool CalcBoundingBox( int numPoints, const VectorR3* vertArray,
 //  Returns the values  Min{ x*x :  x \in [valMin, valMax] }
 //                 and  Max{ x*x :  x \in [valMin, valMax] }
 void CalcMinMaxSquares( double valMin, double valMax, double* valSqMin, double* valSqMax );
-bool CalcExtentsHelpForSphere( double boxMin, double boxMax, 
-							   double radiusSq, double otherSqMin, double otherSqMax,
-							   double* inExtent, double* maxExtent );
+bool CalcExtentsHelpForSphere( double boxMin, double boxMax,
+                               double radiusSq, double otherSqMin, double otherSqMax,
+                               double* inExtent, double* maxExtent );
 
 inline void CEIB_AddOrSubtract( VectorR3* u, VectorR3* v,
-						 const VectorR3& addTerm, bool addOrSubtract )
+                                const VectorR3& addTerm, bool addOrSubtract )
 {
-	if ( addOrSubtract ) {
-		*v += addTerm;
-	}
-	else {
-		*u -= addTerm;
-	}
+    if ( addOrSubtract ) {
+        *v += addTerm;
+    } else {
+        *u -= addTerm;
+    }
 }
 
 inline bool InAABB( const VectorR3& pt, const VectorR3& boxBoundMin, const VectorR3& boxBoundMax )
 {
-	return (   boxBoundMin.x <= pt.x && pt.x <= boxBoundMax.x 
-			&& boxBoundMin.y <= pt.y && pt.y <= boxBoundMax.y
-			&& boxBoundMin.z <= pt.z && pt.z <= boxBoundMax.z );
+    return (   boxBoundMin.x <= pt.x && pt.x <= boxBoundMax.x
+               && boxBoundMin.y <= pt.y && pt.y <= boxBoundMax.y
+               && boxBoundMin.z <= pt.z && pt.z <= boxBoundMax.z );
 }
 
 #endif // EXTENTS_H

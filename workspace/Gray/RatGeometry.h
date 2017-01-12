@@ -11,13 +11,14 @@
 #include "../DataStructs/Stack.h"
 
 
-class RatGeometry {
-	public:
-	void Load();
+class RatGeometry
+{
+public:
+    void Load();
 
-		CLoad3DS g_Load3ds;
-		t3DModel g_3DModel;
-		
+    CLoad3DS g_Load3ds;
+    t3DModel g_3DModel;
+
 };
 
 #endif /*RATGEOMETRY_H_*/

@@ -44,12 +44,13 @@
 
 using namespace std;
 
-class Compton {
+class Compton
+{
 public:
-	Compton();
-	bool Klein_Nishina(double rand, double dsdom,VectorR3 &pos, VectorR3 &dir,double dist);
+    Compton();
+    bool Klein_Nishina(double rand, double dsdom,VectorR3 &pos, VectorR3 &dir,double dist);
 private:
-	
+
 };
 
 #endif

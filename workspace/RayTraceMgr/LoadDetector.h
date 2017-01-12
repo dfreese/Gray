@@ -32,50 +32,51 @@
 
 bool LoadDffFile( const char* filename, SceneDescription& theScene, GammaRayTrace &Gray );
 
-class LoadDetector {
+class LoadDetector
+{
 public:
-	LoadDetector();
-	bool Load( const char* filename, SceneDescription& theScene, GammaRayTrace &Gray );
+    LoadDetector();
+    bool Load( const char* filename, SceneDescription& theScene, GammaRayTrace &Gray );
 private:
-		SceneDescription* ScenePtr;
-		long FileLineNumber;
-		int GetCommandNumber( const char * cmd );
-		bool ReadVertexR3( VectorR3& vert, FILE* infile );
-		void ProcessDetector( const VectorR3& detCenter, const VectorR3& detSize, const Material* curMaterial, int id );
-		void SetCameraViewInfo( CameraView& theView,
-						const VectorR3& viewPos, const VectorR3& lookAtPos, 
-						const VectorR3& upVector, double fovy,
-						int screenWidth, int screenHeight, double nearClipping );
-		void PushMatrix();
-		void PopMatrix();
-		void ApplyTranslation(const VectorR3&t);
-		void ApplyRotation(const VectorR3& axis, double theta);
-		bool ProcessFaceDFF( int numVerts, const Material* mat, FILE* infile, VectorSource * s, bool parse_VectorSource, unsigned id );
-		RigidMapR3 &curMatrix();
-		Stack<RigidMapR3*> MatrixStack;
-		Material defaultBack;
-		Material defaultSphere;
-		double polygonScale;
-		double actScale;
-		
-		double time_resolution;
-		double energy_resolution;
+    SceneDescription* ScenePtr;
+    long FileLineNumber;
+    int GetCommandNumber( const char * cmd );
+    bool ReadVertexR3( VectorR3& vert, FILE* infile );
+    void ProcessDetector( const VectorR3& detCenter, const VectorR3& detSize, const Material* curMaterial, int id );
+    void SetCameraViewInfo( CameraView& theView,
+                            const VectorR3& viewPos, const VectorR3& lookAtPos,
+                            const VectorR3& upVector, double fovy,
+                            int screenWidth, int screenHeight, double nearClipping );
+    void PushMatrix();
+    void PopMatrix();
+    void ApplyTranslation(const VectorR3&t);
+    void ApplyRotation(const VectorR3& axis, double theta);
+    bool ProcessFaceDFF( int numVerts, const Material* mat, FILE* infile, VectorSource * s, bool parse_VectorSource, unsigned id );
+    RigidMapR3 &curMatrix();
+    Stack<RigidMapR3*> MatrixStack;
+    Material defaultBack;
+    Material defaultSphere;
+    double polygonScale;
+    double actScale;
 
-		double time_gate;
-		double energy_gate_lower;
-		double energy_gate_upper;
+    double time_resolution;
+    double energy_resolution;
 
-		bool positronRange;
-		bool positronRangeCusp;
-		double positronC;
-		double positronK1;
-		double positronK2;
-		double positronMaxRange;
-		unsigned int block_id;
+    double time_gate;
+    double energy_gate_lower;
+    double energy_gate_upper;
 
-		int global_id;
-	
-		
+    bool positronRange;
+    bool positronRangeCusp;
+    double positronC;
+    double positronK1;
+    double positronK2;
+    double positronMaxRange;
+    unsigned int block_id;
+
+    int global_id;
+
+
 };
 
 

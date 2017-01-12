@@ -34,38 +34,38 @@
 //    where C, exponent, D are the values returned by FindDoubleRecurseSoln
 
 void FindDoubleRecurseSoln ( double A, double B, double alpha, double beta,
-							 double* C, double* exponent, double* D )
+                             double* C, double* exponent, double* D )
 {
-	// Pre-conditions
-	assert ( A+B>1.0 );
-	assert ( 0.0<alpha && alpha<=1.0 );
-	assert ( 0.0<beta && beta<=1.0 );
+    // Pre-conditions
+    assert ( A+B>1.0 );
+    assert ( 0.0<alpha && alpha<=1.0 );
+    assert ( 0.0<beta && beta<=1.0 );
 
-	double denom = A+B-1.0;
-	double ZdenomInv = 1.0/denom;
-	double AlogAlpha = A*log(alpha);
-	double BlogBeta = B*log(beta);
+    double denom = A+B-1.0;
+    double ZdenomInv = 1.0/denom;
+    double AlogAlpha = A*log(alpha);
+    double BlogBeta = B*log(beta);
 
-	*D = -ZdenomInv;
-	*C = 1.0+ZdenomInv;			// Same as (A+B)/(A+B-1) = (A+B-1+1)/(A+B-1).
+    *D = -ZdenomInv;
+    *C = 1.0+ZdenomInv;			// Same as (A+B)/(A+B-1) = (A+B-1+1)/(A+B-1).
 
-	// Use Newton's method to find exponent
-	double X = 0;				// Initial choice for exponent
-	double alphaExpX;			// ==1 for X==0.
-	double betaExpX;			// ==1 for X==0.
-	double funcValue = A+B;		// Since alphaExpX and betaExpX equal 1
-	double deltaX = (1.0-funcValue)/(AlogAlpha+BlogBeta);
-	while ( true ) {
-		X += deltaX;
-		if ( deltaX<1.0e-12 ) {
-			break;
-		}
-		alphaExpX = pow(alpha, X);
-		betaExpX = pow(beta, X);
-		funcValue = A*alphaExpX + B*betaExpX;
-		deltaX = (1.0-funcValue)/(AlogAlpha*alphaExpX+BlogBeta*betaExpX);
-	}
-	*exponent = X;
+    // Use Newton's method to find exponent
+    double X = 0;				// Initial choice for exponent
+    double alphaExpX;			// ==1 for X==0.
+    double betaExpX;			// ==1 for X==0.
+    double funcValue = A+B;		// Since alphaExpX and betaExpX equal 1
+    double deltaX = (1.0-funcValue)/(AlogAlpha+BlogBeta);
+    while ( true ) {
+        X += deltaX;
+        if ( deltaX<1.0e-12 ) {
+            break;
+        }
+        alphaExpX = pow(alpha, X);
+        betaExpX = pow(beta, X);
+        funcValue = A*alphaExpX + B*betaExpX;
+        deltaX = (1.0-funcValue)/(AlogAlpha*alphaExpX+BlogBeta*betaExpX);
+    }
+    *exponent = X;
 }
 
 //  Consider a function which satisfies the following properties:
@@ -82,57 +82,56 @@ void FindDoubleRecurseSoln ( double A, double B, double alpha, double beta,
 //	  returns true.
 
 bool FindDoubleRecurseSoln ( double A, double B, double alpha, double beta,
-							 double* C, double* exponent, double* D,
-							 double exponentToBeat )
+                             double* C, double* exponent, double* D,
+                             double exponentToBeat )
 {
-	// Pre-conditions
-	assert ( A+B>1.0 );
-	assert ( 0.0<alpha && alpha<=1.0 );
-	assert ( 0.0<beta && beta<=1.0 );
+    // Pre-conditions
+    assert ( A+B>1.0 );
+    assert ( 0.0<alpha && alpha<=1.0 );
+    assert ( 0.0<beta && beta<=1.0 );
 
-	// First check on exponentToBeat
-	//	Also, set some of the values for the first Newton iteration.
-	double X = exponentToBeat;			// Initial choice for exponent
-	double alphaExpX = pow(alpha, X);
-	double betaExpX = pow(beta, X);
-	double funcValue = A*alphaExpX + B*betaExpX;
-	if ( funcValue>=1.0 ) {
-		return false;
-	}
+    // First check on exponentToBeat
+    //	Also, set some of the values for the first Newton iteration.
+    double X = exponentToBeat;			// Initial choice for exponent
+    double alphaExpX = pow(alpha, X);
+    double betaExpX = pow(beta, X);
+    double funcValue = A*alphaExpX + B*betaExpX;
+    if ( funcValue>=1.0 ) {
+        return false;
+    }
 
-	// We are going to beat the exponentToBeat.  
-	double denom = A+B-1.0;
-	double ZdenomInv = 1.0/denom;
-	double AlogAlpha = A*log(alpha);
-	double BlogBeta = B*log(beta);
+    // We are going to beat the exponentToBeat.
+    double denom = A+B-1.0;
+    double ZdenomInv = 1.0/denom;
+    double AlogAlpha = A*log(alpha);
+    double BlogBeta = B*log(beta);
 
-	*D = -ZdenomInv;
-	*C = 1.0+ZdenomInv;			// Same as (A+B)/(A+B-1) = (A+B-1+1)/(A+B-1).
+    *D = -ZdenomInv;
+    *C = 1.0+ZdenomInv;			// Same as (A+B)/(A+B-1) = (A+B-1+1)/(A+B-1).
 
-	double deltaX = (1.0-funcValue)/(AlogAlpha*alphaExpX+BlogBeta*betaExpX);
-	X += deltaX;
-	if ( X<0.0 ) {
-		// If undershot zero, restart Newton iteration at zero
-		funcValue = A+B;		// Since alphaExpX and betaExpX equal 1
-		deltaX = (1.0-funcValue)/(AlogAlpha+BlogBeta);
-		X = deltaX;
-	}
-	else {
-		deltaX = -deltaX;
-	}
-	while ( true ) {
-		if ( deltaX<1.0e-12 ) {
-			break;
-		}
-		alphaExpX = pow(alpha, X);
-		betaExpX = pow(beta, X);
-		funcValue = A*alphaExpX + B*betaExpX;
-		deltaX = (1.0-funcValue)/(AlogAlpha*alphaExpX+BlogBeta*betaExpX);
-		X += deltaX;
-	}
-	*exponent = X;
+    double deltaX = (1.0-funcValue)/(AlogAlpha*alphaExpX+BlogBeta*betaExpX);
+    X += deltaX;
+    if ( X<0.0 ) {
+        // If undershot zero, restart Newton iteration at zero
+        funcValue = A+B;		// Since alphaExpX and betaExpX equal 1
+        deltaX = (1.0-funcValue)/(AlogAlpha+BlogBeta);
+        X = deltaX;
+    } else {
+        deltaX = -deltaX;
+    }
+    while ( true ) {
+        if ( deltaX<1.0e-12 ) {
+            break;
+        }
+        alphaExpX = pow(alpha, X);
+        betaExpX = pow(beta, X);
+        funcValue = A*alphaExpX + B*betaExpX;
+        deltaX = (1.0-funcValue)/(AlogAlpha*alphaExpX+BlogBeta*betaExpX);
+        X += deltaX;
+    }
+    *exponent = X;
 
-	return true;
+    return true;
 }
 
 
@@ -145,34 +144,34 @@ bool FindDoubleRecurseSoln ( double A, double B, double alpha, double beta,
 //    where C, exponent, D are the values returned by FindDoubleRecurseSoln
 
 void FindDoubleRecurseSolnOld ( double A, double B, double alpha, double beta,
-							 double* C, double* exponent, double* D )
+                                double* C, double* exponent, double* D )
 {
-	// Pre-conditions
-	assert ( A+B>1.0 );
-	assert ( 0.0<alpha && alpha<=1.0 );
-	assert ( 0.0<beta && beta<=1.0 );
+    // Pre-conditions
+    assert ( A+B>1.0 );
+    assert ( 0.0<alpha && alpha<=1.0 );
+    assert ( 0.0<beta && beta<=1.0 );
 
-	double denom = A+B-1.0;
-	double ZdenomInv = 1.0/denom;
-	double AlogAlpha = A*log(alpha);
-	double BlogBeta = B*log(beta);
+    double denom = A+B-1.0;
+    double ZdenomInv = 1.0/denom;
+    double AlogAlpha = A*log(alpha);
+    double BlogBeta = B*log(beta);
 
-	*D = -ZdenomInv;
-	*C = 1.0+ZdenomInv;			// Same as (A+B)/(A+B-1) = (A+B-1+1)/(A+B-1).
+    *D = -ZdenomInv;
+    *C = 1.0+ZdenomInv;			// Same as (A+B)/(A+B-1) = (A+B-1+1)/(A+B-1).
 
-	// Use Newton's method to find exponent
-	double X = 0;				// Initial choice for exponent
-	while ( true ) {
-		double alphaExpX = pow(alpha, X);
-		double betaExpX = pow(beta, X);
-		double funcValue = A*alphaExpX + B*betaExpX;
-		double deltaX = (1.0-funcValue)/(AlogAlpha*alphaExpX+BlogBeta*betaExpX);
-		X += deltaX;
-		if ( deltaX<1.0e-12 ) {
-			break;
-		}
-	}
-	*exponent = X;
+    // Use Newton's method to find exponent
+    double X = 0;				// Initial choice for exponent
+    while ( true ) {
+        double alphaExpX = pow(alpha, X);
+        double betaExpX = pow(beta, X);
+        double funcValue = A*alphaExpX + B*betaExpX;
+        double deltaX = (1.0-funcValue)/(AlogAlpha*alphaExpX+BlogBeta*betaExpX);
+        X += deltaX;
+        if ( deltaX<1.0e-12 ) {
+            break;
+        }
+    }
+    *exponent = X;
 }
 
 

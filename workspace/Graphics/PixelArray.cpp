@@ -30,43 +30,45 @@
 // If necessary, it allocates new block of memory.
 // Returns true if new memory has been allocated.
 // Returns false if the memory location (and content) is unchanged
-bool PixelArray::SetSize( int width, int height ) {
-	bool retValue = false;
-	long widthAlloc =  width;
-	long newAlloc = ((long)widthAlloc)*((long)height)*3*sizeof(float);
-	if ( newAlloc>Allocated ) {
-		delete[] ColorValues;
-		Allocated = newAlloc;
-		ColorValues = new float[Allocated];
-		assert(ColorValues != 0);	
-		retValue = true;
-	}
-	WidthAlloc = widthAlloc;
-	Width = width;
-	Height = height;
-	return retValue;
+bool PixelArray::SetSize( int width, int height )
+{
+    bool retValue = false;
+    long widthAlloc =  width;
+    long newAlloc = ((long)widthAlloc)*((long)height)*3*sizeof(float);
+    if ( newAlloc>Allocated ) {
+        delete[] ColorValues;
+        Allocated = newAlloc;
+        ColorValues = new float[Allocated];
+        assert(ColorValues != 0);
+        retValue = true;
+    }
+    WidthAlloc = widthAlloc;
+    Width = width;
+    Height = height;
+    return retValue;
 }
 
 // Set the size to the size of the viewport.
-void PixelArray::ResetSize() {
-	int got[4];		// i,j, width, height
-	glGetIntegerv( GL_VIEWPORT, got );
-	SetSize(got[2],got[3]);
+void PixelArray::ResetSize()
+{
+    int got[4];		// i,j, width, height
+    glGetIntegerv( GL_VIEWPORT, got );
+    SetSize(got[2],got[3]);
 }
 
 // DrawFloats() writes the contents of the pixel array into
 //	OpenGL's buffer.  The floating point numbers are written
-//  directly in. 
+//  directly in.
 // Please note that same ATI graphics board drivers have software
 //  bugs in that they do not clamp color values to the range [0,1],
 //  and this will cause bad results on those graphics boards.
 
 void PixelArray::DrawFloats() const
 {
-	glPixelStorei( GL_UNPACK_ROW_LENGTH, Width );
-	glPixelStorei( GL_UNPACK_ALIGNMENT, 4 );
-	glRasterPos2i(0,0);		// Position at base of window
-	glDrawPixels( Width, Height, GL_RGB, GL_FLOAT, ColorValues );
+    glPixelStorei( GL_UNPACK_ROW_LENGTH, Width );
+    glPixelStorei( GL_UNPACK_ALIGNMENT, 4 );
+    glRasterPos2i(0,0);		// Position at base of window
+    glDrawPixels( Width, Height, GL_RGB, GL_FLOAT, ColorValues );
 }
 
 // DrawViaRgbImage() writes the contents of the pixel array into
@@ -79,21 +81,21 @@ void PixelArray::DrawFloats() const
 
 void PixelArray::DrawViaRgbImage() const
 {
-	glRasterPos2i(0,0);		// Position at base of window
-	RgbImage image( GetHeight(), GetWidth() );
-	Dump( image );
-	image.DrawToOpenglBuffer();
+    glRasterPos2i(0,0);		// Position at base of window
+    RgbImage image( GetHeight(), GetWidth() );
+    Dump( image );
+    image.DrawToOpenglBuffer();
 }
 
-// ClampAndDrawFloats() first clamps all values to the 
+// ClampAndDrawFloats() first clamps all values to the
 //	interval [0,1] and then draws them.  The whole point
 //  is to avoid some software issues for some graphics
 //  boards (particularly, ATI boards).
 
 void PixelArray::ClampAndDrawFloats()
 {
-	ClampAllValues();							// Clamp values to range [0,1]
-	DrawFloats();
+    ClampAllValues();							// Clamp values to range [0,1]
+    DrawFloats();
 }
 
 // Dumps the PixelArray data into an RgbImage object.
@@ -102,21 +104,21 @@ void PixelArray::ClampAndDrawFloats()
 
 void PixelArray::Dump( RgbImage& image ) const
 {
-	assert ( image.GetNumCols()==GetWidth() && image.GetNumRows()==GetHeight() );
-	for ( long i=0; i<GetHeight(); i++ ) {
-		for ( long j=0; j<GetWidth(); j++ ) {
-			const float *color = GetPixel(j,i);
-			image.SetRgbPixelf( i, j, *color, *(color+1), *(color+2) );
-		}
-	}
+    assert ( image.GetNumCols()==GetWidth() && image.GetNumRows()==GetHeight() );
+    for ( long i=0; i<GetHeight(); i++ ) {
+        for ( long j=0; j<GetWidth(); j++ ) {
+            const float *color = GetPixel(j,i);
+            image.SetRgbPixelf( i, j, *color, *(color+1), *(color+2) );
+        }
+    }
 }
 
 // Usually, the filename ends with the suffix ".bmp" (but it is not provided)
 void PixelArray::DumpBmp( const char* filename ) const
 {
-	RgbImage image( GetHeight(), GetWidth() );
-	Dump( image );
-	image.WriteBmpFile( filename );
+    RgbImage image( GetHeight(), GetWidth() );
+    Dump( image );
+    image.WriteBmpFile( filename );
 }
 
 
@@ -124,9 +126,9 @@ void PixelArray::DumpBmp( const char* filename ) const
 
 void PixelArray::ClampAllValues()
 {
-	float* pixelPtr = ColorValues;
-	long iterCount = 3*GetHeight()*GetWidth();
-	for ( long i=0; i<iterCount; i++ ) {
-		ClampRange( pixelPtr++, (float)0.0f, (float)1.0f );		// Clamp value to range [0,1]
-	}
+    float* pixelPtr = ColorValues;
+    long iterCount = 3*GetHeight()*GetWidth();
+    for ( long i=0; i<iterCount; i++ ) {
+        ClampRange( pixelPtr++, (float)0.0f, (float)1.0f );		// Clamp value to range [0,1]
+    }
 }

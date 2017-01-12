@@ -23,28 +23,28 @@
 // Garry: Added destructor for proper cleanup
 SceneDescription::~SceneDescription()
 {
-  while (!LightArray.IsEmpty()) {
-    Light * aLight = LightArray.Pop();
-    delete aLight;
-  }
-  while (!MaterialArray.IsEmpty()) {
-    MaterialBase * material = MaterialArray.Pop();
-    delete material;
-  }
-  while (!TextureArray.IsEmpty()) {
-    TextureMapBase * texture = TextureArray.Pop();
-    delete texture;
-  }
-  while (!ViewableArray.IsEmpty()) {
-    ViewableBase * viewable = ViewableArray.Pop();
-    delete viewable;
-  }
+    while (!LightArray.IsEmpty()) {
+        Light * aLight = LightArray.Pop();
+        delete aLight;
+    }
+    while (!MaterialArray.IsEmpty()) {
+        MaterialBase * material = MaterialArray.Pop();
+        delete material;
+    }
+    while (!TextureArray.IsEmpty()) {
+        TextureMapBase * texture = TextureArray.Pop();
+        delete texture;
+    }
+    while (!ViewableArray.IsEmpty()) {
+        ViewableBase * viewable = ViewableArray.Pop();
+        delete viewable;
+    }
 
 #ifdef GAMMA_PHYSICS
-  while (!GammaStatsArray.IsEmpty()) {
-    GammaStats * stats = GammaStatsArray.Pop();
-    delete stats;
-  }
+    while (!GammaStatsArray.IsEmpty()) {
+        GammaStats * stats = GammaStatsArray.Pop();
+        delete stats;
+    }
 #endif
 
 }
@@ -54,67 +54,66 @@ SceneDescription::~SceneDescription()
 //	a suggested width and height for the camera screen.
 void SceneDescription::RegisterCameraView()
 {
-	RegisteredScreenWidth = CameraAndViewer.GetScreenWidth();
-	RegisteredScreenHeight = CameraAndViewer.GetScreenHeight();
-	ScreenRegistered = true;
+    RegisteredScreenWidth = CameraAndViewer.GetScreenWidth();
+    RegisteredScreenHeight = CameraAndViewer.GetScreenHeight();
+    ScreenRegistered = true;
 }
 
 void SceneDescription::CalcNewScreenDims( float aspectRatio )
 {
-	assert ( ScreenRegistered );
-	assert ( aspectRatio>0.0 );
-	if ( ScreenRegistered ) {
-		double registeredAspectRatio = RegisteredScreenWidth/RegisteredScreenHeight;
-		if ( registeredAspectRatio <= aspectRatio ) {
-			// Match up heights
-			CameraAndViewer.SetScreenDimensions( RegisteredScreenHeight*aspectRatio, RegisteredScreenHeight );
-		}
-		else {
-			// Match up widths
-			CameraAndViewer.SetScreenDimensions( RegisteredScreenWidth, RegisteredScreenWidth/aspectRatio );
-		}
-	}
+    assert ( ScreenRegistered );
+    assert ( aspectRatio>0.0 );
+    if ( ScreenRegistered ) {
+        double registeredAspectRatio = RegisteredScreenWidth/RegisteredScreenHeight;
+        if ( registeredAspectRatio <= aspectRatio ) {
+            // Match up heights
+            CameraAndViewer.SetScreenDimensions( RegisteredScreenHeight*aspectRatio, RegisteredScreenHeight );
+        } else {
+            // Match up widths
+            CameraAndViewer.SetScreenDimensions( RegisteredScreenWidth, RegisteredScreenWidth/aspectRatio );
+        }
+    }
 }
 
 
 void SceneDescription::DeleteAllLights()
 {
-	long i;
-	for ( i=NumLights(); i>0; i-- ) {
-		delete LightArray.Pop();
-	}
+    long i;
+    for ( i=NumLights(); i>0; i-- ) {
+        delete LightArray.Pop();
+    }
 }
 
 void SceneDescription::DeleteAllMaterials()
 {
-	long i;
-	for ( i=NumMaterials(); i>0; i-- ) {
-		delete MaterialArray.Pop();
-	}
+    long i;
+    for ( i=NumMaterials(); i>0; i-- ) {
+        delete MaterialArray.Pop();
+    }
 }
 
 void SceneDescription::DeleteAllTextures()
 {
-	long i;
-	for ( i=NumTextures(); i>0; i-- ) {
-		delete TextureArray.Pop();
-	}
+    long i;
+    for ( i=NumTextures(); i>0; i-- ) {
+        delete TextureArray.Pop();
+    }
 }
 
 void SceneDescription::DeleteAllViewables()
 {
-	long i;
-	for ( i=NumViewables(); i>0; i-- ) {
-		delete ViewableArray.Pop();
-	}
+    long i;
+    for ( i=NumViewables(); i>0; i-- ) {
+        delete ViewableArray.Pop();
+    }
 }
 
 void SceneDescription::DeleteAllGammaStats()
 {
-	long i;
-	for ( i=NumGammaStats(); i>0; i-- ) {
-		delete GammaStatsArray.Pop();
-	}
+    long i;
+    for ( i=NumGammaStats(); i>0; i-- ) {
+        delete GammaStatsArray.Pop();
+    }
 }
 
 

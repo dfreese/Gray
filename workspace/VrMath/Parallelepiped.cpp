@@ -25,26 +25,26 @@
 
 VectorR3 Parallelepiped::GetNormalFront() const
 {
-	VectorR3 ret( EdgeA );
-	ret *= EdgeB;
-	ret.Normalize();
-	return ret;
+    VectorR3 ret( EdgeA );
+    ret *= EdgeB;
+    ret.Normalize();
+    return ret;
 }
 
 VectorR3 Parallelepiped::GetNormalLeft() const
 {
-	VectorR3 ret( EdgeB );
-	ret *= EdgeC;
-	ret.Normalize();
-	return ret;
+    VectorR3 ret( EdgeB );
+    ret *= EdgeC;
+    ret.Normalize();
+    return ret;
 }
 
 VectorR3 Parallelepiped::GetNormalBottom() const
 {
-	VectorR3 ret( EdgeC );
-	ret *= EdgeA;
-	ret.Normalize();
-	return ret;
+    VectorR3 ret( EdgeC );
+    ret *= EdgeA;
+    ret.Normalize();
+    return ret;
 }
 
 
@@ -57,70 +57,70 @@ VectorR3 Parallelepiped::GetNormalBottom() const
 
 void Parallelepiped::GetFrontFace( VectorR3 *retVerts ) const
 {
-	*retVerts = BasePoint;
-	*(retVerts+1) = BasePoint;
-	*(retVerts+1) += EdgeA;
-	*(retVerts+2) = *(retVerts+1);
-	*(retVerts+2) += EdgeB;
-	*(retVerts+3) = BasePoint;
-	*(retVerts+3) += EdgeB;
+    *retVerts = BasePoint;
+    *(retVerts+1) = BasePoint;
+    *(retVerts+1) += EdgeA;
+    *(retVerts+2) = *(retVerts+1);
+    *(retVerts+2) += EdgeB;
+    *(retVerts+3) = BasePoint;
+    *(retVerts+3) += EdgeB;
 }
 
 void Parallelepiped::GetBackFace( VectorR3 *retVerts ) const
 {
-	*retVerts = BasePoint;
-	*retVerts += EdgeC;
-	*(retVerts+3) = *retVerts;
-	*(retVerts+3) += EdgeA;
-	*(retVerts+2) = *(retVerts+3);
-	*(retVerts+2) += EdgeB;
-	*(retVerts+1) = *retVerts;
-	*(retVerts+1) += EdgeB;
+    *retVerts = BasePoint;
+    *retVerts += EdgeC;
+    *(retVerts+3) = *retVerts;
+    *(retVerts+3) += EdgeA;
+    *(retVerts+2) = *(retVerts+3);
+    *(retVerts+2) += EdgeB;
+    *(retVerts+1) = *retVerts;
+    *(retVerts+1) += EdgeB;
 }
 
 void Parallelepiped::GetLeftFace( VectorR3 *retVerts ) const
 {
-	*retVerts = BasePoint;
-	*(retVerts+1) = BasePoint;
-	*(retVerts+1) += EdgeB;
-	*(retVerts+2) = *(retVerts+1);
-	*(retVerts+2) += EdgeC;
-	*(retVerts+3) = BasePoint;
-	*(retVerts+3) += EdgeC;
+    *retVerts = BasePoint;
+    *(retVerts+1) = BasePoint;
+    *(retVerts+1) += EdgeB;
+    *(retVerts+2) = *(retVerts+1);
+    *(retVerts+2) += EdgeC;
+    *(retVerts+3) = BasePoint;
+    *(retVerts+3) += EdgeC;
 }
-	
+
 void Parallelepiped::GetRightFace( VectorR3 *retVerts ) const
 {
-	*retVerts = BasePoint;
-	*retVerts += EdgeA;
-	*(retVerts+3) = *retVerts;
-	*(retVerts+3) += EdgeB;				// Base + EdgeA + EdgeB
-	*(retVerts+2) = *(retVerts+3);
-	*(retVerts+2) += EdgeC;				// Base + EdgeA + EdgeB + EdgeC
-	*(retVerts+1) = *retVerts;
-	*(retVerts+1) += EdgeC;				// Base + EdgeA + EdgeC
+    *retVerts = BasePoint;
+    *retVerts += EdgeA;
+    *(retVerts+3) = *retVerts;
+    *(retVerts+3) += EdgeB;				// Base + EdgeA + EdgeB
+    *(retVerts+2) = *(retVerts+3);
+    *(retVerts+2) += EdgeC;				// Base + EdgeA + EdgeB + EdgeC
+    *(retVerts+1) = *retVerts;
+    *(retVerts+1) += EdgeC;				// Base + EdgeA + EdgeC
 }
 
 
 void Parallelepiped::GetBottomFace( VectorR3 *retVerts ) const
 {
-	*retVerts = BasePoint;
-	*(retVerts+1) = BasePoint;
-	*(retVerts+1) += EdgeC;
-	*(retVerts+2) = *(retVerts+1);
-	*(retVerts+2) += EdgeA;
-	*(retVerts+3) = BasePoint;
-	*(retVerts+3) += EdgeA;
+    *retVerts = BasePoint;
+    *(retVerts+1) = BasePoint;
+    *(retVerts+1) += EdgeC;
+    *(retVerts+2) = *(retVerts+1);
+    *(retVerts+2) += EdgeA;
+    *(retVerts+3) = BasePoint;
+    *(retVerts+3) += EdgeA;
 }
 
 void Parallelepiped::GetTopFace( VectorR3 *retVerts ) const
 {
-	*retVerts = BasePoint;
-	*retVerts += EdgeB;
-	*(retVerts+3) = *retVerts;
-	*(retVerts+3) += EdgeC;
-	*(retVerts+2) = *(retVerts+3);
-	*(retVerts+2) += EdgeA;
-	*(retVerts+1) = *retVerts;
-	*(retVerts+1) += EdgeA;
+    *retVerts = BasePoint;
+    *retVerts += EdgeB;
+    *(retVerts+3) = *retVerts;
+    *(retVerts+3) += EdgeC;
+    *(retVerts+2) = *(retVerts+3);
+    *(retVerts+2) += EdgeA;
+    *(retVerts+1) = *retVerts;
+    *(retVerts+1) += EdgeA;
 }

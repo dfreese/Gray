@@ -1,5 +1,5 @@
 
-// 
+//
 // DoubleRecurse.h
 //
 //  Solves a particular kind of double recursion
@@ -15,7 +15,7 @@
 //    where C, e, D are the values returned by FindDoubleRecurseSoln
 
 void FindDoubleRecurseSoln ( double A, double B, double alpha, double beta,
-							 double* C, double* exponent, double* D );
+                             double* C, double* exponent, double* D );
 
 // In the second form of FindDoubleRecurseSoln, there is an "exponentToBeat"
 //		parameter.  If the value of "exponent" would be less than "exponentToBeat",
@@ -23,6 +23,6 @@ void FindDoubleRecurseSoln ( double A, double B, double alpha, double beta,
 //		are not returned as valid value.
 
 bool FindDoubleRecurseSoln ( double A, double B, double alpha, double beta,
-							 double* C, double* exponent, double* D,
-							 double exponentToBeat );
+                             double* C, double* exponent, double* D,
+                             double exponentToBeat );
 

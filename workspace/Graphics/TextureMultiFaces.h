@@ -25,39 +25,43 @@
 
 //  A TextureSequence object applies different texture maps to different faces
 //	   You cannot change the number of texture maps
-//		after the TextureSequence is created; however, you can use a 
+//		after the TextureSequence is created; however, you can use a
 //		null pointer for the identity texture map.
 
-class TextureMultiFaces : public TextureMapBase {
+class TextureMultiFaces : public TextureMapBase
+{
 
 public:
-	TextureMultiFaces( int numTexturesMaps );		// Number of texture (cannot be changed)
-	TextureMultiFaces( int numTexturesMaps, TextureMapBase* textureMaps[] );		
-	TextureMultiFaces( TextureMapBase* textureMap0, TextureMapBase* textureMap1 );		
-	TextureMultiFaces( TextureMapBase* textureMap0, TextureMapBase* textureMap1, 
-					   TextureMapBase* textureMap2 );		
-	TextureMultiFaces( TextureMapBase* textureMap0, TextureMapBase* textureMap1, 
-					   TextureMapBase* textureMap2, TextureMapBase* textureMap3 );	
-	TextureMultiFaces( TextureMapBase* textureMap0, TextureMapBase* textureMap1, 
-					   TextureMapBase* textureMap2, TextureMapBase* textureMap3,	
-					   TextureMapBase* textureMap4, TextureMapBase* textureMap5 );	
-	
-	virtual ~TextureMultiFaces();			// Destructor does not free the texture maps
+    TextureMultiFaces( int numTexturesMaps );		// Number of texture (cannot be changed)
+    TextureMultiFaces( int numTexturesMaps, TextureMapBase* textureMaps[] );
+    TextureMultiFaces( TextureMapBase* textureMap0, TextureMapBase* textureMap1 );
+    TextureMultiFaces( TextureMapBase* textureMap0, TextureMapBase* textureMap1,
+                       TextureMapBase* textureMap2 );
+    TextureMultiFaces( TextureMapBase* textureMap0, TextureMapBase* textureMap1,
+                       TextureMapBase* textureMap2, TextureMapBase* textureMap3 );
+    TextureMultiFaces( TextureMapBase* textureMap0, TextureMapBase* textureMap1,
+                       TextureMapBase* textureMap2, TextureMapBase* textureMap3,
+                       TextureMapBase* textureMap4, TextureMapBase* textureMap5 );
 
-	void ApplyTexture( VisiblePoint& visPoint ) const;
+    virtual ~TextureMultiFaces();			// Destructor does not free the texture maps
 
-	// Set just one texture map.
-	void SetTexture( const TextureMapBase* textureMap, int textureIndex );
+    void ApplyTexture( VisiblePoint& visPoint ) const;
 
-	const TextureMapBase* GetTexture( int textureIndex ) const { return TexMapPtrs[textureIndex]; }
+    // Set just one texture map.
+    void SetTexture( const TextureMapBase* textureMap, int textureIndex );
 
-	void DeleteAll();			// Frees (deletes) all the texture maps
+    const TextureMapBase* GetTexture( int textureIndex ) const
+    {
+        return TexMapPtrs[textureIndex];
+    }
+
+    void DeleteAll();			// Frees (deletes) all the texture maps
 
 private:
-	typedef const TextureMapBase* TextureMapPointer;
-	
-	int NumTextureMaps;						// Number of texture maps
-	TextureMapPointer* TexMapPtrs;	// Array of pointers to texture maps			
+    typedef const TextureMapBase* TextureMapPointer;
+
+    int NumTextureMaps;						// Number of texture maps
+    TextureMapPointer* TexMapPtrs;	// Array of pointers to texture maps
 
 };
 
@@ -65,56 +69,58 @@ typedef const TextureMapBase* TextureMapPointer;
 
 inline TextureMultiFaces::TextureMultiFaces( int numTextureMaps )
 {
-	NumTextureMaps = numTextureMaps; 
-	TexMapPtrs = new TextureMapPointer[NumTextureMaps];
-	return;
+    NumTextureMaps = numTextureMaps;
+    TexMapPtrs = new TextureMapPointer[NumTextureMaps];
+    return;
 }
 
 inline TextureMultiFaces::TextureMultiFaces( TextureMapBase* textureMap0, TextureMapBase* textureMap1 )
 {
-	TextureMultiFaces(2);
-	TexMapPtrs[0] = textureMap0;
-	TexMapPtrs[1] = textureMap1;
+    TextureMultiFaces(2);
+    TexMapPtrs[0] = textureMap0;
+    TexMapPtrs[1] = textureMap1;
 }
 
-inline TextureMultiFaces::TextureMultiFaces( TextureMapBase* textureMap0, TextureMapBase* textureMap1, 
-					 TextureMapBase* textureMap2 )	
+inline TextureMultiFaces::TextureMultiFaces( TextureMapBase* textureMap0, TextureMapBase* textureMap1,
+        TextureMapBase* textureMap2 )
 {
-	TextureMultiFaces(3);
-	TexMapPtrs[0] = textureMap0;
-	TexMapPtrs[1] = textureMap1;
-	TexMapPtrs[2] = textureMap2;
+    TextureMultiFaces(3);
+    TexMapPtrs[0] = textureMap0;
+    TexMapPtrs[1] = textureMap1;
+    TexMapPtrs[2] = textureMap2;
 }
 
-inline TextureMultiFaces::TextureMultiFaces( TextureMapBase* textureMap0, TextureMapBase* textureMap1, 
-					 TextureMapBase* textureMap2, TextureMapBase* textureMap3 )	
+inline TextureMultiFaces::TextureMultiFaces( TextureMapBase* textureMap0, TextureMapBase* textureMap1,
+        TextureMapBase* textureMap2, TextureMapBase* textureMap3 )
 {
-	TextureMultiFaces(4);
-	TexMapPtrs[0] = textureMap0;
-	TexMapPtrs[1] = textureMap1;
-	TexMapPtrs[2] = textureMap2;
-	TexMapPtrs[3] = textureMap3;
+    TextureMultiFaces(4);
+    TexMapPtrs[0] = textureMap0;
+    TexMapPtrs[1] = textureMap1;
+    TexMapPtrs[2] = textureMap2;
+    TexMapPtrs[3] = textureMap3;
 }
 
-inline TextureMultiFaces::TextureMultiFaces( TextureMapBase* textureMap0, TextureMapBase* textureMap1, 
-					 TextureMapBase* textureMap2, TextureMapBase* textureMap3,	
-					 TextureMapBase* textureMap4, TextureMapBase* textureMap5 )	
+inline TextureMultiFaces::TextureMultiFaces( TextureMapBase* textureMap0, TextureMapBase* textureMap1,
+        TextureMapBase* textureMap2, TextureMapBase* textureMap3,
+        TextureMapBase* textureMap4, TextureMapBase* textureMap5 )
 {
-	TextureMultiFaces(6);
-	TexMapPtrs[0] = textureMap0;
-	TexMapPtrs[1] = textureMap1;
-	TexMapPtrs[2] = textureMap2;
-	TexMapPtrs[3] = textureMap3;
-	TexMapPtrs[4] = textureMap4;
-	TexMapPtrs[5] = textureMap5;
+    TextureMultiFaces(6);
+    TexMapPtrs[0] = textureMap0;
+    TexMapPtrs[1] = textureMap1;
+    TexMapPtrs[2] = textureMap2;
+    TexMapPtrs[3] = textureMap3;
+    TexMapPtrs[4] = textureMap4;
+    TexMapPtrs[5] = textureMap5;
 }
 
-inline TextureMultiFaces::~TextureMultiFaces() {
-	delete[] TexMapPtrs;
+inline TextureMultiFaces::~TextureMultiFaces()
+{
+    delete[] TexMapPtrs;
 }
 
-inline void TextureMultiFaces::SetTexture(const TextureMapBase* textureMap, int textureIndex) {
-	TexMapPtrs[textureIndex] = textureMap;
+inline void TextureMultiFaces::SetTexture(const TextureMapBase* textureMap, int textureIndex)
+{
+    TexMapPtrs[textureIndex] = textureMap;
 }
 
 #endif // TEXTUREMULTIFACES_H

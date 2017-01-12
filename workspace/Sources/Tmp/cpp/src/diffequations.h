@@ -28,8 +28,7 @@ http://www.fsf.org/licensing/licenses
 /////////////////////////////////////////////////////////////////////////
 namespace alglib_impl
 {
-typedef struct
-{
+typedef struct {
     ae_int_t n;
     ae_int_t m;
     double xscale;
@@ -56,8 +55,7 @@ typedef struct
     ae_matrix rkk;
     rcommstate rstate;
 } odesolverstate;
-typedef struct
-{
+typedef struct {
     ae_int_t nfev;
     ae_int_t terminationtype;
 } odesolverreport;
@@ -201,8 +199,8 @@ It accepts following parameters:
 
 *************************************************************************/
 void odesolversolve(odesolverstate &state,
-    void (*diff)(const real_1d_array &y, double x, real_1d_array &dy, void *ptr),
-    void *ptr = NULL);
+                    void (*diff)(const real_1d_array &y, double x, real_1d_array &dy, void *ptr),
+                    void *ptr = NULL);
 
 
 /*************************************************************************
@@ -239,20 +237,20 @@ void odesolverresults(const odesolverstate &state, ae_int_t &m, real_1d_array &x
 namespace alglib_impl
 {
 void odesolverrkck(/* Real    */ ae_vector* y,
-     ae_int_t n,
-     /* Real    */ ae_vector* x,
-     ae_int_t m,
-     double eps,
-     double h,
-     odesolverstate* state,
-     ae_state *_state);
+                                 ae_int_t n,
+                                 /* Real    */ ae_vector* x,
+                                 ae_int_t m,
+                                 double eps,
+                                 double h,
+                                 odesolverstate* state,
+                                 ae_state *_state);
 ae_bool odesolveriteration(odesolverstate* state, ae_state *_state);
 void odesolverresults(odesolverstate* state,
-     ae_int_t* m,
-     /* Real    */ ae_vector* xtbl,
-     /* Real    */ ae_matrix* ytbl,
-     odesolverreport* rep,
-     ae_state *_state);
+                      ae_int_t* m,
+                      /* Real    */ ae_vector* xtbl,
+                      /* Real    */ ae_matrix* ytbl,
+                      odesolverreport* rep,
+                      ae_state *_state);
 ae_bool _odesolverstate_init(odesolverstate* p, ae_state *_state, ae_bool make_automatic);
 ae_bool _odesolverstate_init_copy(odesolverstate* dst, odesolverstate* src, ae_state *_state, ae_bool make_automatic);
 void _odesolverstate_clear(odesolverstate* p);
