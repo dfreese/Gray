@@ -7,4 +7,4 @@ add_library(Output
     Output.cpp
 )
 
-target_include_directories(Output PUBLIC $(CMAKE_CURRENT_SOURCE_DIR))
+target_include_directories(Output PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

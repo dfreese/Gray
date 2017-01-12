@@ -9,4 +9,4 @@ add_library(VrMath
     Quaternion.cpp
 )
 
-target_include_directories(VrMath PUBLIC $(CMAKE_CURRENT_SOURCE_DIR))
+target_include_directories(VrMath PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

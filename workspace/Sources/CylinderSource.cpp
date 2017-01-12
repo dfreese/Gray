@@ -1,5 +1,5 @@
 #include "CylinderSource.h"
-#include "../RayTraceMgr/LoadDetector.h"
+#include "../Gray/LoadDetector.h"
 
 CylinderSource::CylinderSource()
 {

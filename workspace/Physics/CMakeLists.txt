@@ -19,7 +19,7 @@ add_library(Physics
     ZR89.cpp
 )
 
-target_include_directories(Physics PUBLIC $(CMAKE_CURRENT_SOURCE_DIR))
+target_include_directories(Physics PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(Physics Graphics)
 target_link_libraries(Physics VrMath)

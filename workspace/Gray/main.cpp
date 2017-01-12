@@ -28,7 +28,7 @@
 // See the routine InitializeSceneGeometry() below in this file to see how
 //      the different MODE values affect the creation of the scene.
 // *******************************************************************************
-//#define MODE 1  /* Use this line to manually set the scene in RayTraceSetup2.cpp */
+//#define MODE 1  /* Use this line to manually set the scene in RayTraceSetup.cpp */
 //#define MODE 2  /* Use this line to load the scene data from an .obj file. */
 //#define MODE 3  /* Use this line to load the scene data from a .nff file. */
 #define MODE 4 /* Use this line to load detector data from .dff file */
@@ -55,16 +55,16 @@
 #include "../VrMath/MathMisc.h"
 #include "../OpenGLRender/GlutRenderer.h"
 #include "../DataStructs/KdTree.h"
-#include "../RayTraceMgr/LoadNffFile.h"
-#include "../RayTraceMgr/LoadObjFile.h"
-#include "../RayTraceMgr/SceneDescription.h"
-#include "RayTraceSetup2.h"
+#include "../Gray/LoadNffFile.h"
+#include "../Gray/LoadObjFile.h"
+#include "../Gray/SceneDescription.h"
+#include "RayTraceSetup.h"
 #ifdef GAMMA_PHYSICS
 #include "../Gray/GammaRayTrace.h"
 #include "../Physics/LoadMaterials.h"
 #include "../Random/mt19937.h"
 #endif
-#include "../RayTraceMgr/LoadDetector.h"
+#include "../Gray/LoadDetector.h"
 
 void RenderWithGlut(void);
 

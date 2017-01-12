@@ -18,7 +18,7 @@
  *
  */
 
-#include "RayTraceSetup2.h"
+#include "RayTraceSetup.h"
 
 #include "../Graphics/Material.h"
 #include "../Graphics/ViewableSphere.h"
@@ -35,7 +35,7 @@
 #include "../Graphics/TextureSequence.h"
 #include "../Graphics/Light.h"
 #include "../Graphics/CameraView.h"
-#include "../RayTraceMgr/SceneDescription.h"
+#include "../Gray/SceneDescription.h"
 
 #ifdef GAMMA_PHYSICS
 #include "../Sources/CylinderSource.h"

@@ -1,7 +1,7 @@
 #ifndef LOAD_MATERIALS_H_
 #define LOAD_MATERIALS_H_
 
-#include "../RayTraceMgr/SceneDescription.h"
+#include "../Gray/SceneDescription.h"
 #include "../Graphics/MaterialBase.h"
 
 #include "GammaStats.h"

@@ -1,4 +1,4 @@
-#!/bin/csh -f
+#!/bin/sh
 
 set DATE = `date +%s`
 set FILENAME = '/gray_'$DATE'.tar.gz'
@@ -7,8 +7,9 @@ set NAME = '/Gray'
 set BIN_FILE = './Debug/Gray'
 set FILES = {'./Debug/Gray','*.dat','detectors/*.dff','matlab/*.m'}
 echo 'packaging '$FILENAME' for distribution'
-if (-d $RELEASE_DIR$NAME) then
+if [ -d $RELEASE_DIR$NAME ]; then
 	echo 'moving old directory.'
+fi
 mv $RELEASE_DIR$NAME $RELEASE_DIR'/old_'$DATE
 endif
 mkdir $RELEASE_DIR'/Gray'

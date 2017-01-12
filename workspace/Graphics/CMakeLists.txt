@@ -27,10 +27,8 @@ add_library(Graphics
     ViewableTriangle.cpp
 )
 
-target_include_directories(Graphics PUBLIC $(CMAKE_CURRENT_SOURCE_DIR))
+target_include_directories(Graphics PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 find_package(OpenGL REQUIRED)
-if (OPENGL_FOUND)
-    include_directories($(OPENGL_INCLUDE_DIR))
-    target_link_libraries(Graphics $(OPENGL_LIBRARIES))
-endif (OPENGL_FOUND)
+include_directories(${OPENGL_INCLUDE_DIR})
+target_link_libraries(Graphics PUBLIC ${OPENGL_LIBRARIES})

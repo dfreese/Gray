@@ -1,5 +1,5 @@
 #include "EllipsoidSource.h"
-#include "../RayTraceMgr/LoadDetector.h"
+#include "../Gray/LoadDetector.h"
 
 EllipsoidSource::EllipsoidSource()
 {

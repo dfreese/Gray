@@ -31,7 +31,7 @@
 #include "../Graphics/ViewableSphere.h"
 #include "../Graphics/ViewableTorus.h"
 #include "../Graphics/ViewableTriangle.h"
-#include "../RayTraceMgr/SceneDescription.h"
+#include "../Gray/SceneDescription.h"
 
 GlutRenderer::GlutRenderer()
 {

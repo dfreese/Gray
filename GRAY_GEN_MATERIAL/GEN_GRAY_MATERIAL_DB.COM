@@ -14,5 +14,5 @@ cd ..
 if [ ! -d ../include ]; then
     mkdir ../include
 fi
-for i in `cat Gray_Materials.txt | grep -v '#' | awk '{ print $1}'`; do cp ./TMP/$i.dat ../include ; done;
+for i in `cat Gray_Materials.txt | grep -v '#' | awk '{ print $1}'`; do cp ./TMP/$i.dat . ; done;
 rm -r TMP

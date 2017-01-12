@@ -1,5 +1,5 @@
 #include "AnnulusEllipticCylinderSource.h"
-#include "../RayTraceMgr/LoadDetector.h"
+#include "../Gray/LoadDetector.h"
 
 AnnulusEllipticCylinderSource::AnnulusEllipticCylinderSource()
 {

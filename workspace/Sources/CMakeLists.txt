@@ -12,7 +12,7 @@ add_library(Sources
     VoxelSource.cpp
 )
 
-target_include_directories(Sources PUBLIC $(CMAKE_CURRENT_SOURCE_DIR))
+target_include_directories(Sources PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(Sources Graphics)
 target_link_libraries(Sources VrMath)
