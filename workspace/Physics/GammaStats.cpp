@@ -81,24 +81,19 @@ int GammaStats::GetIndex(double e)
 
 bool GammaStats::Load(void)
 {
-    FILE* infile = fopen( filename, "rb" );		// Open for reading binary data
+    FILE* infile;
     double e, m, t, s, d;
     m = 0.0;
     char tmpfile[400];
+    char * pPath;
+    pPath = getenv ("GRAY_INCLUDE");
+    sprintf(tmpfile,"%s/%s",pPath,filename);
+    infile = fopen( tmpfile , "rb" );
     if ( !infile ) {
-        // Try again with the production vesion ::
-        char * pPath;
-        pPath = getenv ("GRAY_INCLUDE");
-        sprintf(tmpfile,"%s/%s",pPath,filename);
-        fprintf(stderr, " Unable to open file: %s, trying to open %s\n",
-                filename,tmpfile);
-        infile = fopen( tmpfile , "rb" );
-        if ( !infile ) {
-            fprintf(stderr, " Unable to open file: %s\nExiting..\n",
-                    tmpfile);
-            exit(0);
-            return false;
-        }
+        fprintf(stderr, " Unable to open file: %s\nExiting..\n",
+                tmpfile);
+        exit(0);
+        return false;
     }
     int sz = 0;
     fscanf(infile, "%d", &sz);
@@ -106,10 +101,10 @@ bool GammaStats::Load(void)
     if (sz > 0) {
         SetSize(sz);
         cout << "Opening file: ";
-        cout << filename;
+        cout << tmpfile;
         cout << " with ";
         cout << sz;
-        cout << "\n";
+        cout << " points\n";
         for (int i = 0; i < sz; i++) {
             if (EOF != fscanf(infile, "%lf%lf%lf%lf",&e,&t,&s,&d)) {
                 line++;
@@ -124,12 +119,15 @@ bool GammaStats::Load(void)
                 cout << " on line: ";
                 cout << line;
                 cout << "\n";
+                fclose(infile);
                 exit(1);
             }
         }
     } else {
+        fclose(infile);
         return false;
     }
+    fclose(infile);
     return true;
 }
 
@@ -200,4 +198,3 @@ void GammaStats::AddEscape(double * xray_escapes,double * xray_probs, double * a
     xray_escape_probability = xray_probs;
     auger = auger_probs;
 }
-
