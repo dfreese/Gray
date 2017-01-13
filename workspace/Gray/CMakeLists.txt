@@ -1,11 +1,9 @@
 add_executable(Gray
-    3ds.cpp
     GammaRayTrace.cpp
     LoadDetector.cpp
     LoadNffFile.cpp
     LoadObjFile.cpp
     main.cpp
-    RatGeometry.cpp
     RayTraceSetup.cpp
     RayTraceStats.cpp
     SceneDescription.cpp

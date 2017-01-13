@@ -11,7 +11,6 @@
 #include "../Sources/RectSource.h"
 #include "../Sources/SourceList.h"
 #include "../Output/Output.h"
-#include "RatGeometry.h"
 
 extern long SeekIntersectionKd(const VectorR3& startPos, const VectorR3& direction,
                                double *hitDist, VisiblePoint& returnedPoint,
@@ -46,7 +45,6 @@ private:
     MaterialBase * defaultMat;
     char * FileNameOutputFile;
     double simulationTime;
-    RatGeometry rat;
     bool logPositron;
     bool logAll;
 
