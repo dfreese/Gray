@@ -4,6 +4,6 @@
 Makefile
 CMakeFiles
 CMakeCache.txt
-GRAY_GEN_MATERIAL/*.dat
-workspace/Gray/Gray
-Gray
+/GRAY_GEN_MATERIAL/*.dat
+/workspace/Gray/Gray
+/Gray
