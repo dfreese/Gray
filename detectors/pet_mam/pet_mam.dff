@@ -46587,7 +46587,7 @@ positron on
 log_all true
 log_det_id true
 # log_det_coord true
-save_detector ./data/pet_mam_det.txt
+save_detector ./pet_mam_det.txt
 seed 62389174
-save_coinc ./data/pet_mam_coinc.dat
-save_singles ./data/pet_mam_sing.dat
+save_coinc ./pet_mam_coinc.dat
+save_singles ./pet_mam_sing.dat
