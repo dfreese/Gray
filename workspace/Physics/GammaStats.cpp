@@ -16,7 +16,6 @@ GammaStats::GammaStats()
 
 GammaStats::~GammaStats()
 {
-    cout << "Calling destructor\n";
 }
 
 void GammaStats::SetName(char * n)
