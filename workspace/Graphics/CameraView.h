@@ -23,7 +23,6 @@
 
 class VectorR3;
 #include "DirectLight.h"	// Has the class definition of View.
-#include "PixelArray.h"
 
 // A camera view is a view plus information about the directions
 // to the pixels.
@@ -52,7 +51,6 @@ public:
     void CalcPixelPosition( double i, double j, VectorR3* pos ) const;
 
     void SetScreenPixelSize( int width, int height );	// Width and height in pixels
-    void SetScreenPixelSize( const PixelArray& pixelarray );
     void SetScreenDistance( double dist );	// Distance to the projection place
     void SetScreenDimensions( double width, double height );
 
@@ -181,11 +179,6 @@ inline void CameraView::SetScreenPixelSize( int width, int height )		// Width an
     HeightPixels = height;
 
     RecalcPixeldUdV();
-}
-
-inline void CameraView::SetScreenPixelSize( const PixelArray& pixels )
-{
-    SetScreenPixelSize( pixels.GetWidth(), pixels.GetHeight() );
 }
 
 inline void CameraView::SetScreenDistance( double dist )

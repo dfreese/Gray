@@ -431,7 +431,7 @@ static void ResizeWindow(GLsizei w, GLsizei h)
 
     // Resize the camera viewpoint
     ActiveScene->CalcNewScreenDims( (double)w / (double)h );
-    ActiveScene->GetCameraView().SetScreenPixelSize( *pixels );
+    ActiveScene->GetCameraView().SetScreenPixelSize(pixels->GetWidth(), pixels->GetHeight());
 }
 
 // *******************************************************************
@@ -548,7 +548,7 @@ void InitializeSceneGeometry()
     ActiveScene = &FileScene;
 
     pixels = new PixelArray(10,10);		// Array of pixels
-    ActiveScene->GetCameraView().SetScreenPixelSize( *pixels );
+    ActiveScene->GetCameraView().SetScreenPixelSize(pixels->GetWidth(), pixels->GetHeight());
     ActiveScene->RegisterCameraView();
 
     // Build the kd-Tree.
