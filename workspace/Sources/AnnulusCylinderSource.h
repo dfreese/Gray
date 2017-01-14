@@ -13,8 +13,6 @@
 
 using namespace std;
 
-#define M_2_PI (2.0*3.14159265358979323846)
-
 class AnnulusCylinderSource : public Source
 {
 public:

@@ -15,7 +15,6 @@
 using namespace std;
 
 #define NUM_TABLE 100000
-#define M_PI 3.1415926535897932384626
 
 class AnnulusEllipticCylinderSource : public Source
 {
