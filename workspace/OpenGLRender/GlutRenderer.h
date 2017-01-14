@@ -24,9 +24,19 @@
 // Including stdlib.h and disabling the atexit_hack seem to work everywhere.
 //	Eventually there should be a new version of glut.h that doesn't need this.
 #include <stdlib.h>
-#define GLUT_DISABLE_ATEXIT_HACK
+// #define GLUT_DISABLE_ATEXIT_HACK
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#include <GLUT/glut.h>
+#else
 #include <GL/gl.h>
 #include <GL/glut.h>
+#endif
 
 #include "../VrMath/LinearR3.h"
 #include "../DataStructs/Array.h"

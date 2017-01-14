@@ -25,7 +25,11 @@
 #if defined(_WIN32)			// If on windows, need this for gl.h
 #include <windows.h>
 #endif  // defined(_WIN32)
-#include "GL/gl.h"
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#else
+#include <GL/gl.h>
+#endif
 #endif
 
 RgbImage::RgbImage( int numRows, int numCols )

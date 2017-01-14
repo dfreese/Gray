@@ -21,9 +21,20 @@
 
 #include "assert.h"
 #include <PixelArray.h>
+#include <OpenGlRgbImage.h>
 #include <RgbImage.h>
-#include <GL/glu.h>
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#include <GLUT/glut.h>
+#else
 #include <GL/gl.h>
+#include <GL/glut.h>
+#endif
 
 
 // SetSize(width, height) resizes the pixel data info.
@@ -82,7 +93,7 @@ void PixelArray::DrawFloats() const
 void PixelArray::DrawViaRgbImage() const
 {
     glRasterPos2i(0,0);		// Position at base of window
-    RgbImage image( GetHeight(), GetWidth() );
+    OpenGlRgbImage image( GetHeight(), GetWidth() );
     Dump( image );
     image.DrawToOpenglBuffer();
 }

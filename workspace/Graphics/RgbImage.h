@@ -35,7 +35,7 @@ public:
     RgbImage( const char* filename );
     RgbImage( int numRows, int numCols );	// Initialize a blank bitmap of this size.
     RgbImage(const RgbImage *image);		// Copy constructor
-    ~RgbImage();
+    virtual ~RgbImage();
 
     // The next routines return "true" to indicate successful completion.
     bool LoadBmpFile( const char *filename );		// Loads the bitmap from the specified file
@@ -92,7 +92,7 @@ public:
 
     void Reset();			// Frees image data memory
 
-private:
+protected:
     unsigned char* ImagePtr;	// array of pixel values (integers range 0 to 255)
     long NumRows;				// number of rows in image
     long NumCols;				// number of columns in image

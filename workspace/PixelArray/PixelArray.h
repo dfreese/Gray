@@ -22,15 +22,7 @@
 #ifndef PIXELARRAY_H
 #define PIXELARRAY_H
 
-// If you do not have GLUT installed, you can use the basic GL routines instead.
-//   For this, include windows.h and GL/gl.h, instead of GL/glut.h
-//#include <windows.h>
-//#include <GL/gl.h>	// Basic OpenGL includes
-// Including stdlib.h and disabling the atexit_hack seem to work everywhere.
-//	Eventually there should be a new version of glut.h that doesn't need this.
 #include <stdlib.h>
-#define GLUT_DISABLE_ATEXIT_HACK
-#include <GL/glut.h>	// GLUT OpenGL includes
 
 
 #include "../VrMath/LinearR3.h"
