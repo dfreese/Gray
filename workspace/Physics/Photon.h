@@ -23,24 +23,24 @@
 #include <limits.h>
 #include <vector>
 
-#include "../Graphics/Material.h"
-#include "../Graphics/ViewableSphere.h"
-#include "../Graphics/ViewableEllipsoid.h"
-#include "../Graphics/ViewableCone.h"
-#include "../Graphics/ViewableTorus.h"
-#include "../Graphics/ViewableTriangle.h"
-#include "../Graphics/ViewableParallelogram.h"
-#include "../Graphics/ViewableCylinder.h"
-#include "../Graphics/ViewableParallelepiped.h"
-#include "../Graphics/ViewableBezierSet.h"
-#include "../Graphics/TextureCheckered.h"
-#include "../Graphics/TextureBilinearXform.h"
-#include "../Graphics/TextureSequence.h"
-#include "../Graphics/TextureRgbImage.h"
-#include "../Graphics/Light.h"
-#include "../Graphics/CameraView.h"
-#include "../Graphics/TransformViewable.h"
-#include "../Graphics/VisiblePoint.h"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #include "../VrMath/MathMisc.h"
 #include "../VrMath/LinearR3.h"
 

@@ -1,4 +1,5 @@
 #include "GammaDecay.h"
+#include <stdio.h>
 
 const double CONST_ACOL = (0.47 / 180.0) * PI / 2.35482005;
 const double CONST_FWHM_TO_SIGMA = (1.0)/(2.35482005);

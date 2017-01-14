@@ -28,8 +28,8 @@
 //#include <fstream.h>   // file I/O
 
 #include "../Graphics/MaterialBase.h"
-#include "../Graphics/TransformViewable.h"
-#include "../Graphics/VisiblePoint.h"
+
+
 #include "../VrMath/MathMisc.h"
 #include "../VrMath/LinearR3.h"
 #include "Photon.h"

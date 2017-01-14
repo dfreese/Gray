@@ -1,4 +1,5 @@
 #include "Photon.h"
+#include <stdio.h>
 
 Photon::Photon()
 {

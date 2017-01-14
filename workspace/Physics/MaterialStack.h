@@ -24,7 +24,7 @@
 #include <vector>
 
 #include "../Graphics/Material.h"
-#include "../Graphics/VisiblePoint.h"
+
 #include "../VrMath/LinearR3.h"
 #include "../DataStructs/Stack.h"
 

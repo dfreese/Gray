@@ -27,8 +27,10 @@
 #include "../VrMath/MathMisc.h"
 #include "../VrMath/LinearR3.h"
 #include "../Random/mt19937.h"
+#include "../Graphics/MaterialBase.h"
 #include "Photon.h"
 #include "NuclearDecay.h"
+
 
 using namespace std;
 
