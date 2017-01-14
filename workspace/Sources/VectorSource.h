@@ -1,15 +1,9 @@
 #ifndef VECTORSOURCE_H_
 #define VECTORSOURCE_H_
 
-#include <math.h>
 #include "Source.h"
 #include "../VrMath/LinearR3.h"
-#include "../VrMath/LinearR4.h"
 #include "../VrMath/Aabb.h"
-#include "../Graphics/VisiblePoint.h"
-#include "../Graphics/ViewableTriangle.h"
-#include "../Random/mt19937.h"
-#include "../VrMath/MathMisc.h"
 
 class VectorSource : public Source
 {

@@ -15,10 +15,6 @@ CylinderSource::CylinderSource(const VectorR3 &p, double rad, VectorR3 L, double
     radius = rad;
     length = L.Norm();
     axis = L.MakeUnit();
-    // calculate Rotation Matrix
-
-    //cout << "L.x = " << L.x << "  L.y = " << L.y << "  L.z = " << L.z <<endl;
-    //cout << "axis.x = " << axis.x << "  axis.y = " << axis.y << "  axis.z = " << axis.z <<endl;
     /* Rotation Matrix based on Logbook 4 p72, AVDB) */
     double c= axis.z;
     double s=(axis.x*axis.x+axis.y*axis.y);
@@ -33,10 +29,6 @@ CylinderSource::CylinderSource(const VectorR3 &p, double rad, VectorR3 L, double
 
 void CylinderSource::Decay(unsigned int photon_number)
 {
-
-    //FIXME: Sources are not rotating -- FIXED 01-13-2020 AVDB
-    //FIXME: Inside is not rotating -- BUG PDO
-
     if (isotope == NULL) {
         return;
     }

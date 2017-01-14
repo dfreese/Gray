@@ -1,37 +1,9 @@
-/*
- * SimpleNurbs.h
- *
- * Author: Samuel R. Buss
- *
- * Software accompanying the book
- *		3D Computer Graphics: A Mathematical Introduction with OpenGL,
- *		by S. Buss, Cambridge University Press, 2003.
- *
- * Software is "as-is" and carries no warranty.  It may be used without
- *   restriction, but if you modify it, please change the filenames to
- *   prevent confusion between different versions.
- * Bug reports: Sam Buss, sbuss@ucsd.edu.
- * Web page: http://math.ucsd.edu/~sbuss/MathCG
- */
-
 #ifndef CSE167_SOURCELIST_H
 #define CSE167_SOURCELIST_H
 
-// Function prototypes
-#include <stdlib.h>
-#include <math.h>
-#include <limits.h>
 #include <vector>
-#include <string>
-#include <map>
-
 #include "Source.h"
 #include "../Physics/BackBack.h"
-
-#define FMIN(X,Y) ( ( (X)<(Y) ) ? (X):(Y))
-#define FMAX(X,Y) ( ( (X)>(Y) ) ? (X):(Y))
-
-using namespace std;
 
 // a microcurie is 37kevents/second
 const double microCurie = 37.0e3;
@@ -55,9 +27,9 @@ private:
     double curTime;
     int search(double e, int b_idx, int s_idx);
     double total_activity;
-    vector <Source*> list;
-    vector <Source*> neg_list;
-    vector <double> prob;
+    std::vector <Source*> list;
+    std::vector <Source*> neg_list;
+    std::vector <double> prob;
     double CalculateTime();
     bool Inside(const VectorR3 & pos);
     double mean_time_between_events;

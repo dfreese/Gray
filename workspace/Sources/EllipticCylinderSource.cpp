@@ -17,10 +17,6 @@ EllipticCylinderSource::EllipticCylinderSource(const VectorR3 &p, double r1, dou
     radius2 = r2;
     length = L.Norm();
     axis = L.MakeUnit();
-    // calculate Rotation Matrix
-
-    //cout << "L.x = " << L.x << "  L.y = " << L.y << "  L.z = " << L.z <<endl;
-    //cout << "axis.x = " << axis.x << "  axis.y = " << axis.y << "  axis.z = " << axis.z <<endl;
     /* Rotation Matrix based on Logbook 4 p72, AVDB) */
     double c= axis.z;
     double s=(axis.x*axis.x+axis.y*axis.y);

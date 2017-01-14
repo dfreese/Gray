@@ -1,4 +1,5 @@
 #include "BeamPointSource.h"
+#include "../Physics/Beam.h"
 
 BeamPointSource::BeamPointSource(const VectorR3 &p, const VectorR3 &a, double angle, double act)
 {

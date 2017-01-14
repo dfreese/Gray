@@ -1,17 +1,9 @@
 #ifndef CYLINDERSOURCE_H_
 #define CYLINDERSOURCE_H_
 
-// Function prototypes
-#include <stdlib.h>
-#include <math.h>
-#include <limits.h>
-#include <vector>
-
 #include "../VrMath/MathMisc.h"
 #include "../VrMath/LinearR3.h"
 #include "Source.h"
-
-using namespace std;
 
 class CylinderSource : public Source
 {

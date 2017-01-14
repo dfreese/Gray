@@ -1,4 +1,7 @@
 #include "VectorSource.h"
+#include "../Graphics/ViewableTriangle.h"
+
+using namespace std;
 
 extern long SeekIntersectionKd(const VectorR3& startPos, const VectorR3& direction,
                                double *hitDist, VisiblePoint& returnedPoint,

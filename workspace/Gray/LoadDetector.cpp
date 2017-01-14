@@ -3,6 +3,7 @@
 #include <string.h>
 #include "LoadDetector.h"
 #include "LoadObjFile.h"
+#include "../Graphics/TransformViewable.h"
 #include "../Graphics/VisiblePoint.h"
 #include "../Graphics/ViewableBase.h"
 #include "../Graphics/ViewableSphere.h"

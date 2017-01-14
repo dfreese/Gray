@@ -1,12 +1,6 @@
 #ifndef ANNULUSCYLINDERSOURCE_H_
 #define ANNULUSCYLINDERSOURCE_H_
 
-// Function prototypes
-#include <stdlib.h>
-#include <math.h>
-#include <limits.h>
-#include <vector>
-
 #include "../VrMath/MathMisc.h"
 #include "../VrMath/LinearR3.h"
 #include "Source.h"

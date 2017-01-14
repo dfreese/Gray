@@ -2,8 +2,6 @@
 #define BEAMPOINTSOURCE_H_
 
 #include "Source.h"
-#include "../Physics/PositronDecay.h"
-#include "../Physics/Beam.h"
 
 class BeamPointSource : public Source
 {

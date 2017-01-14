@@ -1,4 +1,8 @@
 #include "VoxelSource.h"
+#include <iostream>
+#include <fstream>
+
+using namespace std;
 
 VoxelSource::~VoxelSource()
 {
@@ -46,7 +50,6 @@ int VoxelSource::search(double e, int b_idx, int s_idx)
         return b_idx;
     }
     int idx = (int)(((b_idx) + (s_idx))/2);
-    //	cout << " e = " << e << " b_idx = " << b_idx<< " s_idx = " << s_idx << " prob[" << idx << "] = " << prob[idx] << endl;
     if (prob[idx] < e) {
         return search(e,idx+1,s_idx);
     } else {
@@ -69,15 +72,6 @@ void VoxelSource::Decay(unsigned int photon_number)
     pos.z = scale.z * (index[idx][2]+Random());
 
     pos += position;
-
-    /* Debugging code
-    	cout << "DONE ::  pos = " <<pos ;
-                cout << " position = " << position;
-          cout << " idx = " << idx ;
-          cout << " index[" << idx << "][0] = " << index[idx][0] ;
-          cout << " index[" << idx << "][1] = " << index[idx][1] ;
-      cout << " index[" << idx << "][2] = " << index[idx][2] << endl;
-    */
 
     isotope->SetMaterial(GetMaterial());
     isotope->SetPosition(pos);
@@ -112,7 +106,6 @@ bool VoxelSource::Load(const char * filename)
                     return false;
                 }
 
-                //	cout << "Reading["<< i << "][" << j << "][" << k << "]= " << val << endl;
                 if (val > 0) {
                     total += val;
                     prob.push_back(total);

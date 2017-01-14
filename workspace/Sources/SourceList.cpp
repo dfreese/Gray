@@ -1,5 +1,7 @@
 #include "SourceList.h"
 
+using namespace std;
+
 SourceList::SourceList()
 {
     curTime = 0.0;
@@ -98,8 +100,8 @@ bool SourceList::Inside(const VectorR3 & pos)
     for (int i = 0; i < neg_list.size(); i++) {
         if (neg_list[i]->Inside(pos)) {
             double ratio = fabs((neg_list[i]->GetActivity()));
-            ratio = FMIN( (ratio) , (1.0) );
-            ratio = FMAX( (ratio) , (0.0) );
+            ratio = ratio > 1.0 ? 1.0 : ratio;
+            ratio = ratio < 0.0 ? 0.0 : ratio;
             if (Random() < ratio) {
                 return true;
             }
