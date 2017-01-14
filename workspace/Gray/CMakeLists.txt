@@ -15,6 +15,7 @@ target_link_libraries(Gray Output)
 target_link_libraries(Gray DataStructs)
 target_link_libraries(Gray VrMath)
 target_link_libraries(Gray Graphics)
+target_link_libraries(Gray PixelArray)
 target_link_libraries(Gray OpenGLRender)
 
 find_package(OpenGL REQUIRED)

@@ -20,8 +20,8 @@
  */
 
 #include "assert.h"
-#include "PixelArray.h"
-#include "RgbImage.h"
+#include <PixelArray.h>
+#include <RgbImage.h>
 #include <GL/glu.h>
 #include <GL/gl.h>
 

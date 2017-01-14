@@ -5,7 +5,6 @@ add_library(Graphics
     Extents.cpp
     MaterialCookTorrance.cpp
     Material.cpp
-    PixelArray.cpp
     RgbImage.cpp
     TextureAffineXform.cpp
     TextureBilinearXform.cpp

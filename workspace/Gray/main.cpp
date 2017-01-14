@@ -12,7 +12,7 @@
 
 #include "RayTraceStats.h"
 
-#include "../Graphics/PixelArray.h"
+#include "../PixelArray/PixelArray.h"
 #include "../Graphics/ViewableBase.h"
 #include "../Graphics/DirectLight.h"
 #include "../Graphics/CameraView.h"
