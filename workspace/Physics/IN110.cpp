@@ -1,4 +1,3 @@
-/* IN110 Isotope */
 #include "IN110.h"
 
 IN110::IN110()

@@ -41,8 +41,6 @@ void Beam::Decay(unsigned int photon_number)
     AddPhoton(p.red);
 }
 
-
-
 void Beam::Reset()
 {
     p.Reset();

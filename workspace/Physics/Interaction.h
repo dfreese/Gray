@@ -1,27 +1,6 @@
-/*
- * SimpleNurbs.h
- *
- * Author: Samuel R. Buss
- *
- * Software accompanying the book
- *		3D Computer Graphics: A Mathematical Introduction with OpenGL,
- *		by S. Buss, Cambridge University Press, 2003.
- *
- * Software is "as-is" and carries no warranty.  It may be used without
- *   restriction, but if you modify it, please change the filenames to
- *   prevent confusion between different versions.
- * Bug reports: Sam Buss, sbuss@ucsd.edu.
- * Web page: http://math.ucsd.edu/~sbuss/MathCG
- */
-
 #ifndef CSE167_INTERACTION_H
 #define CSE167_INTERACTION_H
 
-// Function prototypes
-#include <stdlib.h>
-#include <math.h>
-#include <limits.h>
-#include <vector>
 #include <iostream>
 #include <fstream>
 //#include <iostream.h>  // I/O
@@ -29,12 +8,7 @@
 
 #include "../Graphics/MaterialBase.h"
 
-
-#include "../VrMath/MathMisc.h"
-#include "../VrMath/LinearR3.h"
 #include "Photon.h"
-#include "PositronDecay.h"
-#include "../Random/mt19937.h"
 #include "../Output/Output.h"
 #include "InteractionList.h"
 

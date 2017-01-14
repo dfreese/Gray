@@ -9,24 +9,15 @@
 #ifndef INTERACTION_LIST_H
 #define INTERACTION_LIST_H
 
-// Function prototypes
-#include <stdlib.h>
-#include <math.h>
-#include <limits.h>
-#include <vector>
 #include "../Graphics/MaterialBase.h"
 #include "../DataStructs/Array.h"
-#include "../VrMath/MathMisc.h"
-#include "../VrMath/LinearR3.h"
-#include "../Random/mt19937.h"
 #include "Photon.h"
-#include "Isotope.h"
 #include "Positron.h"
-#include "../Random/mt19937.h"
-#include "../Output/Output.h"
 #include "Deposit.h"
 
 using namespace std;
+
+class Isotope;
 
 class InteractionList
 {

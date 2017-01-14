@@ -19,7 +19,6 @@ add_library(Physics
 
 target_include_directories(Physics PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_link_libraries(Physics Graphics)
 target_link_libraries(Physics VrMath)
 target_link_libraries(Physics Random)
 target_link_libraries(Physics Output)

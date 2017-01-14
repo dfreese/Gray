@@ -1,7 +1,9 @@
 #include "GammaStats.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <iostream>
 
+using namespace std;
 
 GammaStats::GammaStats()
 {

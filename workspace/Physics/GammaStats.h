@@ -1,15 +1,6 @@
 #ifndef GAMMA_STATS_H
 #define GAMMA_STATS_H
 
-#include "../VrMath/LinearR2.h"
-#include "../VrMath/LinearR3.h"
-#include <stdlib.h>
-#include <math.h>
-#include <limits.h>
-#include <vector>
-
-using namespace std;
-
 class GammaStats
 {
 public:

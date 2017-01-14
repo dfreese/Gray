@@ -1,38 +1,11 @@
-/*
- * SimpleNurbs.h
- *
- * Author: Samuel R. Buss
- *
- * Software accompanying the book
- *		3D Computer Graphics: A Mathematical Introduction with OpenGL,
- *		by S. Buss, Cambridge University Press, 2003.
- *
- * Software is "as-is" and carries no warranty.  It may be used without
- *   restriction, but if you modify it, please change the filenames to
- *   prevent confusion between different versions.
- * Bug reports: Sam Buss, sbuss@ucsd.edu.
- * Web page: http://math.ucsd.edu/~sbuss/MathCG
- */
-
 #ifndef ISOTOPE_H
 #define ISOTOPE_H
 
-// Function prototypes
-#include <stdlib.h>
-#include <math.h>
-#include <limits.h>
-#include <vector>
 #include <map>
 #include "../DataStructs/Stack.h"
-#include "../VrMath/MathMisc.h"
-#include "../VrMath/LinearR3.h"
-#include "../Random/mt19937.h"
-#include "../Graphics/MaterialBase.h"
 #include "Photon.h"
-#include "NuclearDecay.h"
 
-
-using namespace std;
+class MaterialBase;
 
 enum ISOTOPE_TYPE {ISO_ERROR,ISO_F18, ISO_IN110, ISO_ZR89, ISO_CU64, ISO_BACKBACK, ISO_BEAM};
 

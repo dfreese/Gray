@@ -4,6 +4,7 @@
 #include "Source.h"
 #include "../VrMath/LinearR3.h"
 #include "../VrMath/Aabb.h"
+#include "../Random/mt19937.h"
 
 class VectorSource : public Source
 {
