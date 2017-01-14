@@ -20,8 +20,6 @@
 
 #include "DirectLight.h"
 
-class LightView;
-
 // This program calculates direct illumination of a surface.
 // Input is a position, and a normal, and a light
 
@@ -98,39 +96,6 @@ void DirectIlluminate( const VectorR3& position, const VectorR3& normal,
     }
 }
 
-// For a LightView combined class
-void DirectIlluminate( const VectorR3& position, const VectorR3& normal,
-                       const LightView& lv,
-                       const MaterialBase& material,
-                       VectorR3& colorReturned,
-                       const VectorR3& percentLit )
-{
-    if ( !lv.GetView().IsLocalViewer() ) {
-        DirectIlluminateViewPos( position, normal, lv.GetView().GetPosition(),
-                                 lv.GetLight(), material,
-                                 colorReturned, percentLit );
-        return;
-    }
-
-    VectorR3 viewVector;
-    VectorR3 lightVector;
-    double lightReduction;			// Net attenuation factor for light
-
-    viewVector = lv.GetView().GetDirection();
-    viewVector.Negate();				// Unit vector towards viewer
-
-    if ( !CalcLightDirAndFactor( lv.GetLight(), position,
-                                 &lightVector, &lightReduction) ) {
-        // Hidden from spotlight.
-        CalcAmbientOnly(material,lv.GetLight(),lightReduction,colorReturned);
-    } else {
-        // Call the general purpose function
-        DirectIlluminateBasic( colorReturned, material, lv.GetLight(),
-                               percentLit, lightReduction,
-                               normal, viewVector, lightVector, &(lv.GetH()) );
-    }
-}
-
 // Calculate light attenuation due to distance and to spotlight effect.
 // Verify that the light is shining on the surface.
 // Returns: (a) whether the light is shining on the surface (bool)
@@ -182,24 +147,6 @@ bool CalcLightDirAndFactor(const Light& light,
 
 }
 
-void LightView::CalcH()
-{
-
-    // Calculate the direction towards the light
-    if ( light->IsDirectional() ) {
-        H = light->GetPosition();
-    } else {
-        H = light->GetPosition();
-        H -= view->GetPosition();	// Direction from the viewer
-        H.Normalize();
-    }
-
-    // Add on direction *towards* the viewer
-    H -= view->GetDirection();
-
-    H.Normalize();		// Make a unit vector
-}
-
 // Calculate the response to the ambient light
 // This calculation can apply to both the Phong and Cook-Torrance models
 //		so is currently used for all lights.
@@ -232,6 +179,3 @@ void DirectIlluminateBasic( VectorR3& colorReturned, const MaterialBase& materia
                                 N, V, L, H );
     return;
 }
-
-
-
