@@ -5,7 +5,7 @@ double Random::cache_gauss = 0;
 bool Random::cache_valid = false;
 
 double Random::Uniform() {
-    return(genrand());
+    return(genrand_real1());
 }
 
 /*!
@@ -51,7 +51,7 @@ void Random::RandomHemiCube(VectorR3 & p)
 }
 void Random::Seed(unsigned long seed)
 {
-    sgenrand(seed);
+    init_genrand(seed);
 }
 void Random::UniformSphere(VectorR3 & p)
 {

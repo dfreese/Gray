@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <Random.h>
 #include "LoadDetector.h"
 #include "LoadObjFile.h"
 #include "../Graphics/TransformViewable.h"
@@ -25,8 +26,6 @@
 #include "../Sources/SphereSource.h"
 #include "../Sources/VectorSource.h"
 #include "../Sources/VoxelSource.h"
-
-extern void sgenrand(unsigned long seed);
 
 const int numCommands = 59;
 const char * dffCommandList[numCommands] = {
@@ -641,7 +640,7 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
             unsigned long seed = 0;
             int scanCode = sscanf(args, "%ld", &seed);
             if (scanCode ==1) {
-                sgenrand((unsigned long)seed);
+                Random::Seed((unsigned long)seed);
             } else {
                 parseErrorOccurred = true;
                 break;
