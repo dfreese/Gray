@@ -38,10 +38,8 @@
 // Destructor
 KdTree::~KdTree()
 {
-#ifdef GAMMA_PHYSICS
     // FIXME: Bad Cleanup on Exit
     // Garry: why is this return here?
-#endif
     return;
     // Traverse the tree and delete object lists in each non-empty leaf node
     Stack<long> IdxStack;

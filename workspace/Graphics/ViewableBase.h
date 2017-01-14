@@ -115,7 +115,6 @@ public:
     };
     virtual ViewableType GetViewableType() const = 0;
 
-//#ifdef GAMMA_PHYSICS
     void SetGammaReject()
     {
         m_GammaReject = true;
@@ -124,7 +123,6 @@ public:
     {
         return m_GammaReject;
     };
-//#endif
 
 
 protected:
@@ -140,10 +138,7 @@ protected:
         const VectorR3& viewPos, const VectorR3& viewDir, double maxDistance,
         double *intersectDistance, VisiblePoint& returnedPoint ) const = 0;
 
-//#ifdef GAMMA_PHYSICS
     bool m_GammaReject;
-//#endif
-
 
 };
 

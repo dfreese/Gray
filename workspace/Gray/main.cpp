@@ -22,11 +22,9 @@
 #include "../OpenGLRender/GlutRenderer.h"
 #include "../DataStructs/KdTree.h"
 #include "../Gray/SceneDescription.h"
-#ifdef GAMMA_PHYSICS
 #include "../Gray/GammaRayTrace.h"
 #include "../Gray/LoadMaterials.h"
 #include "../Random/mt19937.h"
-#endif
 #include "../Gray/LoadDetector.h"
 
 void RenderWithGlut(void);
@@ -52,8 +50,6 @@ GlutRenderer* glutDraw = 0;
 RayTraceStats MyStats;
 // **********************************************
 
-#ifdef GAMMA_PHYSICS
-
 //extern void sgenrand(unsigned long seed);
 
 GammaRayTrace Gray;
@@ -62,7 +58,6 @@ const char * FileNameOutput = "default.dat";
 unsigned long GraySeed = 0;
 bool BatchMode = false;
 
-#endif
 
 // Window size and pixel array variables
 bool WindowMinimized = false;
@@ -74,9 +69,7 @@ bool RayTraceMode = false;		// Set true for RayTraciing,  false for rendering wi
 // Rendering with OpenGL does not support all features, esp., texture mapping
 // Next two variables can be used to keep from re-raytracing a window.
 
-#ifdef GAMMA_PHYSICS
 bool GammaRayTraceMode = false;
-#endif
 
 long NumScanLinesRayTraced = -1;
 long WidthRayTraced = -1;
@@ -95,11 +88,9 @@ static void RenderScene(void)
     }
     if ( RayTraceMode ) {
         RayTraceView();
-#ifdef GAMMA_PHYSICS
     } else if ( GammaRayTraceMode ) {
         Gray.GRayTraceSources();
         GammaRayTraceMode = false;
-#endif
     } 	else {
         GlutRenderer newGlutter;
         newGlutter.RenderScene(*ActiveScene);
@@ -205,13 +196,11 @@ bool potHitSeekIntersection( long objectNum, double* retStopDistance )
     double thisHitDistance;
     bool hitFlag;
 
-#ifdef GAMMA_PHYSICS
     if (GammaRayTraceMode) {
         if (ActiveScene->GetViewable(objectNum).GammaReject()) {
             return false;
         }
     }
-#endif
 
     if ( objectNum == kdTraverseAvoid ) {
         hitFlag = ActiveScene->GetViewable(objectNum).FindIntersection(kdStartPosAvoid, kdTraverseDir,
@@ -470,7 +459,6 @@ void myKeyboardFunc( unsigned char key, int x, int y )
             glutPostRedisplay();
         }
         break;
-#ifdef GAMMA_PHYSICS
     case 'P':
     case 'p':
         fprintf(stdout,"Starting physics simulation\n");
@@ -482,7 +470,6 @@ void myKeyboardFunc( unsigned char key, int x, int y )
         fprintf(stdout,"Quit.\n");
         exit(0);
         break;
-#endif
     }
 }
 
@@ -548,7 +535,6 @@ void myMouseUpDownFunc( int button, int state, int x, int y )
 void InitializeSceneGeometry()
 {
     // Define the lights, materials, textures and viewable objects.
-#ifdef GAMMA_PHYSICS
     LoadPhysicsFiles( FileScene );
     LoadDetector myLoader;
     if (!myLoader.Load(FileNameDetector, FileScene, Gray)) {
@@ -559,7 +545,6 @@ void InitializeSceneGeometry()
         sgenrand(GraySeed);
         printf("Seeding Gray: %ld\n",GraySeed);
     }
-#endif
     ActiveScene = &FileScene;
 
     pixels = new PixelArray(10,10);		// Array of pixels
@@ -569,8 +554,6 @@ void InitializeSceneGeometry()
     // Build the kd-Tree.
     myBuildKdTree();
 }
-
-#ifdef GAMMA_PHYSICS
 
 const char * switch_batch = "-b";
 const char * switch_seed = "-seed";
@@ -604,7 +587,6 @@ bool GrayProcessCommandLine(int argc, char **argv)
     }
     return true;
 }
-#endif
 
 //**********************************************************
 const char * GRAY_VERSION = "BETA_2_010";
@@ -618,9 +600,6 @@ const char * GRAY_VERSION = "BETA_2_010";
 //**********************************************************
 int main( int argc, char** argv )
 {
-
-
-#ifdef GAMMA_PHYSICS
     fprintf( stdout, "\nGRAY VERSION: ");
     fprintf( stdout, "%s", GRAY_VERSION);
     fprintf( stdout, "\n\n");
@@ -633,16 +612,13 @@ int main( int argc, char** argv )
         exit(0);
     }
 
-#endif
     fprintf( stdout, "Press 'g' or space bar to start ray tracing. (And then wait!)\n" );
     fprintf( stdout, "Press 'G' to return to OpenGL render mode.\n" );
     fprintf( stdout, "Arrow keys change view direction (and use OpenGL).\n" );
     fprintf( stdout, "Home/End keys alter view distance --- resizing keeps it same view size.\n");
 
-#ifdef GAMMA_PHYSICS
     fprintf( stdout, "Press 'P' or 'p' to ray trace Physics\n");
     fprintf( stdout, "Press 'Q' or 'q' to Quit\n");
-#endif
 
     glutInit(&argc, argv);
     // we're going to animate it, so double buffer

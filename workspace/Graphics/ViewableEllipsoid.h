@@ -169,12 +169,10 @@ public:
     {
         return (uvProjectionType==1);
     }
-#ifdef GAMMA_PHYSICS
     int GetDetectorId() const
     {
         return -1;
     }
-#endif
 
 protected:
 

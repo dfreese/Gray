@@ -39,14 +39,10 @@ SceneDescription::~SceneDescription()
         ViewableBase * viewable = ViewableArray.Pop();
         delete viewable;
     }
-
-#ifdef GAMMA_PHYSICS
     while (!GammaStatsArray.IsEmpty()) {
         GammaStats * stats = GammaStatsArray.Pop();
         delete stats;
     }
-#endif
-
 }
 
 // Once you have set up an initial CameraView, you can call RegisterCameraView.
@@ -115,5 +111,3 @@ void SceneDescription::DeleteAllGammaStats()
         delete GammaStatsArray.Pop();
     }
 }
-
-

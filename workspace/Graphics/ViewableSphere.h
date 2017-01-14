@@ -140,12 +140,10 @@ public:
     void CalcUV( const VectorR3& posVec, VectorR2* returnedUV ) const;
     static void CalcUV( double x, double y, double z, int uvtype,
                         VectorR2* returnedUV );
-#ifdef GAMMA_PHYSICS
     int GetDetectorId() const
     {
         return -1;
     }
-#endif
 
 protected:
 

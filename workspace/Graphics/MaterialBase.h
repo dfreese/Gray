@@ -27,10 +27,7 @@
 
 #include "assert.h"
 #include "../VrMath/LinearR4.h"
-
-#ifdef GAMMA_PHYSICS
 #include "../Physics/GammaStats.h"
-#endif
 
 class VisiblePoint;
 class Light;
@@ -121,16 +118,13 @@ public:
 
     virtual MaterialBase* Clone() const = 0;
 
-#ifdef GAMMA_PHYSICS
     void AllocateStats(void);
     char * name;
     GammaStats * GammaProp;
     void SetName(char * n);
-#endif
 
 };
 
-#ifdef GAMMA_PHYSICS
 inline void MaterialBase::SetName(char * n)
 {
     name = n;
@@ -142,7 +136,6 @@ inline void MaterialBase::AllocateStats()
     GammaStats * stats = new GammaStats();
     GammaProp = stats;
 }
-#endif
 
 
 inline void MaterialBase::SetColorAmbient(double r, double g, double b )

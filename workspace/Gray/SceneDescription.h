@@ -17,10 +17,7 @@
 #include "../Graphics/TextureSequence.h"
 #include "../Graphics/BumpMapFunction.h"
 #include "../Graphics/ViewableBase.h"
-
-#ifdef GAMMA_PHYSICS
 #include "../Physics/GammaStats.h"
-#endif
 
 class SceneDescription
 {
@@ -222,7 +219,6 @@ public:
     void DeleteAllTextures();
     void DeleteAllMaterials();
     void DeleteAllViewables();
-#ifdef GAMMA_PHYSICS
     int NumGammaStats() const
     {
         return GammaStatsArray.SizeUsed();
@@ -237,7 +233,6 @@ public:
         return GammaStatsArray;
     }
     void DeleteAllGammaStats();
-#endif
     void DeleteAll();
 
 
@@ -260,9 +255,7 @@ private:
 
     Array<ViewableBase*> ViewableArray;
 
-#ifdef GAMMA_PHYSICS
     Array<GammaStats*> GammaStatsArray;
-#endif
 };
 
 inline SceneDescription::SceneDescription()
@@ -466,14 +459,12 @@ inline BumpMapFunction* SceneDescription::NewBumpMapFunction()
     return newTex;
 }
 
-#ifdef GAMMA_PHYSICS
 inline int SceneDescription::AddGammaStats( GammaStats* newGammaStats )
 {
     int index = (int)GammaStatsArray.SizeUsed();
     GammaStatsArray.Push( newGammaStats );
     return index;
 }
-#endif
 
 inline void SceneDescription::DeleteAll()
 {
@@ -481,9 +472,7 @@ inline void SceneDescription::DeleteAll()
     DeleteAllTextures();
     DeleteAllMaterials();
     DeleteAllViewables();
-#ifdef GAMMA_PHYSICS
     DeleteAllGammaStats();
-#endif
 }
 
 #endif // SCENE_DESCRIPTION_H

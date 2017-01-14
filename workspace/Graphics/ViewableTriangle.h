@@ -92,7 +92,6 @@ public:
         return Normal;
     }
 
-#ifdef GAMMA_PHYSICS
     unsigned GetDetectorId() const
     {
         return detector_id;
@@ -109,7 +108,6 @@ public:
     {
         return src_id;
     }
-#endif
 
 protected:
     VectorR3 VertexA;
@@ -126,18 +124,14 @@ protected:
 
     void PreCalcInfo();				// Precalculations for intersection testing speed
 
-#ifdef GAMMA_PHYSICS
     unsigned detector_id;
     unsigned char src_id;
-#endif
 
 };
 
 inline ViewableTriangle::ViewableTriangle()
 {
-#ifdef GAMMA_PHYSICS
     src_id = 0;
-#endif
     FrontMat = &Material::Default;
     BackMat = &Material::Default;
 }
