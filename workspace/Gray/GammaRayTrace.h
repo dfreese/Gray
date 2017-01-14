@@ -5,11 +5,7 @@
 #include "../Physics/Interaction.h"
 #include "../Gray/MaterialStack.h"
 #include "../Physics/Photon.h"
-#include "../Physics/Positron.h"
-#include "../Physics/GammaDecay.h"
 #include "../Physics/InteractionList.h"
-#include "../Sources/SphereSource.h"
-#include "../Sources/RectSource.h"
 #include "../Sources/SourceList.h"
 #include "../Output/Output.h"
 

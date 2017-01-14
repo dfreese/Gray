@@ -21,6 +21,8 @@
 #include "../Sources/CylinderSource.h"
 #include "../Sources/EllipsoidSource.h"
 #include "../Sources/EllipticCylinderSource.h"
+#include "../Sources/RectSource.h"
+#include "../Sources/SphereSource.h"
 #include "../Sources/VectorSource.h"
 #include "../Sources/VoxelSource.h"
 
