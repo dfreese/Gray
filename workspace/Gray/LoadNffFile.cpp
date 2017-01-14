@@ -30,7 +30,7 @@
 #include "../Graphics/ViewableTriangle.h"
 
 const int numCommands = 14;
-char* nffCommandList[numCommands] = {
+const char * nffCommandList[numCommands] = {
     "v",	// View position, direction and field
     "b",	// Background color
     "l",	// Positional light
@@ -484,4 +484,3 @@ void NffFileLoader::PrintCmdNotSupportedErrors( FILE* outstream )
         fprintf( outstream, ".\n" );
     }
 }
-

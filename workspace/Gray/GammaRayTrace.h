@@ -1,6 +1,7 @@
 #ifndef GAMMARAYTRACE_H
 #define GAMMARAYTRACE_H
 
+#include <string>
 #include "../Physics/Interaction.h"
 #include "../Gray/MaterialStack.h"
 #include "../Physics/Photon.h"
@@ -27,7 +28,7 @@ public:
     void GRayTraceSources(void);
     void AddSource(Source & s);
     void SetDefaultMaterial(MaterialBase * mat);
-    void SetFileNameOutput(char * name);
+    void SetFileNameOutput(const std::string & name);
     void SetSimulationTime(double time)
     {
         simulationTime = time;
@@ -43,7 +44,7 @@ private:
     VectorR3 positionCenter;
 
     MaterialBase * defaultMat;
-    char * FileNameOutputFile;
+    std::string FileNameOutputFile;
     double simulationTime;
     bool logPositron;
     bool logAll;

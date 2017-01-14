@@ -859,7 +859,7 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
         break;
         case 41: { // set coincidence processor file
             char string[256];
-            int scanCode = sscanf(args, "%s", &string);
+            int scanCode = sscanf(args, "%s", string);
             if (scanCode ==1) {
                 cout << "Debug: set new coincidence processor: " << string << endl;
                 Gray.output.c.SetLogFile(string);
@@ -964,7 +964,7 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
         break;
         case 49: { // set singles isotope
             char string[256];
-            int scanCode = sscanf(args, "%s", &string);
+            int scanCode = sscanf(args, "%s", string);
             if (scanCode ==1) {
                 cout << "Debug: set isotope: " << string << endl;
                 Gray.sources.SetCurIsotope(string);

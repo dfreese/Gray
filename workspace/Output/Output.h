@@ -26,7 +26,7 @@ class Output
 public:
     Output();
     ~Output();
-    bool SetLogfile(char * name);
+    bool SetLogfile(const std::string & name);
     void LogNuclearDecay(NuclearDecay *p);
     void SetLogAll(bool val);
     void LogCompton(const Photon &p, double deposit, const MaterialBase & mat);
@@ -79,4 +79,3 @@ private:
 };
 
 #endif /*OUTPUT_H_*/
-

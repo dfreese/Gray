@@ -94,8 +94,8 @@ RayTraceStats MyStats;
 //extern void sgenrand(unsigned long seed);
 
 GammaRayTrace Gray;
-char * FileNameDetector = "default.dff";
-char * FileNameOutput = "default.dat";
+const char * FileNameDetector = "default.dff";
+const char * FileNameOutput = "default.dat";
 unsigned long GraySeed = 0;
 bool BatchMode = false;
 
@@ -681,7 +681,7 @@ int main( int argc, char** argv )
 
 #ifdef GAMMA_PHYSICS
     fprintf( stdout, "\nGRAY VERSION: ");
-    fprintf( stdout, GRAY_VERSION);
+    fprintf( stdout, "%s", GRAY_VERSION);
     fprintf( stdout, "\n\n");
     GrayProcessCommandLine(argc,argv);
 

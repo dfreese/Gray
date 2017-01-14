@@ -26,7 +26,7 @@
 #include "../Graphics/ViewableTriangle.h"
 
 const int numCommands = 4;
-char* commandList[numCommands] = {
+const char * commandList[numCommands] = {
     "v",
     "vt",
     "f",
@@ -455,4 +455,3 @@ void ObjFileLoader::PrintCmdNotSupportedErrors( FILE* outstream )
         fprintf( outstream, ".\n" );
     }
 }
-

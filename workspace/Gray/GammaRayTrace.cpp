@@ -14,7 +14,7 @@
 GammaRayTrace::GammaRayTrace()
 {
     defaultMat = NULL;
-    FileNameOutputFile = NULL;
+    FileNameOutputFile = "";
 
     // Default simulation time is 1 second
     simulationTime = 1.0;
@@ -30,7 +30,7 @@ GammaRayTrace::~GammaRayTrace()
 }
 
 
-void GammaRayTrace::SetFileNameOutput(char * name)
+void GammaRayTrace::SetFileNameOutput(const std::string & name)
 {
     FileNameOutputFile = name;
 }

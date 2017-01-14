@@ -243,9 +243,9 @@ void Output::LogErrorBinary(const Photon &p, int t, int detmaterial )
 
 
 
-bool Output::SetLogfile(char * name)
+bool Output::SetLogfile(const std::string & name)
 {
-    log_file.open(name, ios::out);
+    log_file.open(name.c_str(), ios::out);
     if (log_file.fail()) {
         cerr << "ERROR: cannot open ";
         cerr << name;
