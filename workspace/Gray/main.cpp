@@ -1,17 +1,5 @@
 #include <string.h>
 
-// *******************************************************************************
-// One of the following three lines should un-commented to select the way
-//		the scene is loaded into the SceneDescription.
-// See the routine InitializeSceneGeometry() below in this file to see how
-//      the different MODE values affect the creation of the scene.
-// *******************************************************************************
-//#define MODE 1  /* Use this line to manually set the scene in RayTraceSetup.cpp */
-//#define MODE 2  /* Use this line to load the scene data from an .obj file. */
-//#define MODE 3  /* Use this line to load the scene data from a .nff file. */
-#define MODE 4 /* Use this line to load detector data from .dff file */
-
-
 // If you do not have GLUT installed, you can use the basic GL routines instead.
 //   For this, include windows.h and GL.gl.h, instead of GL/glut.h
 //#include <windows.h>
@@ -33,10 +21,7 @@
 #include "../VrMath/MathMisc.h"
 #include "../OpenGLRender/GlutRenderer.h"
 #include "../DataStructs/KdTree.h"
-#include "../Gray/LoadNffFile.h"
-#include "../Gray/LoadObjFile.h"
 #include "../Gray/SceneDescription.h"
-#include "RayTraceSetup.h"
 #ifdef GAMMA_PHYSICS
 #include "../Gray/GammaRayTrace.h"
 #include "../Gray/LoadMaterials.h"
@@ -563,27 +548,6 @@ void myMouseUpDownFunc( int button, int state, int x, int y )
 void InitializeSceneGeometry()
 {
     // Define the lights, materials, textures and viewable objects.
-
-#if MODE==1
-    SetUpScene2();
-    ActiveScene = &TheScene2;
-#elif MODE==2
-    LoadObjFile( "f15.obj", FileScene );
-    ActiveScene = &FileScene;
-    // The next lines specify scene attributes not given in the obj file.
-    ActiveScene->SetBackGroundColor( 0.0, 0.0, 0.0 );
-    ActiveScene->SetGlobalAmbientLight( 0.6, 0.6, 0.2 );
-    CameraView& theCV = ActiveScene->GetCameraView();
-    theCV.SetPosition( 0.0, 0.0, 40.0 );
-    theCV.SetScreenDistance( 40.0 );
-    theCV.SetScreenDimensions( 20.0, 20.0 );
-    SetUpLights( *ActiveScene );
-    // You may add more scene elements here if you wish
-#elif MODE ==3
-    LoadNffFile( "balls_2_1.nff", FileScene );
-    ActiveScene = &FileScene;
-    // You may add more scene elements here if you wish
-#else //MODE ==4
 #ifdef GAMMA_PHYSICS
     LoadPhysicsFiles( FileScene );
     LoadDetector myLoader;
@@ -597,7 +561,6 @@ void InitializeSceneGeometry()
     }
 #endif
     ActiveScene = &FileScene;
-#endif
 
     pixels = new PixelArray(10,10);		// Array of pixels
     ActiveScene->GetCameraView().SetScreenPixelSize( *pixels );
