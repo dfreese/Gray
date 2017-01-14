@@ -1,5 +1,4 @@
 #include "EllipsoidSource.h"
-#include "../Gray/LoadDetector.h"
 
 EllipsoidSource::EllipsoidSource()
 {

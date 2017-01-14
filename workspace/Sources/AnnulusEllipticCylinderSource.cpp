@@ -1,5 +1,4 @@
 #include "AnnulusEllipticCylinderSource.h"
-#include "../Gray/LoadDetector.h"
 
 AnnulusEllipticCylinderSource::AnnulusEllipticCylinderSource()
 {

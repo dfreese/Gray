@@ -1,36 +1,14 @@
 #ifndef LOAD_DETECTOR_H_
 #define LOAD_DETECTOR_H_
 
-#include "../DataStructs/Array.h"
-#include "SceneDescription.h"
-#include "../VrMath/LinearR2.h"
 #include "../VrMath/LinearR3.h"
-#include "../VrMath/LinearR4.h"
-#include "../Graphics/TransformViewable.h"
-#include "../Graphics/Material.h"
 #include "../DataStructs/Stack.h"
 #include "../Gray/GammaRayTrace.h"
-#include "../Graphics/ViewableTriangle.h"
-#include "../Graphics/CameraView.h"
-#include "../Graphics/ViewableSphere.h"
-#include "../Graphics/ViewableEllipsoid.h"
-#include "../Sources/SphereSource.h"
-#include "../Sources/VoxelSource.h"
-#include "../Sources/RectSource.h"
-#include "../Sources/CylinderSource.h"
-#include "../Sources/AnnulusCylinderSource.h"
-#include "../Sources/BeamPointSource.h"
-#include "../Sources/VectorSource.h"
-#include "../Sources/EllipsoidSource.h"
-#include "../Sources/EllipticCylinderSource.h"
-#include "../Sources/AnnulusEllipticCylinderSource.h"
+#include "../Gray/SceneDescription.h"
 
-
-//class ObjFileLoader;
-//class CameraView;
+class Material;
+class VectorSource;
 #define MAX_INCLUDE 256
-
-bool LoadDffFile( const char* filename, SceneDescription& theScene, GammaRayTrace &Gray );
 
 class LoadDetector
 {
@@ -54,8 +32,6 @@ private:
     bool ProcessFaceDFF( int numVerts, const Material* mat, FILE* infile, VectorSource * s, bool parse_VectorSource, unsigned id );
     RigidMapR3 &curMatrix();
     Stack<RigidMapR3*> MatrixStack;
-    Material defaultBack;
-    Material defaultSphere;
     double polygonScale;
     double actScale;
 

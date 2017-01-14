@@ -23,12 +23,13 @@
 #include <limits.h>
 #include <vector>
 
-#include "../Graphics/Material.h"
 #include "../VrMath/MathMisc.h"
 #include "../VrMath/LinearR3.h"
 #include "../Physics/Isotope.h"
+#include "../Physics/Photon.h"
 
 using namespace std;
+class MaterialBase;
 
 class Source
 {

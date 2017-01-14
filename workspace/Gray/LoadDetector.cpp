@@ -14,6 +14,14 @@
 #include "../Graphics/ViewableCylinder.h"
 #include "../Graphics/ViewableParallelepiped.h"
 #include "../Graphics/ViewableBezierSet.h"
+#include "../Sources/AnnulusCylinderSource.h"
+#include "../Sources/AnnulusEllipticCylinderSource.h"
+#include "../Sources/BeamPointSource.h"
+#include "../Sources/CylinderSource.h"
+#include "../Sources/EllipsoidSource.h"
+#include "../Sources/EllipticCylinderSource.h"
+#include "../Sources/VectorSource.h"
+#include "../Sources/VoxelSource.h"
 
 extern void sgenrand(unsigned long seed);
 
@@ -86,13 +94,6 @@ LoadDetector::LoadDetector()
     newMatrix->SetIdentity();
     MatrixStack.Push(newMatrix);
 
-    defaultSphere.SetColorAmbient(0.2, 0.0, 0.0);
-    defaultSphere.SetColorDiffuse(0.6, 0.0, 0.0);
-    defaultSphere.SetColorSpecular(0.0, 0.0, 0.0);
-    defaultSphere.SetColorReflective(0.0, 0.0, 0.0);
-    defaultSphere.AllocateStats();
-    defaultSphere.GammaProp->DisableInteractions();
-
     polygonScale = 1.0;
     actScale = 1.0;
 
@@ -109,12 +110,6 @@ LoadDetector::LoadDetector()
     block_id = 0;
     global_id = -1;
 
-}
-
-LoadDetector myLoader;
-bool LoadDffFile( const char* filename, SceneDescription& theScene, GammaRayTrace &Gray )
-{
-    return myLoader.Load( filename, theScene, Gray );
 }
 
 RigidMapR3& LoadDetector::curMatrix()
@@ -1244,7 +1239,6 @@ void LoadDetector::ProcessDetector( const VectorR3& detCenter, const VectorR3& d
     for (int i = 0; i < 12; i++) {
         vt[i] = new ViewableTriangle();
         vt[i]->SetMaterialFront(curMaterial);
-        //defaultBack.SetColorAmbient( 1.0, 0.0, 0.0 );
         vt[i]->SetMaterialBack(curMaterial);
         vt[i]->SetDetectorId(id);
     }

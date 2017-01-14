@@ -1,5 +1,4 @@
 #include "AnnulusCylinderSource.h"
-#include "../Gray/LoadDetector.h"
 
 AnnulusCylinderSource::AnnulusCylinderSource()
 {

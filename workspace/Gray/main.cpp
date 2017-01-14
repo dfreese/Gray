@@ -608,7 +608,10 @@ void InitializeSceneGeometry()
 #else //MODE ==4
 #ifdef GAMMA_PHYSICS
     LoadPhysicsFiles( FileScene );
-    LoadDffFile( FileNameDetector, FileScene, Gray );
+    LoadDetector myLoader;
+    if (!myLoader.Load(FileNameDetector, FileScene, Gray)) {
+        fprintf(stderr, "Loading file \"%s\" failed\n", FileNameDetector);
+    }
     Gray.SetFileNameOutput(FileNameOutput);
     if (GraySeed != 0) {
         sgenrand(GraySeed);

@@ -1,5 +1,4 @@
 #include "CylinderSource.h"
-#include "../Gray/LoadDetector.h"
 
 CylinderSource::CylinderSource()
 {
