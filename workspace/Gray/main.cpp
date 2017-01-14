@@ -61,7 +61,7 @@
 #include "RayTraceSetup.h"
 #ifdef GAMMA_PHYSICS
 #include "../Gray/GammaRayTrace.h"
-#include "../Physics/LoadMaterials.h"
+#include "../Gray/LoadMaterials.h"
 #include "../Random/mt19937.h"
 #endif
 #include "../Gray/LoadDetector.h"

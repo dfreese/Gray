@@ -2,7 +2,7 @@
 #define GAMMARAYTRACE_H
 
 #include "../Physics/Interaction.h"
-#include "../Physics/MaterialStack.h"
+#include "../Gray/MaterialStack.h"
 #include "../Physics/Photon.h"
 #include "../Physics/Positron.h"
 #include "../Physics/GammaDecay.h"

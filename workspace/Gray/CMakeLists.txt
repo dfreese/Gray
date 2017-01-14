@@ -1,9 +1,11 @@
 add_executable(Gray
     GammaRayTrace.cpp
     LoadDetector.cpp
+    LoadMaterials.cpp
     LoadNffFile.cpp
     LoadObjFile.cpp
     main.cpp
+    MaterialStack.cpp
     RayTraceSetup.cpp
     RayTraceStats.cpp
     SceneDescription.cpp

@@ -10,8 +10,6 @@ add_library(Physics
     Interaction.cpp
     InteractionList.cpp
     Isotope.cpp
-    LoadMaterials.cpp
-    MaterialStack.cpp
     NuclearDecay.cpp
     Photon.cpp
     Positron.cpp
