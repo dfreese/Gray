@@ -1,5 +1,7 @@
 #include "Positron.h"
 
+using namespace std;
+
 Positron::Positron()
 {
     positronRange = false;

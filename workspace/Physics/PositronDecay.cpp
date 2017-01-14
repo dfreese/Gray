@@ -1,6 +1,8 @@
 #include "PositronDecay.h"
 #include <stdio.h>
 
+using namespace std;
+
 const double CONST_ACOL = (0.47 / 180.0) * PI / 2.35482005;
 const double CONST_FWHM_TO_SIGMA = (1.0)/(2.35482005);
 const double CONST_MM_TO_CM = (0.1); // 10 mm per cm

@@ -1,6 +1,8 @@
 /* Beam Isotope */
 #include "Beam.h"
 
+using namespace std;
+
 Beam::Beam()
 {
     /*******************************************************************************

@@ -1,50 +1,9 @@
-/*
- * SimpleNurbs.h
- *
- * Author: Samuel R. Buss
- *
- * Software accompanying the book
- *		3D Computer Graphics: A Mathematical Introduction with OpenGL,
- *		by S. Buss, Cambridge University Press, 2003.
- *
- * Software is "as-is" and carries no warranty.  It may be used without
- *   restriction, but if you modify it, please change the filenames to
- *   prevent confusion between different versions.
- * Bug reports: Sam Buss, sbuss@ucsd.edu.
- * Web page: http://math.ucsd.edu/~sbuss/MathCG
- */
-
 #ifndef CSE167_PHOTON_H
 #define CSE167_PHOTON_H
-
-// Function prototypes
-#include <stdlib.h>
-#include <math.h>
-#include <limits.h>
-#include <vector>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #include "../VrMath/MathMisc.h"
 #include "../VrMath/LinearR3.h"
 
-using namespace std;
 
 #define ENERGY_511 0.510998903;
 enum INTER_TYPE {COMPTON, PHOTOELECTRIC, AUGER, XRAY_ESCAPE, RAYLEIGH, INTERACTION, NO_INTERACTION, ESCAPE_INTERACTION,ERROR};
@@ -58,7 +17,6 @@ class Photon
 public:
     Photon();
     ~Photon();
-    //Photon(double e, const VectorR3 & p, const VectorR3 & d);
     Photon(int set_id, double e, const VectorR3 & p, const VectorR3 & d);
     void SetRed()
     {

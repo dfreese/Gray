@@ -1,5 +1,6 @@
-/* BackBack Isotope */
 #include "BackBack.h"
+
+using namespace std;
 
 BackBack::BackBack()
 {

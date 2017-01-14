@@ -23,6 +23,7 @@
 #include <limits.h>
 #include <vector>
 #include "NuclearDecay.h"
+#include "Photon.h"
 
 using namespace std;
 
