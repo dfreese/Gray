@@ -8,4 +8,4 @@ target_link_libraries(PixelArray Graphics)
 
 find_package(OpenGL REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIR})
-target_link_libraries(PixelArray PUBLIC ${OPENGL_LIBRARIES})
+target_link_libraries(PixelArray ${OPENGL_LIBRARIES})
