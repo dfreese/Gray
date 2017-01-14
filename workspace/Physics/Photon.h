@@ -59,8 +59,7 @@ public:
 
 void inline Photon::SetScatter()
 {
-    //cout << "Scatter:["<<det_id<<"][" << phantom_scatter << "]\n";
-    if ((det_id == -1) ) {
+    if (det_id == -1) {
         phantom_scatter = true;
     }
 }

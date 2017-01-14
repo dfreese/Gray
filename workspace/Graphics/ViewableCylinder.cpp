@@ -228,7 +228,7 @@ bool ViewableCylinder::FindIntersectionNT (
         }
 
         // Calculate u-v coordinates for texture mapping (in range[0,1]x[0,1])
-        double uCoord = atan2( vdotuB, vdotuA )/PI2 + 0.5;
+        double uCoord = atan2( vdotuB, vdotuA )/M_2_PI + 0.5;
         double vCoord;
         if ( IsRightCylinder() ) {
             vCoord = ((v^CenterAxis)+HalfHeight)/Height;
@@ -329,10 +329,10 @@ bool ViewableCylinder::CalcPartials( const VisiblePoint& visPoint,
             retPartialU = visPoint.GetPosition();
             retPartialU -= Center;
             retPartialU *= CenterAxis;
-            retPartialU *= -PI2;		// Convert from [-pi,pi] to [0,1] and fix sign
+            retPartialU *= -M_2_PI;		// Convert from [-pi,pi] to [0,1] and fix sign
         } else {
             double u = visPoint.GetU();
-            double phi = PI2*(u-0.5);		// Adjust from [0,1] to [-pi,pi]
+            double phi = M_2_PI*(u-0.5);		// Adjust from [0,1] to [-pi,pi]
             VectorR3 temp;
             retPartialU = AxisA;
             double radiusAxB = RadiusA*RadiusB;
@@ -391,4 +391,3 @@ bool ViewableCylinder::CalcPartials( const VisiblePoint& visPoint,
 
     return true;
 }
-

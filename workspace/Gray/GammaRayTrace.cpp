@@ -235,7 +235,7 @@ void GammaRayTrace::GRayTraceSources(void)
         //cout << "DEBUG INTERACTIONS\n";
         //cout << interactions;
     }
-    //cout << "=|Done.\n";
+    cout << "=|Done.\n";
 }
 
 void GammaRayTrace::AddSource(Source & s)

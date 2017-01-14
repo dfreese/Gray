@@ -17,16 +17,13 @@
 #include "../Graphics/ViewableBase.h"
 #include "../Graphics/DirectLight.h"
 #include "../Graphics/CameraView.h"
-#include "../VrMath/LinearR3.h"
-#include "../VrMath/LinearR4.h"
-#include "../VrMath/MathMisc.h"
 #include "../OpenGLRender/GlutRenderer.h"
 #include "../DataStructs/KdTree.h"
 #include "../Gray/SceneDescription.h"
 #include "../Gray/GammaRayTrace.h"
 #include "../Gray/LoadMaterials.h"
-#include "../Random/mt19937.h"
-#include "../Gray/LoadDetector.h"
+#include <Random.h>
+#include <LoadDetector.h>
 
 
 void RenderWithGlut(void);
@@ -49,8 +46,6 @@ static void ResizeWindow(GLsizei w, GLsizei h);
 // ***********************Statistics************
 RayTraceStats MyStats;
 // **********************************************
-
-//extern void sgenrand(unsigned long seed);
 
 GammaRayTrace Gray;
 const char * FileNameDetector = "default.dff";
@@ -542,7 +537,7 @@ void InitializeSceneGeometry()
     }
     Gray.SetFileNameOutput(FileNameOutput);
     if (GraySeed != 0) {
-        sgenrand(GraySeed);
+        Random::Seed(GraySeed);
         printf("Seeding Gray: %ld\n",GraySeed);
     }
     ActiveScene = &FileScene;

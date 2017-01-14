@@ -2,7 +2,6 @@
 #define DETECTOR_H
 #include "../VrMath/LinearR3.h"
 #include "../VrMath/LinearR4.h"
-#include "../Random/Random.h"
 #include "../Physics/Photon.h"
 
 class Detector
@@ -20,61 +19,21 @@ public:
     void SetTimeResolution(double r);
     void SetEnergyResolution(double r);
     void SetDecayTime(double t);
-    double GetTimeResolution() const
-    {
-        return time_resolution;
-    };
-    double GetEnergyResolution() const
-    {
-        return energy_resolution;
-    };
-
+    double GetTimeResolution() const;
+    double GetEnergyResolution() const;
     double BlurTime(Photon &p );
     double BlurEnergy(Photon &p );
-
     void IncrementHit();
-    void SetBlock(unsigned int bl)
-    {
-        block = bl;
-    }
-    unsigned long GetHitCount() const
-    {
-        return count;
-    }
+    void SetBlock(unsigned int bl);
+    unsigned long GetHitCount() const;
     double decay_time;
     unsigned idx[3];
     unsigned block;
 
 private:
-    Random rand;
     double time_resolution;	/* specified as ns FWHM */
     double energy_resolution; /* specified as % FWHM */
     unsigned long count;
 };
-
-void inline Detector::SetTimeResolution(double r)
-{
-    time_resolution = r;
-}
-void inline Detector::SetEnergyResolution(double r)
-{
-    energy_resolution = r;
-}
-void inline Detector::SetDecayTime(double t)
-{
-    decay_time = t;
-}
-double inline Detector::BlurTime(Photon & p)
-{
-    return p.time + time_resolution*FWHM_to_sigma* rand.Gaussian();
-}
-double inline Detector::BlurEnergy(Photon & p)
-{
-    return p.energy*(1.0 + energy_resolution * FWHM_to_sigma * rand.Gaussian());
-}
-void inline Detector::IncrementHit()
-{
-    count++;
-}
 
 #endif /*DETECTOR_*/

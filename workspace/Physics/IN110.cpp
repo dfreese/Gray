@@ -1,4 +1,5 @@
 #include "IN110.h"
+#include <Random.h>
 
 IN110::IN110()
 {
@@ -41,7 +42,7 @@ void IN110::Decay(unsigned int photon_number)
 
     // Calculate Physics to determine when and if Positron and Gamma are emitted together
 
-    if (p.Random() < CONST_PROB_IN110m_POS) {
+    if (Random::Uniform() < CONST_PROB_IN110m_POS) {
         AddPhoton(p.blue);
         AddPhoton(p.red);
     }

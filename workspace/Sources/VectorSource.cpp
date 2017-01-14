@@ -1,5 +1,6 @@
 #include "VectorSource.h"
 #include "../Graphics/ViewableTriangle.h"
+#include <Random.h>
 
 using namespace std;
 
@@ -39,9 +40,9 @@ void VectorSource::Decay(unsigned int photon_number)
     delta -= aabb.GetBoxMin();
 
     do {
-        pos.x = aabb.GetBoxMin().x + Random()*delta.x;
-        pos.y = aabb.GetBoxMin().y + Random()*delta.y;
-        pos.z = aabb.GetBoxMin().z + Random()*delta.z;
+        pos.x = aabb.GetBoxMin().x + Random::Uniform()*delta.x;
+        pos.y = aabb.GetBoxMin().y + Random::Uniform()*delta.y;
+        pos.z = aabb.GetBoxMin().z + Random::Uniform()*delta.z;
     } while (RejectionTest(pos));
 
     isotope->SetMaterial(GetMaterial());
@@ -55,7 +56,7 @@ bool VectorSource::RejectionTest(const VectorR3 &pos)
 {
 
     VectorR3 dir;
-    UniformSphere(dir);
+    Random::UniformSphere(dir);
 
     double hitDist;
     VisiblePoint visPoint;
@@ -112,25 +113,6 @@ void VectorSource::SetMax(const VectorR3 &vert)
     if (aabb.GetMaxZ() < vert.z) {
         aabb.GetBoxMax().z = vert.z;
     }
-}
-
-void VectorSource::UniformSphere(VectorR3 & p)
-{
-
-    double cost = 2.0*Random() - 1.0;
-    double phi = PI2*Random();
-    double sint = sqrt(1.0-cost*cost);
-    p.x = sint * cos(phi);
-    p.y = sint * sin(phi);
-    p.z = cost;
-
-    p.Normalize();
-
-}
-
-inline double VectorSource::Random()
-{
-    return genrand();
 }
 
 bool VectorSource::Inside(const VectorR3 & pos) const

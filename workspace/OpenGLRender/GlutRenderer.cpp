@@ -310,7 +310,7 @@ void GlutRenderer::RenderViewableCone( const ViewableCone& object )
     int i;
     CalcConeBasePt( 0.0, baseN, baseD, apex, axisC, axisA, axisB, &basePt1, &normal1 );
     for ( i=0; i<=MeshCount; i++ ) {
-        double theta = (i<MeshCount) ? (PI2*i)/MeshCount : 0.0;
+        double theta = (i<MeshCount) ? (M_2_PI*i)/MeshCount : 0.0;
         CalcConeBasePt( theta, baseN, baseD, apex, axisC, axisA, axisB, &basePt2, &normal2 );
         DrawLadder( basePt1, basePt2, apex, apex, normal1, normal2 );
         basePt1 = basePt2;
@@ -328,7 +328,7 @@ void GlutRenderer::RenderViewableCone( const ViewableCone& object )
     basePt1 = apex - (((apex^baseN)-baseD)/(axisC^baseN))*axisC;	// Central point on base
     PutVertex( basePt1 );
     for (i=0; i<=MeshCount; i++ ) {
-        double theta = (i<MeshCount) ? (PI2*i)/MeshCount : 0.0;
+        double theta = (i<MeshCount) ? (M_2_PI*i)/MeshCount : 0.0;
         CalcConeBasePt( theta, baseN, baseD, apex, axisC, axisA, axisB, &basePt1, &normal1 );
         PutVertex( basePt1 );
     }
@@ -384,7 +384,7 @@ void GlutRenderer::RenderViewableCylinder( const ViewableCylinder& object )
     CalcCylBasePt( 0.0, baseN, baseD, center, axisC, axisA, axisB, topN, topD, &basePt1, &normal1 );
     CalcCylTopPt( 0.0, baseN, baseD, center, axisC, axisA, axisB, topN, topD, &topPt1 );
     for ( i=0; i<=MeshCount; i++ ) {
-        double theta = (i<MeshCount) ? (PI2*i)/MeshCount : 0.0;
+        double theta = (i<MeshCount) ? (M_2_PI*i)/MeshCount : 0.0;
         CalcCylBasePt( theta, baseN, baseD, center, axisC, axisA, axisB, topN, topD, &basePt2, &normal2 );
         CalcCylTopPt( theta, baseN, baseD, center, axisC, axisA, axisB, topN, topD, &topPt2 );
         DrawLadder( basePt1, basePt2, topPt1, topPt2, normal1, normal2 );
@@ -406,7 +406,7 @@ void GlutRenderer::RenderViewableCylinder( const ViewableCylinder& object )
         PutVertex( basePt1 );			// If inside the cylinder, use as center of triangle fan
     }
     for (i=0; i<=MeshCount; i++ ) {
-        double theta = (i<MeshCount) ? (PI2*i)/MeshCount : 0.0;
+        double theta = (i<MeshCount) ? (M_2_PI*i)/MeshCount : 0.0;
         CalcCylBasePt( theta, baseN, baseD, center, axisC, axisA, axisB, topN, topD, &basePt1, &normal1 );
         PutVertex( basePt1 );
     }
@@ -425,7 +425,7 @@ void GlutRenderer::RenderViewableCylinder( const ViewableCylinder& object )
         PutVertex( basePt1 );
     }
     for (i=0; i<=MeshCount; i++ ) {
-        double theta = (i<MeshCount) ? (PI2*i)/MeshCount : 0.0;
+        double theta = (i<MeshCount) ? (M_2_PI*i)/MeshCount : 0.0;
         CalcCylBasePt( theta, baseN, baseD, center, axisC, axisA, axisB, topN, topD, &basePt1, &normal1 ); // Get the normal!
         CalcCylTopPt( theta, baseN, baseD, center, axisC, axisA, axisB, topN, topD, &basePt1 );
         PutVertex( basePt1 );

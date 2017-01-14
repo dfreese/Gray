@@ -32,11 +32,6 @@ public:
 
 protected:
     double acolinearity;
-    void Acolinearity(const VectorR3 & b, VectorR3 &r, double radians);
-
-    // Positron Range functions
-    double getExponential(const double lambda);
-
     // Positron Range variables
     bool positronRange;
     bool positronRangeGaussian;

@@ -1,5 +1,6 @@
 /* ZR89 Isotope */
 #include "ZR89.h"
+#include <Random.h>
 
 ZR89::ZR89()
 {
@@ -42,7 +43,7 @@ void ZR89::Decay(unsigned int photon_number)
 
     // Calculate Physics to determine when and if Positron and Gamma are emitted together
 
-    if (p.Random() < CONST_PROB_ZR89_POS) {
+    if (Random::Uniform() < CONST_PROB_ZR89_POS) {
         AddPhoton(p.blue);
         AddPhoton(p.red);
     }

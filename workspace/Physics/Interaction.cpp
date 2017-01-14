@@ -1,22 +1,17 @@
 #include "Interaction.h"
+#include <math.h>
+#include <Random.h>
 
 Interaction::Interaction() {}
 
 Interaction::~Interaction() {}
-
-// replace with MersienTwister: DONE
-inline double Interaction::Random()
-{
-    return genrand();
-    //return rand()/(double)RAND_MAX;
-}
 
 // determine interaction in along line in material
 bool Interaction::GammaAttenuation(double &dist, double mu)
 {
     bool interaction = false;
 
-    double r = Random();
+    double r = Random::Uniform();
     double int_dis;
 
     if(r > 0.0 ) {
@@ -89,7 +84,7 @@ INTER_TYPE Interaction::GammaInteraction(Photon &photon, double dist, const Mate
 
 INTER_TYPE Interaction::PE(double sigma, double mu, Photon &p, const MaterialBase & mat, InteractionList &l, Output &o)
 {
-    double rand = Random();
+    double rand = Random::Uniform();
     // determine photofraction
     if (rand > sigma/mu) {
         Photon ptmp;
@@ -118,18 +113,18 @@ void Interaction::Klein_Nishina(double dsdom, Photon &p, const MaterialBase & ma
     // Theta is the compton angle
 
     double phi = 0.0;
-    double theta = PI * Random();
+    double theta = M_PI * Random::Uniform();
     double s = dsigma(theta,alpha);
-    double r = Random();
+    double r = Random::Uniform();
 
     while (s / dsdom < r) {
-        theta = PI*Random();
+        theta = M_PI * Random::Uniform();
         s = dsigma(theta,alpha);
-        r = Random();
+        r = Random::Uniform();
     }
 
     // phi is symmetric around a circle of 360 degrees
-    phi = PI2 * Random();
+    phi = M_2_PI * Random::Uniform();
 
     // After collision the photon loses some energy to the electron
     double deposit = p.energy;
@@ -180,22 +175,9 @@ double Interaction::dsigma(double theta, double alpha)
 
     sigma = h * h;
     sigma = sigma * (h + 1./ h - ss * ss);
-    sigma = 2. * PI * ss * sigma;
+    sigma = 2. * M_PI * ss * sigma;
 
     return(sigma);
-}
-
-
-void Interaction::UniformSphere(VectorR3 & p)
-{
-
-    double theta = PI2 * Random();
-    double phi = PI2 * Random();
-    double sinp = sin(phi);
-
-    p.x = sinp * cos(theta);
-    p.y = sinp * sin(theta);
-    p.z = cos(phi);
 }
 
 bool Interaction::XrayEscape(Photon &p, const MaterialBase & mat, InteractionList &l, Output &o)
@@ -206,7 +188,7 @@ bool Interaction::XrayEscape(Photon &p, const MaterialBase & mat, InteractionLis
     double photon_energy = p.energy;
     double * xray_escape = mat.GammaProp->GetXrayEscape();
     double * xray_escape_probability = mat.GammaProp->GetXrayEscapeProb();
-    double rand = Random();
+    double rand = Random::Uniform();
 
     if (num_escape == 0) {
         //cerr << "X-ray excape not defined\n";
@@ -214,7 +196,7 @@ bool Interaction::XrayEscape(Photon &p, const MaterialBase & mat, InteractionLis
     } else if (num_escape == 1) {
         if (photon_energy > xray_escape[0]) {
             // Inner shell interaction
-            if (Random() < mat.GammaProp->GetAugerProb(0)) {
+            if (Random::Uniform() < mat.GammaProp->GetAugerProb(0)) {
                 p.energy = xray_escape[0];
                 return true;
             } else {
@@ -238,7 +220,7 @@ bool Interaction::XrayEscape(Photon &p, const MaterialBase & mat, InteractionLis
                     return false;
                 }
                 // Perform Auger Electron Check
-                if (Random() < mat.GammaProp->GetAugerProb(i)) {
+                if (Random::Uniform() < mat.GammaProp->GetAugerProb(i)) {
                     p.energy = xray_escape[i];
                     return true;
                 } else {

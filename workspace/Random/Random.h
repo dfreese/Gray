@@ -16,34 +16,23 @@
 
 #ifndef RANDOM_H
 #define RANDOM_H
-#include "mt19937.h"
-#include "math.h"
+#include <math.h>
+#include <LinearR3.h>
 #define FWHM_to_sigma ((double)0.644391971)
 
 class Random
 {
 public:
-    double Gaussian();
+    static double Uniform();
+    static double Gaussian();
+    static double Exponential(const double lambda);
+    static void RandomHemiCube(VectorR3 & p);
+    static void Seed(unsigned long seed);
+    static void UniformSphere(VectorR3 & p);
+    static void Acolinearity(const VectorR3 & b, VectorR3 &r, double radians);
 private:
+    static double cache_gauss;
+    static bool cache_valid;
 };
-
-double inline Random::Gaussian()
-{
-
-    // FIXME: Improve performance by reusing y2
-    double x1, x2, w, y1, y2;
-
-    do {
-        x1 = 2.0 * genrand() - 1.0;
-        x2 = 2.0 * genrand() - 1.0;
-        w = x1 * x1 + x2 * x2;
-    } while ( w >= 1.0 );
-
-    w = sqrt( (-2.0 * log( w ) ) / w );
-    y1 = x1 * w;
-    // y2 = x2 * w;
-
-    return y1;
-}
 
 #endif /* RANDOM_H */

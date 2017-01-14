@@ -17,7 +17,7 @@
  * Web page: http://math.ucsd.edu/~sbuss/MathCG
  *
  */
-
+#include <math.h>
 #include "ViewableEllipsoid.h"
 #include "ViewableSphere.h"
 #include "../VrMath/PolynomialRC.h"
@@ -104,8 +104,8 @@ void ViewableEllipsoid::CalcBoundingPlanes( const VectorR3& u, double *minDot, d
 bool ViewableEllipsoid::CalcPartials( const VisiblePoint& visPoint,
                                       VectorR3& retPartialU, VectorR3& retPartialV ) const
 {
-    double theta = PI2*(visPoint.GetU()-0.5);	// Range [-pi,pi]
-    double phi = PI*(visPoint.GetV()-0.5);		// Range [-pi/2,pi/2]
+    double theta = M_2_PI*(visPoint.GetU()-0.5);	// Range [-pi,pi]
+    double phi = M_PI*(visPoint.GetV()-0.5);		// Range [-pi/2,pi/2]
     double sinphi = sin(phi);
     double cosphi = cos(phi);
     double sintheta = sin(theta);

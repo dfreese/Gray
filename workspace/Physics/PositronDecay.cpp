@@ -1,49 +1,16 @@
 #include "PositronDecay.h"
 #include <stdio.h>
+#include <math.h>
+#include <Random.h>
 
 using namespace std;
 
-const double CONST_ACOL = (0.47 / 180.0) * PI / 2.35482005;
+const double CONST_ACOL = (0.47 / 180.0) * M_PI / 2.35482005;
 const double CONST_FWHM_TO_SIGMA = (1.0)/(2.35482005);
 const double CONST_MM_TO_CM = (0.1); // 10 mm per cm
 PositronDecay::PositronDecay()
 {
     Reset();
-}
-
-void PositronDecay::Acolinearity(const VectorR3 & b, VectorR3 &r, double radians)
-{
-    // Theta: angle relative to other photon, mean around 180.0 degrees
-    // Phi: Angle around central axis any of 360 degrees in a circle
-    double phi = PI2*Random();
-    double theta = PI;
-
-    // Generate acolinearity angle away from blue photon
-    RotationMapR3 rotation;
-
-    // Create rotation axis this is perpendicular to Y axis
-    // using cross product and rotate red direction
-    VectorR3 rot_axis = b;
-    VectorR3 UnitY;
-    UnitY.SetUnitY();
-    rot_axis *= UnitY;
-    rot_axis.Normalize();
-
-    double g1 = getGaussian();
-
-    // blur theta by acolinearity
-    theta += (g1 * radians);
-    //theta += radians;
-
-    // rotate red theta degrees away from blue
-    r = b;
-    rotation.Set(rot_axis, theta);
-    rotation.Transform(&r);
-
-    // using original blue axis rotate red around blue by 360 degrees
-    rotation.Set(b,phi);
-    rotation.Transform(&r);
-
 }
 
 void PositronDecay::Reset()
@@ -98,10 +65,10 @@ void PositronDecay::Decay(unsigned int photon_number)
 
     blue.dir.SetUnitZ();
     if (beamDecay == false) {
-        UniformSphere(blue.dir);
-        Acolinearity(blue.dir, red.dir, acolinearity);
+        Random::UniformSphere(blue.dir);
+        Random::Acolinearity(blue.dir, red.dir, acolinearity);
     } else { // if (beamDecay == true) {
-        Acolinearity(beam_axis, blue.dir, beam_angle);
+        Random::Acolinearity(beam_axis, blue.dir, beam_angle);
         red.dir = blue.dir;
         red.dir.Negate();
         beamDecay = false;
@@ -164,19 +131,6 @@ ostream& PositronDecay::print_on( ostream& os ) const
     return os;
 }
 
-double PositronDecay::getExponential(const double lambda)
-{
-    double s;
-
-    if (Random()>0.5) {
-        s = 1.0;
-    } else {
-        s = -1.0;
-    }
-
-    return -1.0 * s * log ( 1.0-Random() ) / lambda;
-}
-
 /*******************************************************************************
  *            18F             11C            13N               15O             *
  *  C    0.519 (0.516)   0.501 (0.488)    0.433 (0.426)     0.263 (0.379)      *
@@ -188,7 +142,7 @@ void PositronDecay::PositronRange(VectorR3 & p)
 {
     // First generate a direction that the photon will be blurred
     VectorR3 positronDir;
-    UniformSphere(positronDir);
+    Random::UniformSphere(positronDir);
     double range = 0.0;
 
     if (positronRangeCusp == true) {
@@ -202,10 +156,10 @@ void PositronDecay::PositronRange(VectorR3 & p)
 
         do {
 
-            if (Random()<cp) 	{
-                range = getExponential(positronK1);
-            } else 			{
-                range = getExponential(positronK2);
+            if (Random::Uniform() < cp) {
+                range = Random::Exponential(positronK1);
+            } else {
+                range = Random::Exponential(positronK2);
             }
 
         } while (range > positronMaxRange); // rejection test positron range
@@ -218,7 +172,7 @@ void PositronDecay::PositronRange(VectorR3 & p)
     } else if (positronRangeGaussian == true) {
         // must return cm, sigma expressed in mm
         do {
-            range = getGaussian() * positronFWHM * CONST_FWHM_TO_SIGMA * CONST_MM_TO_CM;
+            range = Random::Gaussian() * positronFWHM * CONST_FWHM_TO_SIGMA * CONST_MM_TO_CM;
         } while (range > positronMaxRange); // rejection test positron range
     }
 

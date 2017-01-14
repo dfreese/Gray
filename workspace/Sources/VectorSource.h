@@ -1,10 +1,9 @@
 #ifndef VECTORSOURCE_H_
 #define VECTORSOURCE_H_
 
-#include "Source.h"
-#include "../VrMath/LinearR3.h"
-#include "../VrMath/Aabb.h"
-#include "../Random/mt19937.h"
+#include <Source.h>
+#include <LinearR3.h>
+#include <Aabb.h>
 
 class VectorSource : public Source
 {
@@ -28,8 +27,6 @@ public:
 private:
     AABB aabb;
     bool RejectionTest(const VectorR3 &pos);
-    void UniformSphere(VectorR3 & p);
-    double Random();
 };
 
 #endif /*VECTORSOURCE_H_*/

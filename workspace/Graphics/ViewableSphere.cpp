@@ -185,7 +185,7 @@ bool ViewableSphere::CalcPartials( const VisiblePoint& visPoint,
     retPartialV -= Center;
     retPartialU = retPartialV;
     retPartialU *= AxisC;			// Magnitude = R sin(phi).
-    retPartialU *= -PI2;			// Adjust for [0,1] domain instead of [-pi,pi]
+    retPartialU *= -M_2_PI;			// Adjust for [0,1] domain instead of [-pi,pi]
 
     retPartialV *= retPartialU;		// Pointing in right direction, magnitude 2 pi R^2 sin(phi)
     // Sign and magnitude adjusted below.
@@ -200,7 +200,7 @@ bool ViewableSphere::CalcPartials( const VisiblePoint& visPoint,
             retPartialV = AxisB;
             return false;
         }
-        retPartialV *= (PI*Radius/h);  // Convert to domain [0,1] instead of [-pi/2,pi/2].
+        retPartialV *= (M_PI*Radius/h);  // Convert to domain [0,1] instead of [-pi/2,pi/2].
         // Compensate for sign and R^2 magnitude.
         break;
 
@@ -211,7 +211,7 @@ bool ViewableSphere::CalcPartials( const VisiblePoint& visPoint,
             retPartialV = AxisB;
             return false;
         }
-        retPartialV *= PI*Radius/h;			// Adjust sign and magnitude
+        retPartialV *= M_PI*Radius/h;			// Adjust sign and magnitude
         break;
 
     }

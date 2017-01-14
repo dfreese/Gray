@@ -241,16 +241,16 @@ bool ViewableTorus::CalcPartials( const VisiblePoint& visPoint,
     temp = Center;
     temp -= visPoint.GetPosition();
     temp *= AxisC;				// Cross product
-    temp *= PI2;				// Times 2*Pi to convert from [0,1] to [-pi,pi]
+    temp *= M_2_PI;				// Times 2*Pi to convert from [0,1] to [-pi,pi]
     retPartialU = temp;
 
-    double theta = PI2*(visPoint.GetU()-0.5);
-    double phi = PI2*(visPoint.GetV()-0.5);
+    double theta = M_2_PI * (visPoint.GetU() - 0.5);
+    double phi = M_2_PI * (visPoint.GetV() - 0.5);
     double sinphi = sin(phi);
     double cosphi = cos(phi);
     double sintheta = sin(theta);
     double costheta = cos(theta);
-    double pir = PI*MinorRadius;
+    double pir = M_PI * MinorRadius;
     retPartialV = AxisA;
     retPartialV *= -pir*sinphi*costheta;
     temp = AxisB;

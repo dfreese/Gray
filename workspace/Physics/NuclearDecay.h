@@ -44,12 +44,6 @@ protected:
     void BeamCone();
 
     VectorR3 beam_axis;
-    void RandomHemiCube(VectorR3 & p);
-    void Gaussian();
-    double getGaussian();
-    void UniformSphere(VectorR3 & p);
-    bool gaussAccess;
-    double g1, g2;
 
     MaterialBase * material;
 

@@ -1,5 +1,6 @@
 #include "Detector.h"
 #include <stdio.h>
+#include <Random.h>
 
 Detector::Detector()
 {
@@ -38,6 +39,50 @@ void Detector::Init(unsigned id, const VectorR3 & p, const VectorR3 &s, const Ri
     idx[1] = y;
     idx[2] = z;
     block = bl;
+}
+
+void Detector::SetTimeResolution(double r) {
+    time_resolution = r;
+}
+void Detector::SetEnergyResolution(double r)
+{
+    energy_resolution = r;
+}
+void Detector::SetDecayTime(double t)
+{
+    decay_time = t;
+}
+double Detector::GetTimeResolution() const
+{
+    return time_resolution;
+};
+double Detector::GetEnergyResolution() const
+{
+    return energy_resolution;
+};
+
+void Detector::SetBlock(unsigned int bl)
+{
+    block = bl;
+}
+unsigned long Detector::GetHitCount() const
+{
+    return count;
+}
+
+double Detector::BlurTime(Photon & p)
+{
+    return p.time + time_resolution * FWHM_to_sigma * Random::Gaussian();
+}
+
+double Detector::BlurEnergy(Photon & p)
+{
+    return p.energy * (1.0 + energy_resolution * FWHM_to_sigma * Random::Gaussian());
+}
+
+void Detector::IncrementHit()
+{
+    count++;
 }
 
 ostream& operator<< ( ostream& os, const Detector& d )

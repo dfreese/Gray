@@ -379,7 +379,7 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
             if (scanCode != 1) {
                 parseErrorOccurred = true;
             }
-            fovy *= PI/180.0;
+            fovy *= M_PI / 180.0;
             break;
         case 8: // hither
             scanCode = sscanf( args, "%lf", &hither );
@@ -447,7 +447,7 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
             if (scanCode != 4) {
                 break;
             }
-            ApplyRotation(axis, degree * (PI/180.0) );
+            ApplyRotation(axis, degree * (M_PI/180.0) );
         }
         break;
         case 16: {

@@ -8,3 +8,5 @@ add_library(Output
 )
 
 target_include_directories(Output PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+target_link_libraries(Output Random)

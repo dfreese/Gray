@@ -3,9 +3,6 @@
 
 #include <iostream>
 #include <fstream>
-//#include <iostream.h>  // I/O
-//#include <fstream.h>   // file I/O
-
 #include "../Graphics/MaterialBase.h"
 
 #include "Photon.h"
@@ -30,11 +27,9 @@ public:
     bool GammaAttenuation(double &dist, double u_attentuation);
     INTER_TYPE PE(double sigma, double mu, Photon &p, const MaterialBase & mat, InteractionList &l, Output &o);
     void Klein_Nishina(double dsdom, Photon &p, const MaterialBase & mat, InteractionList &l, Output &o);
-    double Random();
     double dsigma(double phi, double alpha);
 private:
     bool XrayEscape(Photon &p, const MaterialBase & mat, InteractionList &l, Output &o);
-    void UniformSphere(VectorR3 & p);
     VectorR3 comp_pos;
 };
 
