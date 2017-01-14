@@ -109,7 +109,7 @@ public:
 
     bool IsFull() const
     {
-        return SizeUsed()==AllocSize;
+        return(SizeUsed() == AllocSize());
     }
     long SizeAvailable() const
     {
