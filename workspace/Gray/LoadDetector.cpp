@@ -27,7 +27,7 @@
 extern void sgenrand(unsigned long seed);
 
 const int numCommands = 59;
-char* dffCommandList[numCommands] = {
+const char * dffCommandList[numCommands] = {
     "p",		// 0 Polygon patches
     "m",		// 1 Material index
     "color",	// 2 Color and reflection and transmission
@@ -648,7 +648,7 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
         break;
         case 26: {
             char string[256];
-            int scanCode = sscanf(args, "%s", &string);
+            int scanCode = sscanf(args, "%s", string);
             if (scanCode ==1) {
                 Gray.SetLogPositron(true);
             } else {
@@ -714,7 +714,7 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
         break;
         case 30: { // log_all true/false logs all interactions
             char string[256];
-            int scanCode = sscanf(args, "%s", &string);
+            int scanCode = sscanf(args, "%s", string);
             if (scanCode ==1) {
                 Gray.SetLogAll(true);
             } else {
@@ -725,7 +725,7 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
         break;
         case 31: { // Set binary file io
             char string[256];
-            int scanCode = sscanf(args, "%s", &string);
+            int scanCode = sscanf(args, "%s", string);
             if (scanCode ==1) {
                 Gray.output.SetBinary(true);
             } else {
@@ -736,7 +736,7 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
         break;
         case 32: { // Set spectial detector binning TODO: implement binning
             char string[256];
-            int scanCode = sscanf(args, "%s", &string);
+            int scanCode = sscanf(args, "%s", string);
             if (scanCode ==1) {
                 Gray.output.SetBinning(true);
                 Gray.output.c.SetBinning(true);
@@ -767,7 +767,7 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
         break;
         case 34: { // End Vector Source
             char string[256];
-            int scanCode = sscanf(args, "%s", &string);
+            int scanCode = sscanf(args, "%s", string);
             if ((scanCode ==1) && (curVectorSource != NULL)) {
                 Gray.AddSource(*curVectorSource);
                 cout << "Ending Vector Source:\n";
@@ -786,7 +786,7 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
         break;
         case 35: { // Log Detector Id
             char string[256];
-            int scanCode = sscanf(args, "%s", &string);
+            int scanCode = sscanf(args, "%s", string);
             if (scanCode ==1) {
                 Gray.output.SetLogDetId(true);
             } else {
@@ -797,7 +797,7 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
         break;
         case 36: { // Log Detector Id
             char string[256];
-            int scanCode = sscanf(args, "%s", &string);
+            int scanCode = sscanf(args, "%s", string);
             if (scanCode ==1) {
                 Gray.output.SetLogDetCoord(true);
             } else {
@@ -808,7 +808,7 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
         break;
         case 37: { // Save detector
             char string[256];
-            int scanCode = sscanf(args, "%s", &string);
+            int scanCode = sscanf(args, "%s", string);
             if (scanCode ==1) {
                 ofstream det_file;
                 det_file.open(string);
@@ -835,7 +835,7 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
         break;
         case 39: { // set coincidence filename
             char string[256];
-            int scanCode = sscanf(args, "%s", &string);
+            int scanCode = sscanf(args, "%s", string);
             if (scanCode ==1) {
                 cout << "Debug: set coincidence: " << string << endl;
                 Gray.output.eb.SetCoincidence(string);
@@ -847,7 +847,7 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
         break;
         case 40: { // set singles filename
             char string[256];
-            int scanCode = sscanf(args, "%s", &string);
+            int scanCode = sscanf(args, "%s", string);
             if (scanCode ==1) {
                 cout << "Debug: set singles: " << string << endl;
                 Gray.output.eb.SetSingles(string);
@@ -982,7 +982,7 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
             VectorR3 voxelsize;
             double activity;
             int scanCode = sscanf(args, "%s %d %d %d %lf %lf %lf %lf",
-                                  &string,
+                                  string,
                                   &dims[0],
                                   &dims[1],
                                   &dims[2],
@@ -1005,7 +1005,7 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
         break;
         case 51: { // include a dff file into current one
             char string[256];
-            int scanCode = sscanf(args, "%s", &string);
+            int scanCode = sscanf(args, "%s", string);
             if (scanCode ==1) {
                 includeFile[++include_count] = fopen(string,"r");
                 if (!includeFile[include_count]) {
