@@ -44,8 +44,6 @@ void CalcAllDirectIllum( const VectorR3& viewPos, const VisiblePoint& visPoint,
 
 static void ResizeWindow(GLsizei w, GLsizei h);
 
-GlutRenderer* glutDraw = 0;
-
 // ***********************Statistics************
 RayTraceStats MyStats;
 // **********************************************
