@@ -29,13 +29,13 @@
 #include "../Physics/Photon.h"
 
 using namespace std;
-class MaterialBase;
+class GammaMaterial;
 
 class Source
 {
 public:
     Source();
-    bool NextPhoton(Photon &p);
+    void NextPhoton(Photon &p);
     double GetActivity();
     VectorR3 position;
     void SetIsotope(Isotope * i)
@@ -43,7 +43,7 @@ public:
         isotope = i;
     };
     void SetActivity(double act);
-    void SetMaterial(MaterialBase * mat);
+    void SetMaterial(GammaMaterial * mat);
     void SetPosition(const VectorR3 & pos)
     {
         position = pos;
@@ -56,7 +56,7 @@ public:
             isotope->source_num = source_num;
         }
     }
-    MaterialBase * GetMaterial();
+    GammaMaterial * GetMaterial();
     bool isNegative();
     Isotope * GetIsotope()
     {
@@ -76,7 +76,7 @@ protected:
     double Random();
     double activity;
     double time;
-    MaterialBase * material;
+    GammaMaterial * material;
     bool negative;
     int source_num;
 
@@ -116,17 +116,17 @@ inline void Source::SetActivity(double act)
     }
 }
 
-inline void Source::SetMaterial(MaterialBase * mat)
+inline void Source::SetMaterial(GammaMaterial * mat)
 {
     material = mat;
 }
 
-inline MaterialBase * Source::GetMaterial()
+inline GammaMaterial * Source::GetMaterial()
 {
     return material;
 }
 
-inline bool Source::NextPhoton(Photon & p)
+inline void Source::NextPhoton(Photon & p)
 {
     p = isotope->NextPhoton();
 }

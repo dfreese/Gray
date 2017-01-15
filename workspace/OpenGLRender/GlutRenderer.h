@@ -38,8 +38,8 @@
 #include <GL/glut.h>
 #endif
 
-#include "../VrMath/LinearR3.h"
-#include "../DataStructs/Array.h"
+#include <LinearR3.h>
+#include <Array.h>
 class CameraView;
 class Light;
 class ViewableBase;

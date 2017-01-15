@@ -54,7 +54,7 @@ void GammaStats::SetSize(int s)
     }
 }
 
-int GammaStats::search(double e, int b_idx, int s_idx)
+int GammaStats::search(double e, int b_idx, int s_idx) const
 {
     if (b_idx == s_idx) {
         return b_idx;
@@ -67,7 +67,7 @@ int GammaStats::search(double e, int b_idx, int s_idx)
     }
 }
 
-int GammaStats::GetIndex(double e)
+int GammaStats::GetIndex(double e) const
 {
 
     if (cache_energy == e) {
@@ -75,8 +75,9 @@ int GammaStats::GetIndex(double e)
     }
 
     // binary search the sorted list of energies for the index
-    cache_idx = search(e, 0, size-1);
-    cache_energy = e;
+    // And override the const of the function to store the cache of the value.
+    const_cast<GammaStats*>(this)->cache_idx = search(e, 0, size-1);
+    const_cast<GammaStats*>(this)->cache_energy = e;
     return cache_idx;
 }
 
@@ -133,7 +134,7 @@ bool GammaStats::Load(void)
 }
 
 
-double GammaStats::GetSigma(double e, int idx)
+double GammaStats::GetSigma(double e, int idx) const
 {
     double val;
 
@@ -150,17 +151,17 @@ double GammaStats::GetSigma(double e, int idx)
     }
 }
 
-double GammaStats::GetMu(double e, int idx)
+double GammaStats::GetMu(double e, int idx) const
 {
     return 0.0;
 }
 
-double GammaStats::GetTau(double e,int idx)
+double GammaStats::GetTau(double e,int idx) const
 {
     return 0.0;
 }
 
-double GammaStats::GetDsDom(double e)
+double GammaStats::GetDsDom(double e) const
 {
     int idx = GetIndex(e);
     if (idx == 0) {
@@ -175,7 +176,7 @@ double GammaStats::GetDsDom(double e)
     }
 }
 
-void GammaStats::GetPE(double e, double &m, double &s)
+void GammaStats::GetPE(double e, double &m, double &s) const
 {
     int idx = GetIndex(e);
     if (idx == 0) {

@@ -25,13 +25,13 @@
 		(HACK) If Energies sum up above 480keV * 2, then register a coincidence
 ****************************************************************/
 
-#include "../Graphics/MaterialBase.h"
-#include "../Physics/Photon.h"
-#include "../Physics/PositronDecay.h"
-#include "../DataStructs/PQueue.h"
-#include "Event.h"
-#include "Detector.h"
-#include "BinaryFormat.h"
+#include <GammaMaterial.h>
+#include <Photon.h>
+#include <PositronDecay.h>
+#include <PQueue.h>
+#include <Event.h>
+#include <Detector.h>
+#include <BinaryFormat.h>
 #include <stdlib.h>
 #include <math.h>
 #include <limits.h>
@@ -52,9 +52,9 @@ public:
     void SetTimeGate(double t);
     void SetDelayedTimeOffset(double t);
     void SetEnergyGate(double lower, double upper);
-    bool AddEvent(const Photon &p, const INTER_TYPE type, const MaterialBase & mat, Detector * d);
+    bool AddEvent(const Photon &p, const INTER_TYPE type, const GammaMaterial & mat, Detector * d);
     bool SetLogFile(char * name);
-    bool SetBinning(bool b)
+    void SetBinning(bool b)
     {
         binEvents = b;
     };

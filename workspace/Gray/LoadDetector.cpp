@@ -218,7 +218,7 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
 
     FileLineNumber = 0;
 
-    Material* curMaterial = (Material*)&Material::Default;
+    // GammaMaterial* curMaterial = (Material*)&Material::Default;
 
     if ( !infile ) {
         fprintf(stderr, "LoadDffFile: Unable to open file: %s\n", filename);
@@ -240,7 +240,8 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
     VectorSource * curVectorSource = NULL;
     int det_id = 1;
 
-    Gray.SetDefaultMaterial((MaterialBase*)&theScene.GetMaterial(0));
+    Gray.SetDefaultMaterial(&theScene.GetMaterial(0));
+    GammaMaterial* curMaterial = &theScene.GetMaterial(0);
 
     while ( true ) {
         if ( !fgets( inbuffer, 1026, curFile ) ) { // read a line of the file
@@ -285,7 +286,7 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
             } else {
                 // FIXED: arbitrary triangles must use increment to advance detector ids
                 // FIXED: detector only is used when material is sensitive
-                if (curMaterial->GammaProp->log_material) {
+                if (curMaterial->GammaProp.log_material) {
                     ProcessFaceDFF( numVerts, curMaterial, curFile, curVectorSource, parse_VectorSource,global_id  );
                 } else {
                     ProcessFaceDFF( numVerts, curMaterial, curFile, curVectorSource, parse_VectorSource,-1);
@@ -297,7 +298,7 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
             int matIndex = -1;
             int scanCode = sscanf( args, "%d", &matIndex );
             if (scanCode==1) {
-                curMaterial = (Material*)&theScene.GetMaterial(matIndex);
+                curMaterial = &theScene.GetMaterial(matIndex);
             } else {
                 parseErrorOccurred = true;
             }
@@ -343,7 +344,7 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
                 baseCenter *= polygonScale;
                 baseSize *= polygonScale;
                 // FIXED: detector only is used when material is sensitive
-                if (curMaterial->GammaProp->log_material) {
+                if (curMaterial->GammaProp.log_material) {
                     global_id = Gray.output.d.AddDetector(baseCenter, baseSize, curMatrix(), time_resolution, energy_resolution,0,0,0,block_id);
                     block_id++;
                     ProcessDetector(baseCenter, baseSize, curMaterial, global_id);
@@ -525,7 +526,7 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
                             CurrentPos.x += (double)i * UnitStep.x;
                             CurrentPos.y += (double)j * UnitStep.y;
                             CurrentPos.z += (double)k * UnitStep.z;
-                            if (curMaterial->GammaProp->log_material == true) {
+                            if (curMaterial->GammaProp.log_material == true) {
                                 global_id = Gray.output.d.AddDetector(CurrentPos, UnitSize,
                                                                       curMatrix(), time_resolution, energy_resolution,
                                                                       i,j,k,block_id);
@@ -537,7 +538,7 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
                     }
                 }
                 // Increment block detector id after a repeat statement
-                if (curMaterial->GammaProp->log_material == true) {
+                if (curMaterial->GammaProp.log_material == true) {
                     block_id++;
                 }
             }

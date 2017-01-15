@@ -1,6 +1,7 @@
 #include <Random.h>
 #include <mt19937.h>
 #include <cmath>
+#include <LinearR3.h>
 
 double Random::cache_gauss = 0;
 bool Random::cache_valid = false;
@@ -40,7 +41,7 @@ double Random::Exponential(const double lambda)
     } else {
         s = -1.0;
     }
-    return(-1.0 * s * log(1.0 - Random::Uniform()) / lambda);
+    return(-1.0 * s * std::log(1.0 - Random::Uniform()) / lambda);
 }
 void Random::RandomHemiCube(VectorR3 & p)
 {
@@ -59,9 +60,9 @@ void Random::UniformSphere(VectorR3 & p)
 {
     double cost = 2.0 * Random::Uniform() - 1.0;
     double phi = M_2_PI * Random::Uniform();
-    double sint = sqrt(1.0-cost*cost);
-    p.x = sint * cos(phi);
-    p.y = sint * sin(phi);
+    double sint = std::sqrt(1.0 - cost * cost);
+    p.x = sint * std::cos(phi);
+    p.y = sint * std::sin(phi);
     p.z = cost;
     p.Normalize();
 }

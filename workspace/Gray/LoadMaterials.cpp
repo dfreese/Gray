@@ -105,9 +105,9 @@ bool LoadMaterials::Load(int numMaterial, SceneDescription& theScene )
     bool parseOk = true;
     numMaterialLoaded = 0;
     for (int i = 0; i < numMaterial; i++) {
-        Material * mat = theScene.NewMaterial();
+        GammaMaterial * mat = theScene.NewMaterial();
         mat->SetName(physicalMaterial[i]);
-        GammaStats * stats = mat->GammaProp;
+        GammaStats * stats = &mat->GammaProp;
         stats->SetFileName(physicalMaterial[i]);
         stats->SetMaterialType( i) ;
         if (!stats->Load()) {

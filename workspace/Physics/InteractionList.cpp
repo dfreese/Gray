@@ -1,4 +1,7 @@
-#include "InteractionList.h"
+#include <InteractionList.h>
+#include <GammaMaterial.h>
+#include <Photon.h>
+#include <Positron.h>
 
 InteractionList::InteractionList()
 {
@@ -44,7 +47,7 @@ void InteractionList::HitPositron(const Positron &p, double deposit)
     hits.Push(hit);
 }
 
-void InteractionList::HitCompton(const Photon &p, double deposit, const MaterialBase & mat)
+void InteractionList::HitCompton(const Photon &p, double deposit, const GammaMaterial & mat)
 {
     hit.Reset();
     hit.pos = p.pos;
@@ -55,10 +58,10 @@ void InteractionList::HitCompton(const Photon &p, double deposit, const Material
     hit.energy = deposit;
     hit.type = I_COMPTON;
     hit.src_id = p.GetSrc();
-    hit.mat_id = mat.GammaProp->GetMaterial();
+    hit.mat_id = mat.GammaProp.GetMaterial();
     hits.Push(hit);
 }
-void InteractionList::HitPhotoelectric(const Photon &p, double deposit, const MaterialBase & mat)
+void InteractionList::HitPhotoelectric(const Photon &p, double deposit, const GammaMaterial & mat)
 {
     hit.Reset();
     hit.pos = p.pos;
@@ -69,7 +72,7 @@ void InteractionList::HitPhotoelectric(const Photon &p, double deposit, const Ma
     hit.energy = deposit;
     hit.type = I_PHOTOELECTRIC;
     hit.src_id = p.GetSrc();
-    hit.mat_id = mat.GammaProp->GetMaterial();
+    hit.mat_id = mat.GammaProp.GetMaterial();
     hits.Push(hit);
 }
 

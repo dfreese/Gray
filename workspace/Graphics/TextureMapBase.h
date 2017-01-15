@@ -32,7 +32,7 @@ class TextureMapBase
 {
 
 public:
-
+    virtual ~TextureMapBase() {};
     // The section ApplyTexture routine must be written for every
     //  texture map class.  It must modify the VisiblePoint according
     //	to the texture map.  At least one of the following two routines

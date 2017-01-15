@@ -3,11 +3,11 @@
 
 #include <iostream>
 #include <fstream>
-#include "../Graphics/MaterialBase.h"
+#include <Photon.h>
 
-#include "Photon.h"
-#include "../Output/Output.h"
-#include "InteractionList.h"
+class GammaMaterial;
+class InteractionList;
+class Output;
 
 using namespace std;
 
@@ -23,13 +23,13 @@ class Interaction
 public:
     Interaction();
     ~Interaction();
-    INTER_TYPE GammaInteraction(Photon &p, double dist, const MaterialBase & mat, InteractionList &l, Output &o);
+    INTER_TYPE GammaInteraction(Photon &p, double dist, const GammaMaterial & mat, InteractionList &l, Output &o);
     bool GammaAttenuation(double &dist, double u_attentuation);
-    INTER_TYPE PE(double sigma, double mu, Photon &p, const MaterialBase & mat, InteractionList &l, Output &o);
-    void Klein_Nishina(double dsdom, Photon &p, const MaterialBase & mat, InteractionList &l, Output &o);
+    INTER_TYPE PE(double sigma, double mu, Photon &p, const GammaMaterial & mat, InteractionList &l, Output &o);
+    void Klein_Nishina(double dsdom, Photon &p, const GammaMaterial & mat, InteractionList &l, Output &o);
     double dsigma(double phi, double alpha);
 private:
-    bool XrayEscape(Photon &p, const MaterialBase & mat, InteractionList &l, Output &o);
+    bool XrayEscape(Photon &p, const GammaMaterial & mat, InteractionList &l, Output &o);
     VectorR3 comp_pos;
 };
 

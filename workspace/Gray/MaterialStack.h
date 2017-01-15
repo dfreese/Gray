@@ -23,33 +23,33 @@
 #include <limits.h>
 #include <vector>
 
-#include "../Graphics/Material.h"
+#include <GammaMaterial.h>
 
-#include "../VrMath/LinearR3.h"
-#include "../DataStructs/Stack.h"
+#include <LinearR3.h>
+#include <Stack.h>
 
 #define MAX_MATERIALS 10
-#define ERROR_MATERIAL (MaterialBase*)-2
-#define ERROR_MATERIAL_TRACE_DEPTH (MaterialBase*)-3
+#define ERROR_MATERIAL (GammaMaterial*)-2
+#define ERROR_MATERIAL_TRACE_DEPTH (GammaMaterial*)-3
 
 class MaterialStack
 {
 public:
     MaterialStack();
-    void PushMaterial(MaterialBase * mat);
-    MaterialBase * PopMaterial();
-    MaterialBase * curMaterial();
+    void PushMaterial(GammaMaterial * mat);
+    GammaMaterial * PopMaterial();
+    GammaMaterial * curMaterial();
     void ResetMaterial();
     int NumMaterials() const
     {
         return MatStack.Size();
     }
-    void SetDefault(MaterialBase * mat);
+    void SetDefault(GammaMaterial * mat);
 
 private:
-    Stack<MaterialBase*> MatStack;
-    MaterialBase * defaultMaterial;
-    MaterialBase * errorMaterial;
+    Stack<GammaMaterial*> MatStack;
+    GammaMaterial * defaultMaterial;
+    GammaMaterial * errorMaterial;
 };
 
 #endif

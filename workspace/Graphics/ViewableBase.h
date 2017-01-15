@@ -25,11 +25,10 @@
 // The classes    ViewableBase   and   VisiblePoint   are defined in this file.
 // ****************************************************************************
 
-#include <math.h>
-#include "../VrMath/LinearR3.h"
-#include "../VrMath/Aabb.h"
-#include "TextureMapBase.h"
-#include "VisiblePoint.h"
+#include <LinearR3.h>
+#include <Aabb.h>
+#include <TextureMapBase.h>
+#include <VisiblePoint.h>
 
 // This is the purely abstract base class for viewable objects.
 //		Any ViewableBase class is responsible for determining
@@ -41,6 +40,7 @@ class ViewableBase
 
 public:
     ViewableBase();
+    virtual ~ViewableBase() {};
 
     // Returns an intersection if found with distance maxDistance
     // viewDir must be a unit vector.

@@ -1,4 +1,5 @@
 #include "AnnulusEllipticCylinderSource.h"
+#include <math.h>
 
 AnnulusEllipticCylinderSource::AnnulusEllipticCylinderSource()
 {
@@ -208,9 +209,9 @@ double AnnulusEllipticCylinderSource::IncompleteEllipticE(double phi, double m)
     }
     a = 1.0-m;
     ebig = EllipticE(m);
-    if( (a==0) ) {
+    if (a == 0) {
         temp = sin(lphi);
-        if( s<0 ) {
+        if (s < 0) {
             temp = -temp;
         }
         result = temp+npio2*ebig;
@@ -223,7 +224,7 @@ double AnnulusEllipticCylinderSource::IncompleteEllipticE(double phi, double m)
      * Thanks to Brian Fitzgerald <fitzgb@mml0.meche.rpi.edu>
      * for pointing out an instability near odd multiples of pi/2
      */
-    if( fabs(t>10) ) {
+    if(fabs(t) > 10) {
 
         /*
          * Transform the amplitude
@@ -233,7 +234,7 @@ double AnnulusEllipticCylinderSource::IncompleteEllipticE(double phi, double m)
         /*
          * ... but avoid multiple recursions.
          */
-        if( fabs(e)<10) {
+        if (fabs(e) < 10) {
             e = atan(e);
             temp = ebig+m*sin(lphi)*sin(e)-IncompleteEllipticE(e, m);
             if( s<0 ) {

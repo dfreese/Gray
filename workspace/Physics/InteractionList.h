@@ -9,15 +9,13 @@
 #ifndef INTERACTION_LIST_H
 #define INTERACTION_LIST_H
 
-#include "../Graphics/MaterialBase.h"
-#include "../DataStructs/Array.h"
-#include "Photon.h"
-#include "Positron.h"
-#include "Deposit.h"
+#include <Array.h>
+#include <Deposit.h>
 
-using namespace std;
-
+class Photon;
+class Positron;
 class Isotope;
+class GammaMaterial;
 
 class InteractionList
 {
@@ -31,9 +29,9 @@ public:
     Deposit & NextHit();
     void Reset();
     void HitPositron(const Positron &p, double deposit);
-    void HitCompton(const Photon &p, double deposit, const MaterialBase & mat);
-    void HitPhotoelectric(const Photon &p, double deposit, const MaterialBase & mat);
-    void HitRayleigh(const Photon &p, const MaterialBase & mat) { };
+    void HitCompton(const Photon &p, double deposit, const GammaMaterial & mat);
+    void HitPhotoelectric(const Photon &p, double deposit, const GammaMaterial & mat);
+    void HitRayleigh(const Photon &p, const GammaMaterial & mat) { };
     Array<Deposit> hits;
     friend ostream& operator<< (ostream &os, const InteractionList & l);
 protected:

@@ -13,6 +13,8 @@
 #include <fstream>
 #include <string>
 
+class GammaMaterial;
+
 using namespace std;
 
 class EventBuffer
@@ -20,7 +22,7 @@ class EventBuffer
 public:
     EventBuffer();
     ~EventBuffer();
-    bool AddEvent(const Photon &p, INTER_TYPE type, const MaterialBase & mat, Detector * d);
+    bool AddEvent(const Photon &p, INTER_TYPE type, const GammaMaterial & mat, Detector * d);
     bool WriteScatterEvents();
     bool WriteCoincidenceEvents();
     bool WriteSingleEvents();

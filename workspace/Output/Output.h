@@ -14,9 +14,7 @@
 #include <fstream>
 #include <string>
 
-#ifdef ROOT_OUTPUT
-// If root is available on the machine, we can use it in the includes here
-#endif
+class GammaMaterial;
 
 #define ERROR_EMPTY (int)-2
 #define ERROR_TRACE_DEPTH (int)-3
@@ -29,14 +27,14 @@ public:
     bool SetLogfile(const std::string & name);
     void LogNuclearDecay(NuclearDecay *p);
     void SetLogAll(bool val);
-    void LogCompton(const Photon &p, double deposit, const MaterialBase & mat);
-    void LogPhotoElectric(const Photon &p, const MaterialBase & mat);
+    void LogCompton(const Photon &p, double deposit, const GammaMaterial & mat);
+    void LogPhotoElectric(const Photon &p, const GammaMaterial & mat);
     void LogError(const Photon &p, int t, int det_mat);
     void SetBinary(bool val);
     void SetBinning(bool val);
     void SetLogDetId(bool val);
     void SetLogDetCoord(bool val);
-    void LogNEC(const Photon &p, double deposit, const MaterialBase & mat);
+    void LogNEC(const Photon &p, double deposit, const GammaMaterial & mat);
 
     // helper class for reading binary data
     void read(const std::string& file_name, GRAY_BINARY &data);
@@ -54,12 +52,12 @@ private:
     //	void LogPhotoElectricBinary(const Photon &p, const MaterialBase & mat);
     void LogErrorASCII(const Photon &p, int t, int detmaterial);
     void LogErrorBinary(const Photon &p, int t, int detmaterial) ;
-    void LogASCII(const Photon &p, INTER_TYPE type, double deposit, const MaterialBase & mat);
-    void LogBinary(const Photon &p, INTER_TYPE type, double deposit, const MaterialBase & mat);
+    void LogASCII(const Photon &p, INTER_TYPE type, double deposit, const GammaMaterial & mat);
+    void LogBinary(const Photon &p, INTER_TYPE type, double deposit, const GammaMaterial & mat);
 #ifdef ROOT_OUTPUT
     void LogNuclearDecayRoot(NuclearDecay *p);
-    void LogComptonRoot(const Photon &p, double deposit, const MaterialBase & mat);
-    void LogPhotoRoot(const Photon &p, const MaterialBase & mat);
+    void LogComptonRoot(const Photon &p, double deposit, const GammaMaterial & mat);
+    void LogPhotoRoot(const Photon &p, const GammaMaterial & mat);
 #endif
 
     // TODO: Binning not implemented

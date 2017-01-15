@@ -1,13 +1,6 @@
 #ifndef ANNULUSELLIPTICCYLINDERSOURCE_H_
 #define ANNULUSELLIPTICCYLINDERSOURCE_H_
 
-// Function prototypes
-#include <stdlib.h>
-#include <math.h>
-#include <limits.h>
-#include <algorithm>
-#include <vector>
-
 #include "../VrMath/MathMisc.h"
 #include "../VrMath/LinearR3.h"
 #include "Source.h"

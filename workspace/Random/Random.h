@@ -14,8 +14,9 @@
 
 #ifndef RANDOM_H
 #define RANDOM_H
-#include <LinearR3.h>
 #define FWHM_to_sigma ((double)0.644391971)
+
+class VectorR3;
 
 class Random
 {

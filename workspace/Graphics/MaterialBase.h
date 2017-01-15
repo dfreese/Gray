@@ -26,8 +26,7 @@
 #define MATERIAL_BASE_H
 
 #include "assert.h"
-#include "../VrMath/LinearR4.h"
-#include "../Physics/GammaStats.h"
+#include <LinearR3.h>
 
 class VisiblePoint;
 class Light;
@@ -43,7 +42,8 @@ class MaterialBase
 {
 
 public:
-
+    MaterialBase() {}
+    virtual ~MaterialBase() {};
     virtual bool IsReflective() const = 0;
     virtual bool IsTransmissive() const =0;
     virtual bool CalcRefractDir( const VectorR3& normal,
@@ -118,9 +118,7 @@ public:
 
     virtual MaterialBase* Clone() const = 0;
 
-    void AllocateStats(void);
     char * name;
-    GammaStats * GammaProp;
     void SetName(char * n);
 
 };
@@ -128,15 +126,7 @@ public:
 inline void MaterialBase::SetName(char * n)
 {
     name = n;
-    AllocateStats();
 }
-
-inline void MaterialBase::AllocateStats()
-{
-    GammaStats * stats = new GammaStats();
-    GammaProp = stats;
-}
-
 
 inline void MaterialBase::SetColorAmbient(double r, double g, double b )
 {

@@ -19,18 +19,18 @@
  *
  */
 
-#include "GlutRenderer.h"
+#include <GlutRenderer.h>
 
-#include "../Graphics/CameraView.h"
-#include "../Graphics/ViewableBezierSet.h"
-#include "../Graphics/ViewableCone.h"
-#include "../Graphics/ViewableCylinder.h"
-#include "../Graphics/ViewableEllipsoid.h"
-#include "../Graphics/ViewableParallelepiped.h"
-#include "../Graphics/ViewableParallelogram.h"
-#include "../Graphics/ViewableSphere.h"
-#include "../Graphics/ViewableTorus.h"
-#include "../Graphics/ViewableTriangle.h"
+#include <CameraView.h>
+#include <ViewableBezierSet.h>
+#include <ViewableCone.h>
+#include <ViewableCylinder.h>
+#include <ViewableEllipsoid.h>
+#include <ViewableParallelepiped.h>
+#include <ViewableParallelogram.h>
+#include <ViewableSphere.h>
+#include <ViewableTorus.h>
+#include <ViewableTriangle.h>
 #include "../Gray/SceneDescription.h"
 
 GlutRenderer::GlutRenderer()

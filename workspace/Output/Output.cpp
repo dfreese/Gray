@@ -1,4 +1,5 @@
-#include "Output.h"
+#include <Output.h>
+#include <GammaMaterial.h>
 
 Output::Output()
 {
@@ -80,9 +81,9 @@ void Output::LogNuclearDecayBinary(NuclearDecay *p)
     write(b);
 }
 
-void Output::LogCompton(const Photon &p, double deposit, const MaterialBase & mat)
+void Output::LogCompton(const Photon &p, double deposit, const GammaMaterial & mat)
 {
-    bool log_event = (log_data&mat.GammaProp->log_material)|log_all;
+    bool log_event = (log_data&mat.GammaProp.log_material)|log_all;
     if (log_event) {
         if (binary) {
             LogBinary(p, COMPTON, deposit, mat);
@@ -96,9 +97,9 @@ void Output::LogCompton(const Photon &p, double deposit, const MaterialBase & ma
 }
 
 
-void Output::LogPhotoElectric(const Photon &p, const MaterialBase & mat)
+void Output::LogPhotoElectric(const Photon &p, const GammaMaterial & mat)
 {
-    bool log_event = (log_data&mat.GammaProp->log_material)|log_all;
+    bool log_event = (log_data&mat.GammaProp.log_material)|log_all;
     //	cout << " log_data = " << log_data << " log_event = " << log_event << endl;
     if (log_event) {
         if (binary) {
@@ -110,7 +111,7 @@ void Output::LogPhotoElectric(const Photon &p, const MaterialBase & mat)
 }
 
 
-void Output::LogASCII(const Photon &p, INTER_TYPE type, double deposit, const MaterialBase & mat)
+void Output::LogASCII(const Photon &p, INTER_TYPE type, double deposit, const GammaMaterial & mat)
 {
     Photon ptmp;
     ptmp = p;
@@ -141,7 +142,7 @@ void Output::LogASCII(const Photon &p, INTER_TYPE type, double deposit, const Ma
     //	if (log_event) {
     //	log_file << mat.GammaProp->log_material;
     //		log_file << " ";
-    sprintf(str,"%2d ",mat.GammaProp->GetMaterial());
+    sprintf(str,"%2d ",mat.GammaProp.GetMaterial());
     log_file << str;
     //	}
     if (log_det_id) {
@@ -164,10 +165,10 @@ void Output::LogASCII(const Photon &p, INTER_TYPE type, double deposit, const Ma
 
 }
 
-void Output::LogBinary(const Photon &p, INTER_TYPE type, double deposit, const MaterialBase & mat)
+void Output::LogBinary(const Photon &p, INTER_TYPE type, double deposit, const GammaMaterial & mat)
 {
     GRAY_BINARY b;
-    b.log = MakeLogWord( (int) type, p.color, p.phantom_scatter ,  mat.GammaProp->GetMaterial() ,p.src_id);
+    b.log = MakeLogWord( (int) type, p.color, p.phantom_scatter ,  mat.GammaProp.GetMaterial() ,p.src_id);
     //	b.t = 1;
     b.i = p.id;
     //	b.rnb = (uint8_t)p.color;

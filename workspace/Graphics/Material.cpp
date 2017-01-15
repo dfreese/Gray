@@ -18,8 +18,8 @@
  *
  */
 
-#include "Material.h"
-#include "Light.h"
+#include <Material.h>
+#include <Light.h>
 
 // This Material works with the Phong illumination model.
 

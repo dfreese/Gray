@@ -558,6 +558,12 @@ bool setFilenameOutput = false;
 
 bool GrayProcessCommandLine(int argc, char **argv)
 {
+//    BatchMode = true;
+//    GraySeed = 1;
+//    FileNameDetector = "./detectors/neg_sphere.dff";
+//    FileNameOutput = "neg_sphere.dat";
+//    return true;
+    
     if (argc == 1) {
         fprintf(stdout, "Syntax:\n\tGray [-b] [-seed num] [FileNameDetector] [FileNameOutput]\n");
     } else {

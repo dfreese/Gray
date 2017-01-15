@@ -3,11 +3,13 @@
 
 #include <string>
 #include "../Physics/Interaction.h"
-#include "../Gray/MaterialStack.h"
+#include <MaterialStack.h>
 #include "../Physics/Photon.h"
 #include "../Physics/InteractionList.h"
 #include "../Sources/SourceList.h"
-#include "../Output/Output.h"
+#include <Output.h>
+
+class GammaMaterial;
 
 extern long SeekIntersectionKd(const VectorR3& startPos, const VectorR3& direction,
                                double *hitDist, VisiblePoint& returnedPoint,
@@ -23,7 +25,7 @@ public:
     ~GammaRayTrace();
     void GRayTraceSources(void);
     void AddSource(Source & s);
-    void SetDefaultMaterial(MaterialBase * mat);
+    void SetDefaultMaterial(GammaMaterial * mat);
     void SetFileNameOutput(const std::string & name);
     void SetSimulationTime(double time)
     {
@@ -39,7 +41,7 @@ private:
                          MaterialStack& MatStack, InteractionList & i, Output &o, long avoidK ) ;
     VectorR3 positionCenter;
 
-    MaterialBase * defaultMat;
+    GammaMaterial * defaultMat;
     std::string FileNameOutputFile;
     double simulationTime;
     bool logPositron;

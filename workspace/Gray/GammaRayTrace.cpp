@@ -1,7 +1,8 @@
-#include "GammaRayTrace.h"
-#include "../Graphics/VisiblePoint.h"
-#include "../Graphics/ViewableBase.h"
-#include "../Graphics/ViewableTriangle.h"
+#include <GammaRayTrace.h>
+#include <VisiblePoint.h>
+#include <ViewableBase.h>
+#include <ViewableTriangle.h>
+#include <GammaMaterial.h>
 
 GammaRayTrace::GammaRayTrace()
 {
@@ -15,19 +16,16 @@ GammaRayTrace::GammaRayTrace()
 
 }
 
-// Garry: Added destructor for proper cleanup
 GammaRayTrace::~GammaRayTrace()
 {
-
 }
-
 
 void GammaRayTrace::SetFileNameOutput(const std::string & name)
 {
     FileNameOutputFile = name;
 }
 
-void GammaRayTrace::SetDefaultMaterial(MaterialBase * mat)
+void GammaRayTrace::SetDefaultMaterial(GammaMaterial * mat)
 {
     defaultMat = mat;
 }
@@ -37,17 +35,17 @@ INTER_TYPE GammaRayTrace::GRayTrace(Interaction &interaction,
                                     MaterialStack& MatStack, InteractionList &i, Output &o, long avoidK=-1)
 {
     double hitDist;
-    MaterialBase * curMaterial = MatStack.curMaterial();
+    GammaMaterial * curMaterial = MatStack.curMaterial();
 
     if (curMaterial == ERROR_MATERIAL) {
         o.LogError(photon, ERROR_EMPTY,  0);
         return ERROR;
     }
 
-    MaterialBase * nextMaterial;
+    GammaMaterial * nextMaterial;
 
     if (TraceDepth <= 0) {
-        o.LogError(photon, ERROR_TRACE_DEPTH, curMaterial->GammaProp->GetMaterial() );
+        o.LogError(photon, ERROR_TRACE_DEPTH, curMaterial->GammaProp.GetMaterial() );
         return NO_INTERACTION;
     }
 
@@ -83,11 +81,11 @@ INTER_TYPE GammaRayTrace::GRayTrace(Interaction &interaction,
                     photon.det_id = -1;
                     break;
                 }
-                nextMaterial = const_cast<MaterialBase*>(&visPoint.GetMaterial());
+                nextMaterial = dynamic_cast<GammaMaterial*>(&visPoint.GetMaterialMutable());
                 MatStack.PushMaterial(nextMaterial);
             } else if (visPoint.IsBackFacing()) {
                 photon.det_id = -1;
-                MaterialBase * mat = MatStack.PopMaterial();
+                MatStack.PopMaterial();
             } else {
                 cout << "ERROR: material has no face\n";
                 exit(1);

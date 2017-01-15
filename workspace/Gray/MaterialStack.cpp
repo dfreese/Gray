@@ -1,4 +1,4 @@
-#include "MaterialStack.h"
+#include <MaterialStack.h>
 
 MaterialStack::MaterialStack()
 {
@@ -6,22 +6,22 @@ MaterialStack::MaterialStack()
     errorMaterial = ERROR_MATERIAL;
 }
 
-void MaterialStack::PushMaterial(MaterialBase *mat)
+void MaterialStack::PushMaterial(GammaMaterial *mat)
 {
     MatStack.Push(mat);
 }
 
-MaterialBase* MaterialStack::PopMaterial()
+GammaMaterial* MaterialStack::PopMaterial()
 {
     if (NumMaterials() <= 0) {
         cerr << "Poping empty\n";
         return errorMaterial;
     }
-    MaterialBase* ret = MatStack.Pop();
+    GammaMaterial * ret = MatStack.Pop();
     return ret;
 }
 
-MaterialBase * MaterialStack::curMaterial()
+GammaMaterial * MaterialStack::curMaterial()
 {
     if (NumMaterials() <= 0) {
         return errorMaterial;
@@ -35,7 +35,7 @@ void MaterialStack::ResetMaterial()
     MatStack.Reset();
     MatStack.Push(defaultMaterial);
 }
-void MaterialStack::SetDefault(MaterialBase * mat)
+void MaterialStack::SetDefault(GammaMaterial * mat)
 {
     defaultMaterial = mat;
 }

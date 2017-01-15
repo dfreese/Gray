@@ -21,10 +21,8 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
-#include "assert.h"
-#include "../VrMath/LinearR4.h"
-#include "../VrMath/MathMisc.h"
-#include "MaterialBase.h"
+#include <LinearR3.h>
+#include <MaterialBase.h>
 
 // the Material class inplements Phong lighting.  The base class MaterialBase
 //		has the basic date elements that are common to Phong lighting and

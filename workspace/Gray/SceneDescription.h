@@ -5,9 +5,7 @@
 #include "../VrMath/LinearR3.h"
 #include "../Graphics/CameraView.h"
 #include "../Graphics/Light.h"
-#include "../Graphics/MaterialBase.h"
 #include "../Graphics/Material.h"
-#include "../Graphics/MaterialCookTorrance.h"
 #include "../Graphics/TextureMapBase.h"
 #include "../Graphics/TextureAffineXform.h"
 #include "../Graphics/TextureBilinearXform.h"
@@ -18,6 +16,7 @@
 #include "../Graphics/BumpMapFunction.h"
 #include "../Graphics/ViewableBase.h"
 #include "../Physics/GammaStats.h"
+#include <GammaMaterial.h>
 
 class SceneDescription
 {
@@ -122,22 +121,21 @@ public:
     {
         return MaterialArray.SizeUsed();
     }
-    Material* NewMaterial();
-    MaterialCookTorrance* NewMaterialCookTorrance();
-    int AddMaterial( MaterialBase* newMaterial );
-    MaterialBase& GetMaterial( int i )
+    GammaMaterial* NewMaterial();
+    int AddMaterial( GammaMaterial* newMaterial );
+    GammaMaterial& GetMaterial( int i )
     {
         return *MaterialArray[i];
     }
-    const MaterialBase& GetMaterial( int i ) const
+    const GammaMaterial& GetMaterial( int i ) const
     {
         return *MaterialArray[i];
     }
-    Array<MaterialBase*>& GetMaterialArray()
+    Array<GammaMaterial*>& GetMaterialArray()
     {
         return MaterialArray;
     }
-    const Array<MaterialBase*>& GetMaterialArray() const
+    const Array<GammaMaterial*>& GetMaterialArray() const
     {
         return MaterialArray;
     }
@@ -249,7 +247,7 @@ private:
 
     Array<Light*> LightArray;
 
-    Array<MaterialBase*> MaterialArray;
+    Array<GammaMaterial*> MaterialArray;
 
     Array<TextureMapBase*> TextureArray;
 
@@ -272,23 +270,14 @@ inline int SceneDescription::AddLight( Light* newLight )
     return index;
 }
 
-inline Material* SceneDescription::NewMaterial()
+inline GammaMaterial* SceneDescription::NewMaterial()
 {
-    Material* newMat = new Material();
-    MaterialBase* newMatBase = (MaterialBase*)newMat;
+    GammaMaterial* newMatBase = new GammaMaterial();
     MaterialArray.Push( newMatBase );
-    return newMat;
+    return newMatBase;
 }
 
-inline MaterialCookTorrance* SceneDescription::NewMaterialCookTorrance()
-{
-    MaterialCookTorrance* newMatCT = new MaterialCookTorrance();
-    MaterialBase* newMatBase = (MaterialBase*)newMatCT;
-    MaterialArray.Push( newMatBase );
-    return newMatCT;
-}
-
-inline int SceneDescription::AddMaterial( MaterialBase* newMaterial )
+inline int SceneDescription::AddMaterial( GammaMaterial* newMaterial )
 {
     int index = (int)MaterialArray.SizeUsed();
     MaterialArray.Push( newMaterial );

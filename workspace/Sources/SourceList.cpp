@@ -86,6 +86,7 @@ double SourceList::CalculateTime()
     // performance speedup double mean_time_between_events = (1.0) / (total_activity * microCurie);
     double deltaT = -1.0 * log(1.0 - Random()) * mean_time_between_events;
     curTime += deltaT;
+    return curTime;
 }
 
 double SourceList::GetTotalEvents(double time)
