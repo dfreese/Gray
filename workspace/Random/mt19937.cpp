@@ -32,8 +32,6 @@
    email: matumoto@math.keio.ac.jp
 */
 
-#include <stdio.h>
-
 /* Period parameters */
 #define N 624
 #define M 397

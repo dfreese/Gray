@@ -1,4 +1,3 @@
-
 // Random.h
 //
 //   A general purpose dynamically resizable sorted Stack
@@ -13,10 +12,8 @@
 // All rights reserved.  May be used for any purpose as long
 //	as use is acknowledged.
 
-
 #ifndef RANDOM_H
 #define RANDOM_H
-#include <math.h>
 #include <LinearR3.h>
 #define FWHM_to_sigma ((double)0.644391971)
 

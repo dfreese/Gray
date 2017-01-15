@@ -4,10 +4,12 @@
 using namespace std;
 
 int main() {
+    Random::Seed(1);
     for (int ii = 0; ii < 10; ++ii) {
-        cout << Random::Uniform() << " "
-             << Random::Gaussian() << " "
-             << Random::Exponential(1.0) << " "
-             << endl;
+        double x, y, z;
+        x = Random::Uniform();
+        y = Random::Gaussian();
+        z = Random::Exponential(1.0);
+        cout << x << " " << y << " " << z << endl;
     }
 }

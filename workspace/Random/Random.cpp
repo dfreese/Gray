@@ -1,5 +1,6 @@
 #include <Random.h>
 #include <mt19937.h>
+#include <cmath>
 
 double Random::cache_gauss = 0;
 bool Random::cache_valid = false;
@@ -16,17 +17,18 @@ double Random::Gaussian() {
         cache_valid = false;
         return(cache_gauss);
     }
-    double x1, x2, w, y1, y2;
+    double x1, x2, w;
 
     do {
         x1 = 2.0 * Random::Uniform() - 1.0;
         x2 = 2.0 * Random::Uniform() - 1.0;
         w = x1 * x1 + x2 * x2;
-    } while ( w >= 1.0 );
+    } while ( w >= 1.0f );
 
-    w = sqrt( (-2.0 * log( w ) ) / w );
-    y1 = x1 * w;
+    w = std::sqrt( (-2.0 * std::log( w ) ) / w );
+    double y1 = x1 * w;
     cache_gauss = x2 * w;
+    cache_valid = true;
 
     return y1;
 }
