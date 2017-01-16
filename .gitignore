@@ -4,8 +4,11 @@
 Makefile
 CMakeFiles
 CMakeCache.txt
+CMakeScripts
 /GRAY_GEN_MATERIAL/*.dat
 /workspace/Gray/Gray
 /workspace/test_rand/test_rand
 /Gray
 /neg_sphere.dat
+Gray.build
+Gray.xcodeproj
