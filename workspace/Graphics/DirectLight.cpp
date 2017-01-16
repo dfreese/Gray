@@ -18,7 +18,7 @@
  *
  */
 
-#include "DirectLight.h"
+#include <DirectLight.h>
 
 // This program calculates direct illumination of a surface.
 // Input is a position, and a normal, and a light

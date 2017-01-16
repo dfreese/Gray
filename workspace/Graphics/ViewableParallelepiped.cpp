@@ -18,9 +18,9 @@
  *
  */
 
-#include "ViewableParallelepiped.h"
-#include "Extents.h"
-#include "../VrMath/Aabb.h"
+#include <ViewableParallelepiped.h>
+#include <Extents.h>
+#include <Aabb.h>
 
 void ViewableParallelepiped::CalcPlaneInfo()
 {

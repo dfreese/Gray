@@ -1,4 +1,4 @@
-#include "DetectorArray.h"
+#include <DetectorArray.h>
 
 DetectorArray::DetectorArray()
 {

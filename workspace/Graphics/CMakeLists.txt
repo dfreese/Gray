@@ -1,28 +1,56 @@
 add_library(Graphics
     BumpMapFunction.cpp
+    BumpMapFunction.h
     CameraView.cpp
+    CameraView.h
     DirectLight.cpp
+    DirectLight.h
     Extents.cpp
+    Extents.h
+    Light.h
     Material.cpp
+    Material.h
+    MaterialBase.h
     RgbImage.cpp
+    RgbImage.h
     TextureAffineXform.cpp
+    TextureAffineXform.h
     TextureBilinearXform.cpp
+    TextureBilinearXform.h
     TextureCheckered.cpp
+    TextureCheckered.h
     TextureMapBase.cpp
+    TextureMapBase.h
     TextureMultiFaces.cpp
+    TextureMultiFaces.h
     TextureRgbImage.cpp
+    TextureRgbImage.h
     TextureSequence.cpp
+    TextureSequence.h
     TransformViewable.cpp
+    TransformViewable.h
+    View.h
     ViewableBase.cpp
+    ViewableBase.h
     ViewableBezierSet.cpp
+    ViewableBezierSet.h
     ViewableCone.cpp
+    ViewableCone.h
     ViewableCylinder.cpp
+    ViewableCylinder.h
     ViewableEllipsoid.cpp
+    ViewableEllipsoid.h
     ViewableParallelepiped.cpp
+    ViewableParallelepiped.h
     ViewableParallelogram.cpp
+    ViewableParallelogram.h
     ViewableSphere.cpp
+    ViewableSphere.h
     ViewableTorus.cpp
+    ViewableTorus.h
     ViewableTriangle.cpp
+    ViewableTriangle.h
+    VisiblePoint.h
 )
 
 target_include_directories(Graphics PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

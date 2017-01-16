@@ -53,7 +53,6 @@ class ViewableSphere;
 class ViewableTorus;
 class ViewableTriangle;
 class MaterialBase;
-class SceneDescription;
 
 // The GlutRenderer class controls rendering Graphics items from the RayTrace
 //	software package using GLUT.   This allows real time modification
@@ -100,15 +99,9 @@ public:
     void SetBackgroundColor( double backRed, double backGreen, double backBlue );
 
     bool AddLight( const Light& light );			// Returns false if quota of lights exceeded
-
-    void InitLightsAndView( const SceneDescription& scene );
-
     void RenderViewable( const ViewableBase& object );
-    void RenderViewables( const SceneDescription& scene );
     void RenderViewables( const Array<ViewableBase*>& viewables );
     void FinishRendering();
-
-    void RenderScene( const SceneDescription& scene );
 
     void InitRendering();	// Called by SetupLightsAndView, so usually you do not need to call this.
 

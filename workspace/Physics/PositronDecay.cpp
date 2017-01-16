@@ -1,4 +1,4 @@
-#include "PositronDecay.h"
+#include <PositronDecay.h>
 #include <stdio.h>
 #include <math.h>
 #include <Random.h>
@@ -147,7 +147,6 @@ void PositronDecay::PositronRange(VectorR3 & p)
 
     if (positronRangeCusp == true) {
         double cp;
-        double s1,s2;
         // generate cprime which is the scales the dual exponential into a form that allows it
         // to be monte-carlo generated
         //

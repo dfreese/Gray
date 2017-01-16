@@ -1,4 +1,7 @@
-add_library(OpenGLRender GlutRenderer.cpp)
+add_library(OpenGLRender
+    GlutRenderer.cpp
+    GlutRenderer.h
+)
 
 target_include_directories(OpenGLRender PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 

@@ -2,30 +2,30 @@
 #include <stdio.h>
 #include <string.h>
 #include <Random.h>
-#include "LoadDetector.h"
-#include "LoadObjFile.h"
-#include "../Graphics/TransformViewable.h"
-#include "../Graphics/VisiblePoint.h"
-#include "../Graphics/ViewableBase.h"
-#include "../Graphics/ViewableSphere.h"
-#include "../Graphics/ViewableEllipsoid.h"
-#include "../Graphics/ViewableCone.h"
-#include "../Graphics/ViewableTorus.h"
-#include "../Graphics/ViewableTriangle.h"
-#include "../Graphics/ViewableParallelogram.h"
-#include "../Graphics/ViewableCylinder.h"
-#include "../Graphics/ViewableParallelepiped.h"
-#include "../Graphics/ViewableBezierSet.h"
-#include "../Sources/AnnulusCylinderSource.h"
-#include "../Sources/AnnulusEllipticCylinderSource.h"
-#include "../Sources/BeamPointSource.h"
-#include "../Sources/CylinderSource.h"
-#include "../Sources/EllipsoidSource.h"
-#include "../Sources/EllipticCylinderSource.h"
-#include "../Sources/RectSource.h"
-#include "../Sources/SphereSource.h"
-#include "../Sources/VectorSource.h"
-#include "../Sources/VoxelSource.h"
+#include <LoadDetector.h>
+#include <LoadObjFile.h>
+#include <TransformViewable.h>
+#include <VisiblePoint.h>
+#include <ViewableBase.h>
+#include <ViewableSphere.h>
+#include <ViewableEllipsoid.h>
+#include <ViewableCone.h>
+#include <ViewableTorus.h>
+#include <ViewableTriangle.h>
+#include <ViewableParallelogram.h>
+#include <ViewableCylinder.h>
+#include <ViewableParallelepiped.h>
+#include <ViewableBezierSet.h>
+#include <AnnulusCylinderSource.h>
+#include <AnnulusEllipticCylinderSource.h>
+#include <BeamPointSource.h>
+#include <CylinderSource.h>
+#include <EllipsoidSource.h>
+#include <EllipticCylinderSource.h>
+#include <RectSource.h>
+#include <SphereSource.h>
+#include <VectorSource.h>
+#include <VoxelSource.h>
 
 const int numCommands = 59;
 const char * dffCommandList[numCommands] = {
@@ -129,8 +129,7 @@ void LoadDetector::PushMatrix()
 
 void LoadDetector::PopMatrix()
 {
-    RigidMapR3 * old = MatrixStack.Pop();
-
+    // RigidMapR3 * old = MatrixStack.Pop();
     // don't delete old matrix, but keep it in memory for detector structure
     //  THIS IS NOT A MEMORY LEAK
     //	but care should be taken that the pointers are still alive
@@ -238,7 +237,6 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
     // Vectorial Source parsing
     bool parse_VectorSource = false;
     VectorSource * curVectorSource = NULL;
-    int det_id = 1;
 
     Gray.SetDefaultMaterial(&theScene.GetMaterial(0));
     GammaMaterial* curMaterial = &theScene.GetMaterial(0);

@@ -1,6 +1,8 @@
 add_library(PixelArray
     PixelArray.cpp
+    PixelArray.h
     OpenGlRgbImage.cpp
+    OpenGlRgbImage.h
 )
 
 target_include_directories(PixelArray PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

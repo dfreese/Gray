@@ -18,8 +18,8 @@
  *
  */
 
-#include "TextureAffineXform.h"
-#include "../Graphics/VisiblePoint.h"
+#include <TextureAffineXform.h>
+#include <VisiblePoint.h>
 
 void TextureAffineXform::ApplyTexture( VisiblePoint& visPoint ) const
 {

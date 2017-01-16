@@ -22,7 +22,7 @@
 
 #include <math.h>
 #include <assert.h>
-#include "DoubleRecurse.h"
+#include <DoubleRecurse.h>
 
 
 //  Consider a function which satisfies the following properties:

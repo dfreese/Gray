@@ -1,12 +1,19 @@
 add_executable(Gray
     GammaRayTrace.cpp
+    GammaRayTrace.h
     LoadDetector.cpp
+    LoadDetector.h
     LoadMaterials.cpp
+    LoadMaterials.h
     LoadObjFile.cpp
-    main.cpp
+    LoadObjFile.h
     MaterialStack.cpp
+    MaterialStack.h
     RayTraceStats.cpp
+    RayTraceStats.h
     SceneDescription.cpp
+    SceneDescription.h
+    main.cpp
 )
 
 target_include_directories(Gray PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

@@ -31,7 +31,6 @@
 #include <ViewableSphere.h>
 #include <ViewableTorus.h>
 #include <ViewableTriangle.h>
-#include "../Gray/SceneDescription.h"
 
 GlutRenderer::GlutRenderer()
 {
@@ -171,38 +170,11 @@ bool GlutRenderer::AddLight( const Light& light )
     return true;
 }
 
-void GlutRenderer::RenderScene( const SceneDescription& scene )
-{
-    InitLightsAndView( scene );
-    RenderViewables( scene );
-    FinishRendering();
-}
-
-void GlutRenderer::InitLightsAndView( const SceneDescription& scene )
-{
-    // Set camera position
-    SetBackgroundColor( scene.BackgroundColor() );
-    SetupCameraView( scene.GetCameraView() );
-
-    // Define all light sources
-    int i;
-    int numLights = scene.NumLights();
-    for ( i=0; i<numLights; i++ ) {
-        AddLight( scene.GetLight(i) );
-    }
-    SetGlobalAmbientLight( scene.GlobalAmbientLight() );
-}
-
 void GlutRenderer::InitRendering()
 {
     glEnable( GL_LIGHTING );
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     glEnable( GL_DEPTH_TEST );
-}
-
-void GlutRenderer::RenderViewables( const SceneDescription& scene )
-{
-    RenderViewables( scene.GetViewableArray() );
 }
 
 void GlutRenderer::RenderViewables( const Array<ViewableBase*>& viewables )

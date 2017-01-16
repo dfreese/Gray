@@ -32,8 +32,8 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "KdTree.h"
-#include "DoubleRecurse.h"
+#include <KdTree.h>
+#include <DoubleRecurse.h>
 
 // Destructor
 KdTree::~KdTree()
@@ -147,25 +147,29 @@ bool KdTree::Traverse( const VectorR3& startPos, const VectorR3& dir, double see
             Stats_NodeTraversed();
             // Handle non-leaf nodes
             //		These do not contain primitive objects.
-            int thisSign;
-            double thisDirInv;
-            double thisStartPt;
+            int thisSign = 0;
+            double thisDirInv = 0;
+            double thisStartPt = 0;
             switch ( currentNode->NodeType ) {
-            case KD_SPLIT_X:
-                thisSign = signDirX;
-                thisDirInv = dirInv.x;
-                thisStartPt = startPos.x;
-                break;
-            case KD_SPLIT_Y:
-                thisSign = signDirY;
-                thisDirInv = dirInv.y;
-                thisStartPt = startPos.y;
-                break;
-            case KD_SPLIT_Z:
-                thisSign = signDirZ;
-                thisDirInv = dirInv.z;
-                thisStartPt = startPos.z;
-                break;
+                case KD_SPLIT_X:
+                    thisSign = signDirX;
+                    thisDirInv = dirInv.x;
+                    thisStartPt = startPos.x;
+                    break;
+                case KD_SPLIT_Y:
+                    thisSign = signDirY;
+                    thisDirInv = dirInv.y;
+                    thisStartPt = startPos.y;
+                    break;
+                case KD_SPLIT_Z:
+                    thisSign = signDirZ;
+                    thisDirInv = dirInv.z;
+                    thisStartPt = startPos.z;
+                    break;
+                case KD_LEAF:
+                    break;
+                default:
+                    break;
             }
             long nearNodeIdx;
             long farNodeIdx;
@@ -646,7 +650,6 @@ bool KdTree::CalcBestSplit( double totalObjectCosts, double costToBeat,
     double costRight = totalObjectCosts;	// total cost of objects still on the right side during scan
     ExtentTriple* etPtr = extents.TripleArray;
     bool inFirstHalf = true;			// If still scanning first half, measured in distance along axis
-    bool inFirstHalfCosts = true;			// If still scanning first half objects (measured with costs)
     double midPoint = 0.5*(minOnAxis+maxOnAxis);
     while ( numTriplesLeft<numTriples ) {
         // The split can occur either right before or right after the split value.

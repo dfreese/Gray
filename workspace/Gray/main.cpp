@@ -11,17 +11,16 @@
 #include <GL/glut.h>
 #endif
 
-#include "RayTraceStats.h"
-
-#include "../PixelArray/PixelArray.h"
-#include "../Graphics/ViewableBase.h"
-#include "../Graphics/DirectLight.h"
-#include "../Graphics/CameraView.h"
-#include "../OpenGLRender/GlutRenderer.h"
-#include "../DataStructs/KdTree.h"
-#include "../Gray/SceneDescription.h"
-#include "../Gray/GammaRayTrace.h"
-#include "../Gray/LoadMaterials.h"
+#include <RayTraceStats.h>
+#include <PixelArray.h>
+#include <ViewableBase.h>
+#include <DirectLight.h>
+#include <CameraView.h>
+#include <GlutRenderer.h>
+#include <KdTree.h>
+#include <SceneDescription.h>
+#include <GammaRayTrace.h>
+#include <LoadMaterials.h>
 #include <Random.h>
 #include <LoadDetector.h>
 
@@ -69,11 +68,35 @@ bool GammaRayTraceMode = false;
 long NumScanLinesRayTraced = -1;
 long WidthRayTraced = -1;
 
-const double MAX_DIST = 50;	// Max. view distance
-
 SceneDescription* ActiveScene;
 
 SceneDescription FileScene;			// Scene that is loaded from an .obj or .nff file.
+
+
+void InitLightsAndView(GlutRenderer & glut, const SceneDescription & scene)
+{
+    // Set camera position
+    glut.SetBackgroundColor( scene.BackgroundColor() );
+    glut.SetupCameraView( scene.GetCameraView() );
+    // Define all light sources
+    for (int i = 0; i < scene.NumLights(); i++) {
+        glut.AddLight(scene.GetLight(i));
+    }
+    glut.SetGlobalAmbientLight(scene.GlobalAmbientLight());
+}
+
+void RenderViewables(GlutRenderer & glut, const SceneDescription & scene)
+{
+    glut.RenderViewables(scene.GetViewableArray());
+}
+
+void RenderScene(GlutRenderer & glut, const SceneDescription & scene)
+{
+    InitLightsAndView(glut, scene);
+    RenderViewables(glut, scene);
+    glut.FinishRendering();
+}
+
 
 // RenderScene() chooses between using OpenGL or  ray-tracing to render the scene
 static void RenderScene(void)
@@ -88,7 +111,7 @@ static void RenderScene(void)
         GammaRayTraceMode = false;
     } 	else {
         GlutRenderer newGlutter;
-        newGlutter.RenderScene(*ActiveScene);
+        RenderScene(newGlutter, *ActiveScene);
     }
 }
 
@@ -530,7 +553,7 @@ void myMouseUpDownFunc( int button, int state, int x, int y )
 void InitializeSceneGeometry()
 {
     // Define the lights, materials, textures and viewable objects.
-    LoadPhysicsFiles( FileScene );
+    LoadMaterials::LoadPhysicsFiles(FileScene);
     LoadDetector myLoader;
     if (!myLoader.Load(FileNameDetector, FileScene, Gray)) {
         fprintf(stderr, "Loading file \"%s\" failed\n", FileNameDetector);
@@ -574,7 +597,7 @@ bool GrayProcessCommandLine(int argc, char **argv)
             } else if (strcmp(argv[index],switch_seed)==0) {
                 SeedParse = true;
             } else if (isdigit(argv[index][0])) {
-                int ret = sscanf(argv[index],"%ld",&GraySeed);
+                sscanf(argv[index],"%ld",&GraySeed);
             } else {
                 if (setFilenameDetector == false) {
                     FileNameDetector = argv[index];

@@ -1,4 +1,4 @@
-#include "Coincidence.h"
+#include <Coincidence.h>
 
 Coincidence::Coincidence()
 {
@@ -20,7 +20,6 @@ Coincidence::Coincidence()
 
 Coincidence::~Coincidence()
 {
-    long sizeCoinc = coinc.Size();
     if (log_coincidence) {
         output.close();
     }
@@ -55,7 +54,7 @@ bool Coincidence::AddEvent(const Photon &p, const INTER_TYPE type, const GammaMa
         // TODO: Add Delayed Window
 
         // Coincidence Processing Algorithm
-        for (long i; coinc.Size() > buffer_limit; i++) {
+        for (long i = 0; coinc.Size() > buffer_limit; i++) {
             double select_window = 0.0;
             double select_del_window_start = 0.0;
             double select_del_window_end = 0.0;

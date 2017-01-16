@@ -1,4 +1,4 @@
-#include "EllipsoidSource.h"
+#include <EllipsoidSource.h>
 
 EllipsoidSource::EllipsoidSource()
 {
@@ -24,15 +24,6 @@ EllipsoidSource::EllipsoidSource(const VectorR3 &center, const VectorR3 &a1, con
     axis1 = a2;
     axis2 = a1*a2;
     axis3 = a1;
-    // calculate Rotation Matrix
-    //cout << "L.x = " << L.x << "  L.y = " << L.y << "  L.z = " << L.z <<endl;
-    //cout << "axis.x = " << axis.x << "  axis.y = " << axis.y << "  axis.z = " << axis.z <<endl;
-    /* Rotation Matrix based on Logbook 4 p72, AVDB) */
-    double c= axis1.z;
-    double s=(axis1.x*axis1.x+axis1.y*axis1.y);
-    //RotMtrx.Set( axis1.y*axis1.y + (1-axis1.y*axis1.y)*c, -axis1.x*axis1.y*(1-c), -axis1.x*s,
-    //-axis1.x*axis1.y*(1-c), axis1.x*axis1.x + ( 1-axis1.x*axis1.x)*c, axis1.y*s,
-    //axis1.x*s, axis1.y*s,c);
     RotMtrx.Set(1, 0, 0,
                 0, 1, 0,
                 0, 0, 1);

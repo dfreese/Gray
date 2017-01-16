@@ -20,8 +20,7 @@
  *
  */
 
-#include "LinearR4.h"
-
+#include <LinearR4.h>
 #include <assert.h>
 
 const VectorR4 VectorR4::Zero;

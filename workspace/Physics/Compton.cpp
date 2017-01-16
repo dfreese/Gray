@@ -1,3 +1,3 @@
-#include "Compton.h"
+#include <Compton.h>
 
 Compton::Compton() {}

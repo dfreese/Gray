@@ -19,10 +19,10 @@
  *
  */
 
-#include "ViewableBezierSet.h"
-#include "ViewableSphere.h"
-#include "ViewableParallelepiped.h"
-#include "../VrMath/LinearR4.h"
+#include <ViewableBezierSet.h>
+#include <ViewableSphere.h>
+#include <ViewableParallelepiped.h>
+#include <LinearR4.h>
 
 #include <stdio.h>
 

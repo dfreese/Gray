@@ -18,10 +18,10 @@
  *
  */
 
-#include "ViewableSphere.h"
-#include "Extents.h"
-#include "../VrMath/Aabb.h"
-#include "../VrMath/MathMisc.h"
+#include <ViewableSphere.h>
+#include <Extents.h>
+#include <Aabb.h>
+#include <MathMisc.h>
 
 // Returns an intersection if found with distance maxDistance
 // viewDir must be a unit vector.

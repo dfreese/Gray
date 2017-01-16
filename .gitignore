@@ -12,3 +12,6 @@ CMakeScripts
 /neg_sphere.dat
 Gray.build
 Gray.xcodeproj
+Gray/Debug
+/workspace/Gray/Debug
+/workspace/test_rand/Debug

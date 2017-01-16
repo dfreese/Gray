@@ -18,8 +18,8 @@
  *
  */
 
-#include "TextureBilinearXform.h"
-#include "../Graphics/VisiblePoint.h"
+#include <TextureBilinearXform.h>
+#include <VisiblePoint.h>
 
 void TextureBilinearXform::ApplyTexture( VisiblePoint& visPoint ) const
 {

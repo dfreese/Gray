@@ -1,9 +1,11 @@
-#include "LoadMaterials.h"
+#include <LoadMaterials.h>
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
 #include <fstream>
+#include <SceneDescription.h>
 
+namespace {
 const int MaxnumFiles = 256;
 int numFiles =20;
 char* physicalMaterial[MaxnumFiles] ;
@@ -19,9 +21,9 @@ bool phyiscalMaterialLogInteractions[MaxnumFiles] = {
     false
 
 };
+}
 
-LoadMaterials myMatLoader;
-bool LoadPhysicsFiles( SceneDescription& theScene )
+bool LoadMaterials::LoadPhysicsFiles(SceneDescription& theScene)
 {
     ifstream matfile;
     string matstring;
@@ -96,14 +98,14 @@ bool LoadPhysicsFiles( SceneDescription& theScene )
 
     cout << numFiles << " Materials Found " <<endl;
     matfile.close();
-    return myMatLoader.Load(numFiles, theScene );
+    return(LoadMaterials::Load(numFiles, theScene));
 }
 
 
 bool LoadMaterials::Load(int numMaterial, SceneDescription& theScene )
 {
     bool parseOk = true;
-    numMaterialLoaded = 0;
+    int numMaterialLoaded = 0;
     for (int i = 0; i < numMaterial; i++) {
         GammaMaterial * mat = theScene.NewMaterial();
         mat->SetName(physicalMaterial[i]);

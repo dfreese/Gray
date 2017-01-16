@@ -18,7 +18,6 @@ public:
     void SetAxis(const VectorR3 &a1,const VectorR3 &a2);
 private:
     double radius1, radius2, radius3;
-    double length;
     VectorR3 axis1;
     VectorR3 axis2;
     VectorR3 axis3;

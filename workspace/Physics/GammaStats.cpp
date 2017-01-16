@@ -1,4 +1,4 @@
-#include "GammaStats.h"
+#include <GammaStats.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>

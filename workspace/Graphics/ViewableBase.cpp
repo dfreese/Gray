@@ -18,7 +18,7 @@
  *
  */
 
-#include "ViewableBase.h"
+#include <ViewableBase.h>
 
 void ViewableBase::CalcAABB( AABB& retAABB ) const
 {

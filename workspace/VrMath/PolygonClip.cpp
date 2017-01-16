@@ -21,8 +21,8 @@
 // PolygonClip.cpp
 //  Author: Sam Buss, October 2004.
 
-#include "PolygonClip.h"
-#include "LinearR3.h"
+#include <PolygonClip.h>
+#include <LinearR3.h>
 
 // Routine for clipping a convex polygon against a plane.
 // The edge and verts are clipped so as to lie in or below the plane.

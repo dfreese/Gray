@@ -19,7 +19,7 @@
  *
  */
 
-#include "RgbImage.h"
+#include <RgbImage.h>
 
 #ifndef RGBIMAGE_DONT_USE_OPENGL
 #if defined(_WIN32)			// If on windows, need this for gl.h

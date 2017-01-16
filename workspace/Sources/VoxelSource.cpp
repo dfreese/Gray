@@ -6,7 +6,7 @@ using namespace std;
 
 VoxelSource::~VoxelSource()
 {
-    for (int i; i < index.size(); i++) {
+    for (int i = 0; i < index.size(); i++) {
         delete index[i];
     }
 }

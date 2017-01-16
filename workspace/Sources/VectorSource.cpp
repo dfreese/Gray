@@ -1,5 +1,5 @@
-#include "VectorSource.h"
-#include "../Graphics/ViewableTriangle.h"
+#include <VectorSource.h>
+#include <ViewableTriangle.h>
 #include <Random.h>
 
 using namespace std;

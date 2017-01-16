@@ -1,5 +1,4 @@
-/* ZR89 Isotope */
-#include "ZR89.h"
+#include <ZR89.h>
 #include <Random.h>
 
 ZR89::ZR89()

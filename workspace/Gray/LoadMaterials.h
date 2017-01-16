@@ -1,20 +1,14 @@
 #ifndef LOAD_MATERIALS_H_
 #define LOAD_MATERIALS_H_
 
-#include "../Gray/SceneDescription.h"
-#include "../Graphics/MaterialBase.h"
-
-#include "GammaStats.h"
-
-bool LoadPhysicsFiles( SceneDescription& theScene );
+class SceneDescription;
 
 class LoadMaterials
 {
 public:
     // TODO: allow for adding of new materials from a file
-    bool Load( int num, SceneDescription& theScene ); // load default materials
-private:
-    int numMaterialLoaded;
+    static bool LoadPhysicsFiles(SceneDescription& theScene);
+    static bool Load(int num, SceneDescription& theScene); // load default materials
 };
 
 #endif

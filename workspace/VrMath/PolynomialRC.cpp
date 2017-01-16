@@ -20,8 +20,8 @@
  *
  */
 
-#include "PolynomialRC.h"
-#include "MathMisc.h"
+#include <PolynomialRC.h>
+#include <MathMisc.h>
 #include <math.h>
 #include <assert.h>
 
@@ -208,7 +208,7 @@ int PolySolveReal( int degree, double *coefs, double *roots )
             (*(tptr++)) = *(fptr++);
         }
 
-        delete work;
+        delete[] work;
         return numRoots;
     }
 }

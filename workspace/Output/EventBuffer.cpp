@@ -1,4 +1,4 @@
-#include "EventBuffer.h"
+#include <EventBuffer.h>
 #include <GammaMaterial.h>
 
 EventBuffer::EventBuffer()
@@ -24,7 +24,6 @@ EventBuffer::~EventBuffer()
     // Garry: Added to cleanup event queue:
     for (int i = 0; i < num_elements; i++) {
         CLinkedListElt<Event>* cur = events.GetLast();
-        Event * e1 = cur->GetEntry();
         cur->DeleteRemove();
         num_elements--;
     }

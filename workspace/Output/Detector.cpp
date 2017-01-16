@@ -1,4 +1,4 @@
-#include "Detector.h"
+#include <Detector.h>
 #include <stdio.h>
 #include <Random.h>
 

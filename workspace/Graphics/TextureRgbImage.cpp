@@ -22,10 +22,10 @@
  */
 
 
-#include "TextureRgbImage.h"
-#include "VisiblePoint.h"
-#include "MaterialBase.h"
-#include "../VrMath/LinearR3.h"
+#include <TextureRgbImage.h>
+#include <VisiblePoint.h>
+#include <MaterialBase.h>
+#include <LinearR3.h>
 
 // TextureRgbImage makes a texture map out of an RGB image.
 // Uses bilinear interpolation to set colors (by default)

@@ -18,9 +18,9 @@
  *
  */
 
-#include "ViewableTriangle.h"
-#include "Extents.h"
-#include "../VrMath/Aabb.h"
+#include <ViewableTriangle.h>
+#include <Extents.h>
+#include <Aabb.h>
 
 void ViewableTriangle::PreCalcInfo()
 {

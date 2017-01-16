@@ -19,7 +19,7 @@
  *
  */
 
-#include "assert.h"
+#include <assert.h>
 #include <PixelArray.h>
 #include <OpenGlRgbImage.h>
 #include <RgbImage.h>

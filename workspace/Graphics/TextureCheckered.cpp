@@ -18,8 +18,8 @@
  *
  */
 
-#include "TextureCheckered.h"
-#include "ViewableBase.h"
+#include <TextureCheckered.h>
+#include <ViewableBase.h>
 
 bool TextureCheckered::InOddSquare(double u, double v ) const	// Compute even/odd ness
 {

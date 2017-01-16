@@ -21,7 +21,7 @@
 // Parallelepiped.cpp
 //  Author: Sam Buss, January 2005.
 
-#include "Parallelepiped.h"
+#include <Parallelepiped.h>
 
 VectorR3 Parallelepiped::GetNormalFront() const
 {

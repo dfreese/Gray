@@ -19,11 +19,15 @@
  */
 
 #include <stdio.h>
-#include "LoadObjFile.h"
 #include <string.h>
-
-#include "../Graphics/ViewableParallelogram.h"
-#include "../Graphics/ViewableTriangle.h"
+#include <LoadObjFile.h>
+#include <Array.h>
+#include <LinearR2.h>
+#include <LinearR3.h>
+#include <LinearR4.h>
+#include <SceneDescription.h>
+#include <ViewableParallelogram.h>
+#include <ViewableTriangle.h>
 
 const int numCommands = 4;
 const char * commandList[numCommands] = {
@@ -34,22 +38,22 @@ const char * commandList[numCommands] = {
 };
 
 
-bool LoadObjFile( const char* filename, SceneDescription& theScene )
+bool ObjFileLoader::LoadObjFile(const std::string &filename, SceneDescription &theScene)
 {
     ObjFileLoader myLoader;
     return myLoader.Load( filename, theScene );
 }
 
-bool ObjFileLoader::Load( const char* filename, SceneDescription& theScene )
+bool ObjFileLoader::Load(const std::string &filename, SceneDescription &theScene)
 {
     Reset();
     ScenePtr = &theScene;
 
-    FILE* infile = fopen( filename, "r" );
+    FILE* infile = fopen(filename.c_str(), "r" );
     FileLineNumber = 0;
 
-    if ( !infile ) {
-        fprintf(stderr, "LoadObjFile: Unable to open file: %s\n", filename);
+    if (!infile) {
+        fprintf(stderr, "LoadObjFile: Unable to open file: %s\n", filename.c_str());
         return false;
     }
 
@@ -395,10 +399,6 @@ void ObjFileLoader::Reset()
 {
     Vertices.Reset();
     TextureCoords.Reset();
-    // VertexNormals.Reset();
-    for ( long i=0; i<UnsupportedCmds.SizeUsed(); i++ ) {
-        delete UnsupportedCmds[i];
-    }
     UnsupportedCmds.Reset();
 }
 
@@ -426,16 +426,16 @@ void ObjFileLoader::UnsupportedTooManyVerts( int maxVerts)
     }
 }
 
-void ObjFileLoader::AddUnsupportedCmd( char *cmd )
+void ObjFileLoader::AddUnsupportedCmd(const std::string & cmd)
 {
-    for ( long i=0; i<UnsupportedCmds.SizeUsed(); i++ ) {
-        if ( strcmp( cmd, UnsupportedCmds[i] ) == 0 ) {
+    for (long i=0; i<UnsupportedCmds.SizeUsed(); i++) {
+        if (cmd == UnsupportedCmds[i]) {
             return;
         }
     }
-    char* newstring = new char[strlen(cmd)+1];
-    strcpy( newstring, cmd );
-    UnsupportedCmds.Push( newstring );
+    // Copy so the string is mutable.
+    std::string cmd_mut(cmd);
+    UnsupportedCmds.Push(cmd_mut);
 }
 
 void ObjFileLoader::PrintCmdNotSupportedErrors( FILE* outstream )
@@ -450,7 +450,7 @@ void ObjFileLoader::PrintCmdNotSupportedErrors( FILE* outstream )
             if ( i!=0 ) {
                 fprintf( outstream, ", " );
             }
-            fprintf( outstream, "%s", UnsupportedCmds[i] );
+            fprintf(outstream, "%s", UnsupportedCmds[i].c_str());
         }
         fprintf( outstream, ".\n" );
     }

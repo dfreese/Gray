@@ -31,7 +31,6 @@ GammaMaterial * MaterialStack::curMaterial()
 
 void MaterialStack::ResetMaterial()
 {
-    long i;
     MatStack.Reset();
     MatStack.Push(defaultMaterial);
 }

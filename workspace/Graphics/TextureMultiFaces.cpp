@@ -18,8 +18,8 @@
  *
  */
 
-#include "TextureMultiFaces.h"
-#include "VisiblePoint.h"
+#include <TextureMultiFaces.h>
+#include <VisiblePoint.h>
 
 void TextureMultiFaces::ApplyTexture( VisiblePoint& visPoint ) const
 {

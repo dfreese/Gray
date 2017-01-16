@@ -30,17 +30,17 @@
 //    The rigid transformation is represented by a 3x4 matrix,
 //		specifically by a RigidMapR3 object.
 
-#include "TransformViewable.h"
-#include "../Graphics/CameraView.h"
-#include "../Graphics/ViewableBezierSet.h"
-#include "../Graphics/ViewableCone.h"
-#include "../Graphics/ViewableCylinder.h"
-#include "../Graphics/ViewableEllipsoid.h"
-#include "../Graphics/ViewableParallelepiped.h"
-#include "../Graphics/ViewableParallelogram.h"
-#include "../Graphics/ViewableSphere.h"
-#include "../Graphics/ViewableTorus.h"
-#include "../Graphics/ViewableTriangle.h"
+#include <TransformViewable.h>
+#include <CameraView.h>
+#include <ViewableBezierSet.h>
+#include <ViewableCone.h>
+#include <ViewableCylinder.h>
+#include <ViewableEllipsoid.h>
+#include <ViewableParallelepiped.h>
+#include <ViewableParallelogram.h>
+#include <ViewableSphere.h>
+#include <ViewableTorus.h>
+#include <ViewableTriangle.h>
 
 void TransformWithRigid(  ViewableBase* theObject, const RigidMapR3& theTransform )
 {

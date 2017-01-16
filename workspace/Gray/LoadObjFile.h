@@ -21,21 +21,14 @@
 #ifndef LOAD_OBJ_FILE_H
 #define LOAD_OBJ_FILE_H
 
-#include "../DataStructs/Array.h"
-#include "SceneDescription.h"
-#include "../VrMath/LinearR2.h"
-#include "../VrMath/LinearR3.h"
-#include "../VrMath/LinearR4.h"
-
-//class SceneDescription;
-//class ObjFileLoader;
-
-// This is the preferred method for loading from obj files.
-//    Filename should end with ".obj".
-// Returns true if parsing succeeded.
-bool LoadObjFile( const char* filename, SceneDescription& theScene );
+#include <Array.h>
+#include <string>
 
 
+class SceneDescription;
+class VectorR2;
+class VectorR3;
+class VectorR4;
 // ObjFileLoader are intended for future internal use.
 
 class ObjFileLoader
@@ -49,7 +42,8 @@ public:
     // The "Load()" routines reads from the file and includes whatever it
     //	knows how to process into the scene.  (If the scene already includes
     //  items, they are left unchanged.)
-    bool Load( const char* filename, SceneDescription& theScene );
+    bool Load(const std::string & filename, SceneDescription& theScene );
+    static bool LoadObjFile(const std::string & filename, SceneDescription& theScene );
     static char* ScanForSecondField( char* inbuf );
 
 private:
@@ -77,14 +71,14 @@ private:
     void UnsupportedTextureDepth();
     void UnsupportedLines();
     void UnsupportedTooManyVerts( int maxVerts );
-    void AddUnsupportedCmd( char *cmd );
+    void AddUnsupportedCmd(const std::string & cmd);
     void PrintCmdNotSupportedErrors( FILE* outstream );
 
     Array<VectorR4> Vertices;			// Vertices in homogenous format
     Array<VectorR2> TextureCoords;		// Texture coordinates not supported yet
     Array<VectorR3> VertexNormals;		// Vertex normals not supported yet
 
-    Array<char*> UnsupportedCmds;
+    Array<std::string> UnsupportedCmds;
 
 };
 

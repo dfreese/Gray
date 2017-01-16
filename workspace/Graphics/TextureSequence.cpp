@@ -18,7 +18,7 @@
  *
  */
 
-#include "TextureSequence.h"
+#include <TextureSequence.h>
 
 void TextureSequence::ApplyTexture( VisiblePoint& visPoint ) const
 {

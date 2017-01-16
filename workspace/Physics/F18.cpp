@@ -1,5 +1,4 @@
-/* F18 Isotope */
-#include "F18.h"
+#include <F18.h>
 
 // TODO: Get true max endpoint in MeV
 const double F18_MAX_BETA_ENERGY=0.315;

@@ -1,5 +1,4 @@
-/* Beam Isotope */
-#include "Beam.h"
+#include <Beam.h>
 
 using namespace std;
 
