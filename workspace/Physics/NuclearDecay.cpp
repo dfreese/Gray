@@ -1,5 +1,5 @@
 #include <NuclearDecay.h>
-#include <Random.h>
+#include <Random/Random.h>
 
 NuclearDecay::NuclearDecay()
 {

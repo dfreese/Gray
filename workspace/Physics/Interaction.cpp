@@ -3,7 +3,7 @@
 #include <GammaMaterial.h>
 #include <InteractionList.h>
 #include <Output.h>
-#include <Random.h>
+#include <Random/Random.h>
 
 Interaction::Interaction() {}
 

@@ -1,7 +1,7 @@
 #include <GammaDecay.h>
 #include <stdio.h>
 #include <math.h>
-#include <Random.h>
+#include <Random/Random.h>
 
 GammaDecay::GammaDecay()
 {

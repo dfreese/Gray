@@ -1,7 +1,7 @@
 #include <Detector.h>
 #include <Photon.h>
 #include <stdio.h>
-#include <Random.h>
+#include <Random/Random.h>
 
 Detector::Detector()
 {

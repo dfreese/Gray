@@ -21,7 +21,7 @@
 #include <SceneDescription.h>
 #include <GammaRayTrace.h>
 #include <LoadMaterials.h>
-#include <Random.h>
+#include <Random/Random.h>
 #include <LoadDetector.h>
 
 

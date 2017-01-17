@@ -1,7 +1,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <Random.h>
+#include <Random/Random.h>
 #include <LoadDetector.h>
 #include <LoadObjFile.h>
 #include <TransformViewable.h>

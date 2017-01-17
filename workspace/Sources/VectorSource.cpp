@@ -1,6 +1,6 @@
 #include <VectorSource.h>
 #include <ViewableTriangle.h>
-#include <Random.h>
+#include <Random/Random.h>
 
 using namespace std;
 

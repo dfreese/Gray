@@ -1,5 +1,5 @@
 #include <ZR89.h>
-#include <Random.h>
+#include <Random/Random.h>
 
 ZR89::ZR89()
 {

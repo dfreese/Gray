@@ -1,6 +1,6 @@
-#include <Random.h>
-#include <mt19937.h>
 #include <cmath>
+#include <Random/Random.h>
+#include <Random/mt19937.h>
 #include <VrMath/LinearR3.h>
 
 double Random::cache_gauss = 0;

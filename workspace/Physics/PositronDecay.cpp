@@ -1,7 +1,7 @@
 #include <PositronDecay.h>
 #include <stdio.h>
 #include <math.h>
-#include <Random.h>
+#include <Random/Random.h>
 
 using namespace std;
 
