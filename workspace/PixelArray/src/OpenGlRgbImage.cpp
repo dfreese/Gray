@@ -1,4 +1,4 @@
-#include <OpenGlRgbImage.h>
+#include <PixelArray/OpenGlRgbImage.h>
 
 #if defined(_WIN32)			// If on windows, need this for gl.h
 #include <windows.h>

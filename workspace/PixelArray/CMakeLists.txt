@@ -1,11 +1,11 @@
 add_library(PixelArray
-    PixelArray.cpp
-    PixelArray.h
-    OpenGlRgbImage.cpp
-    OpenGlRgbImage.h
+    src/PixelArray.cpp
+    include/PixelArray/PixelArray.h
+    src/OpenGlRgbImage.cpp
+    include/PixelArray/OpenGlRgbImage.h
 )
 
-target_include_directories(PixelArray PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(PixelArray PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 target_link_libraries(PixelArray Graphics)
 
