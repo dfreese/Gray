@@ -10,7 +10,7 @@
 #define INTERACTION_LIST_H
 
 #include <DataStructs/Array.h>
-#include <Deposit.h>
+#include <Physics/Deposit.h>
 
 class Photon;
 class Positron;

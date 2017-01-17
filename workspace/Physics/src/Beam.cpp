@@ -1,4 +1,4 @@
-#include <Beam.h>
+#include <Physics/Beam.h>
 
 using namespace std;
 

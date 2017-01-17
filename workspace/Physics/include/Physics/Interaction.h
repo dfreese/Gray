@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <fstream>
-#include <Photon.h>
+#include <Physics/Photon.h>
 
 class GammaMaterial;
 class InteractionList;

@@ -1,4 +1,4 @@
-#include <GammaDecay.h>
+#include <Physics/GammaDecay.h>
 #include <stdio.h>
 #include <math.h>
 #include <Random/Random.h>

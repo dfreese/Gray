@@ -3,8 +3,8 @@
 
 #include <map>
 #include <DataStructs/Stack.h>
-#include <Photon.h>
-#include <GammaMaterial.h>
+#include <Physics/Photon.h>
+#include <Physics/GammaMaterial.h>
 
 class GammaMaterial;
 

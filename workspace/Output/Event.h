@@ -1,8 +1,8 @@
 #ifndef EVENT_H_
 #define EVENT_H_
 #include <Graphics/Material.h>
-#include "../Physics/Photon.h"
-#include "Detector.h"
+#include <Physics/Photon.h>
+#include <Detector.h>
 
 #define	E_ERROR		-1
 #define	E_SINGLE	0

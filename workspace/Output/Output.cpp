@@ -1,5 +1,5 @@
 #include <Output.h>
-#include <GammaMaterial.h>
+#include <Physics/GammaMaterial.h>
 
 Output::Output()
 {

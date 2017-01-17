@@ -25,9 +25,9 @@
 		(HACK) If Energies sum up above 480keV * 2, then register a coincidence
 ****************************************************************/
 
-#include <GammaMaterial.h>
-#include <Photon.h>
-#include <PositronDecay.h>
+#include <Physics/GammaMaterial.h>
+#include <Physics/Photon.h>
+#include <Physics/PositronDecay.h>
 #include <DataStructs/PQueue.h>
 #include <Event.h>
 #include <Detector.h>

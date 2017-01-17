@@ -25,8 +25,8 @@
 
 #include <VrMath/MathMisc.h>
 #include <VrMath/LinearR3.h>
-#include <Isotope.h>
-#include <Photon.h>
+#include <Physics/Isotope.h>
+#include <Physics/Photon.h>
 
 using namespace std;
 class GammaMaterial;

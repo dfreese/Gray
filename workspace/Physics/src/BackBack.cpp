@@ -1,7 +1,8 @@
-#include <ZR89.h>
-#include <Random/Random.h>
+#include <Physics/BackBack.h>
 
-ZR89::ZR89()
+using namespace std;
+
+BackBack::BackBack()
 {
     /*******************************************************************************
      *            18F             11C            13N               15O             *
@@ -17,49 +18,29 @@ ZR89::ZR89()
     positronK1 = 27.9;
     positronK2 = 2.91;
     positronMaxRange = 3.0;
-    g.SetEnergy(CONST_E_ZR89_GAMMA);
     Reset();
 }
 
-void ZR89::Decay(unsigned int photon_number)
+void BackBack::Decay(unsigned int photon_number)
 {
-    // TODO: Find ZR89 Beta energy
-    SetEnergy(0.315);
     p.source_num = source_num;
-    g.source_num = source_num;
-    SetId(photon_number);
     p.SetTime(time);
-    g.SetTime(time);
     p.SetPosition(position);
-    g.SetPosition(position);
-    // Get Rid of Redundant Positron Range code in Isotopes
-
-    PositronRange(p);
+    //PositronRange(p);
     p.Decay(photon_number);
-
-    // No Gamma Decay for Gamma Rays
-    g.Decay(photon_number);
-
-    // Calculate Physics to determine when and if Positron and Gamma are emitted together
-
-    if (Random::Uniform() < CONST_PROB_ZR89_POS) {
-        AddPhoton(p.blue);
-        AddPhoton(p.red);
-    }
-    // Gamma is emitted for every positron
-    AddPhoton(g.gamma);
+    AddPhoton(p.blue);
+    AddPhoton(p.red);
 }
 
-void ZR89::Reset()
+void BackBack::Reset()
 {
     p.Reset();
-    g.Reset();
     daughter.Reset();
 }
 
-ostream & ZR89::print_on(ostream & os) const
+ostream & BackBack::print_on(ostream & os) const
 {
-    os << "ZR89: ";
+    os << "BackBack: ";
     os << p;
     return os;
 }

@@ -2,8 +2,8 @@
 #define CSE167_SOURCELIST_H
 
 #include <vector>
-#include "Source.h"
-#include "../Physics/BackBack.h"
+#include <Source.h>
+#include <Physics/BackBack.h>
 
 // a microcurie is 37kevents/second
 const double microCurie = 37.0e3;

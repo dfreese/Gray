@@ -1,8 +1,7 @@
-#include <BackBack.h>
+#include <Physics/IN110.h>
+#include <Random/Random.h>
 
-using namespace std;
-
-BackBack::BackBack()
+IN110::IN110()
 {
     /*******************************************************************************
      *            18F             11C            13N               15O             *
@@ -18,29 +17,49 @@ BackBack::BackBack()
     positronK1 = 27.9;
     positronK2 = 2.91;
     positronMaxRange = 3.0;
+    g.SetEnergy(CONST_E_IN110m_GAMMA);
     Reset();
 }
 
-void BackBack::Decay(unsigned int photon_number)
+void IN110::Decay(unsigned int photon_number)
 {
+    // TODO: Get Beta energy from distribution
+    SetEnergy(0.311);
     p.source_num = source_num;
+    g.source_num = source_num;
+    SetId(photon_number);
     p.SetTime(time);
+    g.SetTime(time);
     p.SetPosition(position);
-    //PositronRange(p);
+    g.SetPosition(position);
+    // Get Rid of Redundant Positron Range code in Isotopes
+
+    PositronRange(p);
     p.Decay(photon_number);
-    AddPhoton(p.blue);
-    AddPhoton(p.red);
+
+    // No Gamma Decay for Gamma Rays
+    g.Decay(photon_number);
+
+    // Calculate Physics to determine when and if Positron and Gamma are emitted together
+
+    if (Random::Uniform() < CONST_PROB_IN110m_POS) {
+        AddPhoton(p.blue);
+        AddPhoton(p.red);
+    }
+    // Gamma is emitted for every positron
+    AddPhoton(g.gamma);
 }
 
-void BackBack::Reset()
+void IN110::Reset()
 {
     p.Reset();
+    g.Reset();
     daughter.Reset();
 }
 
-ostream & BackBack::print_on(ostream & os) const
+ostream & IN110::print_on(ostream & os) const
 {
-    os << "BackBack: ";
+    os << "IN110: ";
     os << p;
     return os;
 }

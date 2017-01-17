@@ -2,7 +2,7 @@
 #define GAMMA_MATERIAL_H
 
 #include <Graphics/Material.h>
-#include <GammaStats.h>
+#include <Physics/GammaStats.h>
 
 class GammaMaterial : public Material {
 public:

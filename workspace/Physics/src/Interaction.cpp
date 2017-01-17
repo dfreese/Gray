@@ -1,7 +1,7 @@
-#include <Interaction.h>
+#include <Physics/Interaction.h>
 #include <math.h>
-#include <GammaMaterial.h>
-#include <InteractionList.h>
+#include <Physics/GammaMaterial.h>
+#include <Physics/InteractionList.h>
 #include <Output.h>
 #include <Random/Random.h>
 

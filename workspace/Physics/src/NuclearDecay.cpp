@@ -1,4 +1,4 @@
-#include <NuclearDecay.h>
+#include <Physics/NuclearDecay.h>
 #include <Random/Random.h>
 
 NuclearDecay::NuclearDecay()

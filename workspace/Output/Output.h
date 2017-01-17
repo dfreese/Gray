@@ -1,8 +1,8 @@
 #ifndef OUTPUT_H_
 #define OUTPUT_H_
 #include <Graphics/MaterialBase.h>
-#include "../Physics/Photon.h"
-#include "../Physics/NuclearDecay.h"
+#include <Physics/Photon.h>
+#include <Physics/NuclearDecay.h>
 #include <DetectorArray.h>
 #include <BinaryFormat.h>
 #include <EventBuffer.h>

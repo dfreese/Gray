@@ -2,7 +2,7 @@
 #include <Graphics/VisiblePoint.h>
 #include <Graphics/ViewableBase.h>
 #include <Graphics/ViewableTriangle.h>
-#include <GammaMaterial.h>
+#include <Physics/GammaMaterial.h>
 
 GammaRayTrace::GammaRayTrace()
 {

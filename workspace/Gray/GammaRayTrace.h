@@ -2,11 +2,11 @@
 #define GAMMARAYTRACE_H
 
 #include <string>
-#include "../Physics/Interaction.h"
+#include <Physics/Interaction.h>
 #include <MaterialStack.h>
-#include "../Physics/Photon.h"
-#include "../Physics/InteractionList.h"
-#include "../Sources/SourceList.h"
+#include <Physics/Photon.h>
+#include <Physics/InteractionList.h>
+#include <SourceList.h>
 #include <Output.h>
 
 class GammaMaterial;

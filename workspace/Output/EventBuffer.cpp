@@ -1,5 +1,5 @@
 #include <EventBuffer.h>
-#include <GammaMaterial.h>
+#include <Physics/GammaMaterial.h>
 
 EventBuffer::EventBuffer()
 {

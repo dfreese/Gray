@@ -1,5 +1,5 @@
 #include <Detector.h>
-#include <Photon.h>
+#include <Physics/Photon.h>
 #include <stdio.h>
 #include <Random/Random.h>
 

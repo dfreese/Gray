@@ -1,7 +1,7 @@
-#include <InteractionList.h>
-#include <GammaMaterial.h>
-#include <Photon.h>
-#include <Positron.h>
+#include <Physics/InteractionList.h>
+#include <Physics/GammaMaterial.h>
+#include <Physics/Photon.h>
+#include <Physics/Positron.h>
 
 InteractionList::InteractionList()
 {

@@ -1,7 +1,7 @@
-#include <IN110.h>
+#include <Physics/ZR89.h>
 #include <Random/Random.h>
 
-IN110::IN110()
+ZR89::ZR89()
 {
     /*******************************************************************************
      *            18F             11C            13N               15O             *
@@ -17,14 +17,14 @@ IN110::IN110()
     positronK1 = 27.9;
     positronK2 = 2.91;
     positronMaxRange = 3.0;
-    g.SetEnergy(CONST_E_IN110m_GAMMA);
+    g.SetEnergy(CONST_E_ZR89_GAMMA);
     Reset();
 }
 
-void IN110::Decay(unsigned int photon_number)
+void ZR89::Decay(unsigned int photon_number)
 {
-    // TODO: Get Beta energy from distribution
-    SetEnergy(0.311);
+    // TODO: Find ZR89 Beta energy
+    SetEnergy(0.315);
     p.source_num = source_num;
     g.source_num = source_num;
     SetId(photon_number);
@@ -42,7 +42,7 @@ void IN110::Decay(unsigned int photon_number)
 
     // Calculate Physics to determine when and if Positron and Gamma are emitted together
 
-    if (Random::Uniform() < CONST_PROB_IN110m_POS) {
+    if (Random::Uniform() < CONST_PROB_ZR89_POS) {
         AddPhoton(p.blue);
         AddPhoton(p.red);
     }
@@ -50,16 +50,16 @@ void IN110::Decay(unsigned int photon_number)
     AddPhoton(g.gamma);
 }
 
-void IN110::Reset()
+void ZR89::Reset()
 {
     p.Reset();
     g.Reset();
     daughter.Reset();
 }
 
-ostream & IN110::print_on(ostream & os) const
+ostream & ZR89::print_on(ostream & os) const
 {
-    os << "IN110: ";
+    os << "ZR89: ";
     os << p;
     return os;
 }
