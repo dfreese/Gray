@@ -14,4 +14,5 @@ Gray.build
 Gray.xcodeproj
 Gray/Debug
 /workspace/Gray/Debug
-/workspace/test_rand/Debug
+/workspace/Random/test/Debug
+/workspace/Random/test/test_rand

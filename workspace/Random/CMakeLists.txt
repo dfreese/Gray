@@ -8,3 +8,5 @@ add_library(Random
 target_include_directories(Random PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 target_link_libraries(Random VrMath)
+
+add_subdirectory(test)
