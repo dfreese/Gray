@@ -224,7 +224,8 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
         return false;
     }
 
-    char inbuffer[1026];
+    const int size_inbuffer = 1026;
+    char inbuffer[size_inbuffer];
     int viewCmdStatus = false;		// True if currently handling a "v" command
     VectorR3 viewPos;
     VectorR3 lookAtPos;
@@ -242,7 +243,7 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
     GammaMaterial* curMaterial = &theScene.GetMaterial(0);
 
     while ( true ) {
-        if ( !fgets( inbuffer, 1026, curFile ) ) { // read a line of the file
+        if ( !fgets( inbuffer, size_inbuffer, curFile ) ) { // read a line of the file
             if (include_count > 0) {
                 fclose( curFile );
                 curFile = includeFile[--include_count];
@@ -259,6 +260,16 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
             return true;
         }
         FileLineNumber++;
+        
+        // Ignore blank lines
+        if (strlen(inbuffer) == 0) {
+            continue;
+        } else if (inbuffer[0] == '#') {
+            // Ignore lines starting with a #.  This would also be handled in the
+            // case statement of this function, but just deal with it premptively.
+            continue;
+        }
+        
 
         // TODO: Scan and remove whitespace and comments at begging of file
 
