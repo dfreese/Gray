@@ -2,7 +2,7 @@
 #include <math.h>
 #include <Physics/GammaMaterial.h>
 #include <Physics/InteractionList.h>
-#include <Output.h>
+#include <Output/Output.h>
 #include <Random/Random.h>
 
 Interaction::Interaction() {}

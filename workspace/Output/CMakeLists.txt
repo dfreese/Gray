@@ -1,20 +1,20 @@
 add_library(Output
-    BinaryFormat.h
-    Coincidence.cpp
-    Coincidence.h
-    Detector.cpp
-    Detector.h
-    DetectorArray.cpp
-    DetectorArray.h
-    Event.cpp
-    Event.h
-    EventBuffer.cpp
-    EventBuffer.h
-    Output.cpp
-    Output.h
+    include/Output/BinaryFormat.h
+    src/Coincidence.cpp
+    include/Output/Coincidence.h
+    src/Detector.cpp
+    include/Output/Detector.h
+    src/DetectorArray.cpp
+    include/Output/DetectorArray.h
+    src/Event.cpp
+    include/Output/Event.h
+    src/EventBuffer.cpp
+    include/Output/EventBuffer.h
+    src/Output.cpp
+    include/Output/Output.h
 )
 
-target_include_directories(Output PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(Output PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 target_link_libraries(Output Random)
 target_link_libraries(Output Graphics)

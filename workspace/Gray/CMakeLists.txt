@@ -1,24 +1,24 @@
 add_executable(Gray
-    GammaRayTrace.cpp
-    GammaRayTrace.h
-    KdTree.cpp
-    KdTree.h
-    LoadDetector.cpp
-    LoadDetector.h
-    LoadMaterials.cpp
-    LoadMaterials.h
-    LoadObjFile.cpp
-    LoadObjFile.h
-    MaterialStack.cpp
-    MaterialStack.h
-    RayTraceStats.cpp
-    RayTraceStats.h
-    SceneDescription.cpp
-    SceneDescription.h
-    main.cpp
+    src/GammaRayTrace.cpp
+    include/Gray/GammaRayTrace.h
+    src/KdTree.cpp
+    include/Gray/KdTree.h
+    src/LoadDetector.cpp
+    include/Gray/LoadDetector.h
+    src/LoadMaterials.cpp
+    include/Gray/LoadMaterials.h
+    src/LoadObjFile.cpp
+    include/Gray/LoadObjFile.h
+    src/MaterialStack.cpp
+    include/Gray/MaterialStack.h
+    src/RayTraceStats.cpp
+    include/Gray/RayTraceStats.h
+    src/SceneDescription.cpp
+    include/Gray/SceneDescription.h
+    src/main.cpp
 )
 
-target_include_directories(Gray PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(Gray PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 target_link_libraries(Gray Physics)
 target_link_libraries(Gray Sources)
