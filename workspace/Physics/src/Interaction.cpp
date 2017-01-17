@@ -2,6 +2,7 @@
 #include <math.h>
 #include <Physics/GammaStats.h>
 #include <Random/Random.h>
+#include <stdlib.h>
 
 Interaction::Interaction() {}
 
