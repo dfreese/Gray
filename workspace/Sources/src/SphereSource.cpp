@@ -28,7 +28,7 @@ void SphereSource::Decay(unsigned int photon_number)
 
     pos *= radius;
     pos += position;
-    isotope->SetMaterial(GetMaterial());
+//    isotope->SetMaterial(GetMaterial());
     isotope->SetPosition(pos);
     isotope->Decay(photon_number);
 }

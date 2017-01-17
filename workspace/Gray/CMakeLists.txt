@@ -1,4 +1,5 @@
 add_executable(Gray
+    include/Gray/GammaMaterial.h
     src/GammaRayTrace.cpp
     include/Gray/GammaRayTrace.h
     src/KdTree.cpp

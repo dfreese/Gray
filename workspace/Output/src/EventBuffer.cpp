@@ -1,5 +1,5 @@
 #include <Output/EventBuffer.h>
-#include <Physics/GammaMaterial.h>
+#include <Physics/GammaStats.h>
 
 EventBuffer::EventBuffer()
 {
@@ -105,13 +105,13 @@ void EventBuffer::ProcessCoincEvents(Event * e)
     }
 }
 
-bool EventBuffer::AddEvent(const Photon &p, INTER_TYPE type, const GammaMaterial & mat, Detector * d)
+bool EventBuffer::AddEvent(const Photon &p, INTER_TYPE type, const GammaStats & mat_gamma_prop, Detector * d)
 {
     if ((log_singles == false) && (log_coincidence == false)) {
         return false;
     }
 
-    Event * e1 = new Event(p,type,mat.GammaProp.log_material, mat.GammaProp.GetMaterial(),d);
+    Event * e1 = new Event(p, type, mat_gamma_prop.log_material, mat_gamma_prop.GetMaterial(),d);
     events.AddHead(e1);
     num_elements++;
 

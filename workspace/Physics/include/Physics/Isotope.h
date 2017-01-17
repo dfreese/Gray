@@ -4,9 +4,6 @@
 #include <map>
 #include <DataStructs/Stack.h>
 #include <Physics/Photon.h>
-#include <Physics/GammaMaterial.h>
-
-class GammaMaterial;
 
 enum ISOTOPE_TYPE {ISO_ERROR,ISO_F18, ISO_IN110, ISO_ZR89, ISO_CU64, ISO_BACKBACK, ISO_BEAM};
 
@@ -22,10 +19,6 @@ public:
     {
         position = pos;
     }
-    void SetMaterial (GammaMaterial * mat)
-    {
-        material = mat;
-    }
     void SetId(long i)
     {
         id = i;
@@ -35,10 +28,6 @@ public:
     long GetId() const
     {
         return id;
-    }
-    GammaMaterial * GetMaterial()
-    {
-        return material;
     }
     const VectorR3 & GetPosition() const
     {
@@ -67,7 +56,6 @@ protected:
     }
     Photon EMPTY;
     Stack<Photon> daughter;
-    GammaMaterial * material;
     map<string, ISOTOPE_TYPE> mapIsotope;
 };
 

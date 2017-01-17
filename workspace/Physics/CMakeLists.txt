@@ -11,7 +11,6 @@ add_library(Physics
     include/Physics/F18.h
     src/GammaDecay.cpp
     include/Physics/GammaDecay.h
-    include/Physics/GammaMaterial.h
     src/GammaStats.cpp
     include/Physics/GammaStats.h
     src/IN110.cpp
@@ -37,6 +36,5 @@ add_library(Physics
 target_include_directories(Physics PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 target_link_libraries(Physics DataStructs)
-target_link_libraries(Physics Graphics)
 target_link_libraries(Physics Random)
 target_link_libraries(Physics VrMath)

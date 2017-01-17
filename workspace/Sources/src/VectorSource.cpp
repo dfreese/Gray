@@ -45,7 +45,6 @@ void VectorSource::Decay(unsigned int photon_number)
         pos.z = aabb.GetBoxMin().z + Random::Uniform()*delta.z;
     } while (RejectionTest(pos));
 
-    isotope->SetMaterial(GetMaterial());
     isotope->SetPosition(pos);
     isotope->Decay(photon_number);
     // no positron range for vector sources

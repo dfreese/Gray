@@ -58,7 +58,6 @@ void EllipsoidSource::Decay(unsigned int photon_number)
     roted = RotMtrx*p;
     roted += position;
     isotope->SetPosition(roted);
-    isotope->SetMaterial(GetMaterial());
     isotope->Decay(photon_number);
 }
 

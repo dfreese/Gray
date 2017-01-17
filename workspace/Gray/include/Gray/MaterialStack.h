@@ -23,7 +23,7 @@
 #include <limits.h>
 #include <vector>
 
-#include <Physics/GammaMaterial.h>
+#include <Gray/GammaMaterial.h>
 
 #include <VrMath/LinearR3.h>
 #include <DataStructs/Stack.h>

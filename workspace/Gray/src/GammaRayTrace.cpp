@@ -2,7 +2,7 @@
 #include <Graphics/VisiblePoint.h>
 #include <Graphics/ViewableBase.h>
 #include <Graphics/ViewableTriangle.h>
-#include <Physics/GammaMaterial.h>
+#include <Gray/GammaMaterial.h>
 
 GammaRayTrace::GammaRayTrace()
 {
@@ -59,10 +59,11 @@ INTER_TYPE GammaRayTrace::GRayTrace(Interaction &interaction,
         INTER_TYPE inter_type;
         // set detector id in photon
         double prev_energy = photon.energy;
-        switch(interaction.GammaInteraction(photon, hitDist, *curMaterial)) {
+        GammaStats & cur_mat_gamma_stats = (*curMaterial).GammaProp;
+        switch(interaction.GammaInteraction(photon, hitDist, cur_mat_gamma_stats)) {
             case PHOTOELECTRIC: {
-                o.LogPhotoElectric(photon, *curMaterial);
-                i.HitPhotoelectric(photon, photon.energy, *curMaterial);
+                o.LogPhotoElectric(photon, cur_mat_gamma_stats);
+                i.HitPhotoelectric(photon, photon.energy, cur_mat_gamma_stats);
                 return PHOTOELECTRIC;
                 break;
             }
@@ -73,8 +74,8 @@ INTER_TYPE GammaRayTrace::GRayTrace(Interaction &interaction,
             case COMPTON: {
                 // log interaction to file
                 double deposit = prev_energy - photon.energy;
-                o.LogCompton(photon, deposit, *curMaterial);
-                i.HitCompton(photon, deposit, *curMaterial);
+                o.LogCompton(photon, deposit, cur_mat_gamma_stats);
+                i.HitCompton(photon, deposit, cur_mat_gamma_stats);
                 return GRayTrace(interaction, visPoint, TraceDepth - 1, photon,MatStack, i, o, avoidK);
                 return COMPTON;
                 break;
@@ -179,11 +180,11 @@ void GammaRayTrace::GRayTraceSources(void)
     // text graphics preamble
     cout << "|";
 
-    Isotope * isotope = NULL;
     Photon photon;
 
     for (int i = 1; i < num_rays; i++) {
-        isotope = sources.Decay();
+        Source * source = sources.Decay();
+        Isotope * isotope = source->GetIsotope();
 
         if (logPositron == true) {
             output.LogNuclearDecay(((Positron*)isotope)->GetPositron());
@@ -237,7 +238,7 @@ void GammaRayTrace::GRayTraceSources(void)
             photon = isotope->NextPhoton();
 
             TraceDepth = 100;
-            MatStack.PushMaterial(isotope->GetMaterial());
+            MatStack.PushMaterial(source->GetMaterial());
             if (GRayTrace( interaction, visPoint, TraceDepth, photon, MatStack, interactions, output ) == ERROR) {
                 cout << "ERROR\n";
             }

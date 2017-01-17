@@ -13,7 +13,7 @@ class SourceList
 public:
     SourceList();
     ~SourceList();
-    Isotope * Decay();
+    Source * Decay();
     void AddSource(Source & s);
     void SetCurIsotope(const char * iso);
     double Random();

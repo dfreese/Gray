@@ -16,7 +16,7 @@
 #include <Graphics/BumpMapFunction.h>
 #include <Graphics/ViewableBase.h>
 #include <Physics/GammaStats.h>
-#include <Physics/GammaMaterial.h>
+#include <Gray/GammaMaterial.h>
 
 class SceneDescription
 {

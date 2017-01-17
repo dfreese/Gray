@@ -55,7 +55,7 @@ int SourceList::search(double e, int b_idx, int s_idx)
     }
 }
 
-Isotope * SourceList::Decay()
+Source * SourceList::Decay()
 {
     if (prob.empty()) {
         cerr << "ERROR: Sources do not exit\n";
@@ -77,7 +77,7 @@ Isotope * SourceList::Decay()
         list[idx]->SetTime(GetTime());
         CalculateTime();
         photon_number++;
-        return list[idx]->GetIsotope();
+        return list[idx];
     }
 }
 

@@ -73,7 +73,6 @@ void VoxelSource::Decay(unsigned int photon_number)
 
     pos += position;
 
-    isotope->SetMaterial(GetMaterial());
     isotope->SetPosition(pos);
     isotope->Decay(photon_number);
 }

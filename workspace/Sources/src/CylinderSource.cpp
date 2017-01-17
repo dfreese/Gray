@@ -45,7 +45,6 @@ void CylinderSource::Decay(unsigned int photon_number)
     roted = RotMtrx*positron;
     roted += position;
     isotope->SetPosition(roted);
-    isotope->SetMaterial(GetMaterial());
     isotope->Decay(photon_number);
 }
 

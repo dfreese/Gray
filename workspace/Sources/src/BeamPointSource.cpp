@@ -20,7 +20,6 @@ void BeamPointSource::Decay(unsigned int photon_number)
     //SetBeam(beam_axis, beam_angle);
     ((Beam*)isotope)->SetBeam(beam_axis, beam_angle);
     isotope->SetPosition(position);
-    isotope->SetMaterial(GetMaterial());
     isotope->Decay(photon_number);
 }
 

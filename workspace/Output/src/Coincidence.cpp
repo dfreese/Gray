@@ -1,4 +1,5 @@
 #include <Output/Coincidence.h>
+#include <Physics/GammaStats.h>
 
 Coincidence::Coincidence()
 {
@@ -25,19 +26,22 @@ Coincidence::~Coincidence()
     }
 }
 
-bool Coincidence::AddEvent(const Photon &p, const INTER_TYPE type, const GammaMaterial & mat, Detector * d)
+bool Coincidence::AddEvent(const Photon &p,
+                           const INTER_TYPE type,
+                           const GammaStats & mat_gamma_prop,
+                           Detector * d)
 {
     // Coincidence processor doesn't deal with logging scattered photons: see other parsers
     // or materials that are not logged
 
-    if (!mat.GammaProp.log_material) {
+    if (!mat_gamma_prop.log_material) {
         return false;
     }
     if (p.det_id == -1) {
         return false;
     }
 
-    Event eadd(p,type,mat.GammaProp.log_material, mat.GammaProp.GetMaterial(),d);
+    Event eadd(p,type, mat_gamma_prop.log_material, mat_gamma_prop.GetMaterial(),d);
     // output << "B: " << *eadd << endl;
     eadd.BlurEvent(*d);
     //output << "A: " << *eadd << endl;

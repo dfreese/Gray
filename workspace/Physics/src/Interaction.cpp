@@ -1,6 +1,6 @@
 #include <Physics/Interaction.h>
 #include <math.h>
-#include <Physics/GammaMaterial.h>
+#include <Physics/GammaStats.h>
 #include <Random/Random.h>
 
 Interaction::Interaction() {}
@@ -32,7 +32,7 @@ bool Interaction::GammaAttenuation(double &dist, double mu)
 // determine if photoelectric or compton interaction
 //		perform compton kinematics if comption interaction
 //		TODO: perform rayleigh kinematics if rayleigh interaction
-INTER_TYPE Interaction::GammaInteraction(Photon &photon, double dist, const GammaMaterial & mat)
+INTER_TYPE Interaction::GammaInteraction(Photon &photon, double dist, const GammaStats & mat_gamma_prop)
 {
     double mu = 0.0;
     double sigma = 0.0;
@@ -41,13 +41,13 @@ INTER_TYPE Interaction::GammaInteraction(Photon &photon, double dist, const Gamm
 
     // TODO: Add Rayleigh physics
     rayleigh = -1.0;
-    if (!mat.GammaProp.enable_interactions) {
+    if (!mat_gamma_prop.enable_interactions) {
         return NO_INTERACTION;
     }
 
     // Get attenuation coefficient and sigma, the pe/compton ratio at photon energy
     // change MeV to KeV
-    mat.GammaProp.GetPE(MEV_TO_KEY*photon.energy, mu, sigma);
+    mat_gamma_prop.GetPE(MEV_TO_KEY*photon.energy, mu, sigma);
 
     // determine if there is an interaction inter material
     bool interaction = GammaAttenuation(dist, mu);
@@ -60,16 +60,16 @@ INTER_TYPE Interaction::GammaInteraction(Photon &photon, double dist, const Gamm
         double dsdom;
 
         // test for Photoelectric interaction
-        switch (PE(sigma, mu, photon, mat)) {
+        switch (PE(sigma, mu, photon, mat_gamma_prop)) {
         case PHOTOELECTRIC:
             return PHOTOELECTRIC;
         case XRAY_ESCAPE:
             return XRAY_ESCAPE;
         case COMPTON:
             // get scatter properties
-            dsdom = mat.GammaProp.GetDsDom(photon.energy);
+            dsdom = mat_gamma_prop.GetDsDom(photon.energy);
             // perform compton kinematics
-            Klein_Nishina(dsdom, photon, mat);
+            Klein_Nishina(dsdom, photon, mat_gamma_prop);
             // If the photon scatters on a non-detector, it is a scatter, checked inside SetScatter
             photon.SetScatter();
             return COMPTON;
@@ -83,14 +83,14 @@ INTER_TYPE Interaction::GammaInteraction(Photon &photon, double dist, const Gamm
     }
 }
 
-INTER_TYPE Interaction::PE(double sigma, double mu, Photon &p, const GammaMaterial & mat)
+INTER_TYPE Interaction::PE(double sigma, double mu, Photon &p, const GammaStats & mat_gamma_prop)
 {
     double rand = Random::Uniform();
     // determine photofraction
     if (rand > sigma/mu) {
         Photon ptmp;
         ptmp = p;
-        if (XrayEscape(p,mat)) {
+        if (XrayEscape(p, mat_gamma_prop)) {
             // TODO: Get x-ray escape physics working again
             // 		 Xray needs to deposit majority of energy, and send small x-ray off
             return XRAY_ESCAPE;
@@ -102,7 +102,7 @@ INTER_TYPE Interaction::PE(double sigma, double mu, Photon &p, const GammaMateri
     }
 }
 
-void Interaction::Klein_Nishina(double dsdom, Photon &p, const GammaMaterial & mat)
+void Interaction::Klein_Nishina(double dsdom, Photon &p, const GammaStats & mat_gamma_prop)
 {
     //alpha = *energy / 511.;
     // alpha is defined as the ratio between 511keV and energy
@@ -174,14 +174,14 @@ double Interaction::dsigma(double theta, double alpha)
     return(sigma);
 }
 
-bool Interaction::XrayEscape(Photon &p, const GammaMaterial & mat)
+bool Interaction::XrayEscape(Photon &p, const GammaStats & mat_gamma_prop)
 {
     int i;
 
-    int num_escape = mat.GammaProp.GetNumEscape();
+    int num_escape = mat_gamma_prop.GetNumEscape();
     double photon_energy = p.energy;
-    double * xray_escape = mat.GammaProp.GetXrayEscape();
-    double * xray_escape_probability = mat.GammaProp.GetXrayEscapeProb();
+    double * xray_escape = mat_gamma_prop.GetXrayEscape();
+    double * xray_escape_probability = mat_gamma_prop.GetXrayEscapeProb();
     double rand = Random::Uniform();
 
     if (num_escape == 0) {
@@ -190,7 +190,7 @@ bool Interaction::XrayEscape(Photon &p, const GammaMaterial & mat)
     } else if (num_escape == 1) {
         if (photon_energy > xray_escape[0]) {
             // Inner shell interaction
-            if (Random::Uniform() < mat.GammaProp.GetAugerProb(0)) {
+            if (Random::Uniform() < mat_gamma_prop.GetAugerProb(0)) {
                 p.energy = xray_escape[0];
                 return true;
             } else {
@@ -214,7 +214,7 @@ bool Interaction::XrayEscape(Photon &p, const GammaMaterial & mat)
                     return false;
                 }
                 // Perform Auger Electron Check
-                if (Random::Uniform() < mat.GammaProp.GetAugerProb(i)) {
+                if (Random::Uniform() < mat_gamma_prop.GetAugerProb(i)) {
                     p.energy = xray_escape[i];
                     return true;
                 } else {

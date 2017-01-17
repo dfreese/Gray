@@ -24,7 +24,6 @@ void RectSource::Decay(unsigned int photon_number)
     pos.ArrayProd(size);
     pos += position;
     isotope->SetPosition(pos);
-    isotope->SetMaterial(GetMaterial());
     isotope->Decay(photon_number);
 }
 

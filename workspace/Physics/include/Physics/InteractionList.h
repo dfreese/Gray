@@ -15,7 +15,7 @@
 class Photon;
 class Positron;
 class Isotope;
-class GammaMaterial;
+class GammaStats;
 
 class InteractionList
 {
@@ -29,9 +29,9 @@ public:
     Deposit & NextHit();
     void Reset();
     void HitPositron(const Positron &p, double deposit);
-    void HitCompton(const Photon &p, double deposit, const GammaMaterial & mat);
-    void HitPhotoelectric(const Photon &p, double deposit, const GammaMaterial & mat);
-    void HitRayleigh(const Photon &p, const GammaMaterial & mat) { };
+    void HitCompton(const Photon &p, double deposit, const GammaStats & mat_gamma_prop);
+    void HitPhotoelectric(const Photon &p, double deposit, const GammaStats & mat_gamma_prop);
+    void HitRayleigh(const Photon &p, const GammaStats & mat_gamma_prop) { };
     Array<Deposit> hits;
     friend ostream& operator<< (ostream &os, const InteractionList & l);
 protected:
