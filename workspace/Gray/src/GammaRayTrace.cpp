@@ -45,7 +45,7 @@ INTER_TYPE GammaRayTrace::GRayTrace(Interaction &interaction,
     GammaMaterial * nextMaterial;
 
     if (TraceDepth <= 0) {
-        o.LogError(photon, ERROR_TRACE_DEPTH, curMaterial->GammaProp.GetMaterial() );
+        o.LogError(photon, ERROR_TRACE_DEPTH, curMaterial->GetMaterial());
         return NO_INTERACTION;
     }
 
@@ -59,11 +59,11 @@ INTER_TYPE GammaRayTrace::GRayTrace(Interaction &interaction,
         INTER_TYPE inter_type;
         // set detector id in photon
         double prev_energy = photon.energy;
-        GammaStats & cur_mat_gamma_stats = (*curMaterial).GammaProp;
-        switch(interaction.GammaInteraction(photon, hitDist, cur_mat_gamma_stats)) {
+//        GammaStats & cur_mat_gamma_stats = (*curMaterial).GammaProp;
+        switch(interaction.GammaInteraction(photon, hitDist, *curMaterial)) {
             case PHOTOELECTRIC: {
-                o.LogPhotoElectric(photon, cur_mat_gamma_stats);
-                i.HitPhotoelectric(photon, photon.energy, cur_mat_gamma_stats);
+                o.LogPhotoElectric(photon, (*curMaterial));
+                i.HitPhotoelectric(photon, photon.energy, *curMaterial);
                 return PHOTOELECTRIC;
                 break;
             }
@@ -74,8 +74,8 @@ INTER_TYPE GammaRayTrace::GRayTrace(Interaction &interaction,
             case COMPTON: {
                 // log interaction to file
                 double deposit = prev_energy - photon.energy;
-                o.LogCompton(photon, deposit, cur_mat_gamma_stats);
-                i.HitCompton(photon, deposit, cur_mat_gamma_stats);
+                o.LogCompton(photon, deposit, *curMaterial);
+                i.HitCompton(photon, deposit, *curMaterial);
                 return GRayTrace(interaction, visPoint, TraceDepth - 1, photon,MatStack, i, o, avoidK);
                 return COMPTON;
                 break;

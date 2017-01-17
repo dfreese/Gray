@@ -108,20 +108,19 @@ bool LoadMaterials::Load(int numMaterial, SceneDescription& theScene )
     int numMaterialLoaded = 0;
     for (int i = 0; i < numMaterial; i++) {
         GammaMaterial * mat = theScene.NewMaterial();
-        mat->SetName(physicalMaterial[i]);
-        GammaStats * stats = &mat->GammaProp;
-        stats->SetFileName(physicalMaterial[i]);
-        stats->SetMaterialType( i) ;
-        if (!stats->Load()) {
+        dynamic_cast<Material*>(mat)->SetName(physicalMaterial[i]);
+        mat->SetFileName(physicalMaterial[i]);
+        mat->SetMaterialType( i) ;
+        if (!mat->Load()) {
             parseOk = false;
         } else {
-            stats->log_material = phyiscalMaterialLogInteractions[i];
+            mat->log_material = phyiscalMaterialLogInteractions[i];
 
             if (i == 0)
                 if (i == 0) { // First material is default material
-                    stats->DisableInteractions();
+                    mat->DisableInteractions();
                 }
-            theScene.AddGammaStats(stats);
+            theScene.AddGammaStats(mat);
             numMaterialLoaded++;
         }
     }

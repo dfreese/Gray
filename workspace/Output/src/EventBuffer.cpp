@@ -125,7 +125,6 @@ bool EventBuffer::AddEvent(const Photon &p, INTER_TYPE type, const GammaStats & 
                 Event * se = new Event(e1->photon, e1->type, e1->log_material,e1->mat_id, e1->det);
                 ProcessSingleEvents(se);
             }
-            //if (log_coincidence && mat.GammaProp->log_material) {
             // weird bug about material properties
             if (log_coincidence&&e1->log_material) {
                 // Make new event and pass it off to Coincidence buffer

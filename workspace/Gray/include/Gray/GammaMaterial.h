@@ -4,10 +4,9 @@
 #include <Graphics/Material.h>
 #include <Physics/GammaStats.h>
 
-class GammaMaterial : public Material {
+class GammaMaterial : public Material, public GammaStats {
 public:
-    GammaMaterial() : Material() {}
-    GammaStats GammaProp;
+    GammaMaterial() : Material(), GammaStats() {}
 };
 
 #endif // GAMMA_MATERIAL_H

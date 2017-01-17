@@ -37,8 +37,6 @@ ostream& operator<< ( ostream& os, const Event& e )
         break;
     }
     os << e.photon;
-    //		log_file << mat.GammaProp->log_material;
-    //        	log_file << " ";
     os << e.mat_id;
     os << " ";
     os << e.photon.det_id;
