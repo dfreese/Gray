@@ -58,60 +58,73 @@ INTER_TYPE GammaRayTrace::GRayTrace(Interaction &interaction,
     } else {
         INTER_TYPE inter_type;
         // set detector id in photon
-        switch(interaction.GammaInteraction(photon, hitDist, *curMaterial, i, o)) {
-        case PHOTOELECTRIC:
-            return PHOTOELECTRIC;
-            break;
-        case XRAY_ESCAPE:
-        case COMPTON:
-            return GRayTrace(interaction, visPoint, TraceDepth - 1, photon,MatStack, i, o, avoidK);
-            return COMPTON;
-            break;
-        case NO_INTERACTION: {
-            // If not interaction, recursively traverse the in the direction the photon was travelling
-            if (visPoint.IsFrontFacing()) {
-                // to enter a detector, we must first go into it, then out
-                switch (visPoint.GetObject().GetViewableType()) {
-                case ViewableBase::Viewable_Triangle:
-                    // This detector id will be used to determine if we scatter in a detector
-                    // or inside a phantom
-                    photon.det_id = ((const ViewableTriangle&)(visPoint.GetObject())).GetDetectorId();
+        double prev_energy = photon.energy;
+        switch(interaction.GammaInteraction(photon, hitDist, *curMaterial)) {
+            case PHOTOELECTRIC: {
+                o.LogPhotoElectric(photon, *curMaterial);
+                i.HitPhotoelectric(photon, photon.energy, *curMaterial);
+                return PHOTOELECTRIC;
+                break;
+            }
+            case XRAY_ESCAPE: {
+                return XRAY_ESCAPE;
+                break;
+            }
+            case COMPTON: {
+                // log interaction to file
+                double deposit = prev_energy - photon.energy;
+                o.LogCompton(photon, deposit, *curMaterial);
+                i.HitCompton(photon, deposit, *curMaterial);
+                return GRayTrace(interaction, visPoint, TraceDepth - 1, photon,MatStack, i, o, avoidK);
+                return COMPTON;
+                break;
+            }
+            case NO_INTERACTION: {
+                // If not interaction, recursively traverse the in the direction the photon was travelling
+                if (visPoint.IsFrontFacing()) {
+                    // to enter a detector, we must first go into it, then out
+                    switch (visPoint.GetObject().GetViewableType()) {
+                    case ViewableBase::Viewable_Triangle:
+                        // This detector id will be used to determine if we scatter in a detector
+                        // or inside a phantom
+                        photon.det_id = ((const ViewableTriangle&)(visPoint.GetObject())).GetDetectorId();
+                        break;
+                    default:
+                        photon.det_id = -1;
+                        break;
+                    }
+                    nextMaterial = dynamic_cast<GammaMaterial*>(&visPoint.GetMaterialMutable());
+                    MatStack.PushMaterial(nextMaterial);
+                } else if (visPoint.IsBackFacing()) {
+                    photon.det_id = -1;
+                    MatStack.PopMaterial();
+                } else {
+                    cout << "ERROR: material has no face\n";
+                    exit(1);
+                }
+                // calculate the time taken to travel distance of the non-interaction
+                photon.time += (hitDist * s1_SOL);
+
+                // Make sure not to hit same place in kdtree
+                photon.pos = visPoint.GetPosition() + photon.dir * Epsilon;
+                inter_type = GRayTrace(interaction, visPoint, TraceDepth - 1, photon, MatStack, i, o, avoidK);
+                switch(inter_type) {
+                case PHOTOELECTRIC:
+                case COMPTON:
+                case ESCAPE_INTERACTION:
+                    return inter_type;
                     break;
                 default:
-                    photon.det_id = -1;
+                    return NO_INTERACTION;
                     break;
                 }
-                nextMaterial = dynamic_cast<GammaMaterial*>(&visPoint.GetMaterialMutable());
-                MatStack.PushMaterial(nextMaterial);
-            } else if (visPoint.IsBackFacing()) {
-                photon.det_id = -1;
-                MatStack.PopMaterial();
-            } else {
-                cout << "ERROR: material has no face\n";
-                exit(1);
-            }
-            // calculate the time taken to travel distance of the non-interaction
-            photon.time += (hitDist * s1_SOL);
-
-            // Make sure not to hit same place in kdtree
-            photon.pos = visPoint.GetPosition() + photon.dir * Epsilon;
-            inter_type = GRayTrace(interaction, visPoint, TraceDepth - 1, photon, MatStack, i, o, avoidK);
-            switch(inter_type) {
-            case PHOTOELECTRIC:
-            case COMPTON:
-            case ESCAPE_INTERACTION:
-                return inter_type;
                 break;
-            default:
+            }
+            default: {
+                cout << "ERROR: Interaction not specified\n";
                 return NO_INTERACTION;
                 break;
             }
-        }
-        break;
-        default:
-            cout << "ERROR: Interaction not specified\n";
-            return NO_INTERACTION;
-            break;
         }
     }
 }

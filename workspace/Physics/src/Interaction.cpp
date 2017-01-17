@@ -1,8 +1,6 @@
 #include <Physics/Interaction.h>
 #include <math.h>
 #include <Physics/GammaMaterial.h>
-#include <Physics/InteractionList.h>
-#include <Output/Output.h>
 #include <Random/Random.h>
 
 Interaction::Interaction() {}
@@ -34,7 +32,7 @@ bool Interaction::GammaAttenuation(double &dist, double mu)
 // determine if photoelectric or compton interaction
 //		perform compton kinematics if comption interaction
 //		TODO: perform rayleigh kinematics if rayleigh interaction
-INTER_TYPE Interaction::GammaInteraction(Photon &photon, double dist, const GammaMaterial & mat, InteractionList &l, Output &o)
+INTER_TYPE Interaction::GammaInteraction(Photon &photon, double dist, const GammaMaterial & mat)
 {
     double mu = 0.0;
     double sigma = 0.0;
@@ -62,7 +60,7 @@ INTER_TYPE Interaction::GammaInteraction(Photon &photon, double dist, const Gamm
         double dsdom;
 
         // test for Photoelectric interaction
-        switch (PE(sigma, mu, photon, mat, l, o)) {
+        switch (PE(sigma, mu, photon, mat)) {
         case PHOTOELECTRIC:
             return PHOTOELECTRIC;
         case XRAY_ESCAPE:
@@ -71,7 +69,7 @@ INTER_TYPE Interaction::GammaInteraction(Photon &photon, double dist, const Gamm
             // get scatter properties
             dsdom = mat.GammaProp.GetDsDom(photon.energy);
             // perform compton kinematics
-            Klein_Nishina(dsdom, photon, mat, l, o);
+            Klein_Nishina(dsdom, photon, mat);
             // If the photon scatters on a non-detector, it is a scatter, checked inside SetScatter
             photon.SetScatter();
             return COMPTON;
@@ -85,20 +83,18 @@ INTER_TYPE Interaction::GammaInteraction(Photon &photon, double dist, const Gamm
     }
 }
 
-INTER_TYPE Interaction::PE(double sigma, double mu, Photon &p, const GammaMaterial & mat, InteractionList &l, Output &o)
+INTER_TYPE Interaction::PE(double sigma, double mu, Photon &p, const GammaMaterial & mat)
 {
     double rand = Random::Uniform();
     // determine photofraction
     if (rand > sigma/mu) {
         Photon ptmp;
         ptmp = p;
-        if (XrayEscape(p,mat, l, o)) {
+        if (XrayEscape(p,mat)) {
             // TODO: Get x-ray escape physics working again
             // 		 Xray needs to deposit majority of energy, and send small x-ray off
             return XRAY_ESCAPE;
         } else {
-            o.LogPhotoElectric(p,mat);
-            l.HitPhotoelectric(p,p.energy, mat);
             return PHOTOELECTRIC;
         }
     } else {
@@ -106,7 +102,7 @@ INTER_TYPE Interaction::PE(double sigma, double mu, Photon &p, const GammaMateri
     }
 }
 
-void Interaction::Klein_Nishina(double dsdom, Photon &p, const GammaMaterial & mat, InteractionList &l, Output &o)
+void Interaction::Klein_Nishina(double dsdom, Photon &p, const GammaMaterial & mat)
 {
     //alpha = *energy / 511.;
     // alpha is defined as the ratio between 511keV and energy
@@ -157,11 +153,6 @@ void Interaction::Klein_Nishina(double dsdom, Photon &p, const GammaMaterial & m
 
     // next direction is from compton scattering angle
     p.dir = comp_dir;
-
-    // log interaction to file
-    o.LogCompton(p, deposit, mat);
-    l.HitCompton(p, deposit, mat);
-
 }
 
 double Interaction::dsigma(double theta, double alpha)
@@ -183,7 +174,7 @@ double Interaction::dsigma(double theta, double alpha)
     return(sigma);
 }
 
-bool Interaction::XrayEscape(Photon &p, const GammaMaterial & mat, InteractionList &l, Output &o)
+bool Interaction::XrayEscape(Photon &p, const GammaMaterial & mat)
 {
     int i;
 
