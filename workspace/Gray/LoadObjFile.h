@@ -21,7 +21,7 @@
 #ifndef LOAD_OBJ_FILE_H
 #define LOAD_OBJ_FILE_H
 
-#include <Array.h>
+#include <DataStructs/Array.h>
 #include <string>
 
 

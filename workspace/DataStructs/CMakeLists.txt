@@ -1,14 +1,12 @@
 
 add_library(DataStructs
-    Array.h
-    CLinkedList.h
-    DoubleRecurse.cpp
-    DoubleRecurse.h
-    KdTree.cpp
-    KdTree.h
-    PQueue.h
-    ShellSort.h
-    Stack.h
+    include/DataStructs/Array.h
+    include/DataStructs/CLinkedList.h
+    src/DoubleRecurse.cpp
+    include/DataStructs/DoubleRecurse.h
+    include/DataStructs/PQueue.h
+    include/DataStructs/ShellSort.h
+    include/DataStructs/Stack.h
 )
 
-target_include_directories(DataStructs PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(DataStructs PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

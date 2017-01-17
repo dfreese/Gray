@@ -39,7 +39,7 @@
 #endif
 
 #include <LinearR3.h>
-#include <Array.h>
+#include <DataStructs/Array.h>
 class CameraView;
 class Light;
 class ViewableBase;

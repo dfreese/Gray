@@ -1,11 +1,11 @@
 #ifndef EVENTBUFFER_H_
 #define EVENTBUFFER_H_
 
-#include "Event.h"
-#include "../DataStructs/Array.h"
-#include "../DataStructs/CLinkedList.h"
-#include "../DataStructs/Stack.h"
-#include "../DataStructs/PQueue.h"
+#include <Event.h>
+#include <DataStructs/Array.h>
+#include <DataStructs/CLinkedList.h>
+#include <DataStructs/Stack.h>
+#include <DataStructs/PQueue.h>
 #include <stdlib.h>
 #include <math.h>
 #include <limits.h>

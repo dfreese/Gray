@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <LoadObjFile.h>
-#include <Array.h>
+#include <DataStructs/Array.h>
 #include <LinearR2.h>
 #include <LinearR3.h>
 #include <LinearR4.h>

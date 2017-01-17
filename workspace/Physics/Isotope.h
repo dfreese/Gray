@@ -2,8 +2,8 @@
 #define ISOTOPE_H
 
 #include <map>
-#include "../DataStructs/Stack.h"
-#include "Photon.h"
+#include <DataStructs/Stack.h>
+#include <Photon.h>
 #include <GammaMaterial.h>
 
 class GammaMaterial;

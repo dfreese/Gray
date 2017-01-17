@@ -33,15 +33,15 @@
 #ifndef KDTREE_H
 #define KDTREE_H
 
-#include "ShellSort.h"
-#include "Array.h"
-#include "Stack.h"
-#include "../VrMath/Aabb.h"
+#include <DataStructs/ShellSort.h>
+#include <DataStructs/Array.h>
+#include <DataStructs/Stack.h>
+#include <Aabb.h>
 #define KDTREE_MAX(a,b) (((a)>(b))?(a):(b))
 
 class RayTraceStats;	// Statistics for KdTree traversal
 
-class KdTree;			// kd-tree.
+//class KdTree;			// kd-tree.
 class KdTreeNode;		// A single node in the kd-tree.
 
 class Kd_TraverseNodeData;			// Holds information on a single node needing traversal.

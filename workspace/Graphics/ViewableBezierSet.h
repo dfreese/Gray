@@ -21,11 +21,11 @@
 #ifndef VIEWABLEBEZIERSET_H
 #define VIEWABLEBEZIERSET_H
 
-#include "ViewableBase.h"
-#include "Material.h"
-#include "../DataStructs/Array.h"
-#include "../VrMath/Parallelepiped.h"
-#include "../DataStructs/CLinkedList.h"
+#include <ViewableBase.h>
+#include <Material.h>
+#include <DataStructs/Array.h>
+#include <DataStructs/CLinkedList.h>
+#include <Parallelepiped.h>
 #include <LinearR2.h>
 #include <LinearR3.h>
 #include <LinearR4.h>

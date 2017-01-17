@@ -1,9 +1,10 @@
 #ifndef DETECTORARRAY_H_
 #define DETECTORARRAY_H_
-#include "Detector.h"
-#include "../DataStructs/Array.h"
-#include "../VrMath/LinearR3.h"
-#include "../VrMath/LinearR4.h"
+#include <Detector.h>
+#include <DataStructs/Array.h>
+
+class VectorR3;
+class RigidMapR3;
 
 class DetectorArray
 {

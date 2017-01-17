@@ -1,7 +1,7 @@
 #ifndef SCENE_DESCRIPTION_H
 #define SCENE_DESCRIPTION_H
 
-#include <Array.h>
+#include <DataStructs/Array.h>
 #include <LinearR3.h>
 #include <CameraView.h>
 #include <Light.h>

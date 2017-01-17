@@ -26,7 +26,7 @@
 #include <GammaMaterial.h>
 
 #include <LinearR3.h>
-#include <Stack.h>
+#include <DataStructs/Stack.h>
 
 #define MAX_MATERIALS 10
 #define ERROR_MATERIAL (GammaMaterial*)-2

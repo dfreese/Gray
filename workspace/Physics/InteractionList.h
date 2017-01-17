@@ -9,7 +9,7 @@
 #ifndef INTERACTION_LIST_H
 #define INTERACTION_LIST_H
 
-#include <Array.h>
+#include <DataStructs/Array.h>
 #include <Deposit.h>
 
 class Photon;

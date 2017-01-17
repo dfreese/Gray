@@ -1,6 +1,8 @@
 add_executable(Gray
     GammaRayTrace.cpp
     GammaRayTrace.h
+    KdTree.cpp
+    KdTree.h
     LoadDetector.cpp
     LoadDetector.h
     LoadMaterials.cpp

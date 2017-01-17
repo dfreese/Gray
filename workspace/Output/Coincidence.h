@@ -28,7 +28,7 @@
 #include <GammaMaterial.h>
 #include <Photon.h>
 #include <PositronDecay.h>
-#include <PQueue.h>
+#include <DataStructs/PQueue.h>
 #include <Event.h>
 #include <Detector.h>
 #include <BinaryFormat.h>
