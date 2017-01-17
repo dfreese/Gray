@@ -22,7 +22,7 @@
 #include <assert.h>
 #include <PixelArray.h>
 #include <OpenGlRgbImage.h>
-#include <RgbImage.h>
+#include <Graphics/RgbImage.h>
 
 #ifdef _WIN32
 #include <windows.h>

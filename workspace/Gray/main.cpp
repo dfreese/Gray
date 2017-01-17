@@ -13,9 +13,9 @@
 
 #include <RayTraceStats.h>
 #include <PixelArray.h>
-#include <ViewableBase.h>
-#include <DirectLight.h>
-#include <CameraView.h>
+#include <Graphics/ViewableBase.h>
+#include <Graphics/DirectLight.h>
+#include <Graphics/CameraView.h>
 #include <GlutRenderer.h>
 #include <KdTree.h>
 #include <SceneDescription.h>

@@ -26,8 +26,8 @@
 #include <VrMath/LinearR3.h>
 #include <VrMath/LinearR4.h>
 #include <SceneDescription.h>
-#include <ViewableParallelogram.h>
-#include <ViewableTriangle.h>
+#include <Graphics/ViewableParallelogram.h>
+#include <Graphics/ViewableTriangle.h>
 
 const int numCommands = 4;
 const char * commandList[numCommands] = {

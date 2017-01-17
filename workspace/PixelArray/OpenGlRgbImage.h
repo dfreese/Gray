@@ -2,7 +2,7 @@
 #define OPENGLRGBIMAGE_H
 
 #include <stdio.h>
-#include <RgbImage.h>
+#include <Graphics/RgbImage.h>
 
 
 class OpenGlRgbImage: public RgbImage

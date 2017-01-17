@@ -3,18 +3,18 @@
 
 #include <DataStructs/Array.h>
 #include <VrMath/LinearR3.h>
-#include <CameraView.h>
-#include <Light.h>
-#include <Material.h>
-#include <TextureMapBase.h>
-#include <TextureAffineXform.h>
-#include <TextureBilinearXform.h>
-#include <TextureCheckered.h>
-#include <TextureMultiFaces.h>
-#include <TextureRgbImage.h>
-#include <TextureSequence.h>
-#include <BumpMapFunction.h>
-#include <ViewableBase.h>
+#include <Graphics/CameraView.h>
+#include <Graphics/Light.h>
+#include <Graphics/Material.h>
+#include <Graphics/TextureMapBase.h>
+#include <Graphics/TextureAffineXform.h>
+#include <Graphics/TextureBilinearXform.h>
+#include <Graphics/TextureCheckered.h>
+#include <Graphics/TextureMultiFaces.h>
+#include <Graphics/TextureRgbImage.h>
+#include <Graphics/TextureSequence.h>
+#include <Graphics/BumpMapFunction.h>
+#include <Graphics/ViewableBase.h>
 #include <GammaStats.h>
 #include <GammaMaterial.h>
 
