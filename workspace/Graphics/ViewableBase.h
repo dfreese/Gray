@@ -25,8 +25,8 @@
 // The classes    ViewableBase   and   VisiblePoint   are defined in this file.
 // ****************************************************************************
 
-#include <LinearR3.h>
-#include <Aabb.h>
+#include <VrMath/LinearR3.h>
+#include <VrMath/Aabb.h>
 #include <TextureMapBase.h>
 #include <VisiblePoint.h>
 

@@ -25,9 +25,9 @@
 #include <stdlib.h>
 
 
-#include "../VrMath/LinearR3.h"
-#include "../VrMath/LinearR4.h"
-#include "../VrMath/MathMisc.h"
+#include <VrMath/LinearR3.h>
+#include <VrMath/LinearR4.h>
+#include <VrMath/MathMisc.h>
 class RgbImage;
 
 class PixelArray

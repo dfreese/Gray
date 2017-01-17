@@ -20,7 +20,7 @@
 
 #include <ViewableParallelepiped.h>
 #include <Extents.h>
-#include <Aabb.h>
+#include <VrMath/Aabb.h>
 
 void ViewableParallelepiped::CalcPlaneInfo()
 {

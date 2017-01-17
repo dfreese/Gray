@@ -21,10 +21,10 @@
 #ifndef VIEWABLEPARALLELEPIPED_H
 #define VIEWABLEPARALLELEPIPED_H
 
-#include "ViewableBase.h"
-#include "Material.h"
-#include "../VrMath/LinearR3.h"
-#include "assert.h"
+#include <ViewableBase.h>
+#include <Material.h>
+#include <VrMath/LinearR3.h>
+#include <assert.h>
 
 // This class subsumes cubes and rectangular prisms
 

@@ -32,8 +32,8 @@
 // All rights reserved.  May be used for any purpose as long
 //	as use is acknowledged.
 
-#include <Aabb.h>
-#include <MathMisc.h>
+#include <VrMath/Aabb.h>
+#include <VrMath/MathMisc.h>
 
 // Update the Aabb to include the "newAabb"
 void AABB::EnlargeToEnclose ( const AABB& aabbToEnclose )

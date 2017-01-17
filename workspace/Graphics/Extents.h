@@ -30,7 +30,7 @@ class ViewableParallelepiped;
 class ViewableSphere;
 class ViewableTriangle;
 
-#include "../VrMath/LinearR3.h"
+#include <VrMath/LinearR3.h>
 
 // This is a file for collecting routines that find bounding box extents
 //  of ViewableBase objects intersected with bounding boxes.

@@ -1,7 +1,7 @@
 #ifndef NUCLEARDECAY_H
 #define NUCLEARDECAY_H
 
-#include "../VrMath/LinearR3.h"
+#include <VrMath/LinearR3.h>
 
 class MaterialBase;
 

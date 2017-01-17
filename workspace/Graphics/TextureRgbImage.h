@@ -21,10 +21,10 @@
 #ifndef TEXTURERGBIMAGE_H
 #define TEXTURERGBIMAGE_H
 
-#include "TextureMapBase.h"
-#include "RgbImage.h"
-#include "../VrMath/LinearR2.h"
-#include "../VrMath/LinearR3.h"
+#include <TextureMapBase.h>
+#include <RgbImage.h>
+#include <VrMath/LinearR2.h>
+#include <VrMath/LinearR3.h>
 
 // TextureRgbImage makes a texture map out of an RGB image.
 // Uses bilinear interpolation to set colors (by default)

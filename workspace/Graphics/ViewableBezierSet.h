@@ -25,10 +25,10 @@
 #include <Material.h>
 #include <DataStructs/Array.h>
 #include <DataStructs/CLinkedList.h>
-#include <Parallelepiped.h>
-#include <LinearR2.h>
-#include <LinearR3.h>
-#include <LinearR4.h>
+#include <VrMath/Parallelepiped.h>
+#include <VrMath/LinearR2.h>
+#include <VrMath/LinearR3.h>
+#include <VrMath/LinearR4.h>
 
 class BezierPatch;
 class BezierPatchMgr;

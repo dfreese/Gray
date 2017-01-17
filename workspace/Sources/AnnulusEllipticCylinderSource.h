@@ -1,9 +1,9 @@
 #ifndef ANNULUSELLIPTICCYLINDERSOURCE_H_
 #define ANNULUSELLIPTICCYLINDERSOURCE_H_
 
-#include "../VrMath/MathMisc.h"
-#include "../VrMath/LinearR3.h"
-#include "Source.h"
+#include <VrMath/MathMisc.h>
+#include <VrMath/LinearR3.h>
+#include <Source.h>
 
 using namespace std;
 

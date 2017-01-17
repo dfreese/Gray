@@ -20,7 +20,7 @@
 #include <math.h>
 #include <ViewableEllipsoid.h>
 #include <ViewableSphere.h>
-#include <PolynomialRC.h>
+#include <VrMath/PolynomialRC.h>
 
 // Returns an intersection if found with distance maxDistance
 // viewDir must be a unit vector.

@@ -24,9 +24,9 @@
 #include <ViewableParallelepiped.h>
 #include <ViewableSphere.h>
 #include <ViewableTriangle.h>
-#include <Parallelepiped.h>
-#include <PolygonClip.h>
-#include <MathMisc.h>
+#include <VrMath/Parallelepiped.h>
+#include <VrMath/PolygonClip.h>
+#include <VrMath/MathMisc.h>
 
 // This is a file for collecting routines that find bounding box extents
 //  of ViewableBase objects intersected with bounding boxes.

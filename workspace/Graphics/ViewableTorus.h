@@ -21,9 +21,9 @@
 #ifndef VIEWABLETORUS_H
 #define VIEWABLETORUS_H
 
-#include "ViewableBase.h"
-#include "Material.h"
-#include "../VrMath/LinearR4.h"
+#include <ViewableBase.h>
+#include <Material.h>
+#include <VrMath/LinearR4.h>
 
 class ViewableTorus : public ViewableBase
 {

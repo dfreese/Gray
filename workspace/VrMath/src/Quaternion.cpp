@@ -16,11 +16,11 @@
  *
  */
 
-#include <Quaternion.h>
-#include <MathMisc.h>
-#include <LinearR2.h>
-#include <LinearR3.h>
-#include <LinearR4.h>
+#include <VrMath/Quaternion.h>
+#include <VrMath/MathMisc.h>
+#include <VrMath/LinearR2.h>
+#include <VrMath/LinearR3.h>
+#include <VrMath/LinearR4.h>
 
 const Quaternion Quaternion::Identity( 0.0, 0.0, 0.0, 1.0 );
 

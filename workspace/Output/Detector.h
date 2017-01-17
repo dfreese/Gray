@@ -1,8 +1,9 @@
 #ifndef DETECTOR_H
 #define DETECTOR_H
-#include "../VrMath/LinearR3.h"
-#include "../VrMath/LinearR4.h"
-#include "../Physics/Photon.h"
+#include <VrMath/LinearR3.h>
+#include <VrMath/LinearR4.h>
+
+class Photon;
 
 class Detector
 {

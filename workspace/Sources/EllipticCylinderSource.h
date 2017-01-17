@@ -1,9 +1,9 @@
 #ifndef ELLIPTICCYLINDERSOURCE_H_
 #define ELLIPTICCYLINDERSOURCE_H_
 
-#include "../VrMath/MathMisc.h"
-#include "../VrMath/LinearR3.h"
-#include "Source.h"
+#include <VrMath/MathMisc.h>
+#include <VrMath/LinearR3.h>
+#include <Source.h>
 
 class EllipticCylinderSource : public Source
 {

@@ -2,8 +2,8 @@
 #define VECTORSOURCE_H_
 
 #include <Source.h>
-#include <LinearR3.h>
-#include <Aabb.h>
+#include <VrMath/LinearR3.h>
+#include <VrMath/Aabb.h>
 
 class VectorSource : public Source
 {

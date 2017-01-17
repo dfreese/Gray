@@ -1,7 +1,7 @@
 #ifndef LOAD_DETECTOR_H_
 #define LOAD_DETECTOR_H_
 
-#include <LinearR3.h>
+#include <VrMath/LinearR3.h>
 #include <DataStructs/Stack.h>
 #include <GammaRayTrace.h>
 #include <SceneDescription.h>

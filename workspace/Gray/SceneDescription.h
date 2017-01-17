@@ -2,7 +2,7 @@
 #define SCENE_DESCRIPTION_H
 
 #include <DataStructs/Array.h>
-#include <LinearR3.h>
+#include <VrMath/LinearR3.h>
 #include <CameraView.h>
 #include <Light.h>
 #include <Material.h>

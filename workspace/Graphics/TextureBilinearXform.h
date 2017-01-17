@@ -21,8 +21,8 @@
 #ifndef TEXTUREBILINEARXFORM_H
 #define TEXTUREBILINEARXFORM_H
 
-#include "TextureMapBase.h"
-#include "../VrMath/LinearR2.h"
+#include <TextureMapBase.h>
+#include <VrMath/LinearR2.h>
 
 // TextureBilinearXform - Warps texture map coordinates bilinearly.
 

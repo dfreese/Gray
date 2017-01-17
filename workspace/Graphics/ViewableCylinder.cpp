@@ -18,8 +18,8 @@
  *
  */
 
-#include <MathMisc.h>
-#include <PolynomialRC.h>
+#include <VrMath/MathMisc.h>
+#include <VrMath/PolynomialRC.h>
 #include <ViewableCylinder.h>
 
 // Returns an intersection if found with distance maxDistance

@@ -19,7 +19,7 @@
  */
 
 #include <ViewableTorus.h>
-#include <PolynomialRC.h>
+#include <VrMath/PolynomialRC.h>
 
 void ViewableTorus::PreCalcInfo()
 {

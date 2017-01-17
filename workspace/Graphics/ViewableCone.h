@@ -21,9 +21,9 @@
 #ifndef VIEWABLECONE_H
 #define VIEWABLECONE_H
 
-#include "ViewableBase.h"
-#include "Material.h"
-#include "../VrMath/LinearR3.h"
+#include <ViewableBase.h>
+#include <Material.h>
+#include <VrMath/LinearR3.h>
 
 class ViewableCone : public ViewableBase
 {

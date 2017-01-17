@@ -22,9 +22,9 @@
 #include <string.h>
 #include <LoadObjFile.h>
 #include <DataStructs/Array.h>
-#include <LinearR2.h>
-#include <LinearR3.h>
-#include <LinearR4.h>
+#include <VrMath/LinearR2.h>
+#include <VrMath/LinearR3.h>
+#include <VrMath/LinearR4.h>
 #include <SceneDescription.h>
 #include <ViewableParallelogram.h>
 #include <ViewableTriangle.h>

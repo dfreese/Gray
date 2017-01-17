@@ -1,7 +1,7 @@
 #include <Random.h>
 #include <mt19937.h>
 #include <cmath>
-#include <LinearR3.h>
+#include <VrMath/LinearR3.h>
 
 double Random::cache_gauss = 0;
 bool Random::cache_valid = false;

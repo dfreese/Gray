@@ -38,7 +38,7 @@
 #include <GL/glut.h>
 #endif
 
-#include <LinearR3.h>
+#include <VrMath/LinearR3.h>
 #include <DataStructs/Array.h>
 class CameraView;
 class Light;

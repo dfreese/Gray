@@ -20,8 +20,8 @@
  *
  */
 
-#include <MathMisc.h>
-#include <LinearR3.h>
+#include <VrMath/MathMisc.h>
+#include <VrMath/LinearR3.h>
 
 // ******************************************************
 // * VectorR3 class - math library functions				*

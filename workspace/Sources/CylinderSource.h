@@ -1,9 +1,9 @@
 #ifndef CYLINDERSOURCE_H_
 #define CYLINDERSOURCE_H_
 
-#include "../VrMath/MathMisc.h"
-#include "../VrMath/LinearR3.h"
-#include "Source.h"
+#include <VrMath/MathMisc.h>
+#include <VrMath/LinearR3.h>
+#include <Source.h>
 
 class CylinderSource : public Source
 {

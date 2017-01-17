@@ -31,6 +31,7 @@
 //		specifically by a RigidMapR3 object.
 
 #include <TransformViewable.h>
+#include <VrMath/LinearR4.h>
 #include <CameraView.h>
 #include <ViewableBezierSet.h>
 #include <ViewableCone.h>

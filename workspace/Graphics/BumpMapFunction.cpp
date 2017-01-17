@@ -20,7 +20,7 @@
 
 
 #include <BumpMapFunction.h>
-#include <LinearR2.h>
+#include <VrMath/LinearR2.h>
 #include <VisiblePoint.h>
 
 // viewDir - unit vector giving direction from viewpoint

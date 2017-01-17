@@ -21,9 +21,9 @@
 #ifndef VIEWABLECYLINDER_H
 #define VIEWABLECYLINDER_H
 
-#include "ViewableBase.h"
-#include "Material.h"
-#include "../VrMath/LinearR3.h"
+#include <ViewableBase.h>
+#include <Material.h>
+#include <VrMath/LinearR3.h>
 
 class ViewableCylinder : public ViewableBase
 {

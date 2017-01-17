@@ -20,7 +20,7 @@
 
 #include <ViewableParallelogram.h>
 #include <Extents.h>
-#include <Aabb.h>
+#include <VrMath/Aabb.h>
 
 // Precalculations for intersection testing speed
 void ViewableParallelogram::PreCalcInfo()

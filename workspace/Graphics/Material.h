@@ -21,7 +21,7 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
-#include <LinearR3.h>
+#include <VrMath/LinearR3.h>
 #include <MaterialBase.h>
 
 // the Material class inplements Phong lighting.  The base class MaterialBase

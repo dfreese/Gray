@@ -20,8 +20,8 @@
  *
  */
 
-#include <PolynomialRC.h>
-#include <MathMisc.h>
+#include <VrMath/PolynomialRC.h>
+#include <VrMath/MathMisc.h>
 #include <math.h>
 #include <assert.h>
 

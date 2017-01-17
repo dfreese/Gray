@@ -36,7 +36,7 @@
 #include <DataStructs/ShellSort.h>
 #include <DataStructs/Array.h>
 #include <DataStructs/Stack.h>
-#include <Aabb.h>
+#include <VrMath/Aabb.h>
 #define KDTREE_MAX(a,b) (((a)>(b))?(a):(b))
 
 class RayTraceStats;	// Statistics for KdTree traversal

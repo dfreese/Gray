@@ -19,9 +19,9 @@
  */
 
 #include <TextureMapBase.h>
-#include <LinearR2.h>
-#include <LinearR3.h>
-#include <MathMisc.h>
+#include <VrMath/LinearR2.h>
+#include <VrMath/LinearR3.h>
+#include <VrMath/MathMisc.h>
 
 // Convert a unit vector reflection direction to cube map coordinates
 // The input is a unit vector: reflectDir

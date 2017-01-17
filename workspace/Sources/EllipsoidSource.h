@@ -1,9 +1,9 @@
 #ifndef ELLIPSOIDSOURCE_H_
 #define ELLIPSOIDSOURCE_H_
 
-#include "../VrMath/MathMisc.h"
-#include "../VrMath/LinearR3.h"
-#include "Source.h"
+#include <VrMath/MathMisc.h>
+#include <VrMath/LinearR3.h>
+#include <Source.h>
 
 using namespace std;
 

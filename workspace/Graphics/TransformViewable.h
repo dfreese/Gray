@@ -29,7 +29,7 @@
 //	  to update it according to the specified rigid transformation.
 
 
-#include "../VrMath/LinearR4.h"
+class RigidMapR3;
 class ViewableBase;
 class ViewableBezierSet;
 class ViewableCone;

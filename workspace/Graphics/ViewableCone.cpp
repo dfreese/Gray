@@ -18,8 +18,8 @@
  *
  */
 
-#include <MathMisc.h>
-#include <PolynomialRC.h>
+#include <VrMath/MathMisc.h>
+#include <VrMath/PolynomialRC.h>
 #include <ViewableCone.h>
 
 ViewableCone::ViewableCone()

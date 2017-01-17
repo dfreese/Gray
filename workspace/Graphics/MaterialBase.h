@@ -26,7 +26,7 @@
 #define MATERIAL_BASE_H
 
 #include "assert.h"
-#include <LinearR3.h>
+#include <VrMath/LinearR3.h>
 
 class VisiblePoint;
 class Light;

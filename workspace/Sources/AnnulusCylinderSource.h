@@ -1,7 +1,7 @@
 #ifndef ANNULUSCYLINDERSOURCE_H_
 #define ANNULUSCYLINDERSOURCE_H_
 
-#include <LinearR3.h>
+#include <VrMath/LinearR3.h>
 #include <Source.h>
 
 class AnnulusCylinderSource : public Source

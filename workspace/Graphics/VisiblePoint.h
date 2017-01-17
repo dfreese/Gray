@@ -25,9 +25,9 @@
 // The class   VisiblePoint   is defined in this file.
 // ****************************************************************************
 
-#include "../VrMath/LinearR2.h"
-#include "../VrMath/LinearR3.h"
-#include "MaterialBase.h"
+#include <VrMath/LinearR2.h>
+#include <VrMath/LinearR3.h>
+#include <MaterialBase.h>
 class ViewableBase;
 
 //  VisiblePoint is a class storing information about a visible point.

@@ -25,7 +25,7 @@
 
 #include <GammaMaterial.h>
 
-#include <LinearR3.h>
+#include <VrMath/LinearR3.h>
 #include <DataStructs/Stack.h>
 
 #define MAX_MATERIALS 10

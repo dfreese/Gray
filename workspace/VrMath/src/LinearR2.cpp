@@ -20,7 +20,7 @@
  *
  */
 
-#include <LinearR2.h>
+#include <VrMath/LinearR2.h>
 #include <assert.h>
 
 // ******************************************************

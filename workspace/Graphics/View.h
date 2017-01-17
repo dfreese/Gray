@@ -1,7 +1,7 @@
 #ifndef VIEW_H
 #define VIEW_H
 
-#include "../VrMath/LinearR3.h"
+#include <VrMath/LinearR3.h>
 
 class View
 {

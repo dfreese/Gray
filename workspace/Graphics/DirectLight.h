@@ -21,11 +21,11 @@
 #ifndef DIRECTLIGHT_H
 #define DIRECTLIGHT_H
 
-#include "../VrMath/LinearR3.h"
-#include "Material.h"
-#include "Light.h"
-#include "View.h"
-#include "ViewableBase.h"
+#include <VrMath/LinearR3.h>
+#include <Material.h>
+#include <Light.h>
+#include <View.h>
+#include <ViewableBase.h>
 
 // For a view structure (may be a local viewer)
 void DirectIlluminate( const VectorR3& position, const VectorR3& normal,

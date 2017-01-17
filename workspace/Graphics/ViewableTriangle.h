@@ -21,9 +21,9 @@
 #ifndef VIEWABLETRIANGLE_H
 #define VIEWABLETRIANGLE_H
 
-#include "ViewableBase.h"
-#include "../VrMath/LinearR2.h"
-#include "Material.h"
+#include <ViewableBase.h>
+#include <VrMath/LinearR2.h>
+#include <Material.h>
 
 class ViewableTriangle : public ViewableBase
 {

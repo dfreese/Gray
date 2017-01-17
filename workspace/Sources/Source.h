@@ -23,10 +23,10 @@
 #include <limits.h>
 #include <vector>
 
-#include "../VrMath/MathMisc.h"
-#include "../VrMath/LinearR3.h"
-#include "../Physics/Isotope.h"
-#include "../Physics/Photon.h"
+#include <VrMath/MathMisc.h>
+#include <VrMath/LinearR3.h>
+#include <Isotope.h>
+#include <Photon.h>
 
 using namespace std;
 class GammaMaterial;

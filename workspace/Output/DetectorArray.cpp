@@ -1,6 +1,6 @@
 #include <DetectorArray.h>
-#include <LinearR3.h>
-#include <LinearR4.h>
+#include <VrMath/LinearR3.h>
+#include <VrMath/LinearR4.h>
 
 DetectorArray::DetectorArray()
 {

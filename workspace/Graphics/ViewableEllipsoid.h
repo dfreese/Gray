@@ -23,7 +23,7 @@
 
 #include "ViewableBase.h"
 #include "Material.h"
-#include <LinearR3.h>
+#include <VrMath/LinearR3.h>
 
 class ViewableEllipsoid : public ViewableBase
 {
