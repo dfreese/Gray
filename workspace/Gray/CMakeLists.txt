@@ -14,8 +14,6 @@ add_executable(Gray
     include/Gray/MaterialStack.h
     src/RayTraceStats.cpp
     include/Gray/RayTraceStats.h
-    src/SceneDescription.cpp
-    include/Gray/SceneDescription.h
     src/main.cpp
 )
 

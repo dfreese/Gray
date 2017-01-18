@@ -3,7 +3,8 @@
 #include <string.h>
 #include <iostream>
 #include <fstream>
-#include <Gray/SceneDescription.h>
+#include <Gray/GammaMaterial.h>
+#include <Graphics/SceneDescription.h>
 
 namespace {
 const int MaxnumFiles = 256;
@@ -76,21 +77,15 @@ bool LoadMaterials::LoadPhysicsFiles(SceneDescription& theScene)
             if (matfile.eof()) {
                 break;
             }
-            //
-            //            matstring >> matname;
-            //	    cout << matname << endl;
-            //       cout << "matname = " << matname << endl;
             if ( strncmp(matname,"#",1) ) {
                 numFiles++;
                 matfile >> matchemform;
                 matfile >> matdens;
                 matfile >> matsensitive;
                 matfile >> matnumber;
-//cout << "Material Found :: " << matname << " number : " << matnumber<< endl;
                 sprintf(physicalMaterial[matnumber],"%s.dat",matname);
                 phyiscalMaterialLogInteractions[matnumber]=matsensitive;
             } else {
-                //                 cout << "Comment " <<endl;
                 getline(matfile,matstring);
             }
         }
@@ -107,7 +102,8 @@ bool LoadMaterials::Load(int numMaterial, SceneDescription& theScene )
     bool parseOk = true;
     int numMaterialLoaded = 0;
     for (int i = 0; i < numMaterial; i++) {
-        GammaMaterial * mat = theScene.NewMaterial();
+        GammaMaterial * mat = new GammaMaterial();
+        theScene.AddMaterial(mat);
         dynamic_cast<Material*>(mat)->SetName(physicalMaterial[i]);
         mat->SetFileName(physicalMaterial[i]);
         mat->SetMaterialType( i) ;
@@ -120,8 +116,7 @@ bool LoadMaterials::Load(int numMaterial, SceneDescription& theScene )
                 if (i == 0) { // First material is default material
                     mat->DisableInteractions();
                 }
-            theScene.AddGammaStats(mat);
-            numMaterialLoaded++;
+                numMaterialLoaded++;
         }
     }
     return parseOk;

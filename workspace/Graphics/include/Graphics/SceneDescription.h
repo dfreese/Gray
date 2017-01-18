@@ -15,8 +15,6 @@
 #include <Graphics/TextureSequence.h>
 #include <Graphics/BumpMapFunction.h>
 #include <Graphics/ViewableBase.h>
-#include <Physics/GammaStats.h>
-#include <Gray/GammaMaterial.h>
 
 class SceneDescription
 {
@@ -121,21 +119,20 @@ public:
     {
         return MaterialArray.SizeUsed();
     }
-    GammaMaterial* NewMaterial();
-    int AddMaterial( GammaMaterial* newMaterial );
-    GammaMaterial& GetMaterial( int i )
+    int AddMaterial( MaterialBase * newMaterial );
+    MaterialBase& GetMaterial( int i )
     {
         return *MaterialArray[i];
     }
-    const GammaMaterial& GetMaterial( int i ) const
+    const MaterialBase& GetMaterial( int i ) const
     {
         return *MaterialArray[i];
     }
-    Array<GammaMaterial*>& GetMaterialArray()
+    Array<MaterialBase*>& GetMaterialArray()
     {
         return MaterialArray;
     }
-    const Array<GammaMaterial*>& GetMaterialArray() const
+    const Array<MaterialBase*>& GetMaterialArray() const
     {
         return MaterialArray;
     }
@@ -217,23 +214,7 @@ public:
     void DeleteAllTextures();
     void DeleteAllMaterials();
     void DeleteAllViewables();
-    int NumGammaStats() const
-    {
-        return GammaStatsArray.SizeUsed();
-    }
-    int AddGammaStats( GammaStats* stats );
-    const GammaStats& GetGammaStats( int i ) const
-    {
-        return *GammaStatsArray[i];
-    }
-    Array<GammaStats*>& GetGammaStatsArray()
-    {
-        return GammaStatsArray;
-    }
-    void DeleteAllGammaStats();
     void DeleteAll();
-
-
 
 private:
 
@@ -247,13 +228,11 @@ private:
 
     Array<Light*> LightArray;
 
-    Array<GammaMaterial*> MaterialArray;
+    Array<MaterialBase*> MaterialArray;
 
     Array<TextureMapBase*> TextureArray;
 
     Array<ViewableBase*> ViewableArray;
-
-    Array<GammaStats*> GammaStatsArray;
 };
 
 inline SceneDescription::SceneDescription()
@@ -270,14 +249,7 @@ inline int SceneDescription::AddLight( Light* newLight )
     return index;
 }
 
-inline GammaMaterial* SceneDescription::NewMaterial()
-{
-    GammaMaterial* newMatBase = new GammaMaterial();
-    MaterialArray.Push( newMatBase );
-    return newMatBase;
-}
-
-inline int SceneDescription::AddMaterial( GammaMaterial* newMaterial )
+inline int SceneDescription::AddMaterial(MaterialBase * newMaterial )
 {
     int index = (int)MaterialArray.SizeUsed();
     MaterialArray.Push( newMaterial );
@@ -448,20 +420,12 @@ inline BumpMapFunction* SceneDescription::NewBumpMapFunction()
     return newTex;
 }
 
-inline int SceneDescription::AddGammaStats( GammaStats* newGammaStats )
-{
-    int index = (int)GammaStatsArray.SizeUsed();
-    GammaStatsArray.Push( newGammaStats );
-    return index;
-}
-
 inline void SceneDescription::DeleteAll()
 {
     DeleteAllLights();
     DeleteAllTextures();
     DeleteAllMaterials();
     DeleteAllViewables();
-    DeleteAllGammaStats();
 }
 
 #endif // SCENE_DESCRIPTION_H

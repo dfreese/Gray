@@ -25,7 +25,7 @@
 #include <VrMath/LinearR2.h>
 #include <VrMath/LinearR3.h>
 #include <VrMath/LinearR4.h>
-#include <Gray/SceneDescription.h>
+#include <Graphics/SceneDescription.h>
 #include <Graphics/ViewableParallelogram.h>
 #include <Graphics/ViewableTriangle.h>
 

@@ -4,7 +4,7 @@
 #include <VrMath/LinearR3.h>
 #include <DataStructs/Stack.h>
 #include <Gray/GammaRayTrace.h>
-#include <Gray/SceneDescription.h>
+#include <Graphics/SceneDescription.h>
 
 class Material;
 class VectorSource;

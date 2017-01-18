@@ -239,8 +239,9 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
     bool parse_VectorSource = false;
     VectorSource * curVectorSource = NULL;
 
-    Gray.SetDefaultMaterial(&theScene.GetMaterial(0));
-    GammaMaterial* curMaterial = &theScene.GetMaterial(0);
+    
+    GammaMaterial* curMaterial = dynamic_cast<GammaMaterial*>(&theScene.GetMaterial(0));
+    Gray.SetDefaultMaterial(curMaterial);
 
     while ( true ) {
         if ( !fgets( inbuffer, size_inbuffer, curFile ) ) { // read a line of the file
@@ -307,7 +308,7 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
                 int matIndex = -1;
                 int scanCode = sscanf( args, "%d", &matIndex );
                 if (scanCode==1) {
-                    curMaterial = &theScene.GetMaterial(matIndex);
+                    curMaterial = dynamic_cast<GammaMaterial*>(&theScene.GetMaterial(matIndex));
                 } else {
                     parseErrorOccurred = true;
                 }

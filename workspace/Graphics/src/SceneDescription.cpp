@@ -18,7 +18,7 @@
  *
  */
 
-#include <Gray/SceneDescription.h>
+#include <Graphics/SceneDescription.h>
 
 // Garry: Added destructor for proper cleanup
 SceneDescription::~SceneDescription()
@@ -28,7 +28,7 @@ SceneDescription::~SceneDescription()
         delete aLight;
     }
     while (!MaterialArray.IsEmpty()) {
-        GammaMaterial * material = MaterialArray.Pop();
+        MaterialBase * material = MaterialArray.Pop();
         delete material;
     }
     while (!TextureArray.IsEmpty()) {
@@ -38,11 +38,6 @@ SceneDescription::~SceneDescription()
     while (!ViewableArray.IsEmpty()) {
         ViewableBase * viewable = ViewableArray.Pop();
         delete viewable;
-    }
-    while (!GammaStatsArray.IsEmpty()) {
-        // GammaStats are a property of GammaMaterial (not just a pointer)
-        // These should not be deleted
-        GammaStatsArray.Pop();
     }
 }
 
@@ -102,13 +97,5 @@ void SceneDescription::DeleteAllViewables()
     long i;
     for ( i=NumViewables(); i>0; i-- ) {
         delete ViewableArray.Pop();
-    }
-}
-
-void SceneDescription::DeleteAllGammaStats()
-{
-    long i;
-    for ( i=NumGammaStats(); i>0; i-- ) {
-        delete GammaStatsArray.Pop();
     }
 }

@@ -13,6 +13,8 @@ add_library(Graphics
     include/Graphics/MaterialBase.h
     src/RgbImage.cpp
     include/Graphics/RgbImage.h
+    src/SceneDescription.cpp
+    include/Graphics/SceneDescription.h
     src/TextureAffineXform.cpp
     include/Graphics/TextureAffineXform.h
     src/TextureBilinearXform.cpp
