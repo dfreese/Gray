@@ -1,4 +1,5 @@
 #include <Sources/SphereSource.h>
+#include <Random/Random.h>
 
 SphereSource::SphereSource()
 {
@@ -21,14 +22,14 @@ void SphereSource::Decay(unsigned int photon_number)
 
     VectorR3 pos;
     do {
-        pos.x = (1.0 - 2.0*Random());
-        pos.y = (1.0 - 2.0*Random());
-        pos.z = (1.0 - 2.0*Random());
+        pos.x = (1.0 - 2.0*Random::Uniform());
+        pos.y = (1.0 - 2.0*Random::Uniform());
+        pos.z = (1.0 - 2.0*Random::Uniform());
     } while (pos.Norm() > 1.0);
 
+    
     pos *= radius;
     pos += position;
-//    isotope->SetMaterial(GetMaterial());
     isotope->SetPosition(pos);
     isotope->Decay(photon_number);
 }

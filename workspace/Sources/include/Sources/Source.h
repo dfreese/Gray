@@ -73,7 +73,6 @@ public:
 
 protected:
     Isotope * isotope;
-    double Random();
     double activity;
     double time;
     GammaMaterial * material;
@@ -94,11 +93,6 @@ inline Source::Source()
     negative = false;
     isotope = NULL;
     source_num = 0;
-}
-
-inline double Source::Random()
-{
-    return rand()/(double)RAND_MAX;
 }
 
 inline double Source::GetActivity()

@@ -1,4 +1,5 @@
 #include <Sources/AnnulusCylinderSource.h>
+#include <Random/Random.h>
 
 AnnulusCylinderSource::AnnulusCylinderSource()
 {
@@ -42,10 +43,10 @@ void AnnulusCylinderSource::Decay(unsigned int photon_number)
     }
 
     VectorR3 positron;
-    double phi = M_2_PI * Random();
+    double phi = M_2_PI * Random::Uniform();
     positron.x = radius*cos(phi);
     positron.y = radius*sin(phi);
-    positron.z = length*(0.5 - Random());
+    positron.z = length*(0.5 - Random::Uniform());
 
     VectorR3 roted;
     roted = RotMtrx*positron;

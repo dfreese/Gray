@@ -1,4 +1,5 @@
 #include <Sources/EllipsoidSource.h>
+#include <Random/Random.h>
 
 EllipsoidSource::EllipsoidSource()
 {
@@ -49,9 +50,9 @@ void EllipsoidSource::Decay(unsigned int photon_number)
 
     // ellipsoid test
     do {
-        p.x = (1.0 - 2.0*Random())*radius1;
-        p.y = (1.0 - 2.0*Random())*radius2;
-        p.z = (1.0 - 2.0*Random())*radius3;
+        p.x = (1.0 - 2.0*Random::Uniform())*radius1;
+        p.y = (1.0 - 2.0*Random::Uniform())*radius2;
+        p.z = (1.0 - 2.0*Random::Uniform())*radius3;
     } while ( (p.x*p.x/r1sq + p.y*p.y/r2sq + p.z*p.z/r3sq) > 1 );
 
     VectorR3 roted;

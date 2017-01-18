@@ -1,4 +1,5 @@
 #include <Sources/SourceList.h>
+#include <Random/Random.h>
 
 using namespace std;
 
@@ -15,11 +16,6 @@ SourceList::~SourceList()
     list.clear();
     neg_list.clear();
     prob.clear();
-}
-
-inline double SourceList::Random()
-{
-    return rand()/(double)RAND_MAX;
 }
 
 void SourceList::AddSource(Source & s)
@@ -67,7 +63,7 @@ Source * SourceList::Decay()
     // FIXME Event ID is hosed
     unsigned int idx = 0;
     do {
-        idx = search(Random()*total_activity,0,s_idx);
+        idx = search(Random::Uniform()*total_activity,0,s_idx);
         list[idx]->Reset();
         list[idx]->Decay(photon_number);
     } while ( Inside(list[idx]->GetDecayPosition()) && ( (counter++) < MAX_REJECT_COUNTER));
@@ -84,7 +80,7 @@ Source * SourceList::Decay()
 double SourceList::CalculateTime()
 {
     // performance speedup double mean_time_between_events = (1.0) / (total_activity * microCurie);
-    double deltaT = -1.0 * log(1.0 - Random()) * mean_time_between_events;
+    double deltaT = -1.0 * log(1.0 - Random::Uniform()) * mean_time_between_events;
     curTime += deltaT;
     return curTime;
 }
@@ -103,7 +99,7 @@ bool SourceList::Inside(const VectorR3 & pos)
             double ratio = fabs((neg_list[i]->GetActivity()));
             ratio = ratio > 1.0 ? 1.0 : ratio;
             ratio = ratio < 0.0 ? 0.0 : ratio;
-            if (Random() < ratio) {
+            if (Random::Uniform() < ratio) {
                 return true;
             }
         }

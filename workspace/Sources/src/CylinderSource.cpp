@@ -1,4 +1,5 @@
 #include <Sources/CylinderSource.h>
+#include <Random/Random.h>
 
 CylinderSource::CylinderSource()
 {
@@ -35,11 +36,11 @@ void CylinderSource::Decay(unsigned int photon_number)
 
     VectorR3 positron;
     do {
-        positron.x = (1.0 - 2.0*Random())*radius;
-        positron.y = (1.0 - 2.0*Random())*radius;
+        positron.x = (1.0 - 2.0*Random::Uniform())*radius;
+        positron.y = (1.0 - 2.0*Random::Uniform())*radius;
         positron.z = 0;
     } while (positron.Norm() > radius);
-    positron.z = length*(0.5 - Random());
+    positron.z = length*(0.5 - Random::Uniform());
 
     VectorR3 roted;
     roted = RotMtrx*positron;

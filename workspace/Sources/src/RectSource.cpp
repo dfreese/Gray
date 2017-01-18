@@ -1,4 +1,5 @@
 #include <Sources/RectSource.h>
+#include <Random/Random.h>
 
 RectSource::RectSource()
 {
@@ -18,9 +19,9 @@ void RectSource::Decay(unsigned int photon_number)
         return;
     }
     VectorR3 pos;
-    pos.x = (0.5 - Random());
-    pos.y = (0.5 - Random());
-    pos.z = (0.5 - Random());
+    pos.x = (0.5 - Random::Uniform());
+    pos.y = (0.5 - Random::Uniform());
+    pos.z = (0.5 - Random::Uniform());
     pos.ArrayProd(size);
     pos += position;
     isotope->SetPosition(pos);

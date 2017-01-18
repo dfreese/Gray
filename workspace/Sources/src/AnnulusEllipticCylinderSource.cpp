@@ -1,5 +1,6 @@
 #include <Sources/AnnulusEllipticCylinderSource.h>
 #include <math.h>
+#include <Random/Random.h>
 
 AnnulusEllipticCylinderSource::AnnulusEllipticCylinderSource()
 {
@@ -291,7 +292,7 @@ void AnnulusEllipticCylinderSource::Decay(unsigned int photon_number)
 
     // Generate a uniform from 0 to C
     do {
-        C_uniform = C*Random();
+        C_uniform = C*Random::Uniform();
     } while (C_uniform < 0.0);
 
     // Calculate the phi angle
@@ -307,7 +308,7 @@ void AnnulusEllipticCylinderSource::Decay(unsigned int photon_number)
 
     positron.x = radius*cos(phi);
     positron.y = radius*sin(phi);
-    positron.z = length * (0.5 - Random());
+    positron.z = length * (0.5 - Random::Uniform());
 
     VectorR3 roted;
     roted = RotMtrx*positron;

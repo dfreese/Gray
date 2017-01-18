@@ -1,4 +1,5 @@
 #include <Sources/EllipticCylinderSource.h>
+#include <Random/Random.h>
 
 EllipticCylinderSource::EllipticCylinderSource()
 {
@@ -41,11 +42,11 @@ void EllipticCylinderSource::Decay(unsigned int photon_number)
 
     VectorR3 positron;
     do {
-        positron.x = (1.0 - 2.0*Random())*radius1;
-        positron.y = (1.0 - 2.0*Random())*radius2;
+        positron.x = (1.0 - 2.0*Random::Uniform())*radius1;
+        positron.y = (1.0 - 2.0*Random::Uniform())*radius2;
         positron.z = 0;
     } while (positron.x*positron.x/r1sq + positron.y*positron.y/r2sq > 1);
-    positron.z = length*(0.5 - Random());
+    positron.z = length*(0.5 - Random::Uniform());
 
     VectorR3 roted;
     roted = RotMtrx*positron;

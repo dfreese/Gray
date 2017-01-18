@@ -25,11 +25,11 @@ sphere 0.0 0.0 0.0 6.0
 positron on
 log_all true
 sp_src 0.0 0.0 0.0 0.5 5.0
-t -0.25 0.0 0.0
-sp_src 0.0 0.0 0.0 0.5 -5.0
+# t -0.25 0.0 0.0
+# sp_src 0.0 0.0 0.0 0.5 -5.0
 pop
 # set the simulation time to be 5 seconds
-time 2.0
+time 0.0001
 # lso detector
 m 4
 # set color of lso detector to blue

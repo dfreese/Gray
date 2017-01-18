@@ -1,6 +1,7 @@
 #include <Sources/VoxelSource.h>
 #include <iostream>
 #include <fstream>
+#include <Random/Random.h>
 
 using namespace std;
 
@@ -66,10 +67,10 @@ void VoxelSource::Decay(unsigned int photon_number)
     VectorR3 pos;
     // Random is uniformly distributed between 0 and 1
     // prob.size is number of voxels.
-    int idx = search(Random(),0,prob.size()-1);
-    pos.x = scale.x * (index[idx][0]+Random());
-    pos.y = scale.y * (index[idx][1]+Random());
-    pos.z = scale.z * (index[idx][2]+Random());
+    int idx = search(Random::Uniform(), 0, prob.size() - 1);
+    pos.x = scale.x * (index[idx][0] + Random::Uniform());
+    pos.y = scale.y * (index[idx][1] + Random::Uniform());
+    pos.z = scale.z * (index[idx][2] + Random::Uniform());
 
     pos += position;
 

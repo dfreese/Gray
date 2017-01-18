@@ -158,6 +158,10 @@ void GammaRayTrace::GRayTraceSources(void)
 
     // create a tick mark so that we fill up 40 chars
     tick_mark = (int)(num_rays / num_chars);
+    if (tick_mark == 0) {
+        // Make sure we don't have an error later on because of num % 0
+        tick_mark = 1;
+    }
 
     // done for PET Benchmark
     //num_rays = 34076000;
