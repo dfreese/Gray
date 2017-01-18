@@ -54,7 +54,6 @@ private:
     long FileLineNumber;
 
 private:
-    SceneDescription* ScenePtr;
     void Reset();
 
     static char* Preparse( char* inbuf );
@@ -65,7 +64,7 @@ private:
     static int GetCommandNumber( char *cmd );
     static bool ReadVectorR4Hg( char* inbuf, VectorR4* theVec );
     bool ReadTexCoords( char* inbuf, VectorR2* theVec );
-    bool ProcessFace( char *inbuf );
+    bool ProcessFace( char *inbuf, SceneDescription& theScene );
     static int NextTriVertIdx( int start, int* step, int totalNum );
 
     void UnsupportedTextureDepth();
@@ -81,14 +80,5 @@ private:
     Array<std::string> UnsupportedCmds;
 
 };
-
-inline ObjFileLoader::ObjFileLoader()
-{
-    ReportUnsupportedFeatures = true;
-    UnsupFlagTextureDepth = false;
-    UnsupFlagTooManyVerts = false;
-    UnsupFlagLines = false;
-}
-
 
 #endif // LOAD_OBJ_FILE_H

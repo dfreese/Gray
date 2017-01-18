@@ -29,6 +29,7 @@
 #include <Graphics/ViewableParallelogram.h>
 #include <Graphics/ViewableTriangle.h>
 
+namespace {
 const int numCommands = 4;
 const char * commandList[numCommands] = {
     "v",
@@ -36,7 +37,15 @@ const char * commandList[numCommands] = {
     "f",
     "l"
 };
+}
 
+ObjFileLoader::ObjFileLoader()
+{
+    ReportUnsupportedFeatures = true;
+    UnsupFlagTextureDepth = false;
+    UnsupFlagTooManyVerts = false;
+    UnsupFlagLines = false;
+}
 
 bool ObjFileLoader::LoadObjFile(const std::string &filename, SceneDescription &theScene)
 {
@@ -47,7 +56,6 @@ bool ObjFileLoader::LoadObjFile(const std::string &filename, SceneDescription &t
 bool ObjFileLoader::Load(const std::string &filename, SceneDescription &theScene)
 {
     Reset();
-    ScenePtr = &theScene;
 
     FILE* infile = fopen(filename.c_str(), "r" );
     FileLineNumber = 0;
@@ -98,7 +106,7 @@ bool ObjFileLoader::Load(const std::string &filename, SceneDescription &theScene
         }
         break;
         case 2: { // The 'f' command
-            ok = ProcessFace( args );
+            ok = ProcessFace(args, theScene);
         }
         break;
         case 3:   // 'l' command
@@ -211,7 +219,7 @@ bool ObjFileLoader::ReadTexCoords( char* inbuf, VectorR2* theVec )
     return retCode;
 }
 
-bool ObjFileLoader::ProcessFace( char* inbuf)
+bool ObjFileLoader::ProcessFace( char* inbuf, SceneDescription& theScene)
 {
 
     const int maxNumVerts = 256;
@@ -302,7 +310,6 @@ bool ObjFileLoader::ProcessFace( char* inbuf)
     //		make any sense to support textures and texture coordinates.
 
     VectorR3 vA, vB, vC;
-#if 1
     // Check for perfect parallolgram first
     if ( numVertsInFace==4 ) {
         VectorR3 vD;
@@ -314,7 +321,7 @@ bool ObjFileLoader::ProcessFace( char* inbuf)
             // Add parallelogram
             ViewableParallelogram* vp = new ViewableParallelogram();
             vp->Init( vA, vB, vC );
-            ScenePtr->AddViewable( vp );
+            theScene.AddViewable( vp );
             return true;
         }
     }
@@ -342,45 +349,10 @@ bool ObjFileLoader::ProcessFace( char* inbuf)
             vt->Init( vA, vB, vC );
             if ( vt->GetNormal().x<1.1 && vt->GetNormal().x>-1.1 ) {
                 // If triangle has non-zero area, add it.
-                ScenePtr->AddViewable( vt );
+                theScene.AddViewable( vt );
             }
         }
     }
-#else
-    // OLD CODE
-    vA.SetFromHg( Vertices[vertNums[0]-1] );
-    vB.SetFromHg( Vertices[vertNums[3]-1] );
-    vC.SetFromHg( Vertices[vertNums[6]-1] );
-    if ( numVertsInFace == 3 ) {
-        ViewableTriangle* vt = new ViewableTriangle();
-        vt->Init( vA, vB, vC );
-        ScenePtr->AddViewable( vt );
-
-    } else {
-        // Four sided is the only other option for now
-        VectorR3 vD;
-        vD.SetFromHg( Vertices[vertNums[9]-1] );
-        if ( (vD-vA)==(vC-vB) && (vB-vA)==(vC-vD) ) {
-            // Add parallelogram
-            ViewableParallelogram* vp = new ViewableParallelogram();
-            vp->Init( vA, vB, vC );
-            ScenePtr->AddViewable( vp );
-        } else {
-            // Add as two triangles
-            ViewableTriangle* vt1 = new ViewableTriangle();
-            ViewableTriangle* vt2 = new ViewableTriangle();
-            if ( vA.DistSq(vC) < vB.DistSq(vD) ) {
-                vt1->Init( vA, vB, vC );
-                vt2->Init( vC, vD, vA );
-            } else {
-                vt1->Init( vA, vB, vD );
-                vt2->Init( vB, vC, vD );
-            }
-            ScenePtr->AddViewable( vt1 );
-            ScenePtr->AddViewable( vt2 );
-        }
-    }
-#endif
 
     return true;
 }
