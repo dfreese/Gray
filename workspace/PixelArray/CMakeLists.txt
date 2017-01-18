@@ -8,6 +8,7 @@ add_library(PixelArray
 target_include_directories(PixelArray PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 target_link_libraries(PixelArray Graphics)
+target_link_libraries(PixelArray VrMath)
 
 find_package(OpenGL REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIR})
