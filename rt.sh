@@ -6,3 +6,16 @@ fi
 ./Gray -b ./detectors/neg_sphere.dff neg_sphere.dat
 
 diff -sq neg_sphere.dat detectors/ref_neg_sphere.dat
+
+if [ "$?" -eq 0 ]; then
+    echo ""
+    echo "       _"
+    echo "      /(|"
+    echo "     (  :"
+    echo "    __\  \  _____"
+    echo "   (____)  \`|"
+    echo "   (____)|   |"
+    echo "   (____).__|"
+    echo "   (___)__.|_____"
+    echo ""
+fi
