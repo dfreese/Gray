@@ -27,6 +27,7 @@
 
 #include "assert.h"
 #include <VrMath/LinearR3.h>
+#include <string>
 
 class VisiblePoint;
 class Light;
@@ -118,14 +119,14 @@ public:
 
     virtual MaterialBase* Clone() const = 0;
 
-    char * name;
-    void SetName(char * n);
+    std::string name;
+    void SetName(const std::string & mat_name);
 
 };
 
-inline void MaterialBase::SetName(char * n)
+inline void MaterialBase::SetName(const std::string & mat_name)
 {
-    name = n;
+    name = mat_name;
 }
 
 inline void MaterialBase::SetColorAmbient(double r, double g, double b )

@@ -20,7 +20,7 @@ GammaStats::~GammaStats()
 {
 }
 
-void GammaStats::SetName(char * n)
+void GammaStats::SetName(const std::string & n)
 {
     name = n;
 }
@@ -30,10 +30,45 @@ void GammaStats::SetMaterialType(int s)
     material=s;
 }
 
-void GammaStats::SetFileName(char * n)
+void GammaStats::SetFileName(const std::string & n)
 {
     filename = n;
     name = n;
+}
+
+int GammaStats::GetMaterial() const
+{
+    return material;
+}
+
+std::string GammaStats::GetName() const
+{
+    return name;
+}
+
+void GammaStats::DisableInteractions()
+{
+    enable_interactions = false;
+}
+
+int GammaStats::GetNumEscape() const
+{
+    return num_escape;
+}
+
+double * GammaStats::GetXrayEscape() const
+{
+    return xray_escape;
+}
+
+double * GammaStats::GetXrayEscapeProb() const
+{
+    return xray_escape_probability;
+}
+
+double GammaStats::GetAugerProb(int i) const
+{
+    return auger[i];
 }
 
 void GammaStats::SetSize(int s)
@@ -89,7 +124,7 @@ bool GammaStats::Load(void)
     char tmpfile[400];
     char * pPath;
     pPath = getenv ("GRAY_INCLUDE");
-    sprintf(tmpfile,"%s/%s",pPath,filename);
+    sprintf(tmpfile,"%s/%s", pPath, filename.c_str());
     infile = fopen( tmpfile , "rb" );
     if ( !infile ) {
         fprintf(stderr, " Unable to open file: %s\nExiting..\n",

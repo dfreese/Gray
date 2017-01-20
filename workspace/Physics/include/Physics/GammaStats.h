@@ -1,23 +1,21 @@
 #ifndef GAMMA_STATS_H
 #define GAMMA_STATS_H
 
+#include <string>
+
 class GammaStats
 {
 public:
 
     GammaStats();
     ~GammaStats();
-    void SetName(char * n);
-    void SetFileName(char * n);
+    void SetName(const std::string & n);
+    void SetFileName(const std::string & n);
     void SetSize(int s);
     void SetMaterialType(int s);
     bool Load(void);
     int GetIndex(double e) const;
-
-    int GetMaterial(void) const
-    {
-        return material;
-    }
+    int GetMaterial() const;
     double GetSigma(double e, int idx) const;
     double GetMu(double e, int idx) const;
     double GetTau(double e, int idx) const;
@@ -32,17 +30,14 @@ public:
     bool log_material;
     bool enable_interactions;
     void DisableInteractions();
-    char * GetName() const
-    {
-        return name;
-    }
+    std::string GetName() const;
 
 private:
 
     int search(double e, int b_idx, int s_idx) const;
 
-    char * name;
-    char * filename;
+    std::string name;
+    std::string filename;
     double * energy;
     double * mu;
     double * sigma;
@@ -60,27 +55,5 @@ private:
     int num_escape;
     int material;
 };
-
-inline void GammaStats::DisableInteractions()
-{
-    enable_interactions = false;
-}
-
-inline int GammaStats::GetNumEscape() const
-{
-    return num_escape;
-}
-inline double * GammaStats::GetXrayEscape() const
-{
-    return xray_escape;
-}
-inline double * GammaStats::GetXrayEscapeProb() const
-{
-    return xray_escape_probability;
-}
-inline double GammaStats::GetAugerProb(int i) const
-{
-    return auger[i];
-}
 
 #endif
