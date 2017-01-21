@@ -22,8 +22,8 @@ public:
     void SetDecayTime(double t);
     double GetTimeResolution() const;
     double GetEnergyResolution() const;
-    double BlurTime(Photon &p );
-    double BlurEnergy(Photon &p );
+    double BlurTime(const Photon &p );
+    double BlurEnergy(const Photon &p );
     void IncrementHit();
     void SetBlock(unsigned int bl);
     unsigned long GetHitCount() const;

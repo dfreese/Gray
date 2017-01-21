@@ -1,6 +1,7 @@
 #ifndef LOAD_DETECTOR_H_
 #define LOAD_DETECTOR_H_
 
+#include <string>
 #include <VrMath/LinearR3.h>
 #include <DataStructs/Stack.h>
 #include <Gray/GammaRayTrace.h>
@@ -14,7 +15,7 @@ class LoadDetector
 {
 public:
     LoadDetector();
-    bool Load( const char* filename, SceneDescription& theScene, GammaRayTrace &Gray );
+    bool Load(const std::string & filename, SceneDescription& theScene, GammaRayTrace &Gray );
 private:
     SceneDescription* ScenePtr;
     long FileLineNumber;

@@ -32,7 +32,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <Gray/KdTree.h>
+#include <Graphics/KdTree.h>
 #include <DataStructs/DoubleRecurse.h>
 
 // Destructor

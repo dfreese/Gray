@@ -1,6 +1,6 @@
 #include <Gray/RayTraceStats.h>
 #include <DataStructs/Stack.h>
-#include <Gray/KdTree.h>
+#include <Graphics/KdTree.h>
 
 void RayTraceStats::Init()
 {

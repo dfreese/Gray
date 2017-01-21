@@ -39,8 +39,6 @@
 #include <VrMath/Aabb.h>
 #define KDTREE_MAX(a,b) (((a)>(b))?(a):(b))
 
-class RayTraceStats;	// Statistics for KdTree traversal
-
 //class KdTree;			// kd-tree.
 class KdTreeNode;		// A single node in the kd-tree.
 

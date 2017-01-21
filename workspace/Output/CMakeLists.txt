@@ -1,15 +1,9 @@
 add_library(Output
     include/Output/BinaryFormat.h
-    src/Coincidence.cpp
-    include/Output/Coincidence.h
     src/Detector.cpp
     include/Output/Detector.h
     src/DetectorArray.cpp
     include/Output/DetectorArray.h
-    src/Event.cpp
-    include/Output/Event.h
-    src/EventBuffer.cpp
-    include/Output/EventBuffer.h
     src/Output.cpp
     include/Output/Output.h
 )

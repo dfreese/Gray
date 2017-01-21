@@ -4,6 +4,7 @@
 #include <Random/Random.h>
 #include <Gray/LoadDetector.h>
 #include <Gray/LoadObjFile.h>
+#include <Gray/GammaMaterial.h>
 #include <Graphics/TransformViewable.h>
 #include <Graphics/VisiblePoint.h>
 #include <Graphics/ViewableBase.h>
@@ -16,6 +17,7 @@
 #include <Graphics/ViewableCylinder.h>
 #include <Graphics/ViewableParallelepiped.h>
 #include <Graphics/ViewableBezierSet.h>
+#include <Output/DetectorArray.h>
 #include <Sources/AnnulusCylinderSource.h>
 #include <Sources/AnnulusEllipticCylinderSource.h>
 #include <Sources/BeamPointSource.h>
@@ -27,67 +29,68 @@
 #include <Sources/VectorSource.h>
 #include <Sources/VoxelSource.h>
 
-const int numCommands = 59;
+const int numCommands = 60;
 const char * dffCommandList[numCommands] = {
-    "p",		// 0 Polygon patches
-    "m",		// 1 Material index
-    "color",	// 2 Color and reflection and transmission
-    "k",		// 3 detector position and size
-    "from",		// 4 Parameter to "v" command: eye position
-    "at",		// 5 Parameter to "v" command: "look at" position
-    "up",		// 6 Parameter to "v" command: "up" direction
-    "angle",	// 7 Parameter to "v" command: fov angle
-    "hither",	// 8 Parameter to "v" command: near clipping distance
-    "resolution",// 9 Parameter to "v" command: resolution
-    "l",		 // 10 add lightsource
-    "t",		 // 11 translate current matrix stack by coordinates
-    "push",	 	 // 12 push matrix
-    "pop",		 // 13 pop matrix
-    "b",		// 14 Background color
-    "raxis",		// 15 rotate around axis, axis x,y,z theta
-    "sp_src",		// 16 sphere source
-    "rect_src",		// 17 rectangular source
-    "repeat",		// 18 repeat detector
-    "cyl",			// 19 add a cylinder
-    "cyl_src",		// 20 cylinder source
-    "#",			// 21 comments
-    "time",			// 22 Set Simulation Time
-    "v",			// 23 view matrix
-    "scale",		// 24 set polygon scale
-    "seed",			// 25 set integer seed
-    "positron",		// 26 turn on positron logging
-    "sphere",		// 27 load sphere geometry
-    "beam",			// 28 beam source
-    "acolinearity",	// 29 acolinearity
-    "log_all",		// 30 log all interactions
-    "binary",		// 31 enable binary data output
-    "binning",		// 32 enable binning
-    "start_vecsrc",	// 33 start vector source
-    "end_vecsrc",	// 34 end vector source
-    "log_det_id",	// 35 log detector id
-    "log_det_coord", // 36 log detector coord
+    "p",                // 0 Polygon patches
+    "m",                // 1 Material index
+    "color",            // 2 Color and reflection and transmission
+    "k",                // 3 detector position and size
+    "from",             // 4 Parameter to "v" command: eye position
+    "at",               // 5 Parameter to "v" command: "look at" position
+    "up",               // 6 Parameter to "v" command: "up" direction
+    "angle",            // 7 Parameter to "v" command: fov angle
+    "hither",           // 8 Parameter to "v" command: near clipping distance
+    "resolution",       // 9 Parameter to "v" command: resolution
+    "l",                // 10 add lightsource
+    "t",                // 11 translate current matrix stack by coordinates
+    "push",             // 12 push matrix
+    "pop",              // 13 pop matrix
+    "b",                // 14 Background color
+    "raxis",            // 15 rotate around axis, axis x,y,z theta
+    "sp_src",           // 16 sphere source
+    "rect_src",         // 17 rectangular source
+    "repeat",           // 18 repeat detector
+    "cyl",              // 19 add a cylinder
+    "cyl_src",          // 20 cylinder source
+    "#",                // 21 comments
+    "time",             // 22 Set Simulation Time
+    "v",                // 23 view matrix
+    "scale",            // 24 set polygon scale
+    "seed",             // 25 set integer seed
+    "log_positron",     // 26 turn on positron logging
+    "sphere",           // 27 load sphere geometry
+    "beam",             // 28 beam source
+    "acolinearity",     // 29 acolinearity
+    "log_all",          // 30 log all interactions
+    "binary_output",    // 31 enable binary data output
+    "binning",          // 32 enable binning
+    "start_vecsrc",     // 33 start vector source
+    "end_vecsrc",       // 34 end vector source
+    "log_det_id",       // 35 log detector id
+    "log_det_coord",    // 36 log detector coord
     "save_detector",	// 37 save detector to a file
     "scale_act",		// 38 scale activity
     "save_coinc",		// 39 set coincidence file
     "save_singles",		// 40 set singles file
-    "save_cp",		// 41 set coincidence process file
+    "save_cp",          // 41 set coincidence process file
     "time_resolution",	// 42 set time_resolution of detectors
-    "eres",			// 43 set energy_resolution of detectors
+    "eres",             // 43 set energy_resolution of detectors
     "time_gate",		// 44 set coincidence time gate
     "energy_gate",		// 45 set coincidence energy gate
     "del_window",		// 46 set coincidence delayed window
     "pos_range",		// 47 set positron range
-    "setFBP2D",		// 48 set 2D mode coincidence
-    "isotope",		// 49 set isotope
+    "setFBP2D",         // 48 set 2D mode coincidence
+    "isotope",          // 49 set isotope
     "voxel_src",		// 50 load voxel array source
-    "include",		// 51 include a dff file into current file
+    "include",          // 51 include a dff file into current file
     "increment",		// 52 increment detector id
-    "ellipse",		// 53 load ellipse geometry
+    "ellipse",          // 53 load ellipse geometry
     "sp_ellipse",		// 54 ellipse source
     "elliptic_cyl",		// 55 elliptic cylinder
     "sp_elliptic_cyl",	// 56 elliptic cylinder source
     "sp_annulus_ell", 	// 57 annulus ellipse source
-    "sp_annulus_cyl"	// 58 annulus cylinder source
+    "sp_annulus_cyl",	// 58 annulus cylinder source
+    "binary_format"     // 59 set the binary output format
 };
 
 LoadDetector::LoadDetector()
@@ -199,12 +202,15 @@ void LoadDetector::ApplyRotation(const VectorR3& axis, double theta)
 
 }
 
-bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaRayTrace &Gray)
+bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene, GammaRayTrace &Gray)
 {
     ScenePtr = &theScene;
+    
+    DetectorArray detector_array;
+    std::string filename_detector = "";
 
     unsigned include_count = 0;
-    FILE* infile = fopen( filename, "r" );
+    FILE* infile = fopen(filename.c_str(), "r" );
     FILE* curFile = infile;
     FILE* includeFile[MAX_INCLUDE];
 
@@ -220,8 +226,15 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
     // GammaMaterial* curMaterial = (Material*)&Material::Default;
 
     if ( !infile ) {
-        fprintf(stderr, "LoadDffFile: Unable to open file: %s\n", filename);
+        fprintf(stderr, "LoadDffFile: Unable to open file: %s\n", filename.c_str());
         return false;
+    }
+    
+    std::string file_dir = "";
+    size_t dir_pos = filename.find_last_of('/');
+    if (dir_pos != std::string::npos) {
+        // Include everything, including slash
+        file_dir = filename.substr(0, dir_pos + 1);
     }
 
     const int size_inbuffer = 1026;
@@ -258,12 +271,19 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
                                    screenWidth, screenHeight, hither );
             }
             // TODO: Output geometry to file
+            if (filename_detector != "") {
+                ofstream det_file(filename_detector.c_str());
+                det_file << detector_array;
+                det_file.close();
+            }
             return true;
         }
         FileLineNumber++;
         
         // Ignore blank lines
         if (strlen(inbuffer) == 0) {
+            continue;
+        } else if (inbuffer[0] == '\n') {
             continue;
         } else if (inbuffer[0] == '#') {
             // Ignore lines starting with a #.  This would also be handled in the
@@ -355,7 +375,7 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
                     baseSize *= polygonScale;
                     // FIXED: detector only is used when material is sensitive
                     if (curMaterial->log_material) {
-                        global_id = Gray.output.d.AddDetector(baseCenter, baseSize, curMatrix(), time_resolution, energy_resolution,0,0,0,block_id);
+                        global_id = detector_array.AddDetector(baseCenter, baseSize, curMatrix(), time_resolution, energy_resolution,0,0,0,block_id);
                         block_id++;
                         ProcessDetector(baseCenter, baseSize, curMaterial, global_id);
                     } else {
@@ -545,7 +565,7 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
                                 CurrentPos.y += (double)j * UnitStep.y;
                                 CurrentPos.z += (double)k * UnitStep.z;
                                 if (curMaterial->log_material == true) {
-                                    global_id = Gray.output.d.AddDetector(CurrentPos, UnitSize,
+                                    global_id = detector_array.AddDetector(CurrentPos, UnitSize,
                                                                           curMatrix(), time_resolution, energy_resolution,
                                                                           i,j,k,block_id);
                                     ProcessDetector(CurrentPos, UnitSize, curMaterial,global_id);
@@ -669,14 +689,7 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
                 break;
             }
             case 26: {
-                char string[256];
-                int scanCode = sscanf(args, "%s", string);
-                if (scanCode ==1) {
-                    Gray.SetLogPositron(true);
-                } else {
-                    parseErrorOccurred = true;
-                    break;
-                }
+                Gray.output.SetLogPositron(true);
                 break;
             }
             case 27: {
@@ -735,38 +748,15 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
                 break;
             }
             case 30: { // log_all true/false logs all interactions
-                char string[256];
-                int scanCode = sscanf(args, "%s", string);
-                if (scanCode ==1) {
-                    Gray.SetLogAll(true);
-                } else {
-                    parseErrorOccurred = true;
-                    break;
-                }
+                Gray.output.SetLogAll(true);
                 break;
             }
             case 31: { // Set binary file io
-                char string[256];
-                int scanCode = sscanf(args, "%s", string);
-                if (scanCode ==1) {
-                    Gray.output.SetBinary(true);
-                } else {
-                    parseErrorOccurred = true;
-                    break;
-                }
+                Gray.output.SetBinary(true);
                 break;
             }
             case 32: { // Set spectial detector binning TODO: implement binning
-                char string[256];
-                int scanCode = sscanf(args, "%s", string);
-                if (scanCode ==1) {
-                    Gray.output.SetBinning(true);
-                    Gray.output.c.SetBinning(true);
-                    cout << "Binning Enabled\n";
-                } else {
-                    parseErrorOccurred = true;
-                    break;
-                }
+                cout << "Warning: Binning not implemented\n";
                 break;
             }
             case 33: { // Start Vector Source
@@ -807,34 +797,18 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
                 break;
             }
             case 35: { // Log Detector Id
-                char string[256];
-                int scanCode = sscanf(args, "%s", string);
-                if (scanCode ==1) {
-                    Gray.output.SetLogDetId(true);
-                } else {
-                    parseErrorOccurred = true;
-                    break;
-                }
+                cout << "Warning: Log Detector Id is always on" << endl;
                 break;
             }
-            case 36: { // Log Detector Id
-                char string[256];
-                int scanCode = sscanf(args, "%s", string);
-                if (scanCode ==1) {
-                    Gray.output.SetLogDetCoord(true);
-                } else {
-                    parseErrorOccurred = true;
-                    break;
-                }
+            case 36: { // Log Detector Coordinates
+                cout << "Warning: Log Detector Coordinates is always off" << endl;
                 break;
             }
             case 37: { // Save detector
-                char string[256];
-                int scanCode = sscanf(args, "%s", string);
+                char filename[256];
+                int scanCode = sscanf(args, "%s", filename);
                 if (scanCode ==1) {
-                    ofstream det_file;
-                    det_file.open(string);
-                    det_file << Gray.output.d;
+                    filename_detector = std::string(filename);
                 } else {
                     parseErrorOccurred = true;
                     break;
@@ -856,39 +830,15 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
                 break;
             }
             case 39: { // set coincidence filename
-                char string[256];
-                int scanCode = sscanf(args, "%s", string);
-                if (scanCode ==1) {
-                    cout << "Debug: set coincidence: " << string << endl;
-                    Gray.output.eb.SetCoincidence(string);
-                } else {
-                    parseErrorOccurred = true;
-                    break;
-                }
+                cout << "Warning: Coincidence Processor has been removed: " << endl;
                 break;
             }
             case 40: { // set singles filename
-                char string[256];
-                int scanCode = sscanf(args, "%s", string);
-                if (scanCode ==1) {
-                    cout << "Debug: set singles: " << string << endl;
-                    Gray.output.eb.SetSingles(string);
-                } else {
-                    parseErrorOccurred = true;
-                    break;
-                }
+                cout << "Warning: Singles Processor has been removed: " << endl;
                 break;
             }
             case 41: { // set coincidence processor file
-                char string[256];
-                int scanCode = sscanf(args, "%s", string);
-                if (scanCode ==1) {
-                    cout << "Debug: set new coincidence processor: " << string << endl;
-                    Gray.output.c.SetLogFile(string);
-                } else {
-                    parseErrorOccurred = true;
-                    break;
-                }
+                cout << "Warning: Coincidence Processor has been removed: " << endl;
                 break;
             }
             case 42: { // set time resolution of detectors
@@ -915,37 +865,15 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
                 break;
             }
             case 44: { // set time gate of coincidence processor
-                double t_time_gate = -1.0;
-                int scanCode = sscanf( args, "%lf", &t_time_gate);
-                if (scanCode ==1) {
-                    Gray.output.c.SetTimeGate(t_time_gate);
-                } else {
-                    parseErrorOccurred = true;
-                    break;
-                }
+                cout << "Warning: Coincidence Processor has been removed: " << endl;
                 break;
             }
             case 45: { // set energy window for coincidence processor
-                double t_energy_gate_lower = -1.0;
-                double t_energy_gate_upper = -1.0;
-                int scanCode = sscanf( args, "%lf %lf", &t_energy_gate_lower, &t_energy_gate_upper);
-                if (scanCode ==2) {
-                    Gray.output.c.SetEnergyGate(t_energy_gate_lower, t_energy_gate_upper);
-                } else {
-                    parseErrorOccurred = true;
-                    break;
-                }
+                cout << "Warning: Coincidence Processor has been removed: " << endl;
                 break;
             }
             case 46: { // set time gate of coincidence processor
-                double t_del_window = -1.0;
-                int scanCode = sscanf( args, "%lf", &t_del_window);
-                if (scanCode ==1) {
-                    Gray.output.c.SetDelayedTimeOffset(t_del_window);
-                } else {
-                    parseErrorOccurred = true;
-                    break;
-                }
+                cout << "Warning: Coincidence Processor has been removed: " << endl;
                 break;
             }
             case 47: { // set time gate of coincidence processor
@@ -973,15 +901,7 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
                 break;
             }
             case 48: { // gateCoincidences by ring difference
-                int t_ring_diff = 0;
-                int scanCode = sscanf(args, "%d", &t_ring_diff);
-                if (scanCode ==1) {
-                    Gray.output.c.Set2D((unsigned int)t_ring_diff);
-                    cout << "2D only mode [" << t_ring_diff << "]\n";
-                } else {
-                    parseErrorOccurred = true;
-                    break;
-                }
+                cout << "Warning: Coincidence Processor has been removed: " << endl;
                 break;
             }
             case 49: { // set singles isotope
@@ -1028,13 +948,16 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
             case 51: { // include a dff file into current one
                 char string[256];
                 int scanCode = sscanf(args, "%s", string);
+                // Reference all of the include files to the directory of the
+                // top level file.
+                std::string include_filename = file_dir + std::string(string);
                 if (scanCode ==1) {
-                    includeFile[++include_count] = fopen(string,"r");
+                    includeFile[++include_count] = fopen(include_filename.c_str(),"r");
                     if (!includeFile[include_count]) {
-                        cout << "Include File doesn't exist: " << string << endl;
+                        cout << "Include File doesn't exist: " << include_filename << endl;
                         includeFile[include_count--] = NULL;
                     } else {
-                        cout << "Including File[" << include_count << "]:" << string << endl;
+                        cout << "Including File[" << include_count << "]:" << include_filename << endl;
                         curFile = includeFile[include_count];
                     }
                 } else {
@@ -1053,7 +976,7 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
                 UnitSize.y = 1.0;
                 UnitSize.z = 1.0;
 
-                global_id = Gray.output.d.AddDetector(StartPos, UnitSize,
+                global_id = detector_array.AddDetector(StartPos, UnitSize,
                                                       curMatrix(), time_resolution, energy_resolution,
                                                       0,0,0,0);
                 break;
@@ -1224,6 +1147,17 @@ bool LoadDetector::Load(const char* filename, SceneDescription& theScene, GammaR
                     AnnulusCylinderSource * cyl = new AnnulusCylinderSource(center, radius, axis, actScale*activity);
                     cyl->SetMaterial(curMaterial);
                     Gray.AddSource(*cyl);
+                } else {
+                    parseErrorOccurred = true;
+                    break;
+                }
+                break;
+            }
+            case 59: { // Set the output format
+                Output::BinaryOutputFormat format;
+                int scanCode = sscanf(args, "%d", &format);
+                if (scanCode == 1) {
+                    Gray.output.SetBinaryFormat(format);
                 } else {
                     parseErrorOccurred = true;
                     break;

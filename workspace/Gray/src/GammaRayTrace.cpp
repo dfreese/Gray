@@ -3,16 +3,16 @@
 #include <Graphics/ViewableBase.h>
 #include <Graphics/ViewableTriangle.h>
 #include <Gray/GammaMaterial.h>
+#include <Gray/MaterialStack.h>
+#include <Physics/Interaction.h>
+#include <Physics/Photon.h>
 
 GammaRayTrace::GammaRayTrace()
 {
     defaultMat = NULL;
-    FileNameOutputFile = "";
 
     // Default simulation time is 1 second
     simulationTime = 1.0;
-    SetLogPositron(false);
-    SetLogAll(false);
 
 }
 
@@ -22,7 +22,7 @@ GammaRayTrace::~GammaRayTrace()
 
 void GammaRayTrace::SetFileNameOutput(const std::string & name)
 {
-    FileNameOutputFile = name;
+    output.SetLogfile(name);
 }
 
 void GammaRayTrace::SetDefaultMaterial(GammaMaterial * mat)
@@ -30,22 +30,28 @@ void GammaRayTrace::SetDefaultMaterial(GammaMaterial * mat)
     defaultMat = mat;
 }
 
-INTER_TYPE GammaRayTrace::GRayTrace(Interaction &interaction,
-                                    VisiblePoint &visPoint, int TraceDepth, Photon &photon,
-                                    MaterialStack& MatStack, InteractionList &i, Output &o, long avoidK=-1)
+void GammaRayTrace::SetSimulationTime(double time)
+{
+    simulationTime = time;
+};
+
+INTER_TYPE GammaRayTrace::GRayTrace(VisiblePoint &visPoint, int TraceDepth, Photon &photon,
+                                    MaterialStack& MatStack, long avoidK=-1)
 {
     double hitDist;
     GammaMaterial * curMaterial = MatStack.curMaterial();
 
-    if (curMaterial == ERROR_MATERIAL) {
-        o.LogError(photon, ERROR_EMPTY,  0);
+    if (curMaterial == NULL) {
+        output.LogError(photon, ERROR_EMPTY,  0);
+//        cout << "ERROR" << endl;
         return ERROR;
     }
 
     GammaMaterial * nextMaterial;
 
     if (TraceDepth <= 0) {
-        o.LogError(photon, ERROR_TRACE_DEPTH, curMaterial->GetMaterial());
+        output.LogError(photon, ERROR_TRACE_DEPTH, curMaterial->GetMaterial());
+        cout << "ERROR_TRACE_DEPTH" << endl;
         return NO_INTERACTION;
     }
 
@@ -54,16 +60,13 @@ INTER_TYPE GammaRayTrace::GRayTrace(Interaction &interaction,
 
     if ( intersectNum<0 ) {
         return NO_INTERACTION;
-        //	cout << "== No Intersection ==\n";
     } else {
         INTER_TYPE inter_type;
         // set detector id in photon
         double prev_energy = photon.energy;
-//        GammaStats & cur_mat_gamma_stats = (*curMaterial).GammaProp;
-        switch(interaction.GammaInteraction(photon, hitDist, *curMaterial)) {
+        switch(Interaction::GammaInteraction(photon, hitDist, *curMaterial)) {
             case PHOTOELECTRIC: {
-                o.LogPhotoElectric(photon, (*curMaterial));
-                i.HitPhotoelectric(photon, photon.energy, *curMaterial);
+                output.LogPhotoElectric(photon, (*curMaterial));
                 return PHOTOELECTRIC;
                 break;
             }
@@ -74,9 +77,8 @@ INTER_TYPE GammaRayTrace::GRayTrace(Interaction &interaction,
             case COMPTON: {
                 // log interaction to file
                 double deposit = prev_energy - photon.energy;
-                o.LogCompton(photon, deposit, *curMaterial);
-                i.HitCompton(photon, deposit, *curMaterial);
-                return GRayTrace(interaction, visPoint, TraceDepth - 1, photon,MatStack, i, o, avoidK);
+                output.LogCompton(photon, deposit, *curMaterial);
+                return GRayTrace(visPoint, TraceDepth - 1, photon,MatStack, avoidK);
                 return COMPTON;
                 break;
             }
@@ -108,7 +110,7 @@ INTER_TYPE GammaRayTrace::GRayTrace(Interaction &interaction,
 
                 // Make sure not to hit same place in kdtree
                 photon.pos = visPoint.GetPosition() + photon.dir * Epsilon;
-                inter_type = GRayTrace(interaction, visPoint, TraceDepth - 1, photon, MatStack, i, o, avoidK);
+                inter_type = GRayTrace(visPoint, TraceDepth - 1, photon, MatStack, avoidK);
                 switch(inter_type) {
                 case PHOTOELECTRIC:
                 case COMPTON:
@@ -130,20 +132,8 @@ INTER_TYPE GammaRayTrace::GRayTrace(Interaction &interaction,
     }
 }
 
-void GammaRayTrace::SetLogPositron(bool val)
-{
-    logPositron = val;
-}
-
-void GammaRayTrace::SetLogAll(bool val)
-{
-    logAll = val;
-}
-
 void GammaRayTrace::GRayTraceSources(void)
 {
-
-    //rat.Load();
     const char escape = 0x1B;
     const int num_chars = 70;
     int char_state = 0;
@@ -175,24 +165,14 @@ void GammaRayTrace::GRayTraceSources(void)
     int TraceDepth;
 
     //TODO: Make a photon stack, then race trace it
-    Interaction interaction;
-//	Output output;
-
-    output.SetLogfile(FileNameOutputFile);
-    output.SetLogAll(logAll);
-
     // text graphics preamble
     cout << "|";
-
-    Photon photon;
 
     for (int i = 1; i < num_rays; i++) {
         Source * source = sources.Decay();
         Isotope * isotope = source->GetIsotope();
 
-        if (logPositron == true) {
-            output.LogNuclearDecay(((Positron*)isotope)->GetPositron());
-        }
+        output.LogNuclearDecay(((Positron*)isotope)->GetPositron());
 
         if ((i % 10000)==0) {
             switch(char_state) {
@@ -230,26 +210,21 @@ void GammaRayTrace::GRayTraceSources(void)
             cout << "\033[32m=\033[0m";
             cout.flush();
         }
-
-        interactions.Reset();
-        interactions.HitPositron((Positron&)*isotope,((Positron*)isotope)->GetEnergy());
         while(!isotope->IsEmpty()) {
             if (isotope == NULL) {
                 cerr << "Empty Decay: ERROR\n";
                 continue;
             }
 
-            photon = isotope->NextPhoton();
+            Photon photon = isotope->NextPhoton();
 
             TraceDepth = 100;
             MatStack.PushMaterial(source->GetMaterial());
-            if (GRayTrace( interaction, visPoint, TraceDepth, photon, MatStack, interactions, output ) == ERROR) {
+            if (GRayTrace(visPoint, TraceDepth, photon, MatStack) == ERROR) {
                 cout << "ERROR\n";
             }
             MatStack.ResetMaterial();
         }
-        //cout << "DEBUG INTERACTIONS\n";
-        //cout << interactions;
     }
     cout << "=|Done.\n";
 }

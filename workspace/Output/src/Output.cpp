@@ -4,15 +4,16 @@
 Output::Output()
 {
     log_data = false;
-    log_positron = true;
+    log_positron = false;
     log_all = false;
-    binary = false;
-    binning = false;
-    log_det_id = false;
-    log_det_coord = false;
-    cout << "Size of GRAY STRUCT: ";
-    cout << sizeof(GRAY_BINARY);
-    cout << "\n";
+    binary_output = false;
+    binary_format = FULL_OUTPUT;
+    cout << "Size of GRAY STRUCT: " << sizeof(GRAY_BINARY) << "\n";
+    cout << "Size of BinaryOutputFormat: " << sizeof(BinaryDetectorOutput) << "\n";
+    counter_nuclear_decay = 0;
+    counter_photoelectric = 0;
+    counter_compton = 0;
+    counter_error = 0;
 }
 
 Output::~Output()
@@ -20,23 +21,36 @@ Output::~Output()
     if (log_data) {
         log_file.close();
     }
+    cout << "Nuclear Decays: " << counter_nuclear_decay << endl;
+    cout << "Photoelectrics: " << counter_photoelectric << endl;
+    cout << "Comptons      : " << counter_compton << endl;
+    cout << "Errors        : " << counter_error << endl;
 }
 
-/*  interaction will also serve as error number */
 int Output::MakeLogWord(int interaction, int color, bool scatter, int det_mat, int src_id)
 {
     int errorbit=0;
-    if (interaction <0 ) {
+    if (interaction < 0) {
         errorbit = 0x80000000 ;
-        interaction*=-1;
+        interaction *= -1;
     }
-    return (  errorbit | ( ( interaction << 28) & (0x70000000))   | ( (color << 26 ) & 0xC000000 )| ((scatter << 24) &0x1000000 )| ( ( det_mat << 12 ) & (0xFFF000)) | ( src_id & 0xFFF ) );
+    return (errorbit |
+            ((interaction << 28) & (0x70000000)) |
+            ((color << 26)       & (0x0C000000)) |
+            ((scatter << 24)     & (0x01000000)) |
+            ((det_mat << 12)     & (0x00FFF000)) |
+            (src_id              & (0x00000FFF)));
+}
+
+void Output::SetBinaryFormat(BinaryOutputFormat format) {
+    binary_format = format;
 }
 
 void Output::LogNuclearDecay(NuclearDecay *p )
 {
     if (log_positron) {
-        if (binary) {
+        counter_nuclear_decay++;
+        if (binary_output) {
             LogNuclearDecayBinary(p);
         } else {
             LogNuclearDecayASCII(p);
@@ -53,46 +67,44 @@ void Output::LogNuclearDecayASCII(NuclearDecay *p)
         sprintf(str,"%2d %2d %2d ", p->GetSourceNum(),-2,-2);
         log_file << str;
     }
-    if (log_det_id) {
-        log_file << " -1";
-    }
-    //        log_file << " " << p->GetSourceNum();
-    //	sprintf(str," 0x%x", MakeLogWord( 0, 1, 0, 0, p->source_num));
-    //        log_file << str ;
+    log_file << " -1";
     log_file << "\n";
 }
 
 void Output::LogNuclearDecayBinary(NuclearDecay *p)
 {
-    GRAY_BINARY b;
-    //	b.t = 0;
-    //FIXME ____ CHECK WHAT p->decay_number really is --> OK, I think it's the event number
-    b.log = MakeLogWord( 0, 1, 0, 0, p->source_num);
-    b.i = p->decay_number;
-//	b.rnb = (uint8_t)p.color;
-//	b.rnb = 0;
-    b.time = p->time;
-    b.energy = p->energy;
-    b.x = (float) p->pos.x;
-    b.y = (float) p->pos.y;
-    b.z = (float) p->pos.z;
-    b.det_id = -1;
-    //	b.m = 0;
-    write(b);
+    if (binary_format == FULL_OUTPUT) {
+        GRAY_BINARY b;
+        b.log = MakeLogWord( 0, 1, 0, 0, p->source_num);
+        b.i = p->decay_number;
+        b.time = p->time;
+        b.energy = p->energy;
+        b.x = (float) p->pos.x;
+        b.y = (float) p->pos.y;
+        b.z = (float) p->pos.z;
+        b.det_id = -1;
+        write(b);
+    } else if (binary_format == NO_POS) {
+        BinaryDetectorOutput b;
+        b.log = MakeLogWord( 0, 1, 0, 0, p->source_num);
+        b.i = p->decay_number;
+        b.time = p->time;
+        b.energy = p->energy;
+        b.det_id = -1;
+        write(b);
+    }
 }
 
 void Output::LogCompton(const Photon &p, double deposit, const GammaStats & mat_gamma_prop)
 {
     bool log_event = (log_data & mat_gamma_prop.log_material) | log_all;
     if (log_event) {
-        if (binary) {
+        if (binary_output) {
             LogBinary(p, COMPTON, deposit, mat_gamma_prop);
         } else {
             LogASCII(p, COMPTON, deposit,mat_gamma_prop);
         }
-        //	  if (binary) LogComptonBinary(p,  deposit, mat);
-        //	  else LogComptonASCII(p,  deposit,mat);
-
+        counter_compton++;
     }
 }
 
@@ -100,13 +112,13 @@ void Output::LogCompton(const Photon &p, double deposit, const GammaStats & mat_
 void Output::LogPhotoElectric(const Photon &p, const GammaStats & mat_gamma_prop)
 {
     bool log_event = (log_data & mat_gamma_prop.log_material) | log_all;
-    //	cout << " log_data = " << log_data << " log_event = " << log_event << endl;
     if (log_event) {
-        if (binary) {
+        if (binary_output) {
             LogBinary(p,PHOTOELECTRIC, p.energy, mat_gamma_prop);
         } else {
             LogASCII(p,PHOTOELECTRIC, p.energy, mat_gamma_prop);
         }
+        counter_photoelectric++;
     }
 }
 
@@ -116,18 +128,6 @@ void Output::LogASCII(const Photon &p, INTER_TYPE type, double deposit, const Ga
     Photon ptmp;
     ptmp = p;
     ptmp.energy = deposit;
-    if (( type == COMPTON ) || (type == PHOTOELECTRIC)) {
-        if (p.det_id != -1) {
-            eb.AddEvent(ptmp, type, mat_gamma_prop, (d.d[p.det_id]));
-            c.AddEvent(ptmp, type, mat_gamma_prop, (d.d[p.det_id]));
-        } else {
-            eb.AddEvent(ptmp, type, mat_gamma_prop, NULL);
-            c.AddEvent(ptmp, type, mat_gamma_prop, NULL);
-        }
-    }
-    if (!log_all) {
-        return;
-    }
     if (type == COMPTON ) {
         log_file << " " << 1 << " ";
     } else {
@@ -139,55 +139,43 @@ void Output::LogASCII(const Photon &p, INTER_TYPE type, double deposit, const Ga
     }
     log_file << ptmp;
     char str[256];
-    //	if (log_event) {
-    //	log_file << mat_gamma_prop->log_material;
-    //		log_file << " ";
     sprintf(str,"%2d ",mat_gamma_prop.GetMaterial());
     log_file << str;
-    //	}
-    if (log_det_id) {
-        sprintf(str,"%3d ",p.det_id );
-        log_file << str;
-    }
-    if(log_det_coord) {
-        if (p.det_id > -1) {
-            VectorR3 pos;
-            pos = d.d.GetEntry(p.det_id)->pos;
-            sprintf(str," %14.8e %14.8e %14.8e",pos.x, pos.y, pos.z);
-        } else {
-            sprintf(str," %14.8e %14.8e %14.8e",0.0f, 0.0f, 0.0f);
-        }
-        log_file << str;
-    }
-    //	sprintf(str," 0x%x", MakeLogWord(  type, p.color, p.phantom_scatter ,  mat_gamma_prop->GetMaterial(),p.src_id ));
-    //        log_file << str ;
+    sprintf(str,"%3d ",p.det_id );
+    log_file << str;
     log_file << "\n";
 
 }
 
 void Output::LogBinary(const Photon &p, INTER_TYPE type, double deposit, const GammaStats & mat_gamma_prop)
 {
-    GRAY_BINARY b;
-    b.log = MakeLogWord( (int) type, p.color, p.phantom_scatter ,  mat_gamma_prop.GetMaterial() ,p.src_id);
-    //	b.t = 1;
-    b.i = p.id;
-    //	b.rnb = (uint8_t)p.color;
-    b.time = p.time;
-    b.energy = deposit;
-    b.x = (float) p.pos.x;
-    b.y = (float) p.pos.y;
-    b.z = (float) p.pos.z;
-    b.det_id = p.det_id;
-    // TODO: code detector ID for binary output
-    //
-    //	b.m = mat_gamma_prop->log_material;
-    write(b);
+    if (binary_format == FULL_OUTPUT) {
+        GRAY_BINARY b;
+        b.log = MakeLogWord( (int) type, p.color, p.phantom_scatter ,  mat_gamma_prop.GetMaterial() ,p.src_id);
+        b.i = p.id;
+        b.time = p.time;
+        b.energy = deposit;
+        b.x = (float) p.pos.x;
+        b.y = (float) p.pos.y;
+        b.z = (float) p.pos.z;
+        b.det_id = p.det_id;
+        write(b);
+    } else if (binary_format == NO_POS) {
+        BinaryDetectorOutput b;
+        b.log = MakeLogWord( (int) type, p.color, p.phantom_scatter ,  mat_gamma_prop.GetMaterial() ,p.src_id);
+        b.i = p.id;
+        b.time = p.time;
+        b.energy = deposit;
+        b.det_id = p.det_id;
+        write(b);
+    }
 }
 
 
 void Output::LogError(const Photon &p, int t, int det_mat)
 {
-    if (binary) {
+    counter_error++;
+    if (binary_output) {
         LogErrorBinary(p, t, det_mat);
     } else {
         LogErrorASCII(p, t, det_mat);
@@ -200,27 +188,10 @@ void Output::LogErrorASCII(const Photon &p, int t, int detmaterial)
     log_file << " ";
     log_file << p;
     char str[256];
-    //	if (log_event) {
-    //	log_file << mat_gamma_prop->log_material;
-    //		log_file << " ";
     sprintf(str,"%2d ", detmaterial);
     log_file << str;
-    //	}
-    if (log_det_id) {
-        sprintf(str,"%3d ",p.det_id );
-        log_file << str;
-    }
-    if(log_det_coord) {
-        if (p.det_id > -1) {
-            VectorR3 pos;
-            pos = d.d.GetEntry(p.det_id)->pos;
-            sprintf(str," %14.8e %14.8e %14.8e",pos.x, pos.y, pos.z);
-        } else {
-            sprintf(str," %14.8e %14.8e %14.8e",0.0f, 0.0f, 0.0f);
-        }
-        log_file << str;
-    }
-    //	sprintf(str," 0x%x ",MakeLogWord ( t, p.color, p.phantom_scatter , detmaterial, p.src_id));
+    sprintf(str,"%3d ",p.det_id );
+    log_file << str;
     log_file << "\n";
 }
 
@@ -228,18 +199,24 @@ void Output::LogErrorASCII(const Photon &p, int t, int detmaterial)
 /// ADD  mat to function call
 void Output::LogErrorBinary(const Photon &p, int t, int detmaterial )
 {
-    GRAY_BINARY b;
-    b.log = MakeLogWord( t, p.color, p.phantom_scatter , detmaterial, p.src_id);
-    b.i = p.id;
-    b.time = p.time;
-    b.energy = p.energy;
-    b.x = p.pos.x;
-    b.y = p.pos.y;
-    b.z = p.pos.z;
-    // TODO: code detector ID for binary output
-    //	b.det_id = t;
-    //	b.m = t;
-    write(b);
+    if (binary_format == FULL_OUTPUT) {
+        GRAY_BINARY b;
+        b.log = MakeLogWord( t, p.color, p.phantom_scatter , detmaterial, p.src_id);
+        b.i = p.id;
+        b.time = p.time;
+        b.energy = p.energy;
+        b.x = p.pos.x;
+        b.y = p.pos.y;
+        b.z = p.pos.z;
+        write(b);
+    } else if (binary_format == NO_POS) {
+        BinaryDetectorOutput b;
+        b.log = MakeLogWord(t, p.color, p.phantom_scatter , detmaterial, p.src_id);
+        b.i = p.id;
+        b.time = p.time;
+        b.energy = p.energy;
+        write(b);
+    }
 }
 
 
@@ -264,25 +241,14 @@ void Output::SetLogAll(bool val)
     log_all = val;
 }
 
+void Output::SetLogPositron(bool val)
+{
+    log_positron = val;
+}
+
 void Output::SetBinary(bool val)
 {
-    binary = val;
-}
-
-void Output::SetBinning(bool val)
-{
-    binning = val;
-}
-
-void Output::SetLogDetId(bool val)
-{
-    log_det_id = val;
-    eb.SetLogDetector(val);
-}
-
-void Output::SetLogDetCoord(bool val)
-{
-    log_det_coord = val;
+    binary_output = val;
 }
 
 void Output::write(GRAY_BINARY& data)
@@ -290,12 +256,7 @@ void Output::write(GRAY_BINARY& data)
     log_file.write(reinterpret_cast<char*>(&data), sizeof(GRAY_BINARY));
 }
 
-/* Helper function for reading binary data
- *
- *
- */
-void Output::read(const std::string& file_name, GRAY_BINARY& data)
+void Output::write(BinaryDetectorOutput & data)
 {
-    std::ifstream in(file_name.c_str());
-    in.read(reinterpret_cast<char*>(&data), sizeof(GRAY_BINARY));
+    log_file.write(reinterpret_cast<char*>(&data), sizeof(BinaryDetectorOutput));
 }

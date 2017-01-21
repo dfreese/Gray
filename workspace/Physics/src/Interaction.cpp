@@ -4,9 +4,7 @@
 #include <Random/Random.h>
 #include <stdlib.h>
 
-Interaction::Interaction() {}
-
-Interaction::~Interaction() {}
+const double Interaction::si1_SOL = (1.0 / 29979245800.0);
 
 // determine interaction in along line in material
 bool Interaction::GammaAttenuation(double &dist, double mu)

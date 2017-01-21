@@ -28,10 +28,6 @@
 #include <VrMath/LinearR3.h>
 #include <DataStructs/Stack.h>
 
-#define MAX_MATERIALS 10
-#define ERROR_MATERIAL (GammaMaterial*)-2
-#define ERROR_MATERIAL_TRACE_DEPTH (GammaMaterial*)-3
-
 class MaterialStack
 {
 public:
@@ -40,16 +36,12 @@ public:
     GammaMaterial * PopMaterial();
     GammaMaterial * curMaterial();
     void ResetMaterial();
-    int NumMaterials() const
-    {
-        return MatStack.Size();
-    }
+    int NumMaterials() const;
     void SetDefault(GammaMaterial * mat);
 
 private:
     Stack<GammaMaterial*> MatStack;
     GammaMaterial * defaultMaterial;
-    GammaMaterial * errorMaterial;
 };
 
 #endif

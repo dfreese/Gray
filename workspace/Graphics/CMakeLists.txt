@@ -7,6 +7,8 @@ add_library(Graphics
     include/Graphics/DirectLight.h
     src/Extents.cpp
     include/Graphics/Extents.h
+    include/Graphics/KdTree.h
+    src/KdTree.cpp
     include/Graphics/Light.h
     src/Material.cpp
     include/Graphics/Material.h

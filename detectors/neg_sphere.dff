@@ -22,8 +22,6 @@ sphere 0.0 0.0 0.0 6.0
 # cyl_src 0.0 -2.0 0.0 0.0 0.0 1.0 0.01 68 2.7027
 # cyl_src 0.0 2.0 0.0 0.0 0.0 1.0 0.01 68 2.7027
 # sphere source 10 uCi
-positron on
-log_all true
 sp_src 0.0 0.0 0.0 0.5 5.0
 t -0.25 0.0 0.0
 sp_src 0.0 0.0 0.0 0.5 -5.0
@@ -56,3 +54,6 @@ raxis 0.0 0.0 1.0 45.0
 repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
 # return to previous transformation matrix
 pop
+
+log_positron
+log_all

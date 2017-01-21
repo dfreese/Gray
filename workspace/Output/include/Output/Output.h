@@ -3,10 +3,7 @@
 #include <Graphics/MaterialBase.h>
 #include <Physics/Photon.h>
 #include <Physics/NuclearDecay.h>
-#include <Output/DetectorArray.h>
 #include <Output/BinaryFormat.h>
-#include <Output/EventBuffer.h>
-#include <Output/Coincidence.h>
 #include <stdlib.h>
 #include <math.h>
 #include <limits.h>
@@ -27,52 +24,41 @@ public:
     bool SetLogfile(const std::string & name);
     void LogNuclearDecay(NuclearDecay *p);
     void SetLogAll(bool val);
+    void SetLogPositron(bool val);
     void LogCompton(const Photon &p, double deposit, const GammaStats & mat_gamma_prop);
     void LogPhotoElectric(const Photon &p, const GammaStats & mat_gamma_prop);
     void LogError(const Photon &p, int t, int det_mat);
     void SetBinary(bool val);
-    void SetBinning(bool val);
-    void SetLogDetId(bool val);
-    void SetLogDetCoord(bool val);
-    void LogNEC(const Photon &p, double deposit, const GammaStats & mat_gamma_prop);
-
-    // helper class for reading binary data
-    void read(const std::string& file_name, GRAY_BINARY &data);
-    EventBuffer eb;
-    DetectorArray d;
-    Coincidence c;
+    enum BinaryOutputFormat {
+        FULL_OUTPUT,
+        NO_POS
+    };
+    void SetBinaryFormat(BinaryOutputFormat format);
 
 private:
     int MakeLogWord(int interaction, int color,bool scatter, int det_mat, int src_id);
     void LogNuclearDecayBinary(NuclearDecay *p);
     void LogNuclearDecayASCII(NuclearDecay *p);
-    //	void LogComptonBinary(const Photon &p, double deposit, const MaterialBase & mat);
-    //	void LogComptonASCII(const Photon &p, double deposit, const MaterialBase & mat);
-    //	void LogPhotoElectricASCII(const Photon &p, const MaterialBase & mat);
-    //	void LogPhotoElectricBinary(const Photon &p, const MaterialBase & mat);
     void LogErrorASCII(const Photon &p, int t, int detmaterial);
     void LogErrorBinary(const Photon &p, int t, int detmaterial) ;
     void LogASCII(const Photon &p, INTER_TYPE type, double deposit, const GammaStats & mat_gamma_prop);
     void LogBinary(const Photon &p, INTER_TYPE type, double deposit, const GammaStats & mat_gamma_prop);
-#ifdef ROOT_OUTPUT
-    void LogNuclearDecayRoot(NuclearDecay *p);
-    void LogComptonRoot(const Photon &p, double deposit, const GammaStats & mat_gamma_prop);
-    void LogPhotoRoot(const Photon &p, const GammaStats & mat_gamma_prop);
-#endif
 
-    // TODO: Binning not implemented
-    void BinEvent(GRAY_BINARY &data, const Photon &p, const Detector &d);
     ofstream log_file;
     bool log_data;
     bool log_positron;
     bool log_all;
-    bool log_event;
-    bool log_det_id;
-    bool log_det_coord;
-    bool binary;
-    bool binning;
+    bool binary_output;
 
     void write(GRAY_BINARY& data);
+    void write(BinaryDetectorOutput & data);
+    
+    BinaryOutputFormat binary_format;
+    
+    long counter_nuclear_decay;
+    long counter_photoelectric;
+    long counter_compton;
+    long counter_error;
 
 };
 

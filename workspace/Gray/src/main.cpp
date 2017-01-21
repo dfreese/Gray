@@ -17,7 +17,7 @@
 #include <Graphics/DirectLight.h>
 #include <Graphics/CameraView.h>
 #include <OpenGLRender/GlutRenderer.h>
-#include <Gray/KdTree.h>
+#include <Graphics/KdTree.h>
 #include <Graphics/SceneDescription.h>
 #include <Gray/GammaRayTrace.h>
 #include <Gray/LoadMaterials.h>
@@ -122,7 +122,7 @@ KdTree ObjectKdTree;
 
 void myExtentFunc( long objNum, AABB& retBox )
 {
-    return ActiveScene->GetViewable(objNum).CalcAABB( retBox );
+    ActiveScene->GetViewable(objNum).CalcAABB( retBox );
 }
 bool myExtentsInBox( long objNum, const AABB& aabb, AABB& retBox)
 {
@@ -585,8 +585,11 @@ bool GrayProcessCommandLine(int argc, char **argv)
 {
 //    BatchMode = true;
 //    GraySeed = 1;
-//    FileNameDetector = "./detectors/neg_sphere.dff";
+////    FileNameDetector = "../../../detectors/neg_sphere.dff";
+//    FileNameDetector = "/Users/david/Desktop/normalization/simulation/breast_panel.dff";
 //    FileNameOutput = "neg_sphere.dat";
+//    setFilenameDetector = true;
+//    setFilenameOutput = true;
 //    return true;
     
     if (argc == 1) {

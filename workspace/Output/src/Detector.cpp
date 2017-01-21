@@ -71,12 +71,12 @@ unsigned long Detector::GetHitCount() const
     return count;
 }
 
-double Detector::BlurTime(Photon & p)
+double Detector::BlurTime(const Photon & p)
 {
     return p.time + time_resolution * FWHM_to_sigma * Random::Gaussian();
 }
 
-double Detector::BlurEnergy(Photon & p)
+double Detector::BlurEnergy(const Photon & p)
 {
     return p.energy * (1.0 + energy_resolution * FWHM_to_sigma * Random::Gaussian());
 }
