@@ -553,7 +553,9 @@ void myMouseUpDownFunc( int button, int state, int x, int y )
 void InitializeSceneGeometry()
 {
     // Define the lights, materials, textures and viewable objects.
-    LoadMaterials::LoadPhysicsFiles(FileScene);
+    if (!LoadMaterials::LoadPhysicsFiles(FileScene)) {
+        exit(-1);
+    }
     LoadDetector myLoader;
     if (!myLoader.Load(FileNameDetector, FileScene, Gray)) {
         fprintf(stderr, "Loading file \"%s\" failed\n", FileNameDetector);
