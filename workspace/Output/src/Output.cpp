@@ -8,8 +8,6 @@ Output::Output()
     log_all = false;
     binary_output = false;
     binary_format = FULL_OUTPUT;
-    cout << "Size of GRAY STRUCT: " << sizeof(GRAY_BINARY) << "\n";
-    cout << "Size of BinaryOutputFormat: " << sizeof(BinaryDetectorOutput) << "\n";
     counter_nuclear_decay = 0;
     counter_photoelectric = 0;
     counter_compton = 0;
@@ -21,10 +19,14 @@ Output::~Output()
     if (log_data) {
         log_file.close();
     }
-    cout << "Nuclear Decays: " << counter_nuclear_decay << endl;
-    cout << "Photoelectrics: " << counter_photoelectric << endl;
-    cout << "Comptons      : " << counter_compton << endl;
-    cout << "Errors        : " << counter_error << endl;
+    if (counter_nuclear_decay || counter_photoelectric ||
+        counter_compton || counter_error)
+    {
+        cout << "Nuclear Decays: " << counter_nuclear_decay << endl;
+        cout << "Photoelectrics: " << counter_photoelectric << endl;
+        cout << "Comptons      : " << counter_compton << endl;
+        cout << "Errors        : " << counter_error << endl;
+    }
 }
 
 int Output::MakeLogWord(int interaction, int color, bool scatter, int det_mat, int src_id)

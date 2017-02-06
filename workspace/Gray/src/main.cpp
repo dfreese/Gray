@@ -23,6 +23,8 @@
 #include <Gray/LoadMaterials.h>
 #include <Random/Random.h>
 #include <Gray/LoadDetector.h>
+#include <string>
+#include <sstream>
 
 
 void RenderWithGlut(void);
@@ -47,8 +49,8 @@ RayTraceStats MyStats;
 // **********************************************
 
 GammaRayTrace Gray;
-const char * FileNameDetector = "default.dff";
-const char * FileNameOutput = "default.dat";
+string FileNameDetector = "";
+string FileNameOutput = "";
 unsigned long GraySeed = 0;
 bool BatchMode = false;
 
@@ -558,7 +560,7 @@ void InitializeSceneGeometry()
     }
     LoadDetector myLoader;
     if (!myLoader.Load(FileNameDetector, FileScene, Gray)) {
-        fprintf(stderr, "Loading file \"%s\" failed\n", FileNameDetector);
+        fprintf(stderr, "Loading file \"%s\" failed\n", FileNameDetector.c_str());
     }
     Gray.SetFileNameOutput(FileNameOutput);
     if (GraySeed != 0) {
@@ -575,11 +577,13 @@ void InitializeSceneGeometry()
     myBuildKdTree();
 }
 
-const char * switch_batch = "-b";
-const char * switch_seed = "-seed";
-bool SeedParse = false;
-bool setFilenameDetector = false;
-bool setFilenameOutput = false;
+void usage() {
+    cout << "Gray (-hb) [Scene Description] [Output Filename]\n"
+         << "  -b : batch mode\n"
+         << "  -h : print help message\n"
+         << "  -s [seed] : set the seed for the rand number generator\n"
+         << endl;
+}
 
 bool GrayProcessCommandLine(int argc, char **argv)
 {
@@ -591,36 +595,52 @@ bool GrayProcessCommandLine(int argc, char **argv)
 //    setFilenameDetector = true;
 //    setFilenameOutput = true;
 //    return true;
-    
+
     if (argc == 1) {
-        fprintf(stdout, "Syntax:\n\tGray [-b] [-seed num] [FileNameDetector] [FileNameOutput]\n");
-    } else {
-        for (int index = 1; index < argc; index++) {
-            //printf("\nINDEX: %d: %s\n",index,argv[index]);
-            if (strcmp(argv[index],switch_batch)==0) {
-                BatchMode = true;
-            } else if (strcmp(argv[index],switch_seed)==0) {
-                SeedParse = true;
-            } else if (isdigit(argv[index][0])) {
-                sscanf(argv[index],"%ld",&GraySeed);
-            } else {
-                if (setFilenameDetector == false) {
-                    FileNameDetector = argv[index];
-                    setFilenameDetector = true;
-                } else if (setFilenameOutput == false) {
-                    FileNameOutput = argv[index];
-                    setFilenameOutput = true;
+        return(false);
+    }
+
+    bool setFilenameDetector = false;
+    bool setFilenameOutput = false;
+
+    for (int ix = 1; ix < argc; ix++) {
+        string argument(argv[ix]);
+        if (ix < (argc - 1)) {
+            // Arguments requiring an input
+            string following_argument(argv[ix + 1]);
+            stringstream follow_arg_ss;
+            follow_arg_ss << following_argument;
+            if (argument == "-seed" || (argument == "-s")) {
+                if (!(follow_arg_ss >> GraySeed)) {
+                    cerr << "Loading high energy threshold failed." << endl;
+                    return(-1);
                 }
+                ix++; continue;
+            }
+        }
+        if (argument == "-h" || argument == "--help") {
+            return(false);
+        } else if (argument == "-b") {
+            BatchMode = true;
+        } else {
+            if (setFilenameDetector == false) {
+                FileNameDetector = argument;
+                setFilenameDetector = true;
+            } else if (setFilenameOutput == false) {
+                FileNameOutput = argument;
+                setFilenameOutput = true;
             }
         }
     }
+    if (!setFilenameDetector) {
+        cerr << "Error: input filename not set" << endl;
+        return(false);
+    } else if (!setFilenameOutput) {
+        FileNameOutput = FileNameDetector + ".dat";
+    }
+
     return true;
 }
-
-//**********************************************************
-const char * GRAY_VERSION = "BETA_2_010";
-//**********************************************************
-
 
 //**********************************************************
 // Main Routine
@@ -629,10 +649,16 @@ const char * GRAY_VERSION = "BETA_2_010";
 //**********************************************************
 int main( int argc, char** argv )
 {
-    fprintf( stdout, "\nGRAY VERSION: ");
-    fprintf( stdout, "%s", GRAY_VERSION);
-    fprintf( stdout, "\n\n");
-    GrayProcessCommandLine(argc,argv);
+    if (!GrayProcessCommandLine(argc,argv)) {
+        usage();
+        return(-1);
+    }
+
+    cout << "FileNameDetector: " << FileNameDetector << endl;
+    cout << "FileNameOutput: " << FileNameOutput << endl;
+    cout << "seed: " << GraySeed << endl;
+    cout << "batch: " << BatchMode << endl;
+    return(0);
 
     if (BatchMode == true) {
         // Implement batch mode for raytracing
