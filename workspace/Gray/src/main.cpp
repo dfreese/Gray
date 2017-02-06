@@ -654,12 +654,6 @@ int main( int argc, char** argv )
         return(-1);
     }
 
-    cout << "FileNameDetector: " << FileNameDetector << endl;
-    cout << "FileNameOutput: " << FileNameOutput << endl;
-    cout << "seed: " << GraySeed << endl;
-    cout << "batch: " << BatchMode << endl;
-    return(0);
-
     if (BatchMode == true) {
         // Implement batch mode for raytracing
         InitializeSceneGeometry();
