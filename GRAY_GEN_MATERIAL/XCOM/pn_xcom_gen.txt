@@ -1,8 +1,0 @@
-pn
-3
-
-3
-2
-./gridfile_XCOM_MeV.txt
-pn.txt
-1

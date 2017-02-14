@@ -1,6 +1,7 @@
 *.a
 *.o
 *.cmake
+*.pyc
 Makefile
 CMakeFiles
 CMakeCache.txt
