@@ -1,5 +1,5 @@
 #include <Gray/RayTraceStats.h>
-#include <DataStructs/Stack.h>
+#include <stack>
 #include <Graphics/KdTree.h>
 
 void RayTraceStats::Init()
@@ -58,14 +58,16 @@ void RayTraceStats::PrintKdStats( const KdTree& kdTree, FILE* out )
     long numObjectsAtLeaves = 0;
 
     // Traverse the tree, gathering data
-    Stack<long> treeNodeStack;
-    Stack<long> levelStack;
-    treeNodeStack.Push(0);
-    levelStack.Push(0);
-    while ( !treeNodeStack.IsEmpty() ) {
+    std::stack<long> treeNodeStack;
+    std::stack<long> levelStack;
+    treeNodeStack.push(0);
+    levelStack.push(0);
+    while (!treeNodeStack.empty()) {
         numNodes++;
-        long i = treeNodeStack.Pop();
-        long level = levelStack.Pop();
+        long i = treeNodeStack.top();
+        treeNodeStack.pop();
+        long level = levelStack.top();
+        levelStack.pop();
         if ( level>maxDepth ) {
             maxDepth = level;
         }
@@ -78,14 +80,14 @@ void RayTraceStats::PrintKdStats( const KdTree& kdTree, FILE* out )
             numObjectsAtLeaves += thisNode.GetNumObjects();
         } else {
             if ( !thisNode.RightChildEmpty() ) {
-                treeNodeStack.Push( thisNode.RightChildIndex() );
-                levelStack.Push( level+1 );
+                treeNodeStack.push( thisNode.RightChildIndex() );
+                levelStack.push( level+1 );
             } else {
                 numEmptyLeaves++;
             }
             if ( !thisNode.LeftChildEmpty() ) {
-                treeNodeStack.Push( thisNode.LeftChildIndex() );
-                levelStack.Push ( level+1 );
+                treeNodeStack.push(thisNode.LeftChildIndex());
+                levelStack.push(level + 1);
             } else {
                 numEmptyLeaves++;
             }
