@@ -17,7 +17,7 @@
 #include <Graphics/DirectLight.h>
 #include <Graphics/CameraView.h>
 #include <OpenGLRender/GlutRenderer.h>
-#include <Graphics/KdTree.h>
+#include <DataStructs/KdTree.h>
 #include <Graphics/SceneDescription.h>
 #include <Gray/GammaRayTrace.h>
 #include <Gray/LoadMaterials.h>

@@ -7,8 +7,6 @@ add_library(Graphics
     include/Graphics/DirectLight.h
     src/Extents.cpp
     include/Graphics/Extents.h
-    include/Graphics/KdTree.h
-    src/KdTree.cpp
     include/Graphics/Light.h
     src/Material.cpp
     include/Graphics/Material.h
@@ -59,5 +57,4 @@ add_library(Graphics
 
 target_include_directories(Graphics PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-target_link_libraries(Graphics DataStructs)
 target_link_libraries(Graphics VrMath)

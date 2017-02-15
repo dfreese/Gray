@@ -33,7 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stack>
-#include <Graphics/KdTree.h>
+#include <DataStructs/KdTree.h>
 #include <DataStructs/DoubleRecurse.h>
 
 // Destructor
