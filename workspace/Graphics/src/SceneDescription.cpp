@@ -23,21 +23,21 @@
 // Garry: Added destructor for proper cleanup
 SceneDescription::~SceneDescription()
 {
-    while (!LightArray.IsEmpty()) {
-        Light * aLight = LightArray.Pop();
-        delete aLight;
+    while (!LightArray.empty()) {
+        delete LightArray.back();
+        LightArray.pop_back();
     }
-    while (!MaterialArray.IsEmpty()) {
-        MaterialBase * material = MaterialArray.Pop();
-        delete material;
+    while (!MaterialArray.empty()) {
+        delete MaterialArray.back();
+        MaterialArray.pop_back();
     }
-    while (!TextureArray.IsEmpty()) {
-        TextureMapBase * texture = TextureArray.Pop();
-        delete texture;
+    while (!TextureArray.empty()) {
+        delete TextureArray.back();
+        TextureArray.pop_back();
     }
-    while (!ViewableArray.IsEmpty()) {
-        ViewableBase * viewable = ViewableArray.Pop();
-        delete viewable;
+    while (!ViewableArray.empty()) {
+        delete ViewableArray.back();
+        ViewableArray.pop_back();
     }
 }
 
@@ -70,32 +70,32 @@ void SceneDescription::CalcNewScreenDims( float aspectRatio )
 
 void SceneDescription::DeleteAllLights()
 {
-    long i;
-    for ( i=NumLights(); i>0; i-- ) {
-        delete LightArray.Pop();
+    while (!LightArray.empty()) {
+        delete LightArray.back();
+        LightArray.pop_back();
     }
 }
 
 void SceneDescription::DeleteAllMaterials()
 {
-    long i;
-    for ( i=NumMaterials(); i>0; i-- ) {
-        delete MaterialArray.Pop();
+    while (!MaterialArray.empty()) {
+        delete MaterialArray.back();
+        MaterialArray.pop_back();
     }
 }
 
 void SceneDescription::DeleteAllTextures()
 {
-    long i;
-    for ( i=NumTextures(); i>0; i-- ) {
-        delete TextureArray.Pop();
+    while (!TextureArray.empty()) {
+        delete TextureArray.back();
+        TextureArray.pop_back();
     }
 }
 
 void SceneDescription::DeleteAllViewables()
 {
-    long i;
-    for ( i=NumViewables(); i>0; i-- ) {
-        delete ViewableArray.Pop();
+    while (!ViewableArray.empty()) {
+        delete ViewableArray.back();
+        ViewableArray.pop_back();
     }
 }

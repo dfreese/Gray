@@ -1,7 +1,7 @@
 #ifndef SCENE_DESCRIPTION_H
 #define SCENE_DESCRIPTION_H
 
-#include <DataStructs/Array.h>
+#include <vector>
 #include <VrMath/LinearR3.h>
 #include <Graphics/CameraView.h>
 #include <Graphics/Light.h>
@@ -91,11 +91,13 @@ public:
 
     int NumLights() const
     {
-        return LightArray.SizeUsed();
+        return LightArray.size();
     }
     Light* NewLight()
     {
-        return *(LightArray.Push()) ;
+        Light * light = new Light();
+        LightArray.push_back(light);
+        return(light);
     }
     int AddLight( Light* newLight );
     Light& GetLight( int i )
@@ -106,18 +108,10 @@ public:
     {
         return *LightArray[i];
     }
-    Array<Light*>& GetLightArray()
-    {
-        return LightArray;
-    }
-    const Array<Light*>& GetLightArray() const
-    {
-        return LightArray;
-    }
 
     int NumMaterials() const
     {
-        return MaterialArray.SizeUsed();
+        return MaterialArray.size();
     }
     int AddMaterial( MaterialBase * newMaterial );
     MaterialBase& GetMaterial( int i )
@@ -128,18 +122,10 @@ public:
     {
         return *MaterialArray[i];
     }
-    Array<MaterialBase*>& GetMaterialArray()
-    {
-        return MaterialArray;
-    }
-    const Array<MaterialBase*>& GetMaterialArray() const
-    {
-        return MaterialArray;
-    }
 
     int NumTextures() const
     {
-        return TextureArray.SizeUsed();
+        return TextureArray.size();
     }
 
     int AddTexture( TextureMapBase* newTexture );
@@ -179,18 +165,10 @@ public:
     {
         return *TextureArray[i];
     }
-    Array<TextureMapBase*>& GetTextureArray()
-    {
-        return TextureArray;
-    }
-    const Array<TextureMapBase*>& GetTextureArray() const
-    {
-        return TextureArray;
-    }
 
     int NumViewables() const
     {
-        return ViewableArray.SizeUsed();
+        return ViewableArray.size();
     }
     int AddViewable( ViewableBase* newViewable );
     ViewableBase& GetViewable( int i )
@@ -201,13 +179,8 @@ public:
     {
         return *ViewableArray[i];
     }
-    Array<ViewableBase*>& GetViewableArray()
-    {
-        return ViewableArray;
-    }
-    const Array<ViewableBase*>& GetViewableArray() const
-    {
-        return ViewableArray;
+    const std::vector<ViewableBase*> & GetViewableArray() const {
+        return(ViewableArray);
     }
 
     void DeleteAllLights();
@@ -226,13 +199,13 @@ private:
     double RegisteredScreenHeight;
     bool ScreenRegistered;
 
-    Array<Light*> LightArray;
+    std::vector<Light*> LightArray;
 
-    Array<MaterialBase*> MaterialArray;
+    std::vector<MaterialBase*> MaterialArray;
 
-    Array<TextureMapBase*> TextureArray;
+    std::vector<TextureMapBase*> TextureArray;
 
-    Array<ViewableBase*> ViewableArray;
+    std::vector<ViewableBase*> ViewableArray;
 };
 
 inline SceneDescription::SceneDescription()
@@ -244,29 +217,29 @@ inline SceneDescription::SceneDescription()
 
 inline int SceneDescription::AddLight( Light* newLight )
 {
-    int index = (int)LightArray.SizeUsed();
-    LightArray.Push( newLight );
+    int index = (int)LightArray.size();
+    LightArray.push_back(newLight);
     return index;
 }
 
 inline int SceneDescription::AddMaterial(MaterialBase * newMaterial )
 {
-    int index = (int)MaterialArray.SizeUsed();
-    MaterialArray.Push( newMaterial );
+    int index = (int)MaterialArray.size();
+    MaterialArray.push_back(newMaterial);
     return index;
 }
 
 inline int SceneDescription::AddTexture( TextureMapBase* newTexture )
 {
-    int index = (int)TextureArray.SizeUsed();
-    TextureArray.Push( newTexture );
+    int index = (int)TextureArray.size();
+    TextureArray.push_back(newTexture);
     return index;
 }
 
 inline int SceneDescription::AddViewable( ViewableBase* newViewable )
 {
-    int index = (int)ViewableArray.SizeUsed();
-    ViewableArray.Push( newViewable );
+    int index = (int)ViewableArray.size();
+    ViewableArray.push_back(newViewable);
     return index;
 }
 
@@ -274,7 +247,7 @@ inline TextureAffineXform* SceneDescription::NewTextureAffineXform()
 {
     TextureAffineXform* newTex = new TextureAffineXform();
     TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.Push( newTexBase );
+    TextureArray.push_back(newTexBase);
     return newTex;
 }
 
@@ -282,7 +255,7 @@ inline TextureBilinearXform* SceneDescription::NewTextureBilinearXform()
 {
     TextureBilinearXform* newTex = new TextureBilinearXform();
     TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.Push( newTexBase );
+    TextureArray.push_back(newTexBase);
     return newTex;
 }
 
@@ -290,7 +263,7 @@ inline TextureCheckered* SceneDescription::NewTextureCheckered()
 {
     TextureCheckered* newTex = new TextureCheckered();
     TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.Push( newTexBase );
+    TextureArray.push_back(newTexBase);
     return newTex;
 }
 
@@ -298,7 +271,7 @@ inline TextureRgbImage* SceneDescription::NewTextureRgbImage()
 {
     TextureRgbImage* newTex = new TextureRgbImage();
     TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.Push( newTexBase );
+    TextureArray.push_back(newTexBase);
     return newTex;
 }
 
@@ -306,7 +279,7 @@ inline TextureRgbImage* SceneDescription::NewTextureRgbImage( const RgbImage& rg
 {
     TextureRgbImage* newTex = new TextureRgbImage( rgbImage );
     TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.Push( newTexBase );
+    TextureArray.push_back(newTexBase);
     return newTex;
 }
 
@@ -314,7 +287,7 @@ inline TextureRgbImage* SceneDescription::NewTextureRgbImage( const char* filena
 {
     TextureRgbImage* newTex = new TextureRgbImage();
     TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.Push( newTexBase );
+    TextureArray.push_back(newTexBase);
     return newTex;
 }
 
@@ -322,7 +295,7 @@ inline TextureMultiFaces* SceneDescription::NewTextureMultiFaces( int numTexMaps
 {
     TextureMultiFaces* newTex = new TextureMultiFaces( numTexMaps );
     TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.Push( newTexBase );
+    TextureArray.push_back(newTexBase);
     return newTex;
 }
 
@@ -330,7 +303,7 @@ inline TextureMultiFaces* SceneDescription::NewTextureMultiFaces( int numTexture
 {
     TextureMultiFaces* newTex = new TextureMultiFaces( numTexturesMaps, textureMaps );
     TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.Push( newTexBase );
+    TextureArray.push_back(newTexBase);
     return newTex;
 }
 
@@ -338,7 +311,7 @@ inline TextureMultiFaces* SceneDescription::NewTextureMultiFaces( TextureMapBase
 {
     TextureMultiFaces* newTex = new TextureMultiFaces( textureMap0, textureMap1 );
     TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.Push( newTexBase );
+    TextureArray.push_back(newTexBase);
     return newTex;
 }
 
@@ -347,7 +320,7 @@ inline TextureMultiFaces* SceneDescription::NewTextureMultiFaces( TextureMapBase
 {
     TextureMultiFaces* newTex = new TextureMultiFaces( textureMap0, textureMap1, textureMap2 );
     TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.Push( newTexBase );
+    TextureArray.push_back(newTexBase);
     return newTex;
 }
 
@@ -356,7 +329,7 @@ inline TextureMultiFaces* SceneDescription::NewTextureMultiFaces(TextureMapBase*
 {
     TextureMultiFaces* newTex = new TextureMultiFaces( textureMap0, textureMap1, textureMap2, textureMap3 );
     TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.Push( newTexBase );
+    TextureArray.push_back(newTexBase);
     return newTex;
 }
 
@@ -367,7 +340,7 @@ inline TextureMultiFaces* SceneDescription::NewTextureMultiFaces( TextureMapBase
     TextureMultiFaces* newTex = new TextureMultiFaces( textureMap0, textureMap1, textureMap2, textureMap3,
             textureMap4, textureMap5 );
     TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.Push( newTexBase );
+    TextureArray.push_back(newTexBase);
     return newTex;
 }
 
@@ -375,7 +348,7 @@ inline TextureSequence* SceneDescription::NewTextureSequence( int numTexMaps )
 {
     TextureSequence* newTex = new TextureSequence( numTexMaps );
     TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.Push( newTexBase );
+    TextureArray.push_back( newTexBase );
     return newTex;
 }
 
@@ -383,14 +356,14 @@ inline TextureSequence* SceneDescription::NewTextureSequence( int numTexturesMap
 {
     TextureSequence* newTex = new TextureSequence( numTexturesMaps, textureMaps );
     TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.Push( newTexBase );
+    TextureArray.push_back(newTexBase);
     return newTex;
 }
 inline TextureSequence* SceneDescription::NewTextureSequence( TextureMapBase* textureMap0, TextureMapBase* textureMap1 )
 {
     TextureSequence* newTex = new TextureSequence( textureMap0, textureMap1 );
     TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.Push( newTexBase );
+    TextureArray.push_back(newTexBase);
     return newTex;
 }
 
@@ -399,7 +372,7 @@ inline TextureSequence* SceneDescription::NewTextureSequence( TextureMapBase* te
 {
     TextureSequence* newTex = new TextureSequence( textureMap0, textureMap1, textureMap2 );
     TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.Push( newTexBase );
+    TextureArray.push_back(newTexBase);
     return newTex;
 }
 
@@ -408,7 +381,7 @@ inline TextureSequence* SceneDescription::NewTextureSequence( TextureMapBase* te
 {
     TextureSequence* newTex = new TextureSequence( textureMap0, textureMap1, textureMap2, textureMap3 );
     TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.Push( newTexBase );
+    TextureArray.push_back(newTexBase);
     return newTex;
 }
 
@@ -416,7 +389,7 @@ inline BumpMapFunction* SceneDescription::NewBumpMapFunction()
 {
     BumpMapFunction* newTex = new BumpMapFunction();
     TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.Push( newTexBase );
+    TextureArray.push_back(newTexBase);
     return newTex;
 }
 

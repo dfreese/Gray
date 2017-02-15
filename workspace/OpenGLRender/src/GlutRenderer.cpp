@@ -177,12 +177,10 @@ void GlutRenderer::InitRendering()
     glEnable( GL_DEPTH_TEST );
 }
 
-void GlutRenderer::RenderViewables( const Array<ViewableBase*>& viewables )
+void GlutRenderer::RenderViewables(const std::vector<ViewableBase*> & viewables)
 {
-    // Render each ViewableObject
-    int numObjects = viewables.SizeUsed();
-    for ( long i=0; i<numObjects; i++ ) {
-        RenderViewable( *(viewables[i]) );
+    for (size_t i = 0; i < viewables.size(); i++ ) {
+        RenderViewable(*(viewables[i]));
     }
 }
 

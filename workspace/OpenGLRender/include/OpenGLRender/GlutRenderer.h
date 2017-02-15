@@ -39,7 +39,7 @@
 #endif
 
 #include <VrMath/LinearR3.h>
-#include <DataStructs/Array.h>
+#include <vector>
 class CameraView;
 class Light;
 class ViewableBase;
@@ -100,7 +100,7 @@ public:
 
     bool AddLight( const Light& light );			// Returns false if quota of lights exceeded
     void RenderViewable( const ViewableBase& object );
-    void RenderViewables( const Array<ViewableBase*>& viewables );
+    void RenderViewables(const std::vector<ViewableBase*> & viewables);
     void FinishRendering();
 
     void InitRendering();	// Called by SetupLightsAndView, so usually you do not need to call this.
