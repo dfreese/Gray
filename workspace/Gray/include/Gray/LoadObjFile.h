@@ -21,8 +21,8 @@
 #ifndef LOAD_OBJ_FILE_H
 #define LOAD_OBJ_FILE_H
 
-#include <DataStructs/Array.h>
 #include <string>
+#include <vector>
 
 
 class SceneDescription;
@@ -73,11 +73,14 @@ private:
     void AddUnsupportedCmd(const std::string & cmd);
     void PrintCmdNotSupportedErrors( FILE* outstream );
 
-    Array<VectorR4> Vertices;			// Vertices in homogenous format
-    Array<VectorR2> TextureCoords;		// Texture coordinates not supported yet
-    Array<VectorR3> VertexNormals;		// Vertex normals not supported yet
+    // Vertices in homogenous format
+    std::vector<VectorR4> Vertices;
+    // Texture coordinates not supported yet
+    std::vector<VectorR2> TextureCoords;
+    // Vertex normals not supported yet
+    std::vector<VectorR3> VertexNormals;
 
-    Array<std::string> UnsupportedCmds;
+    std::vector<std::string> UnsupportedCmds;
 
 };
 

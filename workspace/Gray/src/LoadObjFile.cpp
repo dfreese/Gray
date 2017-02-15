@@ -96,13 +96,13 @@ bool ObjFileLoader::Load(const std::string &filename, SceneDescription &theScene
         bool ok = true;
         switch ( cmdNum ) {
         case 0: { // 'v' command
-            VectorR4* vertData = Vertices.Push();
-            ok = ReadVectorR4Hg ( args, vertData );
+            Vertices.push_back(VectorR4());
+            ok = ReadVectorR4Hg ( args, &Vertices.back());
         }
         break;
         case 1: { // "vt" command
-            VectorR2* texData = TextureCoords.Push();
-            ok = ReadTexCoords( args, texData );
+            TextureCoords.push_back(VectorR2());
+            ok = ReadTexCoords(args, &TextureCoords.back());
         }
         break;
         case 2: { // The 'f' command
@@ -250,8 +250,8 @@ bool ObjFileLoader::ProcessFace( char* inbuf, SceneDescription& theScene)
             return false;
         }
         // Negative indices refer to counting backwards
-        vertNums[3*i] = (scannedInt>0) ? scannedInt : Vertices.SizeUsed()+scannedInt;
-        if ( vertNums[3*i]<1 || vertNums[3*i]>Vertices.SizeUsed() ) {
+        vertNums[3*i] = (scannedInt>0) ? scannedInt : Vertices.size()+scannedInt;
+        if ( vertNums[3*i]<1 || vertNums[3*i]>Vertices.size() ) {
             return false;
         }
         s = ScanForWhiteOrSlash( s );
@@ -270,8 +270,8 @@ bool ObjFileLoader::ProcessFace( char* inbuf, SceneDescription& theScene)
                 return false;
             }
             // Negative indices refer to counting backwards
-            vertNums[3*i+1] = (scannedInt>0) ? scannedInt : TextureCoords.SizeUsed()+scannedInt;
-            if ( vertNums[3*i+1]<1 || vertNums[3*i+1]>TextureCoords.SizeUsed() ) {
+            vertNums[3*i+1] = (scannedInt>0) ? scannedInt : TextureCoords.size()+scannedInt;
+            if ( vertNums[3*i+1]<1 || vertNums[3*i+1]>TextureCoords.size() ) {
                 return false;
             }
         }
@@ -290,7 +290,7 @@ bool ObjFileLoader::ProcessFace( char* inbuf, SceneDescription& theScene)
                 return false;
             }
             // Negative indices refer to counting backwards
-            vertNums[3*i+2] = (scannedInt>0) ? scannedInt : VertexNormals.SizeUsed()+scannedInt;
+            vertNums[3*i+2] = (scannedInt>0) ? scannedInt : VertexNormals.size()+scannedInt;
             // XXX TO DO: PUT THIS BACK ONCE NORMALS ARE SCANNED IN!
             //if ( vertNums[3*i+2]<1 || vertNums[3*i+2]>VertexNormals.SizeUsed() ) {
             //	return false;
@@ -369,9 +369,9 @@ int ObjFileLoader::NextTriVertIdx( int start, int* step, int totalNum )
 
 void ObjFileLoader::Reset()
 {
-    Vertices.Reset();
-    TextureCoords.Reset();
-    UnsupportedCmds.Reset();
+    Vertices.clear();
+    TextureCoords.clear();
+    UnsupportedCmds.clear();
 }
 
 void ObjFileLoader::UnsupportedTextureDepth()
@@ -400,14 +400,14 @@ void ObjFileLoader::UnsupportedTooManyVerts( int maxVerts)
 
 void ObjFileLoader::AddUnsupportedCmd(const std::string & cmd)
 {
-    for (long i=0; i<UnsupportedCmds.SizeUsed(); i++) {
+    for (long i=0; i<UnsupportedCmds.size(); i++) {
         if (cmd == UnsupportedCmds[i]) {
             return;
         }
     }
     // Copy so the string is mutable.
     std::string cmd_mut(cmd);
-    UnsupportedCmds.Push(cmd_mut);
+    UnsupportedCmds.push_back(cmd_mut);
 }
 
 void ObjFileLoader::PrintCmdNotSupportedErrors( FILE* outstream )
@@ -415,7 +415,7 @@ void ObjFileLoader::PrintCmdNotSupportedErrors( FILE* outstream )
     if ( !ReportUnsupportedFeatures ) {
         return;
     }
-    int numUnsupCmds = UnsupportedCmds.SizeUsed();
+    int numUnsupCmds = UnsupportedCmds.size();
     if ( numUnsupCmds > 0 ) {
         fprintf( outstream, "ObjFileLoader: Unsupported commands in .nff file:  " );
         for ( long i=0; i<numUnsupCmds; i++ ) {
