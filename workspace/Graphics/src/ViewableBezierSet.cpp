@@ -25,6 +25,7 @@
 #include <VrMath/LinearR4.h>
 
 #include <stdio.h>
+#include <list>
 
 // The next two variables control recusion depth for subdivision
 //	during Bezier intersection.
@@ -464,8 +465,8 @@ int ViewableBezierSet::AddPatchInner(int uOrder, int vOrder, VectorR4 controlPts
     bp->FrontMaterial = FrontMaterial;
     bp->BackMaterial = BackMaterial;
 
-    BezierList bpList;
-    bpList.AddElt(bp);  // Adds element to the end of the linked list
+    std::list<BezierPatch *> bp_list;
+    bp_list.push_back(bp);
 
     // Subdivide until decently flat and has no points at infinity
     //   When split, the current patch in the linked list is
@@ -474,13 +475,11 @@ int ViewableBezierSet::AddPatchInner(int uOrder, int vOrder, VectorR4 controlPts
     int splitCounter = 0;
     while ( someNewPatch ) {
         someNewPatch = false;
-        BezierListElt* bPtr = bpList.GetFirst();
-        BezierListElt* bpNext;
-        while ( !bPtr->IsRoot() ) {
-            bpNext = bPtr->GetNext();
+        std::list<BezierPatch *>::iterator bIter = bp_list.begin();
+        while (bIter == bp_list.end()) {
             bool needSplit;
-            bp = bPtr->GetEntry();
-            if ( bp->HasPointAtInfinity() ) {
+            bp = *bIter;
+            if (bp->HasPointAtInfinity()) {
                 needSplit = true;
             } else {
                 bp->CalcBoundingPpd();
@@ -498,27 +497,28 @@ int ViewableBezierSet::AddPatchInner(int uOrder, int vOrder, VectorR4 controlPts
                 bpU0->MakeSplitV ( bpU0V0, bpU0V1 );
                 bpU0V0->CalcBoundingPpd();
                 bpU0V1->CalcBoundingPpd();
-                bPtr->AddAfter( bpU0V0 );
-                bPtr->AddAfter( bpU0V1 );
+                bp_list.insert(bIter, bpU0V0);
+                bp_list.insert(bIter, bpU0V1);
                 bpU1->MakeSplitV ( bpU1V0, bpU1V1 );
                 bpU1V0->CalcBoundingPpd();
                 bpU1V1->CalcBoundingPpd();
-                bPtr->AddAfter( bpU1V0 );
+                bp_list.insert(bIter, bpU1V0);
+
                 //bPtr->AddAfter( bpU1V1 );
                 //bPtr->Remove();				// Remove from the linked list
                 delete bpU1;					// Only patch that was not added to linked list
             }
-            bPtr = bpNext;
+            bIter++;
         }
         splitCounter++;
         assert( splitCounter<9 && "Patches may be badly formed.");
     }
     // Copy into the master linked list
-    BezierListElt* bPtr = bpList.GetFirst();
-    while ( !bPtr->IsRoot() ) {
-        BezierPatch* bp = bPtr->GetEntry();
+    std::list<BezierPatch *>::iterator bIter = bp_list.begin();
+    while (bIter == bp_list.end()) {
+        BezierPatch* bp = *bIter;
         PatchList.Push(*bp);
-        bPtr = bPtr->GetNext();
+        bIter++;
     }
 
     PatchCounter++;

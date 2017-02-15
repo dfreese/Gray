@@ -24,7 +24,6 @@
 #include <Graphics/ViewableBase.h>
 #include <Graphics/Material.h>
 #include <DataStructs/Array.h>
-#include <DataStructs/CLinkedList.h>
 #include <VrMath/Parallelepiped.h>
 #include <VrMath/LinearR2.h>
 #include <VrMath/LinearR3.h>
@@ -35,10 +34,6 @@ class BezierPatchMgr;
 
 // Dynamic arrays of Bezier patches
 typedef Array<BezierPatch> BezierArray;
-
-// Linked lists of Bezier patches
-typedef CLinkedList<BezierPatch> BezierList;
-typedef CLinkedListElt<BezierPatch> BezierListElt;
 
 // ***********************************************************************************
 // * ViewableBezierSet class - holds a set of degree 3x3 Bezier patches				 *
