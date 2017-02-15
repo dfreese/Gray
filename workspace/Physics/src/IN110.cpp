@@ -54,7 +54,9 @@ void IN110::Reset()
 {
     p.Reset();
     g.Reset();
-    daughter.Reset();
+    while (!daughter.empty()) {
+        daughter.pop();
+    }
 }
 
 ostream & IN110::print_on(ostream & os) const

@@ -35,7 +35,9 @@ void BackBack::Decay(unsigned int photon_number)
 void BackBack::Reset()
 {
     p.Reset();
-    daughter.Reset();
+    while (!daughter.empty()) {
+        daughter.pop();
+    }
 }
 
 ostream & BackBack::print_on(ostream & os) const

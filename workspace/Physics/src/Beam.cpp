@@ -43,7 +43,9 @@ void Beam::Decay(unsigned int photon_number)
 void Beam::Reset()
 {
     p.Reset();
-    daughter.Reset();
+    while (!daughter.empty()) {
+        daughter.pop();
+    }
 }
 
 ostream & Beam::print_on(ostream & os) const

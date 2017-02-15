@@ -54,7 +54,9 @@ void ZR89::Reset()
 {
     p.Reset();
     g.Reset();
-    daughter.Reset();
+    while (!daughter.empty()) {
+        daughter.pop();
+    }
 }
 
 ostream & ZR89::print_on(ostream & os) const

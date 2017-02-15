@@ -2,7 +2,7 @@
 #define ISOTOPE_H
 
 #include <map>
-#include <DataStructs/Stack.h>
+#include <stack>
 #include <Physics/Photon.h>
 
 enum ISOTOPE_TYPE {ISO_ERROR,ISO_F18, ISO_IN110, ISO_ZR89, ISO_CU64, ISO_BACKBACK, ISO_BEAM};
@@ -36,10 +36,10 @@ public:
     virtual void Decay(unsigned int photon_number) = 0;
     virtual void Reset() = 0;
     virtual ostream & print_on(ostream &) const = 0;
-    Photon & NextPhoton();
+    Photon NextPhoton();
     bool IsEmpty() const
     {
-        return daughter.IsEmpty();
+        return daughter.empty();
     }
     int source_num;
 public:
@@ -55,22 +55,23 @@ protected:
         return i.print_on(os);
     }
     Photon EMPTY;
-    Stack<Photon> daughter;
+    std::stack<Photon> daughter;
     map<string, ISOTOPE_TYPE> mapIsotope;
 };
 
-inline Photon & Isotope::NextPhoton()
+inline Photon Isotope::NextPhoton()
 {
-    if (daughter.IsEmpty()) {
+    if (daughter.empty()) {
         return EMPTY;
     }
-    //cout << "Pop[" << daughter.Size() << "]:" << daughter.Top() << endl;
-    return daughter.Pop();
+    Photon val = daughter.top();
+    daughter.pop();
+    return val;
 }
 
 inline void Isotope::AddPhoton(Photon &p)
 {
-    daughter.Push(p);
+    daughter.push(p);
 }
 
 #endif /* ISOTOPE_H */

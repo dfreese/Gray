@@ -43,7 +43,9 @@ void F18::Decay(unsigned int photon_number)
 void F18::Reset()
 {
     p.Reset();
-    daughter.Reset();
+    while (!daughter.empty()) {
+        daughter.pop();
+    }
 }
 
 ostream & F18::print_on(ostream & os) const
