@@ -50,5 +50,5 @@ with open(materials_file, 'r') as fid:
                     e += 0.0000025
                 last_e = e
                 print >>out_fid, '%15.9f   %15.9f   %15.9f   %15.9f' % (
-                    e * 1000, cs * density, pe * density,
+                    e * 1000, pe * density, cs * density,
                     dsdom.dsdom(e * 1000))
