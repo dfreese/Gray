@@ -32,6 +32,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stack>
 #include <Graphics/KdTree.h>
 #include <DataStructs/DoubleRecurse.h>
 
@@ -42,7 +43,7 @@ KdTree::~KdTree()
     // Garry: why is this return here?
     return;
     // Traverse the tree and delete object lists in each non-empty leaf node
-    Stack<long> IdxStack;
+    std::stack<long> IdxStack;
     long currentNodeIndex = RootIndex();			// The current node in the traversal
     while ( true ) {
         if ( currentNodeIndex != -1 ) {
@@ -51,13 +52,14 @@ KdTree::~KdTree()
                 delete[] currentNode->Data.Leaf.ObjectList;
             } else {
                 if ( !currentNode->LeftChildEmpty() ) {
-                    IdxStack.Push( currentNode->Data.Split.LeftChildIdx );
+                    IdxStack.push(currentNode->Data.Split.LeftChildIdx);
                 }
                 currentNodeIndex = currentNode->RightChildIndex();
                 continue;
             }
         }
-        currentNodeIndex = IdxStack.Pop();
+        currentNodeIndex = IdxStack.top();
+        IdxStack.pop();
     }
 }
 
@@ -139,7 +141,9 @@ bool KdTree::Traverse( const VectorR3& startPos, const VectorR3& dir, double see
         cerr << startPos << " dir: " << dir << " seekDistance: " << seekDistance << endl;
         return false;
     }
-    m_traverseStack.Reset();
+    while (!m_traverseStack.empty()) {
+        m_traverseStack.pop();
+    }
 
     while ( true ) {
 
@@ -189,8 +193,8 @@ bool KdTree::Traverse( const VectorR3& startPos, const VectorR3& dir, double see
                     } else if ( rightIdx == -1 ) {
                         currentNodeIndex = leftIdx;
                     } else {
-                        m_traverseStack.Push();
-                        m_traverseStack.Top().Set( rightIdx, minDistance, maxDistance );
+                        m_traverseStack.push(Kd_TraverseNodeData(
+                                rightIdx, minDistance, maxDistance));
                         currentNodeIndex = leftIdx;
                         hitParallel = true;
                         UpdateMax(maxDistance,parallelHitMax);
@@ -217,8 +221,8 @@ bool KdTree::Traverse( const VectorR3& startPos, const VectorR3& dir, double see
                 } else {
                     // Push the far node -- if it exists
                     if ( farNodeIdx != -1 ) {
-                        m_traverseStack.Push();
-                        m_traverseStack.Top().Set( farNodeIdx, splitDistance, maxDistance );
+                        m_traverseStack.push(Kd_TraverseNodeData(
+                                farNodeIdx, splitDistance, maxDistance));
                     }
                     // Near node is the new current node
                     maxDistance = splitDistance;
@@ -267,10 +271,11 @@ bool KdTree::Traverse( const VectorR3& startPos, const VectorR3& dir, double see
         }
 
         // Get to this point if done with a leaf node (possibly empty, possibly not).
-        if ( m_traverseStack.IsEmpty() ) {
+        if (m_traverseStack.empty()) {
             return stopDistanceActive;
         } else {
-            Kd_TraverseNodeData& topNode = m_traverseStack.Pop();
+            Kd_TraverseNodeData topNode = m_traverseStack.top();
+            m_traverseStack.pop();
             minDistance = topNode.GetMinDist();
             if ( stopDistanceActive && minDistance>stopDistance ) {
                 if ( !hitParallel || minDistance>=parallelHitMax ) {

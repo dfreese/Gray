@@ -33,16 +33,15 @@
 #ifndef KDTREE_H
 #define KDTREE_H
 
+#include <assert.h>
+#include <stack>
 #include <DataStructs/ShellSort.h>
 #include <DataStructs/Array.h>
-#include <DataStructs/Stack.h>
 #include <VrMath/Aabb.h>
 #define KDTREE_MAX(a,b) (((a)>(b))?(a):(b))
 
 //class KdTree;			// kd-tree.
 class KdTreeNode;		// A single node in the kd-tree.
-
-class Kd_TraverseNodeData;			// Holds information on a single node needing traversal.
 
 // Next classes used only for creating tree
 class ExtentTriple;				// A extent triples: a single max, min, or flat value
@@ -73,6 +72,53 @@ enum KD_SplittingAxis {
     KD_SPLIT_Z = 2,
     KD_LEAF = 3
 };
+
+
+// *******************************************************************
+// Kd_TraverseNodeData												 *
+//		Holds information on a node needing traversal				 *
+// *******************************************************************
+
+class Kd_TraverseNodeData
+{
+    friend class KdTree;
+
+public:
+    Kd_TraverseNodeData() {}
+    Kd_TraverseNodeData( long nodeNum, double minDist, double maxDist );
+    void Set( long nodeNum, double minDist, double maxDist  );
+
+    long GetNodeNumber() const
+    {
+        return NodeNumber;
+    }
+    double GetMinDist() const
+    {
+        return MinDistance;
+    }
+    double GetMaxDist() const
+    {
+        return MaxDistance;
+    }
+
+private:
+    long NodeNumber;			// Index of the node
+    double MinDistance;			// Minimum distance along ray to search (entry distance)
+    double MaxDistance;			// Maximum distance along ray to search (exit distance)
+};
+
+inline Kd_TraverseNodeData::Kd_TraverseNodeData( long nodeNum, double minDist, double maxDist )
+{
+    Set ( nodeNum, minDist, maxDist );
+}
+
+inline void Kd_TraverseNodeData::Set( long nodeNum, double minDist, double maxDist  )
+{
+    NodeNumber = nodeNum;
+    MinDistance = minDist;
+    MaxDistance = maxDist;
+}
+
 
 // ************************************************************************************
 // KdTree																			  *
@@ -112,7 +158,7 @@ public:
     void Stats_LeafTraversed();
     void Stats_GetAll( long* numNodes, long* numNonEmptyLeaves, long* numObjsInLeaves ) const;
 
-    Stack<Kd_TraverseNodeData> m_traverseStack;
+    std::stack<Kd_TraverseNodeData> m_traverseStack;
 private:
     bool Traverse( const VectorR3& startPos, const VectorR3& dir, double seekDistance = 0.0, bool useSeekDistance = false );
 
@@ -414,7 +460,7 @@ public:
         return ParentIdx;
     }
 
-private:
+//private:
     KD_SplittingAxis NodeType;			// The type of node
 
     long ParentIdx;				// Equals -1 if this is root and there is no parent
@@ -436,52 +482,6 @@ private:
     } Data;
 
 };
-
-// *******************************************************************
-// Kd_TraverseNodeData												 *
-//		Holds information on a node needing traversal				 *
-// *******************************************************************
-
-class Kd_TraverseNodeData
-{
-    friend class KdTree;
-
-public:
-    Kd_TraverseNodeData() {}
-    Kd_TraverseNodeData( long nodeNum, double minDist, double maxDist );
-    void Set( long nodeNum, double minDist, double maxDist  );
-
-    long GetNodeNumber() const
-    {
-        return NodeNumber;
-    }
-    double GetMinDist() const
-    {
-        return MinDistance;
-    }
-    double GetMaxDist() const
-    {
-        return MaxDistance;
-    }
-
-private:
-    long NodeNumber;			// Index of the node
-    double MinDistance;			// Minimum distance along ray to search (entry distance)
-    double MaxDistance;			// Maximum distance along ray to search (exit distance)
-};
-
-inline Kd_TraverseNodeData::Kd_TraverseNodeData( long nodeNum, double minDist, double maxDist )
-{
-    Set ( nodeNum, minDist, maxDist );
-}
-
-inline void Kd_TraverseNodeData::Set( long nodeNum, double minDist, double maxDist  )
-{
-    NodeNumber = nodeNum;
-    MinDistance = minDist;
-    MaxDistance = maxDist;
-}
-
 
 //*********************************************************************
 // ExtentTriple														  *
@@ -524,7 +524,7 @@ public:
     friend bool operator<(const ExtentTriple& x, const ExtentTriple y );
     ExtentTriple operator=( const ExtentTriple& );
 
-private:
+//private:
     TripleType ExtentType;		// Type of extent value
     double ExtentValue;			// The extent value
     long ObjectID;				// The integer number of the object
@@ -566,7 +566,7 @@ public:
         ShellSort( TripleArray, NumTriples() );
     }
 
-private:
+//private:
     ExtentTriple* TripleArray;		// Pointer to an array of triples
     ExtentTriple* EndOfArray;		// Pointer to the first empty spot in array
 
