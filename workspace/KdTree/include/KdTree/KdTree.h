@@ -35,8 +35,8 @@
 
 #include <assert.h>
 #include <stack>
-#include <DataStructs/ShellSort.h>
-#include <DataStructs/Array.h>
+#include <KdTree/ShellSort.h>
+#include <KdTree/Array.h>
 #include <VrMath/Aabb.h>
 #define KDTREE_MAX(a,b) (((a)>(b))?(a):(b))
 

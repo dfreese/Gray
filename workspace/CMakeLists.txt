@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.8.12)
 project (Gray)
 
-add_subdirectory(DataStructs)
+add_subdirectory(KdTree)
 add_subdirectory(Graphics)
 add_subdirectory(Random)
 add_subdirectory(VrMath)

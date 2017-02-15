@@ -33,8 +33,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stack>
-#include <DataStructs/KdTree.h>
-#include <DataStructs/DoubleRecurse.h>
+#include <KdTree/KdTree.h>
+#include <KdTree/DoubleRecurse.h>
 
 // Destructor
 KdTree::~KdTree()

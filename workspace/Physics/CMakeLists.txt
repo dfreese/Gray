@@ -35,6 +35,5 @@ add_library(Physics
 
 target_include_directories(Physics PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-target_link_libraries(Physics DataStructs)
 target_link_libraries(Physics Random)
 target_link_libraries(Physics VrMath)
