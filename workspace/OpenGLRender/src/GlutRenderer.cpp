@@ -244,7 +244,7 @@ void GlutRenderer::RenderViewableBezierSet( const ViewableBezierSet& object )
 
     // Loop over all Bezier patches in the BezierSet
     const BezierArray& thePatches = object.GetPatchList();
-    long numPatches = thePatches.SizeUsed();
+    long numPatches = thePatches.size();
     GLdouble theControlPts[16][4];							// GLdouble must be double for this to work with Dump
     for ( long i=0; i<numPatches; i++ ) {
         const VectorR4* cntlPts = thePatches[i].GetControlPoints();

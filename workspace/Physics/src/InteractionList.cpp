@@ -6,26 +6,33 @@
 InteractionList::InteractionList()
 {
     /* set default values for EMPTY */
-    hits.Reset();
+    hits.clear();
 }
 InteractionList::~InteractionList() {}
 
-inline void InteractionList::AddHit(Deposit & d)
+bool InteractionList::isEmpty() const
 {
-    hits.Push(d);
+    return hits.empty();
 }
 
-inline Deposit & InteractionList::NextHit()
+inline void InteractionList::AddHit(Deposit & d)
 {
-    if (hits.IsEmpty()) {
+    hits.push_back(d);
+}
+
+inline Deposit InteractionList::NextHit()
+{
+    if (hits.empty()) {
         return EMPTY;
     }
-    return hits.Pop();
+    Deposit deposit = hits.back();
+    hits.pop_back();
+    return deposit;
 }
 
 ostream& operator<< (ostream &os, const InteractionList & l)
 {
-    for (int idx = 0; idx < l.hits.SizeUsed(); idx++) {
+    for (int idx = 0; idx < l.hits.size(); idx++) {
         os << "[" << idx << "]:";
         os << l.hits[idx];
         os << "\n";
@@ -44,7 +51,7 @@ void InteractionList::HitPositron(const Positron &p, double deposit)
     hit.type = I_POSITRON;
     hit.src_id = p.source_num;
     hit.mat_id = -1;
-    hits.Push(hit);
+    hits.push_back(hit);
 }
 
 void InteractionList::HitCompton(const Photon &p, double deposit, const GammaStats & mat_gamma_prop)
@@ -59,7 +66,7 @@ void InteractionList::HitCompton(const Photon &p, double deposit, const GammaSta
     hit.type = I_COMPTON;
     hit.src_id = p.GetSrc();
     hit.mat_id = mat_gamma_prop.GetMaterial();
-    hits.Push(hit);
+    hits.push_back(hit);
 }
 void InteractionList::HitPhotoelectric(const Photon &p, double deposit, const GammaStats & mat_gamma_prop)
 {
@@ -73,10 +80,10 @@ void InteractionList::HitPhotoelectric(const Photon &p, double deposit, const Ga
     hit.type = I_PHOTOELECTRIC;
     hit.src_id = p.GetSrc();
     hit.mat_id = mat_gamma_prop.GetMaterial();
-    hits.Push(hit);
+    hits.push_back(hit);
 }
 
 void InteractionList::Reset()
 {
-    hits.Reset();
+    hits.clear();
 }

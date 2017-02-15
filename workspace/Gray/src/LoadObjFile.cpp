@@ -21,7 +21,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <Gray/LoadObjFile.h>
-#include <DataStructs/Array.h>
 #include <VrMath/LinearR2.h>
 #include <VrMath/LinearR3.h>
 #include <VrMath/LinearR4.h>

@@ -21,9 +21,9 @@
 #ifndef VIEWABLEBEZIERSET_H
 #define VIEWABLEBEZIERSET_H
 
+#include <vector>
 #include <Graphics/ViewableBase.h>
 #include <Graphics/Material.h>
-#include <DataStructs/Array.h>
 #include <VrMath/Parallelepiped.h>
 #include <VrMath/LinearR2.h>
 #include <VrMath/LinearR3.h>
@@ -33,7 +33,7 @@ class BezierPatch;
 class BezierPatchMgr;
 
 // Dynamic arrays of Bezier patches
-typedef Array<BezierPatch> BezierArray;
+typedef std::vector<BezierPatch> BezierArray;
 
 // ***********************************************************************************
 // * ViewableBezierSet class - holds a set of degree 3x3 Bezier patches				 *

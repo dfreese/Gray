@@ -74,9 +74,7 @@ bool ViewableBezierSet::FindIntersectionNT (
 
     // Loop over each patch, check their bounding parallelepiped.
     //   For those that are hit, push them into the stack.
-    long numPatches = PatchList.SizeUsed();
-    long i;
-    for ( i=0; i<numPatches; i++ ) {
+    for (long i = 0; i < PatchList.size(); i++ ) {
         const BezierPatch* bPatch = &(PatchList[i]);
         if ( ViewableParallelepiped::QuickIntersectTest( viewPos, viewDir, maxDist,
                 &intersectDistanceIn, &intersectDistanceOut,
@@ -245,9 +243,7 @@ void ViewableBezierSet::CalcBoundingSphere()
 
     double radiusSq=0.0;
     VectorR3 temp;
-    long numPatches = PatchList.SizeUsed();
-    long i;
-    for ( i=0; i<numPatches; i++ ) {
+    for (size_t i=0; i < PatchList.size(); i++ ) {
         const BezierPatch& bPatch = PatchList[i];
         if ( !bPatch.IsSplitIntoTwo() ) {
             for ( int i=0; i<4; i++ ) {
@@ -272,9 +268,7 @@ void ViewableBezierSet::CalcBoundingSphereCenter()
     VectorR3 ctrAccum;
     int num = 0;
     VectorR3 temp;
-    long numPatches = PatchList.SizeUsed();
-    long i;
-    for ( i=0; i<numPatches; i++ ) {
+    for (size_t i = 0; i < PatchList.size(); i++ ) {
         const BezierPatch& bPatch = PatchList[i];
         for ( int i=0; i<4; i++ ) {
             for ( int j=0; j<4; j++ ) {
@@ -455,7 +449,8 @@ int ViewableBezierSet::AddPatchInner(int uOrder, int vOrder, VectorR4 controlPts
         }
     }
     // Save the original input patch
-    BezierPatch& origBP = *(OriginalPatches.Push());
+    OriginalPatches.push_back(BezierPatch());
+    BezierPatch& origBP = OriginalPatches.back();
     origBP.SetControlPoints(controlPts);
     origBP.FaceNum = PatchCounter;
 
@@ -517,7 +512,7 @@ int ViewableBezierSet::AddPatchInner(int uOrder, int vOrder, VectorR4 controlPts
     std::list<BezierPatch *>::iterator bIter = bp_list.begin();
     while (bIter == bp_list.end()) {
         BezierPatch* bp = *bIter;
-        PatchList.Push(*bp);
+        PatchList.push_back(*bp);
         bIter++;
     }
 
@@ -923,9 +918,7 @@ void ViewableBezierSet::CalcBoundingPlanes( const VectorR3& u, double *minDot, d
     double min = DBL_MAX;
     double max = -DBL_MAX;
     // Loop over each patch, find their bounding parallelepiped.
-    long numPatches = PatchList.SizeUsed();
-    long i;
-    for ( i=0; i<numPatches; i++ ) {
+    for (size_t i = 0; i < PatchList.size(); i++ ) {
         const BezierPatch& bPatch = PatchList[i];
         double newMin, newMax;
         bPatch.GetMinMaxDot(u, &newMin, &newMax );
