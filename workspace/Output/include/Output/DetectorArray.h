@@ -1,7 +1,7 @@
 #ifndef DETECTORARRAY_H_
 #define DETECTORARRAY_H_
 #include <Output/Detector.h>
-#include <DataStructs/Array.h>
+#include <vector>
 
 class VectorR3;
 class RigidMapR3;
@@ -17,7 +17,7 @@ public:
     void OutputDetectorArray();
     friend ostream& operator<< ( ostream& os, const DetectorArray& d );
 public:
-    Array<Detector*> d;
+    std::vector<Detector*> d;
 };
 
 #endif /*DETECTORARRAY_H_*/
