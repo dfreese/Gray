@@ -4,6 +4,7 @@ add_library(DataStructs
     include/DataStructs/CLinkedList.h
     src/DoubleRecurse.cpp
     include/DataStructs/DoubleRecurse.h
+    include/DataStructs/ShellSort.h
     include/DataStructs/Stack.h
 )
 
