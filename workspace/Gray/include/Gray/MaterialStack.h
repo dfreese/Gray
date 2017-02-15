@@ -26,7 +26,7 @@
 #include <Gray/GammaMaterial.h>
 
 #include <VrMath/LinearR3.h>
-#include <DataStructs/Stack.h>
+#include <stack>
 
 class MaterialStack
 {
@@ -40,7 +40,7 @@ public:
     void SetDefault(GammaMaterial * mat);
 
 private:
-    Stack<GammaMaterial*> MatStack;
+    std::stack<GammaMaterial*> MatStack;
     GammaMaterial * defaultMaterial;
 };
 

@@ -7,7 +7,7 @@ MaterialStack::MaterialStack()
 
 void MaterialStack::PushMaterial(GammaMaterial *mat)
 {
-    MatStack.Push(mat);
+    MatStack.push(mat);
 }
 
 GammaMaterial* MaterialStack::PopMaterial()
@@ -16,7 +16,8 @@ GammaMaterial* MaterialStack::PopMaterial()
         cerr << "Poping empty\n";
         return NULL;
     }
-    GammaMaterial * ret = MatStack.Pop();
+    GammaMaterial * ret = MatStack.top();
+    MatStack.pop();
     return ret;
 }
 
@@ -25,13 +26,15 @@ GammaMaterial * MaterialStack::curMaterial()
     if (NumMaterials() <= 0) {
         return NULL;
     }
-    return MatStack.Top();
+    return MatStack.top();
 }
 
 void MaterialStack::ResetMaterial()
 {
-    MatStack.Reset();
-    MatStack.Push(defaultMaterial);
+    while (!MatStack.empty()) {
+        MatStack.pop();
+    }
+    MatStack.push(defaultMaterial);
 }
 void MaterialStack::SetDefault(GammaMaterial * mat)
 {
@@ -40,5 +43,5 @@ void MaterialStack::SetDefault(GammaMaterial * mat)
 
 int MaterialStack::NumMaterials() const
 {
-    return MatStack.Size();
+    return MatStack.size();
 }
