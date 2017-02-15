@@ -1,9 +1,9 @@
 #ifndef LOAD_DETECTOR_H_
 #define LOAD_DETECTOR_H_
 
+#include <stack>
 #include <string>
 #include <VrMath/LinearR3.h>
-#include <DataStructs/Stack.h>
 #include <Gray/GammaRayTrace.h>
 #include <Graphics/SceneDescription.h>
 
@@ -32,7 +32,7 @@ private:
     void ApplyRotation(const VectorR3& axis, double theta);
     bool ProcessFaceDFF( int numVerts, const Material* mat, FILE* infile, VectorSource * s, bool parse_VectorSource, unsigned id );
     RigidMapR3 &curMatrix();
-    Stack<RigidMapR3*> MatrixStack;
+    std::stack<RigidMapR3*> MatrixStack;
     double polygonScale;
     double actScale;
 

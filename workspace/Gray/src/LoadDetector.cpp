@@ -97,7 +97,7 @@ LoadDetector::LoadDetector()
 {
     RigidMapR3 * newMatrix = new RigidMapR3();
     newMatrix->SetIdentity();
-    MatrixStack.Push(newMatrix);
+    MatrixStack.push(newMatrix);
 
     polygonScale = 1.0;
     actScale = 1.0;
@@ -119,15 +119,14 @@ LoadDetector::LoadDetector()
 
 RigidMapR3& LoadDetector::curMatrix()
 {
-    RigidMapR3 * cur = MatrixStack.Top();
-    return (*cur);
+    return (*MatrixStack.top());
 }
 
 void LoadDetector::PushMatrix()
 {
     RigidMapR3 * newMatrix = new RigidMapR3();
     *newMatrix = curMatrix();
-    MatrixStack.Push(newMatrix);
+    MatrixStack.push(newMatrix);
 }
 
 void LoadDetector::PopMatrix()
