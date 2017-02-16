@@ -10,13 +10,8 @@
 #include <Graphics/ViewableBase.h>
 #include <Graphics/ViewableSphere.h>
 #include <Graphics/ViewableEllipsoid.h>
-#include <Graphics/ViewableCone.h>
-#include <Graphics/ViewableTorus.h>
 #include <Graphics/ViewableTriangle.h>
-#include <Graphics/ViewableParallelogram.h>
 #include <Graphics/ViewableCylinder.h>
-#include <Graphics/ViewableParallelepiped.h>
-#include <Graphics/ViewableBezierSet.h>
 #include <Output/DetectorArray.h>
 #include <Sources/AnnulusCylinderSource.h>
 #include <Sources/AnnulusEllipticCylinderSource.h>
