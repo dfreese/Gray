@@ -26,9 +26,9 @@
 #ifndef QUATERNION_H
 #define QUATERNION_H
 
-#include "LinearR3.h"
-#include "LinearR4.h"
-#include "MathMisc.h"
+#include <VrMath/LinearR3.h>
+#include <VrMath/LinearR4.h>
+#include <VrMath/MathMisc.h>
 
 
 class Quaternion;			// Quaternion (x,y,z,w) values.

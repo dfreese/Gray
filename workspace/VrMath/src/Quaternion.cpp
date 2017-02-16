@@ -1,6 +1,6 @@
 /*
  *
- * RayTrace Software Package, release 3.0.  May 3, 2006.
+ * RayTrace Software Package, release 3.2b.  May 3, 2006; October 5, 2008.
  *
  * Mathematics Subpackage (VrMath)
  *
@@ -25,16 +25,16 @@
 const Quaternion Quaternion::Identity( 0.0, 0.0, 0.0, 1.0 );
 
 // ******************************************************************
-// * Quaternion class - member functions							*
+// * Quaternion class - member functions                            *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * **
 
 // Convert a rotation map into an equivalent Quaternion.
 Quaternion& Quaternion::Set( const RotationMapR3& A)
 {
     // Use Shepperd's algorithm, which is stable, does not lose
-    //		significant precision and uses only one sqrt.
+    //        significant precision and uses only one sqrt.
     //   J. Guidance and Control, 1 (1978) 223-224.
-    double m00 = A.m11 + A.m22 + A.m33;	// Trace of A
+    double m00 = A.m11 + A.m22 + A.m33;    // Trace of A
     double temp;
     if ( m00 >= 0.5 ) {
         w = sqrt( 1.0+m00 );
@@ -42,24 +42,27 @@ Quaternion& Quaternion::Set( const RotationMapR3& A)
         x = (A.m32-A.m23)*wInv;
         y = (A.m13-A.m31)*wInv;
         z = (A.m21-A.m12)*wInv;
-    } else if ( (temp = A.m11+A.m11-m00)>=0.5 ) {
+    }
+    else if ( (temp = A.m11+A.m11-m00)>=0.5 ) {
         x = sqrt(1.0+temp);
         double xInv = 1.0/x;
         w = (A.m32-A.m23)*xInv;
         y = (A.m21+A.m12)*xInv;
         z = (A.m31+A.m13)*xInv;
-    } else if ( (temp=A.m22+A.m22-m00) >=0.5 ) {
+    }
+    else if ( (temp=A.m22+A.m22-m00) >=0.5 ) {
         y = sqrt(1.0+temp);
         double yInv = 1.0/y;
         w = (A.m13-A.m31)*yInv;
         x = (A.m21+A.m12)*yInv;
         z = (A.m32+A.m23)*yInv;
-    } else {
+    }
+    else {
         z = sqrt(1.0+A.m33+A.m33-m00);
         double zInv = 1.0/z;
         w = (A.m21-A.m12)*zInv;
-        x = (A.m31-A.m13)*zInv;
-        y = (A.m32-A.m23)*zInv;
+        x = (A.m31+A.m13)*zInv;
+        y = (A.m32+A.m23)*zInv;
     }
     w *= 0.5;
     x *= 0.5;
@@ -82,7 +85,7 @@ Quaternion& Quaternion::SetRotate( const VectorR3& rotVec)
 }
 
 // ******************************************************************
-// * VectorR3/RotationMapR3 class - member functions				*
+// * VectorR3/RotationMapR3 class - member functions                *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * **
 
 // this.Rotate( q ) -- Apply quaternion q to rotate this vector.
@@ -102,7 +105,8 @@ VectorR3& VectorR3::Set( const Quaternion& q )
         theta += theta;
         this->Set( q.x, q.y, q.z );
         (*this) *= (theta/sinhalf);
-    } else {
+    }
+    else {
         this->SetZero();
     }
     return *this;
@@ -134,16 +138,15 @@ RotationMapR3& RotationMapR3::Set( const Quaternion& quat )
 
 
 //*******************************************************************
-// Solid Geometry routines											*
+// Solid Geometry routines                                            *
 //*******************************************************************
 
 // Compute the angle formed by two geodesics on the unit sphere.
-//	Three unit vectors u,v,w specify the geodesics u-v and v-w which
+//    Three unit vectors u,v,w specify the geodesics u-v and v-w which
 //  meet at vertex v.  The angle from v-w to v-u is returned.  This
 //  is always in the range [0, 2PI).
 // The three vectors should be unit vectors and should be distinct
-double SphereAngle( const VectorR3& u, const VectorR3& v, const VectorR3& w )
-{
+double SphereAngle( const VectorR3& u, const VectorR3& v, const VectorR3& w ) {
     VectorR3 vuPerp = ProjectPerpUnit ( u, v );
     VectorR3 vwPerp = ProjectPerpUnit ( w, v );
     double costheta = vwPerp^vuPerp;
@@ -151,7 +154,7 @@ double SphereAngle( const VectorR3& u, const VectorR3& v, const VectorR3& w )
     double normProdInv = 1.0/sqrt(vuPerp.NormSq()*vwPerp.NormSq());
     costheta *= normProdInv;
     sintheta *= normProdInv;
-
+    
     double theta = atan2( sintheta, costheta );
     if (theta<0.0) {
         theta += PI2;
