@@ -22,13 +22,20 @@ SourceList::SourceList()
 
 }
 
-// Garry: Added destructor for proper cleanup
 SourceList::~SourceList()
 {
-    list.clear();
-    neg_list.clear();
-    prob.clear();
-}
+    while (!list.empty()) {
+        delete list.back();
+        list.pop_back();
+    }
+    while (!neg_list.empty()) {
+        delete neg_list.back();
+        neg_list.pop_back();
+    }
+    while (!isotopes.empty()) {
+        delete isotopes.back();
+        isotopes.pop_back();
+    }}
 
 void SourceList::AddSource(Source * s)
 {
@@ -48,6 +55,7 @@ void SourceList::AddSource(Source * s)
         + " passed valid_isotope test, but was not implemented";
         throw(runtime_error(error));
     }
+    isotopes.push_back(isotope);
     
     s->SetIsotope(isotope);
     if (s->isNegative()) {

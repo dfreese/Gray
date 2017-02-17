@@ -25,6 +25,7 @@ private:
     double total_activity;
     std::vector <Source*> list;
     std::vector <Source*> neg_list;
+    std::vector <Isotope*> isotopes;
     std::vector <double> prob;
     double CalculateTime();
     double GetTime();

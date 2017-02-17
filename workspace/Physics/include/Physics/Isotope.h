@@ -10,6 +10,7 @@ class Isotope
 {
 public:
     Isotope();
+    virtual ~Isotope() {};
     void SetTime (const double t)
     {
         time = t;
