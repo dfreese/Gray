@@ -8,7 +8,6 @@ SourceList::SourceList()
     curTime = 0.0;
     total_activity = 0.0;
     photon_number = 0;
-    curIsotope = ISO_BACKBACK;
     current_isotope = "BackBack";
     valid_isotopes.insert("F18");
     valid_isotopes.insert("IN110");
@@ -28,7 +27,7 @@ SourceList::~SourceList()
 
 void SourceList::AddSource(Source * s)
 {
-    s->SetIsotope(isotope.newIsotope(curIsotope));
+    s->SetIsotope(isotope.newIsotope(isotope.getType(current_isotope)));
     if (s->isNegative()) {
         cout << "Adding negative source\n";
         neg_list.push_back(s);
@@ -123,7 +122,6 @@ bool SourceList::Inside(const VectorR3 & pos)
 
 bool SourceList::SetCurIsotope(const std::string & iso)
 {
-    curIsotope = isotope.getType(iso);
     if (valid_isotopes.count(iso)) {
         current_isotope = iso;
         return(true);
