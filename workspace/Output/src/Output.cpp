@@ -174,7 +174,7 @@ void Output::LogBinary(const Photon &p, INTER_TYPE type, double deposit, const G
 }
 
 
-void Output::LogError(const Photon &p, int t, int det_mat)
+void Output::LogError(const Photon &p, ErrorType t, int det_mat)
 {
     counter_error++;
     if (binary_output) {

@@ -42,13 +42,13 @@ INTER_TYPE GammaRayTrace::GRayTrace(VisiblePoint &visPoint, int TraceDepth, Phot
     GammaMaterial * curMaterial = MatStack.curMaterial();
 
     if (curMaterial == NULL) {
-        output.LogError(photon, ERROR_EMPTY,  0);
+        output.LogError(photon, Output::ERROR_EMPTY,  0);
 //        cout << "ERROR" << endl;
         return ERROR;
     }
 
     if (TraceDepth <= 0) {
-        output.LogError(photon, ERROR_TRACE_DEPTH, curMaterial->GetMaterial());
+        output.LogError(photon, Output::ERROR_TRACE_DEPTH, curMaterial->GetMaterial());
         cout << "ERROR_TRACE_DEPTH" << endl;
         return NO_INTERACTION;
     }

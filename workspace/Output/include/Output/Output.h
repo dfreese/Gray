@@ -13,9 +13,6 @@
 
 class GammaStats;
 
-#define ERROR_EMPTY (int)-2
-#define ERROR_TRACE_DEPTH (int)-3
-
 class Output
 {
 public:
@@ -27,12 +24,16 @@ public:
     void SetLogPositron(bool val);
     void LogCompton(const Photon &p, double deposit, const GammaStats & mat_gamma_prop);
     void LogPhotoElectric(const Photon &p, const GammaStats & mat_gamma_prop);
-    void LogError(const Photon &p, int t, int det_mat);
     void SetBinary(bool val);
     enum BinaryOutputFormat {
         FULL_OUTPUT,
         NO_POS
     };
+    enum ErrorType {
+        ERROR_EMPTY = -2,
+        ERROR_TRACE_DEPTH = -3
+    };
+    void LogError(const Photon &p, ErrorType t, int det_mat);
     void SetBinaryFormat(BinaryOutputFormat format);
 
 private:
