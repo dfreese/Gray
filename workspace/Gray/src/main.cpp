@@ -48,7 +48,6 @@ static void ResizeWindow(GLsizei w, GLsizei h);
 RayTraceStats MyStats;
 // **********************************************
 
-GammaRayTrace Gray;
 string FileNameDetector = "";
 string FileNameOutput = "";
 unsigned long GraySeed = 0;
@@ -108,10 +107,7 @@ static void RenderScene(void)
     }
     if ( RayTraceMode ) {
         RayTraceView();
-    } else if ( GammaRayTraceMode ) {
-        Gray.GRayTraceSources();
-        GammaRayTraceMode = false;
-    } 	else {
+    } else {
         GlutRenderer newGlutter;
         RenderScene(newGlutter, *ActiveScene);
     }
@@ -552,7 +548,7 @@ void myMouseUpDownFunc( int button, int state, int x, int y )
     }
 }
 
-void InitializeSceneGeometry()
+void InitializeSceneGeometry(GammaRayTrace & Gray)
 {
     // Define the lights, materials, textures and viewable objects.
     if (!LoadMaterials::LoadPhysicsFiles(FileScene)) {
@@ -654,11 +650,14 @@ int main( int argc, char** argv )
         return(-1);
     }
 
+
+    GammaRayTrace Gray;
+
     if (BatchMode == true) {
         // Implement batch mode for raytracing
-        InitializeSceneGeometry();
+        InitializeSceneGeometry(Gray);
         Gray.GRayTraceSources();
-        exit(0);
+        return(0);
     }
 
     fprintf( stdout, "Press 'g' or space bar to start ray tracing. (And then wait!)\n" );
@@ -676,7 +675,7 @@ int main( int argc, char** argv )
     glutInitWindowPosition(0, 0);
     glutCreateWindow( "Ray Tracing" );
 
-    InitializeSceneGeometry();
+    InitializeSceneGeometry(Gray);
 
     // set up callback functions
     glutKeyboardFunc( myKeyboardFunc );
