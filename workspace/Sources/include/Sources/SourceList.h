@@ -1,6 +1,7 @@
 #ifndef CSE167_SOURCELIST_H
 #define CSE167_SOURCELIST_H
 
+#include <set>
 #include <string>
 #include <vector>
 #include <Sources/Source.h>
@@ -16,7 +17,7 @@ public:
     ~SourceList();
     Source * Decay();
     void AddSource(Source * s);
-    void SetCurIsotope(const std::string & iso);
+    bool SetCurIsotope(const std::string & iso);
     double GetMeanTotalEvents(double time);
     double GetTotalEvents(double time);
 private:
@@ -34,6 +35,8 @@ private:
     unsigned int photon_number;
     ISOTOPE_TYPE curIsotope;
     BackBack isotope;
+    std::set<std::string> valid_isotopes;
+    std::string current_isotope;
 };
 
 #endif

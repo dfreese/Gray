@@ -901,13 +901,15 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
             case 49: { // set singles isotope
                 char string[256];
                 int scanCode = sscanf(args, "%s", string);
-                if (scanCode ==1) {
-                    cout << "Debug: set isotope: " << string << endl;
-                    Gray.sources.SetCurIsotope(string);
-                } else {
+                if (scanCode != 1) {
                     parseErrorOccurred = true;
                     break;
                 }
+                if (!Gray.sources.SetCurIsotope(string)) {
+                    parseErrorOccurred = true;
+                    break;
+                }
+                cout << "Debug: set isotope: " << string << endl;
                 break;
             }
             case 50: { // load voxel array source

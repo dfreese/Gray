@@ -9,6 +9,13 @@ SourceList::SourceList()
     total_activity = 0.0;
     photon_number = 0;
     curIsotope = ISO_BACKBACK;
+    current_isotope = "BackBack";
+    valid_isotopes.insert("F18");
+    valid_isotopes.insert("IN110");
+    valid_isotopes.insert("ZR89");
+    valid_isotopes.insert("BackBack");
+    valid_isotopes.insert("Beam");
+
 }
 
 // Garry: Added destructor for proper cleanup
@@ -114,7 +121,14 @@ bool SourceList::Inside(const VectorR3 & pos)
     return false;
 }
 
-void SourceList::SetCurIsotope(const std::string & iso)
+bool SourceList::SetCurIsotope(const std::string & iso)
 {
     curIsotope = isotope.getType(iso);
+    if (valid_isotopes.count(iso)) {
+        current_isotope = iso;
+        return(true);
+    } else {
+        return(false);
+    }
+
 }
