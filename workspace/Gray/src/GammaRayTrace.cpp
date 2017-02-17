@@ -4,6 +4,7 @@
 #include <Graphics/ViewableTriangle.h>
 #include <Gray/GammaMaterial.h>
 #include <Physics/Interaction.h>
+#include <Physics/Positron.h>
 #include <Physics/Photon.h>
 
 GammaRayTrace::GammaRayTrace()

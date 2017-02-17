@@ -1,5 +1,10 @@
 #include <Sources/SourceList.h>
 #include <Random/Random.h>
+#include <Physics/F18.h>
+#include <Physics/IN110.h>
+#include <Physics/ZR89.h>
+#include <Physics/BackBack.h>
+#include <Physics/Beam.h>
 
 using namespace std;
 
@@ -27,7 +32,24 @@ SourceList::~SourceList()
 
 void SourceList::AddSource(Source * s)
 {
-    s->SetIsotope(isotope.newIsotope(isotope.getType(current_isotope)));
+    Isotope * isotope;
+    if (current_isotope == "F18") {
+        isotope = static_cast<Isotope *>(new F18());
+    } else if (current_isotope == "IN110") {
+        isotope = static_cast<Isotope *>(new IN110());
+    } else if (current_isotope == "ZR89") {
+        isotope = static_cast<Isotope *>(new ZR89());
+    } else if (current_isotope == "BackBack") {
+        isotope = static_cast<Isotope *>(new BackBack());
+    } else if (current_isotope == "Beam") {
+        isotope = static_cast<Isotope *>(new Beam());
+    } else {
+        string error = "Isotope named " + current_isotope
+        + " passed valid_isotope test, but was not implemented";
+        throw(runtime_error(error));
+    }
+    
+    s->SetIsotope(isotope);
     if (s->isNegative()) {
         cout << "Adding negative source\n";
         neg_list.push_back(s);

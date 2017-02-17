@@ -6,8 +6,6 @@
 #include <string>
 #include <Physics/Photon.h>
 
-enum ISOTOPE_TYPE {ISO_ERROR,ISO_F18, ISO_IN110, ISO_ZR89, ISO_CU64, ISO_BACKBACK, ISO_BEAM};
-
 class Isotope
 {
 public:
@@ -24,8 +22,6 @@ public:
     {
         id = i;
     }
-    ISOTOPE_TYPE getType(const std::string & iso);
-    Isotope * newIsotope(ISOTOPE_TYPE type);
     long GetId() const
     {
         return id;
@@ -57,7 +53,6 @@ protected:
     }
     Photon EMPTY;
     std::stack<Photon> daughter;
-    map<std::string, ISOTOPE_TYPE> mapIsotope;
 };
 
 inline Photon Isotope::NextPhoton()
