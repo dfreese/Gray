@@ -17,13 +17,8 @@
 #ifndef ZR89_H
 #define ZR89_H
 
-#include "Positron.h"
-#include "GammaDecay.h"
-
-using namespace std;
-
-const double CONST_E_ZR89_GAMMA = 0.90915; /* MeV */
-const double CONST_PROB_ZR89_POS = 0.227;	/* 22.7% of decays lead to a positron */
+#include <Physics/Positron.h>
+#include <Physics/GammaDecay.h>
 
 class ZR89 : public Positron
 {
@@ -31,9 +26,12 @@ public:
     ZR89();
     virtual void Decay(unsigned int photon_number);
     virtual void Reset();
-    virtual ostream & print_on(ostream & os) const;
+    virtual std::ostream & print_on(std::ostream & os) const;
 protected:
     GammaDecay g;
+    const double CONST_E_ZR89_GAMMA = 0.90915; /* MeV */
+    const double CONST_PROB_ZR89_POS = 0.227;	/* 22.7% of decays lead to a positron */
+
 };
 
 #endif /* ZR89_H */

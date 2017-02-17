@@ -1,8 +1,8 @@
 #ifndef GAMMADECAY_H
 #define GAMMADECAY_H
 
-#include "NuclearDecay.h"
-#include "Photon.h"
+#include <Physics/NuclearDecay.h>
+#include <Physics/Photon.h>
 
 class GammaDecay : public NuclearDecay
 {

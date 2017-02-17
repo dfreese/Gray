@@ -16,7 +16,6 @@ class Photon
 {
 public:
     Photon();
-    ~Photon();
     Photon(int set_id, double e, const VectorR3 & p, const VectorR3 & d);
     void SetRed()
     {

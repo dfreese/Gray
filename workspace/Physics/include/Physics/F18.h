@@ -1,7 +1,7 @@
 #ifndef F18_H
 #define F18_H
 
-#include "Positron.h"
+#include <Physics/Positron.h>
 
 class F18 : public Positron
 {

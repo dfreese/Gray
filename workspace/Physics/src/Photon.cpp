@@ -8,11 +8,6 @@ Photon::Photon()
     Reset();
 }
 
-Photon::~Photon()
-{
-    Reset();
-}
-
 void Photon::Reset()
 {
     energy = -1.0;

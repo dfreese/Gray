@@ -1,7 +1,7 @@
 #ifndef BEAM_H
 #define BEAM_H
 
-#include "Positron.h"
+#include <Physics/Positron.h>
 
 class Beam : public Positron
 {

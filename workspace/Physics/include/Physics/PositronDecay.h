@@ -1,8 +1,8 @@
 #ifndef CSE167_POSITRONDECAY_H
 #define CSE167_POSITRONDECAY_H
 
-#include "NuclearDecay.h"
-#include "Photon.h"
+#include <Physics/NuclearDecay.h>
+#include <Physics/Photon.h>
 
 class PositronDecay : public NuclearDecay
 {

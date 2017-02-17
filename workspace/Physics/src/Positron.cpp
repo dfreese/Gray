@@ -7,6 +7,21 @@ Positron::Positron()
     positronRange = false;
 }
 
+void Positron::SetEnergy(double e)
+{
+    energy = e;
+};
+
+double Positron::GetEnergy() const
+{
+    return energy;
+}
+
+PositronDecay * Positron::GetPositron()
+{
+    return(&p);
+}
+
 void Positron::PositronRange(PositronDecay & p)
 {
     if (positronRange) {

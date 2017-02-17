@@ -7,8 +7,6 @@
 
 class GammaStats;
 
-using namespace std;
-
 //#define XRAY_ESCAPE_ENERGY_LSO 63.314
 //#define XRAY_ESCAPE_ENERGY_CD 26.711
 //#define XRAY_ESCALE_ENERGY_TE 31.814

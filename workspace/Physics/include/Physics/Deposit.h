@@ -8,7 +8,7 @@
 #ifndef DEPOSIT_H
 #define DEPOSIT_H
 
-#include "Photon.h"
+#include <Physics/Photon.h>
 
 enum HIT_TYPE {I_POSITRON, I_COMPTON, I_RAYLEIGH, I_PHOTOELECTRIC, I_GAMMA_DECAY, I_BETA_DECAY, I_AUGER, I_XRAY_ESCAPE, I_EMPTY, I_DEBUG, I_ERROR};
 

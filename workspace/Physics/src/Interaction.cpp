@@ -4,6 +4,9 @@
 #include <Random/Random.h>
 #include <stdlib.h>
 
+
+using namespace std;
+
 const double Interaction::si1_SOL = (1.0 / 29979245800.0);
 
 // determine interaction in along line in material
