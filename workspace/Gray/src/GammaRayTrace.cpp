@@ -6,6 +6,7 @@
 #include <Physics/Interaction.h>
 #include <Physics/Positron.h>
 #include <Physics/Photon.h>
+#include <Sources/Source.h>
 
 GammaRayTrace::GammaRayTrace()
 {

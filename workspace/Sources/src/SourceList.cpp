@@ -5,6 +5,8 @@
 #include <Physics/ZR89.h>
 #include <Physics/BackBack.h>
 #include <Physics/Beam.h>
+#include <Sources/Source.h>
+#include <VrMath/LinearR3.h>
 
 using namespace std;
 

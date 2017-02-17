@@ -4,8 +4,10 @@
 #include <set>
 #include <string>
 #include <vector>
-#include <Sources/Source.h>
-#include <Physics/BackBack.h>
+
+class Source;
+class Isotope;
+class VectorR3;
 
 class SourceList
 {
@@ -32,7 +34,6 @@ private:
     bool Inside(const VectorR3 & pos);
     double mean_time_between_events;
     unsigned int photon_number;
-    BackBack isotope;
     std::set<std::string> valid_isotopes;
     std::string current_isotope;
     // a microcurie is 37kevents/second
