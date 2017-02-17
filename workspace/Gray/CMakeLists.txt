@@ -1,4 +1,6 @@
 add_executable(Gray
+    include/Gray/Config.h
+    src/Config.cpp
     include/Gray/GammaMaterial.h
     src/GammaRayTrace.cpp
     include/Gray/GammaRayTrace.h

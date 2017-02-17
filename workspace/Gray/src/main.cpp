@@ -11,6 +11,7 @@
 #include <GL/glut.h>
 #endif
 
+#include <Gray/Config.h>
 #include <Gray/RayTraceStats.h>
 #include <PixelArray/PixelArray.h>
 #include <Graphics/ViewableBase.h>
@@ -47,12 +48,6 @@ static void ResizeWindow(GLsizei w, GLsizei h);
 // ***********************Statistics************
 RayTraceStats MyStats;
 // **********************************************
-
-string FileNameDetector = "";
-string FileNameOutput = "";
-unsigned long GraySeed = 0;
-bool BatchMode = false;
-
 
 // Window size and pixel array variables
 bool WindowMinimized = false;
@@ -548,20 +543,21 @@ void myMouseUpDownFunc( int button, int state, int x, int y )
     }
 }
 
-void InitializeSceneGeometry(GammaRayTrace & Gray)
+void InitializeSceneGeometry(GammaRayTrace & Gray, const Config & config)
 {
     // Define the lights, materials, textures and viewable objects.
     if (!LoadMaterials::LoadPhysicsFiles(FileScene)) {
         exit(-1);
     }
     LoadDetector myLoader;
-    if (!myLoader.Load(FileNameDetector, FileScene, Gray)) {
-        fprintf(stderr, "Loading file \"%s\" failed\n", FileNameDetector.c_str());
+    if (!myLoader.Load(config.filename_detector, FileScene, Gray)) {
+        fprintf(stderr, "Loading file \"%s\" failed\n",
+                config.filename_detector.c_str());
     }
-    Gray.SetFileNameOutput(FileNameOutput);
-    if (GraySeed != 0) {
-        Random::Seed(GraySeed);
-        printf("Seeding Gray: %ld\n",GraySeed);
+    Gray.SetFileNameOutput(config.filename_output);
+    if (config.seed != 0) {
+        Random::Seed(config.seed);
+        printf("Seeding Gray: %ld\n", config.seed);
     }
     ActiveScene = &FileScene;
 
@@ -573,89 +569,24 @@ void InitializeSceneGeometry(GammaRayTrace & Gray)
     myBuildKdTree();
 }
 
-void usage() {
-    cout << "Gray (-hb) [Scene Description] [Output Filename]\n"
-         << "  -b : batch mode\n"
-         << "  -h : print help message\n"
-         << "  -s [seed] : set the seed for the rand number generator\n"
-         << endl;
-}
-
-bool GrayProcessCommandLine(int argc, char **argv)
-{
-//    BatchMode = true;
-//    GraySeed = 1;
-////    FileNameDetector = "../../../detectors/neg_sphere.dff";
-//    FileNameDetector = "/Users/david/Desktop/normalization/simulation/breast_panel.dff";
-//    FileNameOutput = "neg_sphere.dat";
-//    setFilenameDetector = true;
-//    setFilenameOutput = true;
-//    return true;
-
-    if (argc == 1) {
-        return(false);
-    }
-
-    bool setFilenameDetector = false;
-    bool setFilenameOutput = false;
-
-    for (int ix = 1; ix < argc; ix++) {
-        string argument(argv[ix]);
-        if (ix < (argc - 1)) {
-            // Arguments requiring an input
-            string following_argument(argv[ix + 1]);
-            stringstream follow_arg_ss;
-            follow_arg_ss << following_argument;
-            if (argument == "-seed" || (argument == "-s")) {
-                if (!(follow_arg_ss >> GraySeed)) {
-                    cerr << "Loading high energy threshold failed." << endl;
-                    return(-1);
-                }
-                ix++; continue;
-            }
-        }
-        if (argument == "-h" || argument == "--help") {
-            return(false);
-        } else if (argument == "-b") {
-            BatchMode = true;
-        } else {
-            if (setFilenameDetector == false) {
-                FileNameDetector = argument;
-                setFilenameDetector = true;
-            } else if (setFilenameOutput == false) {
-                FileNameOutput = argument;
-                setFilenameOutput = true;
-            }
-        }
-    }
-    if (!setFilenameDetector) {
-        cerr << "Error: input filename not set" << endl;
-        return(false);
-    } else if (!setFilenameOutput) {
-        FileNameOutput = FileNameDetector + ".dat";
-    }
-
-    return true;
-}
-
 //**********************************************************
 // Main Routine
 // Set up OpenGL, hook up callbacks, define RayTrace world,
 // and start the main loop
 //**********************************************************
-int main( int argc, char** argv )
+int main( int argc, char** argv)
 {
-    if (!GrayProcessCommandLine(argc,argv)) {
-        usage();
+    Config config;
+    if (!config.ProcessCommandLine(argc,argv)) {
+        Config::usage();
         return(-1);
     }
 
-
     GammaRayTrace Gray;
 
-    if (BatchMode == true) {
+    if (config.batch_mode == true) {
         // Implement batch mode for raytracing
-        InitializeSceneGeometry(Gray);
+        InitializeSceneGeometry(Gray, config);
         Gray.GRayTraceSources();
         return(0);
     }
@@ -675,7 +606,7 @@ int main( int argc, char** argv )
     glutInitWindowPosition(0, 0);
     glutCreateWindow( "Ray Tracing" );
 
-    InitializeSceneGeometry(Gray);
+    InitializeSceneGeometry(Gray, config);
 
     // set up callback functions
     glutKeyboardFunc( myKeyboardFunc );
