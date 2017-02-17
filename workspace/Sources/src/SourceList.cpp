@@ -6,6 +6,7 @@ using namespace std;
 SourceList::SourceList()
 {
     curTime = 0.0;
+    total_activity = 0.0;
     photon_number = 0;
     curIsotope = ISO_BACKBACK;
 }
@@ -36,6 +37,11 @@ void SourceList::AddSource(Source & s)
         mean_time_between_events = (1.0) / (total_activity * microCurie);
         prob.push_back(total_activity);
     }
+}
+
+double SourceList::GetTime()
+{
+    return curTime;
 }
 
 int SourceList::search(double e, int b_idx, int s_idx)
@@ -85,11 +91,16 @@ double SourceList::CalculateTime()
     return curTime;
 }
 
-double SourceList::GetTotalEvents(double time)
+double SourceList::GetMeanTotalEvents(double time)
 {
     // the number of events is the total time times the activity times the number of microcuries
     mean_time_between_events = (1.0) / (total_activity * microCurie);
     return time * total_activity * microCurie;
+}
+
+double SourceList::GetTotalEvents(double time)
+{
+    return(Random::Poisson(GetMeanTotalEvents(time)));
 }
 
 bool SourceList::Inside(const VectorR3 & pos)

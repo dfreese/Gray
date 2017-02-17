@@ -16,11 +16,8 @@ public:
     Source * Decay();
     void AddSource(Source & s);
     void SetCurIsotope(const char * iso);
-    double Random();
-    double GetTime()
-    {
-        return curTime;
-    };
+    double GetTime();
+    double GetMeanTotalEvents(double time);
     double GetTotalEvents(double time);
 private:
     static const int MAX_REJECT_COUNTER = 100000;
