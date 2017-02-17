@@ -40,8 +40,8 @@ private:
     int MakeLogWord(int interaction, int color,bool scatter, int det_mat, int src_id);
     void LogNuclearDecayBinary(NuclearDecay *p);
     void LogNuclearDecayASCII(NuclearDecay *p);
-    void LogErrorASCII(const Photon &p, int t, int detmaterial);
-    void LogErrorBinary(const Photon &p, int t, int detmaterial) ;
+    void LogErrorASCII(const Photon &p, ErrorType t, int detmaterial);
+    void LogErrorBinary(const Photon &p, ErrorType t, int detmaterial) ;
     void LogASCII(const Photon &p, INTER_TYPE type, double deposit, const GammaStats & mat_gamma_prop);
     void LogBinary(const Photon &p, INTER_TYPE type, double deposit, const GammaStats & mat_gamma_prop);
 

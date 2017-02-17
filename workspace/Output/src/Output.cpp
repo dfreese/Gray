@@ -184,7 +184,7 @@ void Output::LogError(const Photon &p, ErrorType t, int det_mat)
     }
 }
 
-void Output::LogErrorASCII(const Photon &p, int t, int detmaterial)
+void Output::LogErrorASCII(const Photon &p, ErrorType t, int detmaterial)
 {
     log_file <<   t;
     log_file << " ";
@@ -199,7 +199,7 @@ void Output::LogErrorASCII(const Photon &p, int t, int detmaterial)
 
 
 /// ADD  mat to function call
-void Output::LogErrorBinary(const Photon &p, int t, int detmaterial )
+void Output::LogErrorBinary(const Photon &p, ErrorType t, int detmaterial )
 {
     if (binary_format == FULL_OUTPUT) {
         GRAY_BINARY b;
