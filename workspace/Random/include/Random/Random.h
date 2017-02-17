@@ -28,7 +28,10 @@ public:
     static void Seed(unsigned long seed);
     static void UniformSphere(VectorR3 & p);
     static void Acolinearity(const VectorR3 & b, VectorR3 &r, double radians);
+    static int Poisson(double lambda);
 private:
+    static int PoissonSmall(double lambda);
+    static int PoissonLarge(double lambda);
     static double cache_gauss;
     static bool cache_valid;
 };

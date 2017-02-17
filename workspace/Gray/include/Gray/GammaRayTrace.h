@@ -13,9 +13,6 @@ extern long SeekIntersectionKd(const VectorR3& startPos, const VectorR3& directi
                                double *hitDist, VisiblePoint& returnedPoint,
                                long avoidK = -1);
 
-const double Epsilon = 1e-10;
-const double s1_SOL = (1.0 / 29979245800.0);
-
 class GammaRayTrace
 {
 public:
@@ -34,7 +31,8 @@ private:
                          std::stack<GammaMaterial const * const> & MatStack, long avoidK);
     GammaMaterial * defaultMat;
     double simulationTime;
-
+    const double Epsilon = 1e-10;
+    const double s1_SOL = (1.0 / 29979245800.0);
 };
 
 #endif /*GAMMARAYTRACE_H*/
