@@ -502,7 +502,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                     curMatrix().Transform(&position);
                     SphereSource * s = new SphereSource(position, radius, actScale*activity);
                     s->SetMaterial(curMaterial);
-                    Gray.AddSource(*s);
+                    Gray.AddSource(s);
                 } else {
                     parseErrorOccurred = true;
                     break;
@@ -521,7 +521,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                     curMatrix().Transform(&baseCenter);
                     RectSource * s = new RectSource(baseCenter, baseSize,actScale*activity);
                     s->SetMaterial(curMaterial);
-                    Gray.AddSource(*s);
+                    Gray.AddSource(s);
                 } else {
                     parseErrorOccurred = true;
                 }
@@ -633,7 +633,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                     cout << (double) axis.y << "  " << (double) axis.z <<  endl;
                     CylinderSource * cyl = new CylinderSource(center, radius, axis, actScale*activity);
                     cyl->SetMaterial(curMaterial);
-                    Gray.AddSource(*cyl);
+                    Gray.AddSource(cyl);
 
                 } else {
                     parseErrorOccurred = true;
@@ -719,7 +719,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                     curMatrix().Transform3x3(&axis);
                     BeamPointSource * s = new BeamPointSource(position, axis, angle, actScale*activity);
                     s->SetMaterial(curMaterial);
-                    Gray.AddSource(*s);
+                    Gray.AddSource(s);
                     if (positronRange) {
                         // PositronRange is set by selecting Isotope
                         //s->SetPositronRange(positronC,
@@ -775,7 +775,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                 char string[256];
                 int scanCode = sscanf(args, "%s", string);
                 if ((scanCode ==1) && (curVectorSource != NULL)) {
-                    Gray.AddSource(*curVectorSource);
+                    Gray.AddSource(curVectorSource);
                     cout << "Ending Vector Source:\n";
                     cout << curVectorSource->GetMin();
                     cout << "\n";
@@ -931,7 +931,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                     VoxelSource(position,dims,voxelsize,activity);
                     if (s->Load(string)) {
                         s->SetMaterial(curMaterial);
-                        Gray.AddSource(*s);
+                        Gray.AddSource(s);
                     }
                 } else {
                     parseErrorOccurred = true;
@@ -1030,7 +1030,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                     //CylinderSource * cyl = new CylinderSource(center, radius, axis, actScale*activity);
                     EllipsoidSource *ve = new EllipsoidSource(center, axis1, axis2, radius1, radius2, radius3, actScale*activity);
                     ve->SetMaterial(curMaterial);
-                    Gray.AddSource(*ve);
+                    Gray.AddSource(ve);
                 }
                 break;
             }
@@ -1082,7 +1082,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                     cout << (double) axis.y << "  " << (double) axis.z <<  endl;
                     EllipticCylinderSource * cyl = new EllipticCylinderSource(center, radius1, radius2, axis, actScale*activity);
                     cyl->SetMaterial(curMaterial);
-                    Gray.AddSource(*cyl);
+                    Gray.AddSource(cyl);
                 } else {
                     parseErrorOccurred = true;
                     break;
@@ -1111,7 +1111,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                     cout << (double) axis.y << "  " << (double) axis.z <<  endl;
                     AnnulusEllipticCylinderSource * cyl = new AnnulusEllipticCylinderSource(center, radius1, radius2, axis, actScale*activity);
                     cyl->SetMaterial(curMaterial);
-                    Gray.AddSource(*cyl);
+                    Gray.AddSource(cyl);
                 } else {
                     parseErrorOccurred = true;
                     break;
@@ -1140,7 +1140,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                     cout << (double) axis.y << "  " << (double) axis.z <<  endl;
                     AnnulusCylinderSource * cyl = new AnnulusCylinderSource(center, radius, axis, actScale*activity);
                     cyl->SetMaterial(curMaterial);
-                    Gray.AddSource(*cyl);
+                    Gray.AddSource(cyl);
                 } else {
                     parseErrorOccurred = true;
                     break;

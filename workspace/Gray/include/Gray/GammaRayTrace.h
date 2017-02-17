@@ -19,7 +19,7 @@ public:
     GammaRayTrace();
     ~GammaRayTrace();
     void GRayTraceSources(void);
-    void AddSource(Source & s);
+    void AddSource(Source * s);
     void SetDefaultMaterial(GammaMaterial * mat);
     void SetFileNameOutput(const std::string & name);
     void SetSimulationTime(double time);

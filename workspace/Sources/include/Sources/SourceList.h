@@ -15,7 +15,7 @@ public:
     SourceList();
     ~SourceList();
     Source * Decay();
-    void AddSource(Source & s);
+    void AddSource(Source * s);
     void SetCurIsotope(const std::string & iso);
     double GetMeanTotalEvents(double time);
     double GetTotalEvents(double time);

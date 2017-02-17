@@ -19,18 +19,17 @@ SourceList::~SourceList()
     prob.clear();
 }
 
-void SourceList::AddSource(Source & s)
+void SourceList::AddSource(Source * s)
 {
-    // TODO: Add the ability to change the isotopes from the DFF file
-    s.SetIsotope(isotope.newIsotope(curIsotope));
-    if (s.isNegative()) {
+    s->SetIsotope(isotope.newIsotope(curIsotope));
+    if (s->isNegative()) {
         cout << "Adding negative source\n";
-        neg_list.push_back(&s);
-        s.SetSourceNum(-1*neg_list.size());
+        neg_list.push_back(s);
+        s->SetSourceNum(-1*neg_list.size());
     } else {
-        list.push_back(&s);
-        s.SetSourceNum(list.size());
-        total_activity += s.GetActivity();
+        list.push_back(s);
+        s->SetSourceNum(list.size());
+        total_activity += s->GetActivity();
         mean_time_between_events = (1.0) / (total_activity * microCurie);
         prob.push_back(total_activity);
     }

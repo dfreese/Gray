@@ -211,7 +211,7 @@ void GammaRayTrace::GRayTraceSources(void)
     cout << "=|Done.\n";
 }
 
-void GammaRayTrace::AddSource(Source & s)
+void GammaRayTrace::AddSource(Source * s)
 {
     sources.AddSource(s);
 }
