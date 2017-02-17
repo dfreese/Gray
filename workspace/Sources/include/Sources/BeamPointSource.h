@@ -1,12 +1,11 @@
 #ifndef BEAMPOINTSOURCE_H_
 #define BEAMPOINTSOURCE_H_
 
-#include "Source.h"
+#include <Sources/Source.h>
 
 class BeamPointSource : public Source
 {
 public:
-    BeamPointSource();
     BeamPointSource(const VectorR3 &p, const VectorR3 &a, double angle, double act);
     // gets a beam positron instead of a regular one
     void virtual Decay(unsigned int photon_number);

@@ -34,7 +34,14 @@ class GammaMaterial;
 class Source
 {
 public:
-    Source();
+    Source() {
+        material = NULL;
+        activity = 0.0;
+        negative = false;
+        isotope = NULL;
+        source_num = 0;
+    }
+    virtual ~Source() {};
     void NextPhoton(Photon &p);
     double GetActivity();
     VectorR3 position;
@@ -84,15 +91,6 @@ protected:
 inline bool Source::isNegative()
 {
     return negative;
-}
-
-inline Source::Source()
-{
-    material = NULL;
-    activity = 0.0;
-    negative = false;
-    isotope = NULL;
-    source_num = 0;
 }
 
 inline double Source::GetActivity()

@@ -1,7 +1,7 @@
 #ifndef CSE167_SPHERESOURCE_H
 #define CSE167_SPHERESOURCE_H
 
-#include "Source.h"
+#include <Sources/Source.h>
 
 class SphereSource : public Source
 {

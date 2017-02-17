@@ -1,7 +1,7 @@
 #ifndef CSE167_VOXELSOURCE_H
 #define CSE167_VOXELSOURCE_H
 
-#include "Source.h"
+#include <Sources/Source.h>
 
 class VoxelSource : public Source
 {

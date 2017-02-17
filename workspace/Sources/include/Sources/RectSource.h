@@ -5,7 +5,6 @@
 #include <VrMath/LinearR3.h>
 #include <Sources/Source.h>
 
-using namespace std;
 
 class RectSource : public Source
 {

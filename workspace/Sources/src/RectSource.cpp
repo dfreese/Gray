@@ -1,6 +1,8 @@
 #include <Sources/RectSource.h>
 #include <Random/Random.h>
 
+using namespace std;
+
 RectSource::RectSource()
 {
     position.SetZero();

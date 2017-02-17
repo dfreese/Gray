@@ -2,6 +2,8 @@
 #include <math.h>
 #include <Random/Random.h>
 
+using namespace std;
+
 AnnulusEllipticCylinderSource::AnnulusEllipticCylinderSource()
 {
     position.SetZero();

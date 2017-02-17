@@ -5,14 +5,11 @@
 #include <VrMath/LinearR3.h>
 #include <Sources/Source.h>
 
-using namespace std;
-
 #define NUM_TABLE 100000
 
 class AnnulusEllipticCylinderSource : public Source
 {
 public:
-    ~AnnulusEllipticCylinderSource();
     AnnulusEllipticCylinderSource();
     AnnulusEllipticCylinderSource(const VectorR3 &pos, double radius1, double radius2, VectorR3 &L, double act);
     void virtual Decay(unsigned int photon_number);
