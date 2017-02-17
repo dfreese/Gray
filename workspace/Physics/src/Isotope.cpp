@@ -25,7 +25,7 @@ Isotope::Isotope()
     mapIsotope["Beam"] = ISO_BEAM;
 }
 
-ISOTOPE_TYPE Isotope::getType(const char * iso)
+ISOTOPE_TYPE Isotope::getType(const std::string & iso)
 {
     switch (mapIsotope[iso]) {
     case ISO_F18:

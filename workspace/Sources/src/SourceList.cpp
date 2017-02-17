@@ -21,18 +21,15 @@ SourceList::~SourceList()
 
 void SourceList::AddSource(Source & s)
 {
-
-    Source * src = &s;
-
     // TODO: Add the ability to change the isotopes from the DFF file
-    src->SetIsotope(isotope.newIsotope(curIsotope));
+    s.SetIsotope(isotope.newIsotope(curIsotope));
     if (s.isNegative()) {
         cout << "Adding negative source\n";
-        neg_list.push_back(src);
-        src->SetSourceNum(-1*neg_list.size());
+        neg_list.push_back(&s);
+        s.SetSourceNum(-1*neg_list.size());
     } else {
-        list.push_back(src);
-        src->SetSourceNum(list.size());
+        list.push_back(&s);
+        s.SetSourceNum(list.size());
         total_activity += s.GetActivity();
         mean_time_between_events = (1.0) / (total_activity * microCurie);
         prob.push_back(total_activity);
@@ -118,7 +115,7 @@ bool SourceList::Inside(const VectorR3 & pos)
     return false;
 }
 
-void SourceList::SetCurIsotope(const char * iso)
+void SourceList::SetCurIsotope(const std::string & iso)
 {
     curIsotope = isotope.getType(iso);
 }

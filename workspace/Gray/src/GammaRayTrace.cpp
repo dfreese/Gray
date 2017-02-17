@@ -121,17 +121,14 @@ void GammaRayTrace::GRayTraceSources(void)
     const char escape = 0x1B;
     const int num_chars = 70;
     int char_state = 0;
-    int tick_mark = 0;
-
-    int num_rays = 0;
 
     // calculate the number of positrons to throw
     // TODO: need to fix the number of rays because of negative sources
     // FIXME: time should not increase when Inside() of a negative source
-    num_rays = sources.GetTotalEvents(simulationTime);
+    int num_rays = sources.GetTotalEvents(simulationTime);
 
     // create a tick mark so that we fill up 40 chars
-    tick_mark = (int)(num_rays / num_chars);
+    int tick_mark = (int)(num_rays / num_chars);
     if (tick_mark == 0) {
         // Make sure we don't have an error later on because of num % 0
         tick_mark = 1;

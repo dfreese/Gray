@@ -1,6 +1,7 @@
 #ifndef CSE167_SOURCELIST_H
 #define CSE167_SOURCELIST_H
 
+#include <string>
 #include <vector>
 #include <Sources/Source.h>
 #include <Physics/BackBack.h>
@@ -15,8 +16,7 @@ public:
     ~SourceList();
     Source * Decay();
     void AddSource(Source & s);
-    void SetCurIsotope(const char * iso);
-    double GetTime();
+    void SetCurIsotope(const std::string & iso);
     double GetMeanTotalEvents(double time);
     double GetTotalEvents(double time);
 private:
@@ -28,6 +28,7 @@ private:
     std::vector <Source*> neg_list;
     std::vector <double> prob;
     double CalculateTime();
+    double GetTime();
     bool Inside(const VectorR3 & pos);
     double mean_time_between_events;
     unsigned int photon_number;
