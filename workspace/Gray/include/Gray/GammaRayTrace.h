@@ -1,12 +1,12 @@
 #ifndef GAMMARAYTRACE_H
 #define GAMMARAYTRACE_H
 
+#include <stack>
 #include <string>
 #include <Sources/SourceList.h>
 #include <Output/Output.h>
 
 class GammaMaterial;
-class MaterialStack;
 class Photon;
 
 extern long SeekIntersectionKd(const VectorR3& startPos, const VectorR3& direction,
@@ -31,7 +31,7 @@ public:
 private:
     INTER_TYPE GRayTrace(VisiblePoint &visPoint,
                          int TraceDepth, Photon &photon,
-                         MaterialStack & MatStack, long avoidK);
+                         std::stack<GammaMaterial const * const> & MatStack, long avoidK);
     GammaMaterial * defaultMat;
     double simulationTime;
 

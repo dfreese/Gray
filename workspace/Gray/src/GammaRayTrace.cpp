@@ -3,7 +3,6 @@
 #include <Graphics/ViewableBase.h>
 #include <Graphics/ViewableTriangle.h>
 #include <Gray/GammaMaterial.h>
-#include <Gray/MaterialStack.h>
 #include <Physics/Interaction.h>
 #include <Physics/Photon.h>
 
@@ -35,24 +34,23 @@ void GammaRayTrace::SetSimulationTime(double time)
     simulationTime = time;
 };
 
-INTER_TYPE GammaRayTrace::GRayTrace(VisiblePoint &visPoint, int TraceDepth, Photon &photon,
-                                    MaterialStack& MatStack, long avoidK=-1)
+INTER_TYPE GammaRayTrace::GRayTrace(
+        VisiblePoint &visPoint, int TraceDepth, Photon &photon,
+        std::stack<GammaMaterial const * const> & MatStack, long avoidK=-1)
 {
-    double hitDist;
-    GammaMaterial * curMaterial = MatStack.curMaterial();
-
-    if (curMaterial == NULL) {
+    if (MatStack.empty()) {
         output.LogError(photon, Output::ERROR_EMPTY,  0);
-//        cout << "ERROR" << endl;
+        cout << "ERROR" << endl;
         return ERROR;
     }
-
+    GammaMaterial const * const curMaterial = MatStack.top();
     if (TraceDepth <= 0) {
         output.LogError(photon, Output::ERROR_TRACE_DEPTH, curMaterial->GetMaterial());
         cout << "ERROR_TRACE_DEPTH" << endl;
         return NO_INTERACTION;
     }
 
+    double hitDist;
     int intersectNum = SeekIntersectionKd(photon.pos,photon.dir,
                                           &hitDist,visPoint,avoidK );
 
@@ -94,11 +92,11 @@ INTER_TYPE GammaRayTrace::GRayTrace(VisiblePoint &visPoint, int TraceDepth, Phot
                     photon.det_id = -1;
                     break;
                 }
-                MatStack.PushMaterial(dynamic_cast<GammaMaterial*>(
-                        &visPoint.GetMaterialMutable()));
+                MatStack.push(dynamic_cast<GammaMaterial const * const>(
+                        &visPoint.GetMaterial()));
             } else if (visPoint.IsBackFacing()) {
                 photon.det_id = -1;
-                MatStack.PopMaterial();
+                MatStack.pop();
             } else {
                 cout << "ERROR: material has no face\n";
                 exit(1);
@@ -143,9 +141,8 @@ void GammaRayTrace::GRayTraceSources(void)
     //num_rays = 34076000;
     //num_rays = 2938374;
 
-    MaterialStack MatStack;
-    MatStack.SetDefault(defaultMat);
-    MatStack.PushMaterial(defaultMat);
+    std::stack<GammaMaterial const * const> MatStack;
+    MatStack.push(defaultMat);
 
     VisiblePoint visPoint;
     int TraceDepth;
@@ -205,11 +202,13 @@ void GammaRayTrace::GRayTraceSources(void)
             Photon photon = isotope->NextPhoton();
 
             TraceDepth = 100;
-            MatStack.PushMaterial(source->GetMaterial());
-            if (GRayTrace(visPoint, TraceDepth, photon, MatStack) == ERROR) {
-                cout << "ERROR\n";
+            MatStack.push(source->GetMaterial());
+            GRayTrace(visPoint, TraceDepth, photon, MatStack);
+            // Reset the material stack to be empty with the default material.
+            while (!MatStack.empty()) {
+                MatStack.pop();
             }
-            MatStack.ResetMaterial();
+            MatStack.push(defaultMat);
         }
     }
     cout << "=|Done.\n";
