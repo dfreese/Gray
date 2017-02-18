@@ -12,7 +12,6 @@
 #endif
 
 #include <Gray/Config.h>
-#include <Gray/RayTraceStats.h>
 #include <PixelArray/PixelArray.h>
 #include <Graphics/ViewableBase.h>
 #include <Graphics/DirectLight.h>
@@ -31,9 +30,6 @@
 void RenderWithGlut(void);
 
 void RayTraceView(void);
-long SeekIntersection(const VectorR3& startPos, const VectorR3& direction,
-                      double *hitDist, VisiblePoint& returnedPoint,
-                      long avoidK);
 long SeekIntersectionKd(const VectorR3& startPos, const VectorR3& direction,
                         double *hitDist, VisiblePoint& returnedPoint,
                         long avoidK);
@@ -45,15 +41,11 @@ void CalcAllDirectIllum( const VectorR3& viewPos, const VisiblePoint& visPoint,
 
 static void ResizeWindow(GLsizei w, GLsizei h);
 
-// ***********************Statistics************
-RayTraceStats MyStats;
-// **********************************************
-
 // Window size and pixel array variables
 bool WindowMinimized = false;
-int WindowWidth;	// Width in pixels
-int WindowHeight;	// Height in pixels
-PixelArray* pixels;		// Array of pixels
+int WindowWidth = 10;	// Width in pixels
+int WindowHeight = 10;	// Height in pixels
+PixelArray pixels(10,10); // Array of pixels
 
 bool RayTraceMode = false;		// Set true for RayTraciing,  false for rendering with OpenGL
 // Rendering with OpenGL does not support all features, esp., texture mapping
@@ -127,7 +119,6 @@ void myBuildKdTree()
     ObjectKdTree.SetDoubleRecurseSplitting( true );
     ObjectKdTree.SetObjectCost(8.0);
     ObjectKdTree.BuildTree( ActiveScene->NumViewables(), myExtentFunc, myExtentsInBox  );
-    RayTraceStats::PrintKdStats( ObjectKdTree );
 }
 
 // *****************************************************************
@@ -147,7 +138,6 @@ void RayTraceView(void)
 
     if ( WidthRayTraced!=WindowWidth || NumScanLinesRayTraced!=WindowHeight ) {
         // Do the rendering here
-        MyStats.Init();
         ObjectKdTree.ResetStats();
         int TraceDepth = 12;
         for ( i=0; i<WindowWidth; i++) {
@@ -156,13 +146,11 @@ void RayTraceView(void)
                 //j = WindowHeight-183;
                 MainView.CalcPixelDirection(i,j,&PixelDir);
                 RayTrace( TraceDepth, MainView.GetPosition(), PixelDir, curPixelColor );
-                pixels->SetPixel(i,j,curPixelColor);
+                pixels.SetPixel(i,j,curPixelColor);
             }
         }
         WidthRayTraced = WindowWidth;			// Set these values to show scene has been computed.
         NumScanLinesRayTraced = WindowHeight;
-        MyStats.GetKdRunData( ObjectKdTree );
-        MyStats.PrintStats();
     }
 
     glMatrixMode(GL_PROJECTION);
@@ -173,7 +161,7 @@ void RayTraceView(void)
     glDisable(GL_LIGHTING);
     glDisable(GL_DEPTH_TEST);
 
-    pixels->Draw();
+    pixels.Draw();
 
     // flush the pipeline, swap the buffers
     glFlush();
@@ -261,8 +249,6 @@ long SeekIntersectionKd(const VectorR3& pos, const VectorR3& direction,
                         double *hitDist, VisiblePoint& returnedPoint,
                         long avoidK)
 {
-    MyStats.AddRayTraced();
-
     bestObject = -1;
     bestHitDistance = DBL_MAX;
     kdTraverseAvoid = avoidK;
@@ -294,9 +280,6 @@ long SeekIntersectionKd(const VectorR3& pos, const VectorR3& direction,
 
 bool ShadowFeelerKd(const VectorR3& pos, const Light& light, long intersectNum )
 {
-    MyStats.AddRayTraced();
-    MyStats.AddShadowFeeler();
-
     kdTraverseDir = pos;
     kdTraverseDir -= light.GetPosition();
     double dist = kdTraverseDir.Norm();
@@ -357,14 +340,6 @@ void RayTrace( int TraceDepth, const VectorR3& pos, const VectorR3 dir,
                 }
             }
         }
-#ifdef DEBUG_RAYTRACE
-        if ((returnedColor.x == ActiveScene->BackgroundColor().x) &&
-                (returnedColor.y == ActiveScene->BackgroundColor().y) &&
-                (returnedColor.z == ActiveScene->BackgroundColor().z)) {
-            // bad things in little china
-            printf("Bad things in little china\n");
-        }
-#endif
     }
 }
 
@@ -433,7 +408,7 @@ static void ResizeWindow(GLsizei w, GLsizei h)
 
     WindowHeight = h;
     WindowWidth = w;
-    if ( pixels->SetSize( WindowWidth, WindowHeight ) ) {	// If pixel data reallocated,
+    if ( pixels.SetSize( WindowWidth, WindowHeight ) ) {	// If pixel data reallocated,
         RayTraceMode = false;
         NumScanLinesRayTraced = WidthRayTraced = -1;		// signal pixel data no longer valid
     }
@@ -442,7 +417,7 @@ static void ResizeWindow(GLsizei w, GLsizei h)
 
     // Resize the camera viewpoint
     ActiveScene->CalcNewScreenDims( (double)w / (double)h );
-    ActiveScene->GetCameraView().SetScreenPixelSize(pixels->GetWidth(), pixels->GetHeight());
+    ActiveScene->GetCameraView().SetScreenPixelSize(pixels.GetWidth(), pixels.GetHeight());
 }
 
 // *******************************************************************
@@ -561,8 +536,7 @@ void InitializeSceneGeometry(GammaRayTrace & Gray, const Config & config)
     }
     ActiveScene = &FileScene;
 
-    pixels = new PixelArray(10,10);		// Array of pixels
-    ActiveScene->GetCameraView().SetScreenPixelSize(pixels->GetWidth(), pixels->GetHeight());
+    ActiveScene->GetCameraView().SetScreenPixelSize(pixels.GetWidth(), pixels.GetHeight());
     ActiveScene->RegisterCameraView();
 
     // Build the kd-Tree.

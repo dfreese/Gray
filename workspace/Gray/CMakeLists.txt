@@ -10,8 +10,6 @@ add_executable(Gray
     include/Gray/LoadMaterials.h
     src/LoadObjFile.cpp
     include/Gray/LoadObjFile.h
-    src/RayTraceStats.cpp
-    include/Gray/RayTraceStats.h
     src/main.cpp
 )
 
