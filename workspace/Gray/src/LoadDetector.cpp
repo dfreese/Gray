@@ -494,10 +494,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                     }
 
                     ViewableSphere * sp = new ViewableSphere(position, radius);
-                    sp->SetMaterial(curMaterial);
-                    sp->SetGammaReject();
                     TransformWithRigid(sp,curMatrix());
-                    //theScene.AddViewable(sp);
 
                     curMatrix().Transform(&position);
                     SphereSource * s = new SphereSource(position, radius, actScale*activity);
@@ -620,9 +617,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                     vc->SetCenter(center);
                     vc->SetHeight(height);
                     vc->SetMaterial(curMaterial);
-                    vc->SetGammaReject();
                     TransformWithRigid(vc,curMatrix());
-                    //theScene.AddViewable(vc);
 
                     curMatrix().Transform(&center);
                     curMatrix().Transform3x3(&axis);

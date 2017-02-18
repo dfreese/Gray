@@ -50,9 +50,6 @@ PixelArray pixels(10,10); // Array of pixels
 bool RayTraceMode = false;		// Set true for RayTraciing,  false for rendering with OpenGL
 // Rendering with OpenGL does not support all features, esp., texture mapping
 // Next two variables can be used to keep from re-raytracing a window.
-
-bool GammaRayTraceMode = false;
-
 long NumScanLinesRayTraced = -1;
 long WidthRayTraced = -1;
 
@@ -194,12 +191,6 @@ bool potHitSeekIntersection( long objectNum, double* retStopDistance )
 {
     double thisHitDistance;
     bool hitFlag;
-
-    if (GammaRayTraceMode) {
-        if (ActiveScene->GetViewable(objectNum).GammaReject()) {
-            return false;
-        }
-    }
 
     if ( objectNum == kdTraverseAvoid ) {
         hitFlag = ActiveScene->GetViewable(objectNum).FindIntersection(kdStartPosAvoid, kdTraverseDir,
@@ -448,7 +439,6 @@ void myKeyboardFunc( unsigned char key, int x, int y )
     case 'P':
     case 'p':
         fprintf(stdout,"Starting physics simulation\n");
-        GammaRayTraceMode = true;
         glutPostRedisplay();
         break;
     case 'q':

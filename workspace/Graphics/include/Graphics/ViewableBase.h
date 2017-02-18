@@ -115,16 +115,6 @@ public:
     };
     virtual ViewableType GetViewableType() const = 0;
 
-    void SetGammaReject()
-    {
-        m_GammaReject = true;
-    };
-    bool GammaReject() const
-    {
-        return m_GammaReject;
-    };
-
-
 protected:
 
     const TextureMapBase* TextureFront;		// Front texture map
@@ -137,15 +127,11 @@ protected:
     virtual bool FindIntersectionNT (
         const VectorR3& viewPos, const VectorR3& viewDir, double maxDistance,
         double *intersectDistance, VisiblePoint& returnedPoint ) const = 0;
-
-    bool m_GammaReject;
-
 };
 
 inline ViewableBase::ViewableBase()
 {
     TextureMap( 0 );
-    m_GammaReject = false;
 }
 
 inline void ViewableBase::TextureMap(
