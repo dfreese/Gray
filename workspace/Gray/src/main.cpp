@@ -16,7 +16,6 @@
 #include <Graphics/ViewableBase.h>
 #include <Graphics/DirectLight.h>
 #include <Graphics/CameraView.h>
-#include <OpenGLRender/GlutRenderer.h>
 #include <KdTree/KdTree.h>
 #include <Graphics/SceneDescription.h>
 #include <Gray/GammaRayTrace.h>
@@ -26,145 +25,39 @@
 #include <string>
 #include <sstream>
 
-
-void RenderWithGlut(void);
-
-void RayTraceView(void);
-long SeekIntersectionKd(const VectorR3& startPos, const VectorR3& direction,
-                        double *hitDist, VisiblePoint& returnedPoint,
-                        long avoidK);
-void RayTrace( int TraceDepth, const VectorR3& pos, const VectorR3 dir,
-               VectorR3& returnedColor, long avoidK = -1);
-bool ShadowFeeler(const VectorR3& pos, const Light& light, long intersectNum=-1 );
-void CalcAllDirectIllum( const VectorR3& viewPos, const VisiblePoint& visPoint,
-                         VectorR3& returnedColor, long avoidK = -1);
-
-static void ResizeWindow(GLsizei w, GLsizei h);
-
 // Window size and pixel array variables
-bool WindowMinimized = false;
 int WindowWidth = 10;	// Width in pixels
 int WindowHeight = 10;	// Height in pixels
 PixelArray pixels(10,10); // Array of pixels
 
 bool RayTraceMode = false;		// Set true for RayTraciing,  false for rendering with OpenGL
-// Rendering with OpenGL does not support all features, esp., texture mapping
 // Next two variables can be used to keep from re-raytracing a window.
 long NumScanLinesRayTraced = -1;
 long WidthRayTraced = -1;
 
 SceneDescription* ActiveScene;
-
-SceneDescription FileScene;			// Scene that is loaded from an .obj or .nff file.
-
-
-void InitLightsAndView(GlutRenderer & glut, const SceneDescription & scene)
-{
-    // Set camera position
-    glut.SetBackgroundColor( scene.BackgroundColor() );
-    glut.SetupCameraView( scene.GetCameraView() );
-    // Define all light sources
-    for (int i = 0; i < scene.NumLights(); i++) {
-        glut.AddLight(scene.GetLight(i));
-    }
-    glut.SetGlobalAmbientLight(scene.GlobalAmbientLight());
-}
-
-void RenderViewables(GlutRenderer & glut, const SceneDescription & scene)
-{
-    glut.RenderViewables(scene.GetViewableArray());
-}
-
-void RenderScene(GlutRenderer & glut, const SceneDescription & scene)
-{
-    InitLightsAndView(glut, scene);
-    RenderViewables(glut, scene);
-    glut.FinishRendering();
-}
-
-
-// RenderScene() chooses between using OpenGL or  ray-tracing to render the scene
-static void RenderScene(void)
-{
-    if ( WindowMinimized ) {
-        return;
-    }
-    if ( RayTraceMode ) {
-        RayTraceView();
-    } else {
-        GlutRenderer newGlutter;
-        RenderScene(newGlutter, *ActiveScene);
-    }
-}
+KdTree * ActiveKdTree;
 
 // ******************************************************
 //   KdTree definitions and routines for creating the KdTree
 // ******************************************************
-KdTree ObjectKdTree;
 
-void myExtentFunc( long objNum, AABB& retBox )
+void ExtentFunc(long objNum, AABB& retBox)
 {
     ActiveScene->GetViewable(objNum).CalcAABB( retBox );
 }
-bool myExtentsInBox( long objNum, const AABB& aabb, AABB& retBox)
+bool ExtentsInBox(long objNum, const AABB& aabb, AABB& retBox)
 {
-    return ActiveScene->GetViewable(objNum).CalcExtentsInBox( aabb, retBox );
+    return ActiveScene->GetViewable(objNum).CalcExtentsInBox(aabb, retBox);
 }
 
-void myBuildKdTree()
+void BuildKdTree(KdTree & tree)
 {
-    ObjectKdTree.SetDoubleRecurseSplitting( true );
-    ObjectKdTree.SetObjectCost(8.0);
-    ObjectKdTree.BuildTree( ActiveScene->NumViewables(), myExtentFunc, myExtentsInBox  );
+    tree.SetDoubleRecurseSplitting(true);
+    tree.SetObjectCost(8.0);
+    tree.BuildTree(ActiveScene->NumViewables(), ExtentFunc, ExtentsInBox);
 }
 
-// *****************************************************************
-// RayTraceView() is the top level routine that starts the ray tracing.
-//	Current implementation: casts a ray to the center of each pixel.
-//	Calls RayTrace() for each one.
-// *****************************************************************
-
-void RayTraceView(void)
-{
-    int i,j;
-    VectorR3 PixelDir;
-    VisiblePoint visPoint;
-    VectorR3 curPixelColor;		// Accumulator for Pixel Color
-
-    const CameraView& MainView = ActiveScene->GetCameraView();
-
-    if ( WidthRayTraced!=WindowWidth || NumScanLinesRayTraced!=WindowHeight ) {
-        // Do the rendering here
-        ObjectKdTree.ResetStats();
-        int TraceDepth = 12;
-        for ( i=0; i<WindowWidth; i++) {
-            for ( j=0; j<WindowHeight; j++ ) {
-                //i = 249;
-                //j = WindowHeight-183;
-                MainView.CalcPixelDirection(i,j,&PixelDir);
-                RayTrace( TraceDepth, MainView.GetPosition(), PixelDir, curPixelColor );
-                pixels.SetPixel(i,j,curPixelColor);
-            }
-        }
-        WidthRayTraced = WindowWidth;			// Set these values to show scene has been computed.
-        NumScanLinesRayTraced = WindowHeight;
-    }
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluOrtho2D(0, WindowWidth, 0, WindowHeight);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glDisable(GL_LIGHTING);
-    glDisable(GL_DEPTH_TEST);
-
-    pixels.Draw();
-
-    // flush the pipeline, swap the buffers
-    glFlush();
-    glutSwapBuffers();
-
-}
 
 
 // *********************************************************
@@ -174,7 +67,6 @@ void RayTraceView(void)
 // *********************************************************
 bool kdTraverseFeeler;
 double isectEpsilon = 1.0e-6;
-//double isectEpsilon = 1.0e-18;
 long bestObject;
 long kdTraverseAvoid;
 double bestHitDistance;
@@ -185,6 +77,22 @@ VectorR3 kdStartPos;
 VectorR3 kdStartPosAvoid;
 VectorR3 kdTraverseDir;
 
+// Call back function for KdTraversal of shadow feeler
+// It is of type PotentialObjectCallback.
+bool potHitShadowFeeler( long objectNum, double* retStopDistance )
+{
+    double thisHitDistance;
+    bool hitFlag = ActiveScene->GetViewable(objectNum).FindIntersection(kdStartPos, kdTraverseDir,
+                                                                        kdShadowDist, &thisHitDistance, tempPoint);
+    if  ( hitFlag && !(/*objectNum==kdTraverseAvoid &&*/ thisHitDistance+isectEpsilon>=kdShadowDist) ) {
+        kdTraverseFeeler = false;
+        *retStopDistance = -1.0;	// Negative value should abort process quickly
+        return true;
+    } else {
+        return false;
+    }
+}
+
 // Call back function for KdTraversal of view ray or reflection ray
 // It is of type PotentialObjectCallback.
 bool potHitSeekIntersection( long objectNum, double* retStopDistance )
@@ -194,14 +102,14 @@ bool potHitSeekIntersection( long objectNum, double* retStopDistance )
 
     if ( objectNum == kdTraverseAvoid ) {
         hitFlag = ActiveScene->GetViewable(objectNum).FindIntersection(kdStartPosAvoid, kdTraverseDir,
-                  bestHitDistance, &thisHitDistance, tempPoint);
+                                                                       bestHitDistance, &thisHitDistance, tempPoint);
         if ( !hitFlag ) {
             return false;
         }
         thisHitDistance += isectEpsilon;		// Adjust back to real hit distance
     } else {
         hitFlag = ActiveScene->GetViewable(objectNum).FindIntersection(kdStartPos, kdTraverseDir,
-                  bestHitDistance, &thisHitDistance, tempPoint);
+                                                                       bestHitDistance, &thisHitDistance, tempPoint);
         if ( !hitFlag ) {
             return false;
         }
@@ -213,23 +121,6 @@ bool potHitSeekIntersection( long objectNum, double* retStopDistance )
     *retStopDistance = bestHitDistance;	// No need to traverse search further than this distance
     return true;
 }
-
-// Call back function for KdTraversal of shadow feeler
-// It is of type PotentialObjectCallback.
-bool potHitShadowFeeler( long objectNum, double* retStopDistance )
-{
-    double thisHitDistance;
-    bool hitFlag = ActiveScene->GetViewable(objectNum).FindIntersection(kdStartPos, kdTraverseDir,
-                   kdShadowDist, &thisHitDistance, tempPoint);
-    if  ( hitFlag && !(/*objectNum==kdTraverseAvoid &&*/ thisHitDistance+isectEpsilon>=kdShadowDist) ) {
-        kdTraverseFeeler = false;
-        *retStopDistance = -1.0;	// Negative value should abort process quickly
-        return true;
-    } else {
-        return false;
-    }
-}
-
 
 
 // SeekIntersectionKd seeks for an intersection with all viewable objects
@@ -250,7 +141,7 @@ long SeekIntersectionKd(const VectorR3& pos, const VectorR3& direction,
     bestHitPoint = &returnedPoint;
 
     bestObject = -1;
-    ObjectKdTree.Traverse( pos, direction, *potHitSeekIntersection );
+    ActiveKdTree->Traverse( pos, direction, *potHitSeekIntersection );
 
     if ( bestObject>=0 ) {
         // FIXME: NAN in KDTREE Traversal
@@ -269,7 +160,7 @@ long SeekIntersectionKd(const VectorR3& pos, const VectorR3& direction,
 //		intersectNum is the index of the visible object being (possibly)
 //		illuminated at pos.
 
-bool ShadowFeelerKd(const VectorR3& pos, const Light& light, long intersectNum )
+bool ShadowFeelerKd(const VectorR3& pos, const Light& light, long intersectNum = -1)
 {
     kdTraverseDir = pos;
     kdTraverseDir -= light.GetPosition();
@@ -282,61 +173,14 @@ bool ShadowFeelerKd(const VectorR3& pos, const Light& light, long intersectNum )
     kdTraverseFeeler = true;		// True indicates no shadowing objects
     kdTraverseAvoid = intersectNum;
     kdShadowDist = dist;
-    ObjectKdTree.Traverse( light.GetPosition(), kdTraverseDir, potHitShadowFeeler, dist, true );
-
+    ActiveKdTree->Traverse( light.GetPosition(), kdTraverseDir, potHitShadowFeeler, dist, true );
+    
     return kdTraverseFeeler;	// Return whether ray is free of shadowing objects
 }
 
-
-void RayTrace( int TraceDepth, const VectorR3& pos, const VectorR3 dir,
-               VectorR3& returnedColor, long avoidK )
-{
-    double hitDist;
-    VisiblePoint visPoint;
-
-    int intersectNum = SeekIntersectionKd(pos,dir,
-                                          &hitDist,visPoint, avoidK );
-    if ( intersectNum<0 ) {
-        returnedColor = ActiveScene->BackgroundColor();
-    } else {
-        CalcAllDirectIllum( pos, visPoint, returnedColor, intersectNum );
-        if ( TraceDepth > 1 ) {
-            VectorR3 nextDir;
-            VectorR3 moreColor;
-            const MaterialBase* thisMat = &(visPoint.GetMaterial());
-
-            // Ray trace reflection
-            if ( thisMat->IsReflective() ) {
-                nextDir = visPoint.GetNormal();
-                nextDir *= -2.0*(dir^visPoint.GetNormal());
-                nextDir += dir;
-                nextDir.ReNormalize();	// Just in case...
-                VectorR3 c = thisMat->GetReflectionColor(visPoint, -dir, nextDir);
-                RayTrace( TraceDepth-1, visPoint.GetPosition(), nextDir, moreColor, intersectNum);
-                moreColor.x *= c.x;
-                moreColor.y *= c.y;
-                moreColor.z *= c.z;
-                returnedColor += moreColor;
-            }
-
-            // Ray Trace Transmission
-            if ( thisMat->IsTransmissive() ) {
-                if ( thisMat->CalcRefractDir(visPoint.GetNormal(),dir, nextDir) ) {
-                    VectorR3 c = thisMat->GetTransmissionColor(visPoint, -dir, nextDir);
-                    RayTrace( TraceDepth-1, visPoint.GetPosition(), nextDir, moreColor, intersectNum);
-                    moreColor.x *= c.x;
-                    moreColor.y *= c.y;
-                    moreColor.z *= c.z;
-                    returnedColor += moreColor;
-                }
-            }
-        }
-    }
-}
-
 void CalcAllDirectIllum( const VectorR3& viewPos,
-                         const VisiblePoint& visPoint,
-                         VectorR3& returnedColor, long avoidK )
+                        const VisiblePoint& visPoint,
+                        VectorR3& returnedColor, long avoidK = -1)
 {
     const MaterialBase* thisMat = &(visPoint.GetMaterial());
     const VectorR3& ambientcolor = thisMat->GetColorAmbient();
@@ -386,14 +230,108 @@ void CalcAllDirectIllum( const VectorR3& viewPos,
     }
 }
 
+void RayTrace(int TraceDepth, const VectorR3& pos, const VectorR3 dir,
+              VectorR3& returnedColor, long avoidK = -1)
+{
+    double hitDist;
+    VisiblePoint visPoint;
+
+    int intersectNum = SeekIntersectionKd(pos,dir,
+                                          &hitDist,visPoint, avoidK );
+    if ( intersectNum<0 ) {
+        returnedColor = ActiveScene->BackgroundColor();
+    } else {
+        CalcAllDirectIllum( pos, visPoint, returnedColor, intersectNum );
+        if ( TraceDepth > 1 ) {
+            VectorR3 nextDir;
+            VectorR3 moreColor;
+            const MaterialBase* thisMat = &(visPoint.GetMaterial());
+
+            // Ray trace reflection
+            if ( thisMat->IsReflective() ) {
+                nextDir = visPoint.GetNormal();
+                nextDir *= -2.0*(dir^visPoint.GetNormal());
+                nextDir += dir;
+                nextDir.ReNormalize();	// Just in case...
+                VectorR3 c = thisMat->GetReflectionColor(visPoint, -dir, nextDir);
+                RayTrace( TraceDepth-1, visPoint.GetPosition(), nextDir, moreColor, intersectNum);
+                moreColor.x *= c.x;
+                moreColor.y *= c.y;
+                moreColor.z *= c.z;
+                returnedColor += moreColor;
+            }
+
+            // Ray Trace Transmission
+            if ( thisMat->IsTransmissive() ) {
+                if ( thisMat->CalcRefractDir(visPoint.GetNormal(),dir, nextDir) ) {
+                    VectorR3 c = thisMat->GetTransmissionColor(visPoint, -dir, nextDir);
+                    RayTrace( TraceDepth-1, visPoint.GetPosition(), nextDir, moreColor, intersectNum);
+                    moreColor.x *= c.x;
+                    moreColor.y *= c.y;
+                    moreColor.z *= c.z;
+                    returnedColor += moreColor;
+                }
+            }
+        }
+    }
+}
+
+
+// *****************************************************************
+// RayTraceView() is the top level routine that starts the ray tracing.
+//	Current implementation: casts a ray to the center of each pixel.
+//	Calls RayTrace() for each one.
+// *****************************************************************
+
+void RayTraceView(void)
+{
+    int i,j;
+    VectorR3 PixelDir;
+    VisiblePoint visPoint;
+    VectorR3 curPixelColor;		// Accumulator for Pixel Color
+
+    const CameraView& MainView = ActiveScene->GetCameraView();
+
+    if ( WidthRayTraced!=WindowWidth || NumScanLinesRayTraced!=WindowHeight ) {
+        // Do the rendering here
+        ActiveKdTree->ResetStats();
+        int TraceDepth = 12;
+        for ( i=0; i<WindowWidth; i++) {
+            for ( j=0; j<WindowHeight; j++ ) {
+                //i = 249;
+                //j = WindowHeight-183;
+                MainView.CalcPixelDirection(i,j,&PixelDir);
+                RayTrace( TraceDepth, MainView.GetPosition(), PixelDir, curPixelColor);
+                pixels.SetPixel(i,j,curPixelColor);
+            }
+        }
+        WidthRayTraced = WindowWidth;			// Set these values to show scene has been computed.
+        NumScanLinesRayTraced = WindowHeight;
+    }
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(0, WindowWidth, 0, WindowHeight);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
+
+    pixels.Draw();
+
+    // flush the pipeline, swap the buffers
+    glFlush();
+    glutSwapBuffers();
+
+}
+
 // called when the window is resized
 static void ResizeWindow(GLsizei w, GLsizei h)
 {
-    WindowMinimized = (h==0 || w==0);
     h = (h==0) ? 1 : h;
     w = (w==0) ? 1 : w;
 
-    if ( (NumScanLinesRayTraced!=h || WidthRayTraced!=w) && !WindowMinimized ) {
+    if ((NumScanLinesRayTraced!=h || WidthRayTraced!=w)) {
         RayTraceMode = false;							// Go back to OpenGL mode if size changes.
     }
 
@@ -508,7 +446,9 @@ void myMouseUpDownFunc( int button, int state, int x, int y )
     }
 }
 
-void InitializeSceneGeometry(GammaRayTrace & Gray, const Config & config)
+void InitializeSceneGeometry(GammaRayTrace & Gray,
+                             const Config & config,
+                             SceneDescription & FileScene)
 {
     // Define the lights, materials, textures and viewable objects.
     if (!LoadMaterials::LoadPhysicsFiles(FileScene)) {
@@ -528,9 +468,6 @@ void InitializeSceneGeometry(GammaRayTrace & Gray, const Config & config)
 
     ActiveScene->GetCameraView().SetScreenPixelSize(pixels.GetWidth(), pixels.GetHeight());
     ActiveScene->RegisterCameraView();
-
-    // Build the kd-Tree.
-    myBuildKdTree();
 }
 
 //**********************************************************
@@ -547,10 +484,14 @@ int main( int argc, char** argv)
     }
 
     GammaRayTrace Gray;
+    SceneDescription FileScene;
+    InitializeSceneGeometry(Gray, config, FileScene);
+    KdTree ObjectKdTree;
+    BuildKdTree(ObjectKdTree);
+    ActiveKdTree = &ObjectKdTree;
 
     if (config.batch_mode == true) {
         // Implement batch mode for raytracing
-        InitializeSceneGeometry(Gray, config);
         Gray.GRayTraceSources();
         return(0);
     }
@@ -570,8 +511,6 @@ int main( int argc, char** argv)
     glutInitWindowPosition(0, 0);
     glutCreateWindow( "Ray Tracing" );
 
-    InitializeSceneGeometry(Gray, config);
-
     // set up callback functions
     glutKeyboardFunc( myKeyboardFunc );
     glutSpecialFunc( mySpecialFunc );
@@ -579,7 +518,7 @@ int main( int argc, char** argv)
     glutReshapeFunc( ResizeWindow );
 
     // call this in main loop
-    glutDisplayFunc(RenderScene);
+    glutDisplayFunc(RayTraceView);
     glutMainLoop();
 
     return(0);
