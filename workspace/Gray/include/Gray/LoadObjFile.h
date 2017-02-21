@@ -45,6 +45,7 @@ public:
     bool Load(const std::string & filename, SceneDescription& theScene );
     static bool LoadObjFile(const std::string & filename, SceneDescription& theScene );
     static char* ScanForSecondField( char* inbuf );
+    static std::string ScanForSecondField(const std::string & inbuf);
 
 private:
     bool ReportUnsupportedFeatures;

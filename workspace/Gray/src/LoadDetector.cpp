@@ -203,24 +203,13 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
     DetectorArray detector_array;
     std::string filename_detector = "";
 
-    unsigned include_count = 0;
-    FILE* infile = fopen(filename.c_str(), "r" );
-    FILE* curFile = infile;
-    FILE* includeFile[MAX_INCLUDE];
-
-    // Create a dynamic stack of include files
-    for (include_count = 0; include_count < MAX_INCLUDE; include_count++) {
-        includeFile[include_count] = NULL;
-    }
-    includeFile[0] = infile;
-    include_count = 0;
+    stack<ifstream> file_stack;
+    file_stack.emplace(filename.c_str());
 
     FileLineNumber = 0;
 
-    // GammaMaterial* curMaterial = (Material*)&Material::Default;
-
-    if ( !infile ) {
-        fprintf(stderr, "LoadDffFile: Unable to open file: %s\n", filename.c_str());
+    if (!file_stack.top()) {
+        cerr << "LoadDffFile: Unable to open file: " << filename << endl;
         return false;
     }
     
@@ -231,8 +220,6 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
         file_dir = filename.substr(0, dir_pos + 1);
     }
 
-    const int size_inbuffer = 1026;
-    char inbuffer[size_inbuffer];
     int viewCmdStatus = false;		// True if currently handling a "v" command
     VectorR3 viewPos;
     VectorR3 lookAtPos;
@@ -251,14 +238,12 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
     Gray.SetDefaultMaterial(curMaterial);
 
     while ( true ) {
-        if ( !fgets( inbuffer, size_inbuffer, curFile ) ) { // read a line of the file
-            if (include_count > 0) {
-                fclose( curFile );
-                curFile = includeFile[--include_count];
+        string line;
+        if (!getline(file_stack.top(), line)) { // read a line of the file
+            file_stack.pop();
+            if (!file_stack.empty()) {
                 continue;
             }
-
-            fclose( curFile );
             if ( viewCmdStatus ) {
                 SetCameraViewInfo( theScene.GetCameraView(),
                                    viewPos, lookAtPos, upVector, fovy,
@@ -275,11 +260,11 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
         FileLineNumber++;
         
         // Ignore blank lines
-        if (strlen(inbuffer) == 0) {
+        if (line.size() == 0) {
             continue;
-        } else if (inbuffer[0] == '\n') {
+        } else if (line[0] == '\n') {
             continue;
-        } else if (inbuffer[0] == '#') {
+        } else if (line[0] == '#') {
             // Ignore lines starting with a #.  This would also be handled in the
             // case statement of this function, but just deal with it premptively.
             continue;
@@ -289,20 +274,20 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
         // TODO: Scan and remove whitespace and comments at begging of file
 
         char theCommand[17];
-        int scanCode = sscanf( inbuffer, "%16s", theCommand );
+        int scanCode = sscanf(line.c_str(), "%16s", theCommand );
         if ( scanCode!=1 ) {
             parseErrorOccurred = true;
         }
 
         int cmdNum = GetCommandNumber( theCommand );
 
-        char* args = ObjFileLoader::ScanForSecondField( inbuffer );
+        string args = ObjFileLoader::ScanForSecondField(line);
 
         switch ( cmdNum ) {
             case 0: {
                 int numVerts;
                 const int maxNumVerts = 256;
-                scanCode = sscanf( args, "%d", &numVerts );
+                scanCode = sscanf(args.c_str(), "%d", &numVerts );
                 if (scanCode!=1 || numVerts<3 ) {
                     parseErrorOccurred = true;
                 } else if ( numVerts>maxNumVerts ) {
@@ -311,16 +296,16 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                     // FIXED: arbitrary triangles must use increment to advance detector ids
                     // FIXED: detector only is used when material is sensitive
                     if (curMaterial->log_material) {
-                        ProcessFaceDFF( numVerts, curMaterial, curFile, curVectorSource, parse_VectorSource,global_id  );
+                        ProcessFaceDFF( numVerts, curMaterial, file_stack.top(), curVectorSource, parse_VectorSource,global_id  );
                     } else {
-                        ProcessFaceDFF( numVerts, curMaterial, curFile, curVectorSource, parse_VectorSource,-1);
+                        ProcessFaceDFF( numVerts, curMaterial, file_stack.top(), curVectorSource, parse_VectorSource,-1);
                     }
                 }
                 break;
             }
             case 1: { // material index
                 int matIndex = -1;
-                int scanCode = sscanf( args, "%d", &matIndex );
+                int scanCode = sscanf(args.c_str(), "%d", &matIndex );
                 if (scanCode==1) {
                     curMaterial = dynamic_cast<GammaMaterial*>(&theScene.GetMaterial(matIndex));
                 } else {
@@ -335,7 +320,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                 VectorR3 trans;
                 VectorR3 reflec;
                 double ior;
-                int scanCode = sscanf( args, "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+                int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
                                        &(ambient.x), &(ambient.y), &(ambient.z),
                                        &(diffuse.x), &(diffuse.y), &(diffuse.z),
                                        &(spec.x), &(spec.y), &(spec.z),
@@ -361,7 +346,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
             {
                 VectorR3 baseCenter;
                 VectorR3 baseSize;
-                scanCode = sscanf( args, "%lf %lf %lf %lf %lf %lf",
+                scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf",
                                    &baseCenter.x, &baseCenter.y, &baseCenter.z,
                                    &baseSize.x, &baseSize.y, &baseSize.z );
                 if (scanCode == 6) {
@@ -381,28 +366,28 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                 break;
             }
             case 4: { // from
-                scanCode = sscanf( args, "%lf %lf %lf", &(viewPos.x), &(viewPos.y), &(viewPos.z) );
+                scanCode = sscanf(args.c_str(), "%lf %lf %lf", &(viewPos.x), &(viewPos.y), &(viewPos.z) );
                 if (scanCode != 3) {
                     parseErrorOccurred = true;
                 }
                 break;
             }
             case 5: { // lookat
-                scanCode = sscanf( args, "%lf %lf %lf", &(lookAtPos.x), &(lookAtPos.y), &(lookAtPos.z) );
+                scanCode = sscanf(args.c_str(), "%lf %lf %lf", &(lookAtPos.x), &(lookAtPos.y), &(lookAtPos.z) );
                 if (scanCode != 3) {
                     parseErrorOccurred = true;
                 }
                 break;
             }
             case 6: { // up
-                scanCode = sscanf( args, "%lf %lf %lf", &(upVector.x), &(upVector.y), &(upVector.z) );
+                scanCode = sscanf(args.c_str(), "%lf %lf %lf", &(upVector.x), &(upVector.y), &(upVector.z) );
                 if (scanCode != 3) {
                     parseErrorOccurred = true;
                 }
                 break;
             }
             case 7: { // angle
-                scanCode = sscanf( args, "%lf", &fovy );
+                scanCode = sscanf(args.c_str(), "%lf", &fovy );
                 if (scanCode != 1) {
                     parseErrorOccurred = true;
                 }
@@ -410,14 +395,14 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                 break;
             }
             case 8: { // hither
-                scanCode = sscanf( args, "%lf", &hither );
+                scanCode = sscanf(args.c_str(), "%lf", &hither );
                 if (scanCode != 1) {
                     parseErrorOccurred = true;
                 }
                 break;
             }
             case 9: { // resolution
-                scanCode = sscanf( args, "%d %d", &screenWidth, &screenHeight );
+                scanCode = sscanf(args.c_str(), "%d %d", &screenWidth, &screenHeight );
                 if (scanCode != 2) {
                     parseErrorOccurred = true;
                 }
@@ -425,7 +410,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
             }
             case 10: { // light
                 VectorR3 lightPos, lightColor;
-                scanCode = sscanf( args, "%lf %lf %lf %lf %lf %lf",
+                scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf",
                                    &(lightPos.x), &(lightPos.y), &(lightPos.z),
                                    &(lightColor.x), &(lightColor.y), &(lightColor.z) );
                 if ( scanCode==3 || scanCode==6 ) {
@@ -442,7 +427,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
             }
             case 11: { // translate
                 VectorR3 trans;
-                scanCode = sscanf( args, "%lf %lf %lf",&(trans.x), &(trans.y), &(trans.z));
+                scanCode = sscanf(args.c_str(), "%lf %lf %lf",&(trans.x), &(trans.y), &(trans.z));
 
                 trans *= polygonScale;
 
@@ -464,7 +449,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
             }
             case 14: { // background color
                 VectorR3 bgColor;
-                scanCode = sscanf( args, "%lf %lf %lf", &(bgColor.x), &(bgColor.y), &(bgColor.z) );
+                scanCode = sscanf(args.c_str(), "%lf %lf %lf", &(bgColor.x), &(bgColor.y), &(bgColor.z) );
                 if ( scanCode!=3 ) {
                     parseErrorOccurred = true;
                     break;
@@ -475,7 +460,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
             case 15: { // raxis
                 VectorR3 axis;
                 double degree;
-                scanCode = sscanf( args, "%lf %lf %lf %lf", &(axis.x), &(axis.y), &(axis.z), &degree );
+                scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf", &(axis.x), &(axis.y), &(axis.z), &degree );
                 if (scanCode != 4) {
                     break;
                 }
@@ -487,7 +472,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                 VectorR3 position;
                 double radius = -1.0;
                 double activity = -1.0;
-                scanCode = sscanf( args, "%lf %lf %lf %lf %lf", &(position.x), &(position.y), &(position.z), &radius, &activity );
+                scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf", &(position.x), &(position.y), &(position.z), &radius, &activity );
                 if (scanCode == 5) {
                     if (activity < 0.0) {
                         cout << "Negative Source " << activity << " uCi" << endl;
@@ -510,7 +495,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                 VectorR3 baseCenter;
                 VectorR3 baseSize;
                 double activity = -1.0;
-                scanCode = sscanf( args, "%lf %lf %lf %lf %lf %lf %lf",
+                scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf",
                                    &baseCenter.x, &baseCenter.y, &baseCenter.z,
                                    &baseSize.x, &baseSize.y, &baseSize.z, &activity );
                 if (scanCode == 7) {
@@ -530,7 +515,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                 int num_x = -1;
                 int num_y = -1;
                 int num_z = -1;
-                scanCode = sscanf( args, "%d %d %d %lf %lf %lf %lf %lf %lf", &num_x, &num_y, &num_z, &(UnitStep.x), &(UnitStep.y), &(UnitStep.z),
+                scanCode = sscanf(args.c_str(), "%d %d %d %lf %lf %lf %lf %lf %lf", &num_x, &num_y, &num_z, &(UnitStep.x), &(UnitStep.y), &(UnitStep.z),
                                    &(UnitSize.x), &(UnitSize.y), &(UnitSize.z));
                 if (scanCode != 9) {
                     parseErrorOccurred = true;
@@ -579,7 +564,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                 double radius;
                 double height;
 
-                int scanCode = sscanf( args, "%lf %lf %lf %lf %lf %lf %lf %lf",
+                int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf",
                                        &(center.x), &(center.y), &(center.z),
                                        &(axis.x), &(axis.y), &(axis.z),
                                        &radius, &height);
@@ -604,7 +589,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                 double radius;
                 double height;
                 double activity;
-                int scanCode = sscanf( args, "%lf %lf %lf %lf %lf %lf %lf %lf %lf",
+                int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf",
                                        &(center.x), &(center.y), &(center.z),
                                        &(axis.x), &(axis.y), &(axis.z),
                                        &radius, &height, &activity);
@@ -642,7 +627,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
             }
             case 22: { // simulation time in seconds
                 double simulationTime = 1.0;
-                int scanCode = sscanf(args, "%lf", &simulationTime);
+                int scanCode = sscanf(args.c_str(), "%lf", &simulationTime);
                 if (scanCode != 1) {
                     parseErrorOccurred = true;
                     break;
@@ -657,7 +642,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
             }
             case 24: { // polygon scale
                 double t_polygonScale = -1.0;
-                int scanCode = sscanf( args, "%lf", &t_polygonScale);
+                int scanCode = sscanf(args.c_str(), "%lf", &t_polygonScale);
                 if (scanCode ==1) {
                     polygonScale = t_polygonScale;
                 } else {
@@ -668,7 +653,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
             }
             case 25: { // input long integer random seed
                 unsigned long seed = 0;
-                int scanCode = sscanf(args, "%ld", &seed);
+                int scanCode = sscanf(args.c_str(), "%ld", &seed);
                 if (scanCode ==1) {
                     Random::Seed((unsigned long)seed);
                 } else {
@@ -685,7 +670,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                 // Sphere object
                 VectorR3 position;
                 double radius = -1.0;
-                scanCode = sscanf( args, "%lf %lf %lf %lf", &(position.x), &(position.y), &(position.z), &radius );
+                scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf", &(position.x), &(position.y), &(position.z), &radius );
                 if (scanCode == 4) {
                     ViewableSphere * s = new ViewableSphere(position, radius);
                     s->SetMaterial(curMaterial);
@@ -703,7 +688,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                 VectorR3 axis;
                 double angle = -1.0;
                 double activity = -1.0;
-                scanCode = sscanf( args, "%lf %lf %lf %lf %lf %lf %lf %lf",
+                scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf",
                                    &(position.x), &(position.y), &(position.z),
                                    &(axis.x), &(axis.y), &(axis.z),
                                    &angle,
@@ -728,7 +713,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
             }
             case 29: { // acolinearity double_radians
                 double acon = -1.0;
-                scanCode = sscanf( args, "%lf", &acon);
+                scanCode = sscanf(args.c_str(), "%lf", &acon);
                 if (scanCode == 1) {
                 } else {
                     parseErrorOccurred = true;
@@ -750,7 +735,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
             }
             case 33: { // Start Vector Source
                 double activity = -1.0;
-                int scanCode = sscanf(args, "%lf", &activity);
+                int scanCode = sscanf(args.c_str(), "%lf", &activity);
                 if (scanCode ==1) {
                     cout << "Starting Vector Source\n";
                     curVectorSource = new VectorSource(actScale*activity);
@@ -768,7 +753,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
             }
             case 34: { // End Vector Source
                 char string[256];
-                int scanCode = sscanf(args, "%s", string);
+                int scanCode = sscanf(args.c_str(), "%s", string);
                 if ((scanCode ==1) && (curVectorSource != NULL)) {
                     Gray.AddSource(curVectorSource);
                     cout << "Ending Vector Source:\n";
@@ -795,7 +780,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
             }
             case 37: { // Save detector
                 char filename[256];
-                int scanCode = sscanf(args, "%s", filename);
+                int scanCode = sscanf(args.c_str(), "%s", filename);
                 if (scanCode ==1) {
                     filename_detector = std::string(filename);
                 } else {
@@ -806,7 +791,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
             }
             case 38: { // activity scale
                 double t_actScale = -1.0;
-                int scanCode = sscanf( args, "%lf", &t_actScale);
+                int scanCode = sscanf(args.c_str(), "%lf", &t_actScale);
                 if (scanCode ==1) {
                     actScale = t_actScale;
                     cout << "scale act:";
@@ -832,7 +817,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
             }
             case 42: { // set time resolution of detectors
                 double t_time_resolution = -1.0;
-                int scanCode = sscanf( args, "%lf", &t_time_resolution);
+                int scanCode = sscanf(args.c_str(), "%lf", &t_time_resolution);
                 if (scanCode ==1) {
                     // Convert paired time resolution to single detector time resolution
                     time_resolution = t_time_resolution/sqrt(2.0);
@@ -844,7 +829,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
             }
             case 43: { // set energy resolution of detectors
                 double t_energy_resolution = -1.0;
-                int scanCode = sscanf( args, "%lf", &t_energy_resolution);
+                int scanCode = sscanf(args.c_str(), "%lf", &t_energy_resolution);
                 if (scanCode ==1) {
                     energy_resolution = t_energy_resolution;
                 } else {
@@ -870,7 +855,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                 double t_k1 = -1.0;
                 double t_k2 = -1.0;
                 double t_max_range = -1.0;
-                int scanCode = sscanf( args, "%lf%lf%lf%lf", &t_c,&t_k1,&t_k2,&t_max_range);
+                int scanCode = sscanf(args.c_str(), "%lf%lf%lf%lf", &t_c,&t_k1,&t_k2,&t_max_range);
                 if (scanCode ==4) {
                     // set state variables
                     positronRange = true;
@@ -895,7 +880,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
             }
             case 49: { // set singles isotope
                 char string[256];
-                int scanCode = sscanf(args, "%s", string);
+                int scanCode = sscanf(args.c_str(), "%s", string);
                 if (scanCode != 1) {
                     parseErrorOccurred = true;
                     break;
@@ -914,7 +899,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                 int dims[3];
                 VectorR3 voxelsize;
                 double activity;
-                int scanCode = sscanf(args, "%s %d %d %d %lf %lf %lf %lf",
+                int scanCode = sscanf(args.c_str(), "%s %d %d %d %lf %lf %lf %lf",
                                       string,
                                       &dims[0],
                                       &dims[1],
@@ -938,18 +923,18 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
             }
             case 51: { // include a dff file into current one
                 char string[256];
-                int scanCode = sscanf(args, "%s", string);
+                int scanCode = sscanf(args.c_str(), "%s", string);
                 // Reference all of the include files to the directory of the
                 // top level file.
                 std::string include_filename = file_dir + std::string(string);
                 if (scanCode ==1) {
-                    includeFile[++include_count] = fopen(include_filename.c_str(),"r");
-                    if (!includeFile[include_count]) {
-                        cout << "Include File doesn't exist: " << include_filename << endl;
-                        includeFile[include_count--] = NULL;
+                    file_stack.push(ifstream(filename.c_str()));
+                    if (file_stack.top()) {
+                        cout << "Including File:" << include_filename << endl;
                     } else {
-                        cout << "Including File[" << include_count << "]:" << include_filename << endl;
-                        curFile = includeFile[include_count];
+                        cerr << "Include File doesn't exist: "
+                             << include_filename << endl;
+                        file_stack.pop();
                     }
                 } else {
                     parseErrorOccurred = true;
@@ -980,7 +965,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                 double radius2;
                 double radius3;
 
-                int scanCode = sscanf( args, "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+                int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
                                        &(center.x), &(center.y), &(center.z),
                                        &(axis1.x), &(axis1.y), &(axis1.z),
                                        &(axis2.x), &(axis2.y), &(axis2.z),
@@ -1008,7 +993,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                 double radius3;
                 double activity;
 
-                int scanCode = sscanf( args, "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+                int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
                                        &(center.x), &(center.y), &(center.z),
                                        &(axis1.x), &(axis1.y), &(axis1.z),
                                        &(axis2.x), &(axis2.y), &(axis2.z),
@@ -1037,7 +1022,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                 double radius1;
                 double radius2;
                 double height;
-                int scanCode = sscanf( args, "%lf %lf %lf %lf %lf %lf %lf %lf %lf",
+                int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf",
                                        &(center.x), &(center.y), &(center.z),
                                        &(axis.x), &(axis.y), &(axis.z),
                                        &radius1, &radius2, &height);
@@ -1064,7 +1049,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                 double radius2;
                 double height;
                 double activity;
-                int scanCode = sscanf( args, "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+                int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
                                        &(center.x), &(center.y), &(center.z),
                                        &(axis.x), &(axis.y), &(axis.z),
                                        &radius1, &radius2, &height, &activity);
@@ -1093,7 +1078,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                 double radius2;
                 double height;
                 double activity;
-                int scanCode = sscanf( args, "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+                int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
                                        &(center.x), &(center.y), &(center.z),
                                        &(axis.x), &(axis.y), &(axis.z),
                                        &radius1, &radius2, &height, &activity);
@@ -1121,7 +1106,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                 double radius;
                 double height;
                 double activity;
-                int scanCode = sscanf( args, "%lf %lf %lf %lf %lf %lf %lf %lf %lf",
+                int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf",
                                        &(center.x), &(center.y), &(center.z),
                                        &(axis.x), &(axis.y), &(axis.z),
                                        &radius, &height, &activity);
@@ -1146,7 +1131,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
             }
             case 59: { // Set the output format
                 Output::BinaryOutputFormat format;
-                int scanCode = sscanf(args, "%d", &format);
+                int scanCode = sscanf(args.c_str(), "%d", &format);
                 if (scanCode == 1) {
                     Gray.output.SetBinaryFormat(format);
                 } else {
@@ -1161,7 +1146,8 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
             }
         }
         if ( parseErrorOccurred ) {
-            fprintf(stderr, "Parse error in NFF file, line %ld: %40s.\n", FileLineNumber, inbuffer );
+            cerr << "Parse error in NFF file, line: " << FileLineNumber
+                 << " " << line << endl;
             parseErrorOccurred = false;
         }
     }
@@ -1282,7 +1268,12 @@ void LoadDetector::SetCameraViewInfo( CameraView& theView,
     }
 }
 
-bool LoadDetector::ProcessFaceDFF( int numVerts, const Material* curMaterial, FILE* curFile, VectorSource *s, bool parse_VectorSource, unsigned id )
+bool LoadDetector::ProcessFaceDFF(int numVerts,
+                                  const Material* curMaterial,
+                                  std::ifstream & curFile,
+                                  VectorSource *s,
+                                  bool parse_VectorSource,
+                                  unsigned id)
 {
     VectorR3 firstVert, prevVert, thisVert;
     if ( !ReadVertexR3(firstVert, curFile) ) {
@@ -1325,13 +1316,13 @@ bool LoadDetector::ProcessFaceDFF( int numVerts, const Material* curMaterial, FI
     return true;
 }
 
-bool LoadDetector::ReadVertexR3( VectorR3& vert, FILE* curFile )
+bool LoadDetector::ReadVertexR3(VectorR3& vert, std::ifstream & curFile)
 {
-    char inbuffer[258];
-    if ( !fgets( inbuffer, 256, curFile ) ) {
+    string line;
+    if (!getline(curFile, line)) {
         return false;
     }
     int scanCode;
-    scanCode = sscanf( inbuffer, "%lf %lf %lf", &vert.x, &vert.y, &vert.z );
+    scanCode = sscanf(line.c_str(), "%lf %lf %lf", &vert.x, &vert.y, &vert.z );
     return (scanCode == 3);
 }

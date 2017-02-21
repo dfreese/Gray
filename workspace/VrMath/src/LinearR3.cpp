@@ -47,7 +47,7 @@ const VectorR3 UnitVecKR3(0.0, 0.0, 1.0);
 
 double VectorR3::MaxAbs() const
 {
-    register double m;
+    double m;
     m = (x>0.0) ? x : -x;
     if ( y>m ) {
         m=y;
@@ -114,9 +114,9 @@ VectorR3& VectorR3::RotateUnitInDirection ( const VectorR3& dir)
 
 Matrix3x3& Matrix3x3::ReNormalize()	// Re-normalizes nearly orthonormal matrix
 {
-    register double alpha = m11*m11+m21*m21+m31*m31;	// First column's norm squared
-    register double beta  = m12*m12+m22*m22+m32*m32;	// Second column's norm squared
-    register double gamma = m13*m13+m23*m23+m33*m33;	// Third column's norm squared
+    double alpha = m11*m11+m21*m21+m31*m31;	// First column's norm squared
+    double beta  = m12*m12+m22*m22+m32*m32;	// Second column's norm squared
+    double gamma = m13*m13+m23*m23+m33*m33;	// Third column's norm squared
     alpha = 1.0 - 0.5*(alpha-1.0);				// Get mult. factor
     beta  = 1.0 - 0.5*(beta-1.0);
     gamma = 1.0 - 0.5*(gamma-1.0);
@@ -135,7 +135,7 @@ Matrix3x3& Matrix3x3::ReNormalize()	// Re-normalizes nearly orthonormal matrix
     alpha *= 0.5;
     beta *= 0.5;
     gamma *= 0.5;
-    register double temp1, temp2;
+    double temp1, temp2;
     temp1 = m11-alpha*m12-beta*m13;			// Update row1
     temp2 = m12-alpha*m11-gamma*m13;
     m13 -= beta*m11+gamma*m12;
@@ -264,7 +264,7 @@ VectorR3 Matrix3x3::Solve(const VectorR3& u) const	// Returns solution
     double sd23 = m31*m12-m11*m32;
     double sd33 = m11*m22-m21*m12;
 
-    register double detInv = 1.0/(m11*sd11 + m12*sd12 + m13*sd13);
+    double detInv = 1.0/(m11*sd11 + m12*sd12 + m13*sd13);
 
     double rx = (u.x*sd11 + u.y*sd21 + u.z*sd31)*detInv;
     double ry = (u.x*sd12 + u.y*sd22 + u.z*sd32)*detInv;
@@ -288,9 +288,9 @@ double Matrix3x3::SumSquaresNorm() const
 
 Matrix3x4& Matrix3x4::ReNormalize()	// Re-normalizes nearly orthonormal matrix
 {
-    register double alpha = m11*m11+m21*m21+m31*m31;	// First column's norm squared
-    register double beta  = m12*m12+m22*m22+m32*m32;	// Second column's norm squared
-    register double gamma = m13*m13+m23*m23+m33*m33;	// Third column's norm squared
+    double alpha = m11*m11+m21*m21+m31*m31;	// First column's norm squared
+    double beta  = m12*m12+m22*m22+m32*m32;	// Second column's norm squared
+    double gamma = m13*m13+m23*m23+m33*m33;	// Third column's norm squared
     alpha = 1.0 - 0.5*(alpha-1.0);				// Get mult. factor
     beta  = 1.0 - 0.5*(beta-1.0);
     gamma = 1.0 - 0.5*(gamma-1.0);
@@ -309,7 +309,7 @@ Matrix3x4& Matrix3x4::ReNormalize()	// Re-normalizes nearly orthonormal matrix
     alpha *= 0.5;
     beta *= 0.5;
     gamma *= 0.5;
-    register double temp1, temp2;
+    double temp1, temp2;
     temp1 = m11-alpha*m12-beta*m13;			// Update row1
     temp2 = m12-alpha*m11-gamma*m13;
     m13 -= beta*m11+gamma*m12;
@@ -413,7 +413,7 @@ LinearMapR3 LinearMapR3::Inverse() const			// Returns inverse
     double sd23 = m31*m12-m11*m32;
     double sd33 = m11*m22-m21*m12;
 
-    register double detInv = 1.0/(m11*sd11 + m12*sd12 + m13*sd13);
+    double detInv = 1.0/(m11*sd11 + m12*sd12 + m13*sd13);
 
     return( LinearMapR3( sd11*detInv, sd12*detInv, sd13*detInv,
                          sd21*detInv, sd22*detInv, sd23*detInv,
@@ -433,7 +433,7 @@ LinearMapR3& LinearMapR3::Invert() 			// Converts into inverse.
     double sd23 = m31*m12-m11*m32;
     double sd33 = m11*m22-m21*m12;
 
-    register double detInv = 1.0/(m11*sd11 + m12*sd12 + m13*sd13);
+    double detInv = 1.0/(m11*sd11 + m12*sd12 + m13*sd13);
 
     m11 = sd11*detInv;
     m12 = sd21*detInv;
@@ -469,7 +469,7 @@ void LinearMapR3::InverseSym( LinearMapR3* inverse ) const
     double sd23 = m31*m21-m11*m32;
     double sd33 = m11*m22-m21*m21;
 
-    register double detInv = 1.0/(m11*sd11 + m21*sd12 + m31*sd13);
+    double detInv = 1.0/(m11*sd11 + m21*sd12 + m31*sd13);
 
     inverse->m11 = sd11*detInv;
     inverse->m12 = inverse->m21 = sd12*detInv;
@@ -492,7 +492,7 @@ LinearMapR3& LinearMapR3::InvertSym()
     double sd23 = m31*m21-m11*m32;
     double sd33 = m11*m22-m21*m21;
 
-    register double detInv = 1.0/(m11*sd11 + m21*sd12 + m31*sd13);
+    double detInv = 1.0/(m11*sd11 + m21*sd12 + m31*sd13);
 
     m11 = sd11*detInv;
     m12 = m21 = sd12*detInv;
@@ -701,7 +701,7 @@ AffineMapR3 AffineMapR3::Inverse() const				// Returns inverse
     double sd23 = m31*m12-m11*m32;
     double sd33 = m11*m22-m21*m12;
 
-    register double detInv = 1.0/(m11*sd11 + m12*sd12 + m13*sd13);
+    double detInv = 1.0/(m11*sd11 + m12*sd12 + m13*sd13);
 
     // Make sd's hold the (transpose of) the inverse of the 3x3 part
     sd11 *= detInv;
@@ -735,7 +735,7 @@ AffineMapR3& AffineMapR3::Invert()					// Converts into inverse.
     double sd23 = m31*m12-m11*m32;
     double sd33 = m11*m22-m21*m12;
 
-    register double detInv = 1.0/(m11*sd11 + m12*sd12 + m13*sd13);
+    double detInv = 1.0/(m11*sd11 + m12*sd12 + m13*sd13);
 
     m11 = sd11*detInv;
     m12 = sd21*detInv;
@@ -777,9 +777,9 @@ RotationMapR3 operator*(const RotationMapR3& A, const RotationMapR3& B)
 RotationMapR3& RotationMapR3::Set( const VectorR3& u, double theta )
 {
     assert ( fabs(u.NormSq()-1.0)<2.0e-6 );
-    register double c = cos(theta);
-    register double s = sin(theta);
-    register double mc = 1.0-c;
+    double c = cos(theta);
+    double s = sin(theta);
+    double mc = 1.0-c;
     double xmc = u.x*mc;
     double xymc = xmc*u.y;
     double xzmc = xmc*u.z;
@@ -914,9 +914,9 @@ RotationMapR3 RotateToMap( const VectorR3& fromVec, const VectorR3& toVec)
 RigidMapR3& RigidMapR3::SetRotationPart( const VectorR3& u, double theta )
 {
     assert ( fabs(u.NormSq()-1.0)<2.0e-6 );
-    register double c = cos(theta);
-    register double s = sin(theta);
-    register double mc = 1.0-c;
+    double c = cos(theta);
+    double s = sin(theta);
+    double mc = 1.0-c;
     double xmc = u.x*mc;
     double xymc = xmc*u.y;
     double xzmc = xmc*u.z;

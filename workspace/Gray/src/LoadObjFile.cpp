@@ -133,6 +133,19 @@ char* ObjFileLoader::Preparse( char* inbuf )
     return ScanForNonwhite( inbuf );
 }
 
+std::string ObjFileLoader::ScanForSecondField(const std::string & inbuf)
+{
+    size_t white_space = inbuf.find_first_of(' ');
+    if (white_space == string::npos) {
+        return("");
+    }
+    white_space += inbuf.substr(white_space).find_first_not_of(' ');
+    if (white_space == string::npos) {
+        return("");
+    }
+    return (inbuf.substr(white_space));
+}
+
 char* ObjFileLoader::ScanForSecondField( char* inbuf )
 {
     char *s;
