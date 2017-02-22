@@ -1,12 +1,9 @@
 #include <Sources/VectorSource.h>
 #include <Graphics/ViewableTriangle.h>
 #include <Random/Random.h>
+#include <GraphicsTrees/IntersectionKdTree.h>
 
 using namespace std;
-
-//extern long SeekIntersectionKd(const VectorR3& startPos, const VectorR3& direction,
-//                               double *hitDist, VisiblePoint& returnedPoint,
-//                               long avoidK);
 
 VectorSource::VectorSource(const double act)
 {
@@ -61,11 +58,8 @@ bool VectorSource::RejectionTest(const VectorR3 &pos)
     VisiblePoint visPoint;
     int avoidK = -1;
 
-    // FIXME: Intentionally broke Vector Source until the kd tree could be
-    // properly added as a dependency into this class.
-    int intersectNum = -1;
-    // int intersectNum = SeekIntersectionKd(pos,dir,
-    //                                       &hitDist,visPoint,avoidK );
+    int intersectNum = kd_tree->SeekIntersection(pos, dir, &hitDist,
+                                                 visPoint, avoidK);
 
     if ( intersectNum<0 ) {
         return true;

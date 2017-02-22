@@ -8,6 +8,7 @@
 class Source;
 class Isotope;
 class VectorR3;
+class IntersectKdTree;
 
 class SourceList
 {
@@ -19,6 +20,7 @@ public:
     bool SetCurIsotope(const std::string & iso);
     double GetMeanTotalEvents(double time);
     double GetTotalEvents(double time);
+    void SetKdTree(IntersectKdTree & tree);
 
 private:
     static const int MAX_REJECT_COUNTER = 100000;

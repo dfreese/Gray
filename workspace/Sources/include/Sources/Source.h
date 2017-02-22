@@ -30,6 +30,7 @@
 
 using namespace std;
 class GammaMaterial;
+class IntersectKdTree;
 
 class Source
 {
@@ -75,6 +76,10 @@ public:
     }
     void Reset();
 
+    void SetKdTree(IntersectKdTree & tree) {
+        kd_tree = &tree;
+    }
+
     virtual bool Inside(const VectorR3 &pos) const = 0;
     virtual void Decay(unsigned int photon_number) = 0;
 
@@ -85,7 +90,7 @@ protected:
     GammaMaterial * material;
     bool negative;
     int source_num;
-
+    IntersectKdTree * kd_tree;
 };
 
 inline bool Source::isNegative()

@@ -7,6 +7,7 @@
 #include <Physics/Beam.h>
 #include <Sources/Source.h>
 #include <VrMath/LinearR3.h>
+//#include <GraphicsTrees/>
 
 using namespace std;
 
@@ -70,6 +71,15 @@ void SourceList::AddSource(Source * s)
         total_activity += s->GetActivity();
         mean_time_between_events = (1.0) / (total_activity * microCurie);
         prob.push_back(total_activity);
+    }
+}
+
+void SourceList::SetKdTree(IntersectKdTree & tree) {
+    for (auto source: list) {
+        source->SetKdTree(tree);
+    }
+    for (auto source: neg_list) {
+        source->SetKdTree(tree);
     }
 }
 
