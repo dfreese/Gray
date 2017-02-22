@@ -68,33 +68,6 @@ KdTree::~KdTree()
 	}
 }
 
-
-/***********************************************************************************************
- * Tree traversal functions.
- ***********************************************************************************************/
-
-// Traverse: Simple traversal scheme.
-//	 startPos - beginning of the ray.
-//	 dir - direction of the ray.
-//   Returns "true" if traversal aborted by the callback function returning "true"
-bool KdTree::Traverse( const VectorR3& startPos, const VectorR3& dir, 
-				PotentialObjectCallback* pocFunc, double seekDistance, bool obeySeekDistance  )
-{
-	CallbackFunction = (void*) pocFunc;
-	UseListCallback = false;
-
-	return Traverse( startPos, dir, seekDistance, obeySeekDistance );
-}
-
-bool KdTree::Traverse( const VectorR3& startPos, const VectorR3& dir, 
-				PotentialObjectsListCallback* polcFunc, double seekDistance, bool obeySeekDistance  )
-{
-	CallbackFunction = (void*) polcFunc;
-	UseListCallback = true;
-
-	return Traverse( startPos, dir, seekDistance, obeySeekDistance );
-}
-
 bool KdTree::Traverse( const VectorR3& startPos, const VectorR3& dir, double seekDistance, bool obeySeekDistance )
 {
 	double entryDist, exitDist;
@@ -248,36 +221,20 @@ bool KdTree::Traverse( const VectorR3& startPos, const VectorR3& dir, double see
 		else {
 			// Handle leaf nodes by invoking the callback function
 			Stats_LeafTraversed();
-			if ( UseListCallback ) {
-				// Pass whole list of objects back to the user
-				bool stopFlag;
-				double newStopDist;
-				Stats_ObjectsInLeaves( currentNode->Data.Leaf.NumObjects );
-				stopFlag = (*((PotentialObjectsListCallback*)CallbackFunction))( 
-										currentNode->Data.Leaf.NumObjects, 
-										currentNode->Data.Leaf.ObjectList, 
-										&newStopDist );
-				if ( stopFlag ) {
-					stopDistanceActive = true;
-					stopDistance = newStopDist;
-				}
-			}
-			else {
-				// Pass the objects back to the user one at a time
-				double newStopDist;
-				int i = currentNode->Data.Leaf.NumObjects;
-				Stats_ObjectsInLeaves( i );
-				long* objectIdPtr = currentNode->Data.Leaf.ObjectList;
-				for ( ; i>0; i-- ) {
-					if ( (*((PotentialObjectCallback*)CallbackFunction))( 
-												*objectIdPtr, &newStopDist )  )  
-					{
-						stopDistanceActive = true;
-						stopDistance = newStopDist;
-					}
-					objectIdPtr++;
-				}
-			}
+            // Pass the objects back to the user one at a time
+            double newStopDist;
+            int i = currentNode->Data.Leaf.NumObjects;
+            Stats_ObjectsInLeaves( i );
+            long* objectIdPtr = currentNode->Data.Leaf.ObjectList;
+            for ( ; i>0; i-- ) {
+                if (ObjectCallback(*objectIdPtr, &newStopDist))
+                {
+                    stopDistanceActive = true;
+                    stopDistance = newStopDist;
+                }
+                objectIdPtr++;
+            }
+
 		}
 
 		// Get to this point if done with a leaf node (possibly empty, possibly not).
@@ -307,23 +264,14 @@ bool KdTree::Traverse( const VectorR3& startPos, const VectorR3& dir, double see
 /***********************************************************************************************
  * Tree building functions.
  ***********************************************************************************************/
-void KdTree::BuildTree(long numObjects, ExtentFunction* extentFunc, ExtentInBoxFunction* extentInBoxFunc )
+void KdTree::BuildTree(long numObjects)
 {
 	assert (TreeSize() == 0);
 	NumObjects = numObjects;
-	ExtentFunc = extentFunc;
-	ExtentInBoxFunc = extentInBoxFunc;
 
 	// Get total cost of all objects
-	if ( UseConstantCost ) {
-		TotalObjectCosts = ObjectConstantCost*NumObjects;
-	}
-	else {
-		TotalObjectCosts = 0;
-		for ( long i=0; i<NumObjects; i++ ) {
-			TotalObjectCosts += (*UserCostFunction)(  i );
-		}
-	}
+    TotalObjectCosts = ObjectConstantCost * NumObjects;
+
 
 	// Allocate space for the AABB's for each object
 	//	This is used only during the tree construction and is then released.
@@ -333,7 +281,7 @@ void KdTree::BuildTree(long numObjects, ExtentFunction* extentFunc, ExtentInBoxF
 	long i;
 	AABB* ObjectAabbPtr = ObjectAABBs;
 	for (i=0; i<numObjects; i++ ) {
-		(*ExtentFunc)( i, *ObjectAabbPtr );
+		ExtentFunc(i, *ObjectAabbPtr);
 		ObjectAabbPtr++;
 	}
 
@@ -736,14 +684,7 @@ bool KdTree::CalcBestSplit( double totalObjectCosts, double costToBeat,
 void KdTree::UpdateLeftRightCosts( const ExtentTriple& et, long* numObjectsLeft, long* numObjectsRight, 
 							   double *costLeft, double *costRight )
 {
-	double cost;
-	if ( UseConstantCost ) {
-		cost = ObjectConstantCost;
-	}
-	else {
-		cost = (*UserCostFunction)(et.ObjectID);
-	}
-
+	double cost = ObjectConstantCost;
 	switch ( et.ExtentType ) {
 	case ExtentTriple::TT_MAX:
 		(*numObjectsRight) --;
@@ -779,7 +720,7 @@ void KdTree::MakeAabbsForSubtree( unsigned char leftRightFlag, const ExtentTripl
 				|| (etPtr->ExtentType==(ExtentTriple::TT_MAX) && leftRightFlag==1)) )
 			{
 				assert ( 0<=objectID && objectID<NumObjects );
-				bool stillIn = (*ExtentInBoxFunc)( objectID, theAabb, ObjectAABBs[objectID] );
+				bool stillIn = ExtentInBoxFunc(objectID, theAabb, ObjectAABBs[objectID]);
 				bool flatX = ObjectAABBs[objectID].IsFlatX();
 				bool flatY = ObjectAABBs[objectID].IsFlatY();
 				bool flatZ = ObjectAABBs[objectID].IsFlatZ();
@@ -867,20 +808,7 @@ void KdTree::CopyTriplesForSubtree( unsigned char leftRightFlag, int axisNumber,
 
 double KdTree::CalcTotalCosts( const ExtentTripleArrayInfo& extents ) const
 {
-	long n = extents.NumObjects();
-	if ( UseConstantCost ) {
-		return ObjectConstantCost*n;
-	}
-	else {
-		double totalCosts = 0;
-		ExtentTriple* etPtr = extents.TripleArray;
-		for ( long i=0; i<n; i++, etPtr++ ) {
-			if ( etPtr->ExtentType != ExtentTriple::TT_MAX ) {
-				totalCosts += (*UserCostFunction)(  etPtr->ObjectID );
-			}
-		}
-		return totalCosts;
-	}
+	return (ObjectConstantCost * extents.NumObjects());
 }
 
 

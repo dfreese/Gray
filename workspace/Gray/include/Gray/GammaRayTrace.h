@@ -8,6 +8,7 @@
 
 class GammaMaterial;
 class Photon;
+class IntersectKdTree;
 
 extern long SeekIntersectionKd(const VectorR3& startPos, const VectorR3& direction,
                                double *hitDist, VisiblePoint& returnedPoint,
@@ -25,6 +26,7 @@ public:
     void SetSimulationTime(double time);
     Output output;
     SourceList sources;
+    void SetKdTree(IntersectKdTree & tree);
 private:
     INTER_TYPE GRayTrace(VisiblePoint &visPoint,
                          int TraceDepth, Photon &photon,
@@ -33,6 +35,7 @@ private:
     double simulationTime;
     const double Epsilon = 1e-10;
     const double s1_SOL = (1.0 / 29979245800.0);
+    IntersectKdTree * kd_tree;
 };
 
 #endif /*GAMMARAYTRACE_H*/

@@ -6,6 +6,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 add_subdirectory(KdTree)
 add_subdirectory(Graphics)
+add_subdirectory(GraphicsTrees)
 add_subdirectory(Random)
 add_subdirectory(VrMath)
 add_subdirectory(Physics)

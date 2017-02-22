@@ -4,9 +4,9 @@
 
 using namespace std;
 
-extern long SeekIntersectionKd(const VectorR3& startPos, const VectorR3& direction,
-                               double *hitDist, VisiblePoint& returnedPoint,
-                               long avoidK);
+//extern long SeekIntersectionKd(const VectorR3& startPos, const VectorR3& direction,
+//                               double *hitDist, VisiblePoint& returnedPoint,
+//                               long avoidK);
 
 VectorSource::VectorSource(const double act)
 {
@@ -61,8 +61,11 @@ bool VectorSource::RejectionTest(const VectorR3 &pos)
     VisiblePoint visPoint;
     int avoidK = -1;
 
-    int intersectNum = SeekIntersectionKd(pos,dir,
-                                          &hitDist,visPoint,avoidK );
+    // FIXME: Intentionally broke Vector Source until the kd tree could be
+    // properly added as a dependency into this class.
+    int intersectNum = -1;
+    // int intersectNum = SeekIntersectionKd(pos,dir,
+    //                                       &hitDist,visPoint,avoidK );
 
     if ( intersectNum<0 ) {
         return true;

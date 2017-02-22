@@ -47,25 +47,6 @@ class Kd_TraverseNodeData;            // Holds information on a single node need
 class ExtentTriple;                // A extent triples: a single max, min, or flat value
 class ExtentTripleArrayInfo;    // Information about array of extent triples.
 
-// Three callback routines that aid in tree building:
-//     ExtentFunction returns bounding box (an AABB) enclosing the object.
-typedef void ExtentFunction( long objectNum, AABB& boundingBox );
-//     ExtentInBoxFunction returns a AABB that encloses the intersection of the object and the clippingBox.
-//       Returns the "boundingBox" and returns true if the box is non-empty.
-typedef bool ExtentInBoxFunction( long objectNum, const AABB& clippingBox, AABB& boundingBox );
-//     Returns the cost of testing an intersection against an object.
-typedef double ObjectCostFunction( long objectNum );
-
-// Callback routines that are used to return information while traversing the tree.
-//    Gives an object in a leaf node.  
-//      Return code is "true" if the returned stop distance is relevant
-typedef bool PotentialObjectCallback( long objectNum, double* retStopDistance );
-//    Returns the list of objects in a leaf node.
-//      The list is sorted by objectNums.  
-//      The list is static, so the pointer may be saved for later use.
-//      Return code is "true" if the returned stop distance is relevant
-typedef bool PotentialObjectsListCallback( int numberOfObjects, long* objectNums, double* retStopDistance );
-
 enum KD_SplittingAxis {
     KD_SPLIT_X = 0,
     KD_SPLIT_Y = 1,
@@ -83,21 +64,10 @@ public:
     KdTree();
 
     // This constructor builds directly the entire KdTree.
-    KdTree( long numObjects, ExtentFunction* extentFunc, ExtentInBoxFunction* extentInBoxFunc );
+    KdTree(long numObjects);
 
     // Destructor
-    ~KdTree();
-
-    // ****** Tree traversal routines ******
-
-    // Traverse: Simple traversal scheme.
-    //     startPos - beginning of the ray.
-    //     dir - direction of the ray.
-    //   Returns "true" if traversal aborted by the callback function returning "true"
-    bool Traverse( const VectorR3& startPos, const VectorR3& dir, 
-                    PotentialObjectCallback* pocFunc, double seekDistance = 0.0, bool useSeekDistance = false );
-    bool Traverse( const VectorR3& startPos, const VectorR3& dir, 
-                    PotentialObjectsListCallback* polcFunc, double seekDistance = 0.0, bool useSeekDistance = false );
+    virtual ~KdTree();
 
     // ******** Accessors ****************
     const KdTreeNode& GetNode( long i ) const;
@@ -108,8 +78,10 @@ public:
     void Stats_LeafTraversed();
     void Stats_GetAll( long* numNodes, long* numNonEmptyLeaves, long* numObjsInLeaves ) const;
 
-private:
-    bool Traverse( const VectorR3& startPos, const VectorR3& dir, double seekDistance = 0.0, bool useSeekDistance = false );
+protected:
+    // ****** Tree traversal routines ******
+    bool Traverse(const VectorR3 & startPos, const VectorR3 & dir,
+                  double seekDistance = 0.0, bool useSeekDistance = false);
 
 public:
     // ****** Tree building routines *******
@@ -121,8 +93,7 @@ public:
     // To change this call one of the following.  
     //    The first form sets the value to a new constant.
     //    The second form gives a callback function to get the relative costs
-    void SetObjectCost ( double cost );        // Defaults 4.0.
-    void SetObjectCost ( ObjectCostFunction costFunction );
+    void SetObjectCost ( double cost );        // Defaults 2.0.
 
     // Set the cost function for the splitting decision
     // By default, uses a MacDonald-Booth method based on Goldsmith-Salmon surface area values.
@@ -142,7 +113,7 @@ public:
     void SetStoppingCriterion( long numRays, double numAccesses );
 
     // Can call BuildTree at most once.
-    void BuildTree( long numObject, ExtentFunction* extentFunc, ExtentInBoxFunction* extentInBoxFunc );
+    void BuildTree(long numObject);
 
     const static int ExtentTripleStorageMultiplier  = 4;    // m/(1-m) where m is the overlapping fraction expected
 
@@ -158,9 +129,11 @@ private:
 
     AABB BoundingBox;            // An AABB that encloses the entire tree
 
-    // Traversal helper data
-    bool UseListCallback;        // True for the "List" callback traversal
-    void* CallbackFunction;        // Either PotentialObjectCallback* or PotentialObjectsListCallback*
+    // Callback routines that are used to return information while traversing
+    // the tree.  Gives an object in a leaf node. Return code is "true" if the
+    // returned stop distance is relevant.  Must be overridden in a derived
+    // class
+    virtual bool ObjectCallback(long objectNum, double* retStopDistance) = 0;
 
     // Traversal statistics
     long Stats_NumberKdNodesTraversed;
@@ -180,14 +153,18 @@ private:
 
     double StoppingCostPerRay;                // Improved cost/ray needed to justify adding tree node
 
-    bool UseConstantCost;
     double ObjectConstantCost;
     static double DefaultObjectCost() { return 2.0; }
-    ObjectCostFunction* UserCostFunction;
 
-    // Temporary data used only while building the kd-tree.
-    ExtentFunction* ExtentFunc;    // Function for calculating the extents. 
-    ExtentInBoxFunction* ExtentInBoxFunc;    // For extents within a box
+    // ExtentFunc returns bounding box (an AABB) enclosing the object.  It must
+    // be overridden by a derived class.
+    virtual void ExtentFunc(long objectNum, AABB& boundingBox ) = 0;
+    // ExtentInBoxFunc returns a AABB that encloses the intersection of the
+    // object and the clippingBox.  Returns the "boundingBox" and returns true
+    // if the box is non-empty.  this must be overrriden in a derived class.
+    virtual bool ExtentInBoxFunc(long objectNum, const AABB& clippingBox,
+                                 AABB& boundingBox) = 0;
+
     AABB* ObjectAABBs;            // Holds extents (and extents in boxes) for each object.
     ExtentTriple* ET_Lists;        // Tons of storage for extent lists.
     double BoundingBoxSurfaceArea;    // Surface area of the tree's bounding box
@@ -522,30 +499,22 @@ inline KdTree::KdTree()
     ResetStats();
 }
 
-inline KdTree::KdTree( long numObjects, ExtentFunction* extentFunc, ExtentInBoxFunction* extentInBoxFunc )
+inline KdTree::KdTree(long numObjects)
 {
     SplitAlgorithm = MacDonaldBooth;
     SetObjectCost ( DefaultObjectCost() );
     SetStoppingCriterion( 1000000, 4.0 );
-    BuildTree( numObjects, extentFunc, extentInBoxFunc );
-
+    BuildTree(numObjects);
     ResetStats();
 }
 
 // Set a cost function for objects
 inline void KdTree::SetObjectCost ( double cost )
 {
-    UseConstantCost = true;
     ObjectConstantCost = cost;
     assert (cost>0.0);
 }
 
-// Set a user-defined callback function for cost calculations
-inline void KdTree::SetObjectCost ( ObjectCostFunction costFunction )
-{
-    UseConstantCost = false;
-    UserCostFunction = costFunction;
-}
 
 inline void KdTree::SetStoppingCriterion( long numRays, double numAccesses )
 {

@@ -2,6 +2,7 @@
 #include <Graphics/VisiblePoint.h>
 #include <Graphics/ViewableBase.h>
 #include <Graphics/ViewableTriangle.h>
+#include <GraphicsTrees/IntersectionKdTree.h>
 #include <Gray/GammaMaterial.h>
 #include <Physics/Interaction.h>
 #include <Physics/Positron.h>
@@ -36,6 +37,10 @@ void GammaRayTrace::SetSimulationTime(double time)
     simulationTime = time;
 };
 
+void GammaRayTrace::SetKdTree(IntersectKdTree & tree) {
+    kd_tree = &tree;
+}
+
 INTER_TYPE GammaRayTrace::GRayTrace(
         VisiblePoint &visPoint, int TraceDepth, Photon &photon,
         std::stack<GammaMaterial const * const> & MatStack, long avoidK=-1)
@@ -53,8 +58,8 @@ INTER_TYPE GammaRayTrace::GRayTrace(
     }
 
     double hitDist;
-    int intersectNum = SeekIntersectionKd(photon.pos,photon.dir,
-                                          &hitDist,visPoint,avoidK );
+    int intersectNum = kd_tree->SeekIntersection(photon.pos, photon.dir,
+                                                 &hitDist, visPoint, avoidK);
 
     if ( intersectNum<0 ) {
         return NO_INTERACTION;
