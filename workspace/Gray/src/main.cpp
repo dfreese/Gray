@@ -27,6 +27,7 @@
 #include <string>
 #include <sstream>
 
+namespace {
 // Window size and pixel array variables
 int WindowWidth = 10;	// Width in pixels
 int WindowHeight = 10;	// Height in pixels
@@ -151,7 +152,6 @@ void RayTrace(int TraceDepth, const VectorR3& pos, const VectorR3 dir,
 //	Current implementation: casts a ray to the center of each pixel.
 //	Calls RayTrace() for each one.
 // *****************************************************************
-
 void RayTraceView(void)
 {
     int i,j;
@@ -226,8 +226,8 @@ void myKeyboardFunc( unsigned char key, int x, int y )
     switch ( key ) {
     case 'q':
     case 'Q':
-        fprintf(stdout,"Quit.\n");
-        exit(0);
+        cout << "Quit."  << endl;
+        throw 0;
         break;
     }
 }
@@ -309,6 +309,7 @@ bool InitializeSceneGeometry(GammaRayTrace & Gray,
     ActiveScene->RegisterCameraView();
     return(true);
 }
+}
 
 //**********************************************************
 // Main Routine
@@ -359,7 +360,11 @@ int main( int argc, char** argv)
 
     // call this in main loop
     glutDisplayFunc(RayTraceView);
-    glutMainLoop();
+    try {
+        glutMainLoop();
+    } catch (...) {
+        cout << "exit command caught" << endl;
+    }
 
     return(0);
 }
