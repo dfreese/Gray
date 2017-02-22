@@ -309,34 +309,11 @@ bool InitializeSceneGeometry(GammaRayTrace & Gray,
     ActiveScene->RegisterCameraView();
     return(true);
 }
-}
 
-//**********************************************************
-// Main Routine
-// Set up OpenGL, hook up callbacks, define RayTrace world,
-// and start the main loop
-//**********************************************************
-int main( int argc, char** argv)
+void run_viewer(int argc, char** argv,
+                SceneDescription & FileScene,
+                IntersectKdTree & intersect_kd_tree)
 {
-    Config config;
-    if (!config.ProcessCommandLine(argc,argv)) {
-        Config::usage();
-        return(-1);
-    }
-
-    GammaRayTrace Gray;
-    SceneDescription FileScene;
-    if (!InitializeSceneGeometry(Gray, config, FileScene)) {
-        return(1);
-    }
-    IntersectKdTree intersect_kd_tree(FileScene);
-    Gray.SetKdTree(intersect_kd_tree);
-
-    if (config.batch_mode == true) {
-        // Implement batch mode for raytracing
-        Gray.GRayTraceSources();
-        return(0);
-    }
     ShadowKdTree shadow_kd_tree(FileScene);
     ActiveShadowKdTree = &shadow_kd_tree;
     ActiveIntersectKdTree = &intersect_kd_tree;
@@ -366,5 +343,35 @@ int main( int argc, char** argv)
         cout << "exit command caught" << endl;
     }
 
+}
+}
+
+//**********************************************************
+// Main Routine
+// Set up OpenGL, hook up callbacks, define RayTrace world,
+// and start the main loop
+//**********************************************************
+int main( int argc, char** argv)
+{
+    Config config;
+    if (!config.ProcessCommandLine(argc,argv)) {
+        Config::usage();
+        return(-1);
+    }
+
+    GammaRayTrace Gray;
+    SceneDescription FileScene;
+    if (!InitializeSceneGeometry(Gray, config, FileScene)) {
+        return(1);
+    }
+    IntersectKdTree intersect_kd_tree(FileScene);
+    Gray.SetKdTree(intersect_kd_tree);
+
+    if (config.batch_mode == true) {
+        // Implement batch mode for raytracing
+        Gray.GRayTraceSources();
+        return(0);
+    }
+    run_viewer(argc, argv, FileScene, intersect_kd_tree);
     return(0);
 }
