@@ -5,8 +5,10 @@
 #include <Gray/LoadMaterials.h>
 #include <Gray/LoadDetector.h>
 #include <Gray/Config.h>
-#include <Viewer/Viewer.h>
 #include <Random/Random.h>
+#ifdef USE_OPENGL
+#include <Viewer/Viewer.h>
+#endif
 
 using namespace std;
 
@@ -38,7 +40,9 @@ int main( int argc, char** argv)
     Gray.SetKdTree(intersect_kd_tree);
 
     if (!config.batch_mode) {
+#ifdef USE_OPENGL
         run_viewer(argc, argv, FileScene, intersect_kd_tree);
+#endif
     }
     Gray.GRayTraceSources();
     return(0);
