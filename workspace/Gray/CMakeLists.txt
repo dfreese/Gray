@@ -26,7 +26,6 @@ target_link_libraries(Gray GraphicsTrees)
 target_link_libraries(Gray VrMath)
 target_link_libraries(Gray Graphics)
 target_link_libraries(Gray PixelArray)
-target_link_libraries(Gray OpenGLRender)
 
 find_package(OpenGL REQUIRED)
 target_link_libraries(Gray ${OPENGL_gl_LIBRARIES})
