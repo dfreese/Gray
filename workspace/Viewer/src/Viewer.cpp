@@ -1,4 +1,4 @@
-#include <PixelArray/Viewer.h>
+#include <Viewer/Viewer.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -13,7 +13,7 @@
 #include <Graphics/SceneDescription.h>
 #include <GraphicsTrees/IntersectionKdTree.h>
 #include <GraphicsTrees/ShadowKdTree.h>
-#include <PixelArray/PixelArray.h>
+#include <Viewer/PixelArray.h>
 
 namespace {
     // Window size and pixel array variables

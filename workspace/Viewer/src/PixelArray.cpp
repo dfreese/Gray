@@ -20,8 +20,8 @@
  */
 
 #include <assert.h>
-#include <PixelArray/PixelArray.h>
-#include <PixelArray/OpenGlRgbImage.h>
+#include <Viewer/PixelArray.h>
+#include <Viewer/OpenGlRgbImage.h>
 #include <Graphics/RgbImage.h>
 
 #ifdef _WIN32

@@ -5,7 +5,7 @@
 #include <Gray/LoadMaterials.h>
 #include <Gray/LoadDetector.h>
 #include <Gray/Config.h>
-#include <PixelArray/Viewer.h>
+#include <Viewer/Viewer.h>
 #include <Random/Random.h>
 
 using namespace std;
