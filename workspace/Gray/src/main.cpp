@@ -37,11 +37,9 @@ int main( int argc, char** argv)
     IntersectKdTree intersect_kd_tree(FileScene);
     Gray.SetKdTree(intersect_kd_tree);
 
-    if (config.batch_mode == true) {
-        // Implement batch mode for raytracing
-        Gray.GRayTraceSources();
-        return(0);
+    if (!config.batch_mode) {
+        run_viewer(argc, argv, FileScene, intersect_kd_tree);
     }
-    run_viewer(argc, argv, FileScene, intersect_kd_tree);
+    Gray.GRayTraceSources();
     return(0);
 }
