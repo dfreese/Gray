@@ -29,4 +29,4 @@ if [ ! -e "$sym_link_loc" ]; then
     ln -s $gray_exe $sym_link_loc
 fi
 
-export GRAY_INCLUDE=${DIR}/GRAY_GEN_MATERIAL
+export GRAY_INCLUDE=${DIR}/materials

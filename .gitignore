@@ -6,7 +6,7 @@ Makefile
 CMakeFiles
 CMakeCache.txt
 CMakeScripts
-/GRAY_GEN_MATERIAL/*.dat
+/materials/*.dat
 /workspace/Gray/Gray
 /workspace/test_rand/test_rand
 /Gray
