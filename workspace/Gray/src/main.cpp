@@ -284,6 +284,7 @@ void myMouseUpDownFunc( int button, int state, int x, int y )
         fprintf(stdout, "Mouse click at: %d, %d.\n", x, y );
     }
 }
+}
 
 bool InitializeSceneGeometry(GammaRayTrace & Gray,
                              const Config & config,
@@ -303,10 +304,6 @@ bool InitializeSceneGeometry(GammaRayTrace & Gray,
         Random::Seed(config.seed);
         printf("Seeding Gray: %ld\n", config.seed);
     }
-    ActiveScene = &FileScene;
-
-    ActiveScene->GetCameraView().SetScreenPixelSize(pixels.GetWidth(), pixels.GetHeight());
-    ActiveScene->RegisterCameraView();
     return(true);
 }
 
@@ -314,6 +311,10 @@ void run_viewer(int argc, char** argv,
                 SceneDescription & FileScene,
                 IntersectKdTree & intersect_kd_tree)
 {
+    ActiveScene = &FileScene;
+
+    ActiveScene->GetCameraView().SetScreenPixelSize(pixels.GetWidth(), pixels.GetHeight());
+    ActiveScene->RegisterCameraView();
     ShadowKdTree shadow_kd_tree(FileScene);
     ActiveShadowKdTree = &shadow_kd_tree;
     ActiveIntersectKdTree = &intersect_kd_tree;
@@ -343,7 +344,6 @@ void run_viewer(int argc, char** argv,
         cout << "exit command caught" << endl;
     }
 
-}
 }
 
 //**********************************************************
