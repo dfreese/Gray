@@ -1,12 +1,11 @@
 #include <iostream>
 #include <Graphics/SceneDescription.h>
 #include <GraphicsTrees/IntersectionKdTree.h>
-#include <GraphicsTrees/ShadowKdTree.h>
 #include <Gray/GammaRayTrace.h>
 #include <Gray/LoadMaterials.h>
 #include <Gray/LoadDetector.h>
 #include <Gray/Config.h>
-#include <Gray/Viewer.h>
+#include <PixelArray/Viewer.h>
 #include <Random/Random.h>
 
 using namespace std;

@@ -1,4 +1,4 @@
-#include <Gray/Viewer.h>
+#include <PixelArray/Viewer.h>
 
 #ifdef _WIN32
 #include <windows.h>
