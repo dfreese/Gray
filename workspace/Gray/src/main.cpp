@@ -27,6 +27,7 @@ int main( int argc, char** argv)
     LoadDetector myLoader;
     if (!myLoader.Load(config.filename_detector, FileScene, Gray)) {
         cerr << "Loading file \"" << config.filename_detector << "\" failed" << endl;
+        return(1);
     }
     Gray.SetFileNameOutput(config.filename_output);
     if (config.seed != 0) {

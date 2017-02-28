@@ -1,8 +1,5 @@
 #include <Gray/Viewer.h>
 
-#include <stdlib.h>
-#include <string.h>
-
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -13,21 +10,10 @@
 #include <GL/glut.h>
 #endif
 
-#include <Gray/Config.h>
-#include <PixelArray/PixelArray.h>
-#include <Graphics/ViewableBase.h>
-#include <Graphics/DirectLight.h>
-#include <Graphics/CameraView.h>
-#include <KdTree/KdTree.h>
 #include <Graphics/SceneDescription.h>
-#include <Gray/GammaRayTrace.h>
-#include <Gray/LoadMaterials.h>
-#include <Random/Random.h>
-#include <Gray/LoadDetector.h>
 #include <GraphicsTrees/IntersectionKdTree.h>
 #include <GraphicsTrees/ShadowKdTree.h>
-#include <string>
-#include <sstream>
+#include <PixelArray/PixelArray.h>
 
 namespace {
     // Window size and pixel array variables
