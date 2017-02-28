@@ -39,11 +39,13 @@ int main( int argc, char** argv)
     IntersectKdTree intersect_kd_tree(FileScene);
     Gray.SetKdTree(intersect_kd_tree);
 
-    if (!config.batch_mode) {
+    if (config.run_viewer_flag) {
 #ifdef USE_OPENGL
         run_viewer(argc, argv, FileScene, intersect_kd_tree);
 #endif
     }
-    Gray.GRayTraceSources();
+    if (config.run_physics_flag) {
+        Gray.GRayTraceSources();
+    }
     return(0);
 }

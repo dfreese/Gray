@@ -20,7 +20,8 @@ public:
     std::string filename_detector;
     std::string filename_output;
     unsigned long seed;
-    bool batch_mode;
+    bool run_viewer_flag;
+    bool run_physics_flag;
 };
 
 #endif /* Config_h */

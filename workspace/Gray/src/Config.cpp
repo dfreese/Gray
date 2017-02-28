@@ -16,7 +16,8 @@ Config::Config() :
     filename_detector(""),
     filename_output(""),
     seed(0),
-    batch_mode(false)
+    run_viewer_flag(true),
+    run_physics_flag(true)
 {
 
 }
@@ -48,7 +49,9 @@ bool Config::ProcessCommandLine(int argc, char **argv)
         if (argument == "-h" || argument == "--help") {
             return(false);
         } else if (argument == "-b") {
-            batch_mode = true;
+            run_viewer_flag = false;
+        } else if (argument == "-d") {
+            run_physics_flag = false;
         } else {
             if (setFilenameDetector == false) {
                 filename_detector = argument;
@@ -72,7 +75,8 @@ bool Config::ProcessCommandLine(int argc, char **argv)
 
 void Config::usage() {
     cout << "Gray (-hb) [Scene Description] [Output Filename]\n"
-    << "  -b : batch mode\n"
+    << "  -b : batch mode (don't view the geometry)\n"
+    << "  -d : don't run the physics simulation\n"
     << "  -h : print help message\n"
     << "  -s [seed] : set the seed for the rand number generator\n"
     << endl;
