@@ -281,30 +281,9 @@ void myMouseUpDownFunc( int button, int state, int x, int y )
         return;
     }
     if ( state==GLUT_DOWN ) {
-        fprintf(stdout, "Mouse click at: %d, %d.\n", x, y );
+        cout << "Mouse click at: " << x << " " << y << endl;
     }
 }
-}
-
-bool InitializeSceneGeometry(GammaRayTrace & Gray,
-                             const Config & config,
-                             SceneDescription & FileScene)
-{
-    // Define the lights, materials, textures and viewable objects.
-    if (!LoadMaterials::LoadPhysicsFiles(FileScene)) {
-        exit(-1);
-    }
-    LoadDetector myLoader;
-    if (!myLoader.Load(config.filename_detector, FileScene, Gray)) {
-        fprintf(stderr, "Loading file \"%s\" failed\n",
-                config.filename_detector.c_str());
-    }
-    Gray.SetFileNameOutput(config.filename_output);
-    if (config.seed != 0) {
-        Random::Seed(config.seed);
-        printf("Seeding Gray: %ld\n", config.seed);
-    }
-    return(true);
 }
 
 void run_viewer(int argc, char** argv,
@@ -343,7 +322,28 @@ void run_viewer(int argc, char** argv,
     } catch (...) {
         cout << "exit command caught" << endl;
     }
+    
+}
 
+bool InitializeSceneGeometry(GammaRayTrace & Gray,
+                             const Config & config,
+                             SceneDescription & FileScene)
+{
+    // Define the lights, materials, textures and viewable objects.
+    if (!LoadMaterials::LoadPhysicsFiles(FileScene)) {
+        exit(-1);
+    }
+    LoadDetector myLoader;
+    if (!myLoader.Load(config.filename_detector, FileScene, Gray)) {
+        fprintf(stderr, "Loading file \"%s\" failed\n",
+                config.filename_detector.c_str());
+    }
+    Gray.SetFileNameOutput(config.filename_output);
+    if (config.seed != 0) {
+        Random::Seed(config.seed);
+        printf("Seeding Gray: %ld\n", config.seed);
+    }
+    return(true);
 }
 
 //**********************************************************
