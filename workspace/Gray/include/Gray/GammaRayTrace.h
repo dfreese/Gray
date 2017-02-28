@@ -10,10 +10,6 @@ class GammaMaterial;
 class Photon;
 class IntersectKdTree;
 
-extern long SeekIntersectionKd(const VectorR3& startPos, const VectorR3& direction,
-                               double *hitDist, VisiblePoint& returnedPoint,
-                               long avoidK = -1);
-
 class GammaRayTrace
 {
 public:
