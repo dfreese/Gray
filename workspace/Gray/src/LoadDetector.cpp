@@ -120,7 +120,6 @@ RigidMapR3& LoadDetector::curMatrix()
 void LoadDetector::PushMatrix()
 {
     RigidMapR3 * newMatrix = new RigidMapR3();
-    *newMatrix = curMatrix();
     MatrixStack.push(newMatrix);
 }
 
