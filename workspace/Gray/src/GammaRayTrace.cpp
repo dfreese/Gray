@@ -125,9 +125,7 @@ INTER_TYPE GammaRayTrace::GRayTrace(
 
 void GammaRayTrace::GRayTraceSources(void)
 {
-    const char escape = 0x1B;
     const int num_chars = 70;
-    int char_state = 0;
 
     // calculate the number of positrons to throw
     // TODO: need to fix the number of rays because of negative sources
@@ -153,7 +151,7 @@ void GammaRayTrace::GRayTraceSources(void)
 
     //TODO: Make a photon stack, then race trace it
     // text graphics preamble
-    cout << "|";
+    cout << "[";
 
     for (int i = 1; i < num_rays; i++) {
         Source * source = sources.Decay();
@@ -161,40 +159,10 @@ void GammaRayTrace::GRayTraceSources(void)
 
         output.LogNuclearDecay(((Positron*)isotope)->GetPositron());
 
-        if ((i % 10000)==0) {
-            switch(char_state) {
-            case 0:
-                cout << "\033[1m|\033[0m";
-                break;
-            case 1:
-                cout << "\033[1m/\033[0m";
-                break;
-            case 2:
-                cout << "\033[1m=\033[0m";
-                break;
-            case 3:
-                cout << "\033[1m\\\033[0m";
-                break;
-            default:
-                cout << "\033[1m|\033[0m";
-                break;
-            }
-
-            char_state++;
-            if (char_state == 4) {
-                char_state = 0;
-            }
-
-            cout << escape;
-            cout << "[1D";
-
-            cout.flush();
-        }
-
         // Fun ANSI graphics to do while waiting for simulation
         // this is a simple spinner code
         if ((i % tick_mark) == 0) {
-            cout << "\033[32m=\033[0m";
+            cout << "=";
             cout.flush();
         }
         while(!isotope->IsEmpty()) {
@@ -215,7 +183,7 @@ void GammaRayTrace::GRayTraceSources(void)
             MatStack.push(defaultMat);
         }
     }
-    cout << "=|Done.\n";
+    cout << "=] Done.\n";
 }
 
 void GammaRayTrace::AddSource(Source * s)
