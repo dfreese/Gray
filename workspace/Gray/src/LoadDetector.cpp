@@ -3,7 +3,6 @@
 #include <string.h>
 #include <Random/Random.h>
 #include <Gray/LoadDetector.h>
-#include <Gray/LoadObjFile.h>
 #include <Gray/GammaMaterial.h>
 #include <Graphics/TransformViewable.h>
 #include <Graphics/VisiblePoint.h>
@@ -280,7 +279,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
 
         int cmdNum = GetCommandNumber( theCommand );
 
-        string args = ObjFileLoader::ScanForSecondField(line);
+        string args = ScanForSecondField(line);
 
         switch ( cmdNum ) {
             case 0: {
@@ -1324,4 +1323,17 @@ bool LoadDetector::ReadVertexR3(VectorR3& vert, std::ifstream & curFile)
     int scanCode;
     scanCode = sscanf(line.c_str(), "%lf %lf %lf", &vert.x, &vert.y, &vert.z );
     return (scanCode == 3);
+}
+
+std::string LoadDetector::ScanForSecondField(const std::string & inbuf)
+{
+    size_t white_space = inbuf.find_first_of(' ');
+    if (white_space == string::npos) {
+        return("");
+    }
+    white_space += inbuf.substr(white_space).find_first_not_of(' ');
+    if (white_space == string::npos) {
+        return("");
+    }
+    return (inbuf.substr(white_space));
 }

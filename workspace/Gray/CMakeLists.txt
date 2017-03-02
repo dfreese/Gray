@@ -8,8 +8,6 @@ add_executable(Gray
     include/Gray/LoadDetector.h
     src/LoadMaterials.cpp
     include/Gray/LoadMaterials.h
-    src/LoadObjFile.cpp
-    include/Gray/LoadObjFile.h
     src/main.cpp
 )
 

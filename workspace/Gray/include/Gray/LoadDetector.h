@@ -55,6 +55,7 @@ private:
 
     int global_id;
 
+    static std::string ScanForSecondField(const std::string & inbuf);
 
 };
 
