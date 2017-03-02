@@ -119,6 +119,7 @@ RigidMapR3& LoadDetector::curMatrix()
 void LoadDetector::PushMatrix()
 {
     RigidMapR3 * newMatrix = new RigidMapR3();
+    *newMatrix = curMatrix();
     MatrixStack.push(newMatrix);
 }
 
@@ -129,6 +130,7 @@ void LoadDetector::PopMatrix()
     //  THIS IS NOT A MEMORY LEAK
     //	but care should be taken that the pointers are still alive
     // delete old;
+    MatrixStack.pop();
 }
 
 void LoadDetector::ApplyTranslation(const VectorR3&t)
