@@ -1,7 +1,7 @@
 /*
  * Extents.cpp
  *
- * RayTrace Software Package, release 3.0.  May 3, 2006
+ * RayTrace Software Package, release 3.2.  May 3, 2007
  *
  * Author: Samuel R. Buss
  *
@@ -86,10 +86,14 @@ bool CalcExtentsInBox( const ViewableParallelepiped& ppiped,
     VectorR3 deltaAB = ppiped.GetVertexB();
     VectorR3 deltaAC = ppiped.GetVertexC();
     VectorR3 deltaAD = ppiped.GetVertexD();
+    const VectorR3& vertexA = ppiped.GetVertexA();
+    deltaAB -= vertexA;
+    deltaAC -= vertexA;
+    deltaAD -= vertexA;
 
     int baseCount = 0;
 
-    // Front fact
+    // Front face
     VertArray[baseCount+0] = ppiped.GetVertexA();
     VertArray[baseCount+1] = ppiped.GetVertexB();
     VertArray[baseCount+2] = ppiped.GetVertexC() + deltaAB;
@@ -103,28 +107,28 @@ bool CalcExtentsInBox( const ViewableParallelepiped& ppiped,
     VertArray[baseCount+3] = ppiped.GetVertexC() + deltaAD;
     baseCount += ClipConvexPolygonAgainstBoundingBox( 4, &(VertArray[baseCount]), ppiped.GetNormalABC(),
                  boxBoundMin, boxBoundMax );
-    // Left fact
+    // Left face
     VertArray[baseCount+0] = ppiped.GetVertexA();
     VertArray[baseCount+1] = ppiped.GetVertexC();
     VertArray[baseCount+2] = ppiped.GetVertexD() + deltaAC;
     VertArray[baseCount+3] = ppiped.GetVertexD();
     baseCount += ClipConvexPolygonAgainstBoundingBox( 4, &(VertArray[baseCount]), ppiped.GetNormalACD(),
                  boxBoundMin, boxBoundMax );
-    // Right fact
+    // Right face
     VertArray[baseCount+0] = ppiped.GetVertexA() + deltaAB;
     VertArray[baseCount+1] = ppiped.GetVertexC() + deltaAB;
     VertArray[baseCount+2] = ppiped.GetVertexD() + deltaAC + deltaAB;
     VertArray[baseCount+3] = ppiped.GetVertexD() + deltaAB;
     baseCount += ClipConvexPolygonAgainstBoundingBox( 4, &(VertArray[baseCount]), ppiped.GetNormalACD(),
                  boxBoundMin, boxBoundMax );
-    // Bottom fact
+    // Bottom face
     VertArray[baseCount+0] = ppiped.GetVertexA();
     VertArray[baseCount+1] = ppiped.GetVertexB();
     VertArray[baseCount+2] = ppiped.GetVertexD() + deltaAB;
     VertArray[baseCount+3] = ppiped.GetVertexD();
     baseCount += ClipConvexPolygonAgainstBoundingBox( 4, &(VertArray[baseCount]), ppiped.GetNormalABD(),
                  boxBoundMin, boxBoundMax );
-    // Top fact
+    // Top face
     VertArray[baseCount+0] = ppiped.GetVertexA() + deltaAC;
     VertArray[baseCount+1] = ppiped.GetVertexB() + deltaAC;
     VertArray[baseCount+2] = ppiped.GetVertexD() + deltaAB + deltaAC;

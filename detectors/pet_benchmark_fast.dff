@@ -20,7 +20,7 @@ cyl 0.0 0.0 0.0 0.0 0.0 1.0 10 70
 cyl_src 0.0 -2.0 0.0 0.0 0.0 1.0 0.01 68 2.7027
 cyl_src 0.0 2.0 0.0 0.0 0.0 1.0 0.01 68 2.7027
 # set the simulation time to be 5 seconds
-time 240.0
+time 1.0
 # lso detector
 m 4
 # set color of lso detector to blue
