@@ -41,7 +41,7 @@
 #include <math.h>
 #include <assert.h>
 #include <iostream>
-#include "LinearR3.h"
+#include <VrMath/LinearR3.h>
 using namespace std;
 
 class VectorR4;				// R4 Vector
