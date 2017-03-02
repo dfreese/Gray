@@ -1,6 +1,6 @@
 /*
  *
- * RayTrace Software Package, release 3.0.  May 3, 2006.
+ * RayTrace Software Package, release 3.1.  December 20, 2006.
  *
  * Mathematics Subpackage (VrMath)
  *
@@ -68,6 +68,9 @@ const double E = exp(1.0);
 const double LnTwo = log(2.0);
 const double LnTwoInv = 1.0/log(2.0);
 
+const double GoldenRatio = (sqrt(5.0)+1.0)*0.5;
+const double GoldenRatioInv = (sqrt(5.0)-1.0)*0.5;  // 1.0/GoldenRatio
+
 // Special purpose constants
 const double OnePlusEpsilon15 = 1.0+1.0e-15;
 const double OneMinusEpsilon15 = 1.0-1.0e-15;
@@ -122,14 +125,16 @@ template<class T> inline bool ClampRange ( T *x, const T& min, const T& max)
     }
 }
 
+#if 0
 inline void ClampRangeSafe ( double* x, double min, double max)
 {
-    if ( (!((*x)>=min)) || isnan(*x) ) {
+    if ( (!((*x)>=min)) || _isnan(*x) ) {	// Other compilers may use "isnan" instead of "_isnan"
         *x = min;
     } else if ( !((*x)<=max) ) {
         *x = max;
     }
 }
+#endif
 
 template<class T> inline bool ClampMin ( T *x, const T& min)
 {
@@ -423,6 +428,16 @@ template<class T> inline T Cube ( const T& x )
 template<class T> inline T FourthPower( const T& x )
 {
     return Square(Square(x));
+}
+
+template<class T> inline T FifthPower( const T& x )
+{
+    return x*Square(Square(x));
+}
+
+template<class T> inline T SixthPower( const T& x )
+{
+    return Cube(Square(x));
 }
 
 // SafeSqrt(x) = returns sqrt(max(x, 0.0));
