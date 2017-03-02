@@ -1,7 +1,6 @@
-# seed 10001111
 seed 12388
 # binary output format
-binary true
+binary_output
 # set background color to near gray
 b 0.9 0.9 0.9
 # setup view settings for rendering
@@ -24,7 +23,7 @@ sphere 0.0 0.0 0.0 6.0
 # create two cylindrical sources
 # cyl_src 0.0 -2.0 0.0 0.0 0.0 1.0 0.01 68 2.7027
 # cyl_src 0.0 2.0 0.0 0.0 0.0 1.0 0.01 68 2.7027
-# positron on
+# log_positron
 # log_all true
 # beam source pos_x pos_y pos_z axis_x axis_y axis_z FWHM_degrees activity
 beam 0.1 0.1 0.0 1.0 0.0 0.0 20.0 1.0
@@ -40,21 +39,21 @@ push
 # translate down detector ring radius
 t 0.0 -45.75 0.0
 # create 8 panels of LSO at 45 degree rotations
-# repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
+repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
 raxis 0.0 0.0 1.0 45.0
-# repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
+repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
 raxis 0.0 0.0 1.0 45.0
-# repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
+repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
 raxis 0.0 0.0 1.0 45.0
-# repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
+repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
 raxis 0.0 0.0 1.0 45.0
-# repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
+repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
 raxis 0.0 0.0 1.0 45.0
-# repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
+repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
 raxis 0.0 0.0 1.0 45.0
-# repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
+repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
 raxis 0.0 0.0 1.0 45.0
-# repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
+repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
 # return to previous transformation matrix
 pop
 # bgo detector
