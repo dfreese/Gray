@@ -8,25 +8,18 @@
 #include <Gray/GammaMaterial.h>
 #include <Graphics/SceneDescription.h>
 
-bool LoadMaterials::LoadPhysicsFiles(SceneDescription& theScene)
+bool LoadMaterials::ParseMaterialsFile(
+        const std::string & matfilelocation,
+        std::vector<std::string> & material_names,
+        std::vector<bool> & material_sensitivities)
 {
-    char * pPath = getenv ("GRAY_INCLUDE");
-    if (pPath==NULL) {
-        printf("No GRAY_INCLUDE variable set !\n");
-        printf("Execute export GRAY_INCLUDE=yourpath\n");
-        return(false);
-    }
-    string include_location(pPath);
-    string matfilelocation = include_location + "/Gray_Materials.txt";
     ifstream matfile(matfilelocation.c_str());
 
     if (!matfile.is_open()) {
         cout << matfilelocation << " not found." << endl;
         return(false);
     }
-    
-    vector<string> material_names;
-    vector<bool> material_sensitivities;
+
     string matstring;
     while (getline(matfile, matstring)) {
         if (matstring.empty()) {
@@ -39,7 +32,7 @@ bool LoadMaterials::LoadPhysicsFiles(SceneDescription& theScene)
         float matdens;
         int matnumber;
         bool matsensitive;
-        
+
         stringstream line_ss(matstring);
         line_ss >> matname;
         line_ss >> matchemform;
@@ -51,6 +44,28 @@ bool LoadMaterials::LoadPhysicsFiles(SceneDescription& theScene)
     }
     cout << material_names.size() << " Materials Found " <<endl;
     matfile.close();
+    return(true);
+}
+
+
+bool LoadMaterials::LoadPhysicsFiles(SceneDescription& theScene)
+{
+    char * pPath = getenv ("GRAY_INCLUDE");
+    if (pPath==NULL) {
+        printf("No GRAY_INCLUDE variable set !\n");
+        printf("Execute export GRAY_INCLUDE=yourpath\n");
+        return(false);
+    }
+    string include_location(pPath);
+    string matfilelocation = include_location + "/Gray_Materials.txt";
+    vector<string> material_names;
+    vector<bool> material_sensitivities;
+    if (!ParseMaterialsFile(matfilelocation,
+                            material_names,
+                            material_sensitivities))
+    {
+        return(false);
+    }
 
     int numMaterialLoaded = 0;
     for (size_t i = 0; i < material_names.size(); i++) {
