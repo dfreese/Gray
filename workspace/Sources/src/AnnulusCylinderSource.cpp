@@ -1,12 +1,12 @@
 #include <Sources/AnnulusCylinderSource.h>
 #include <Random/Random.h>
 
-AnnulusCylinderSource::AnnulusCylinderSource()
+AnnulusCylinderSource::AnnulusCylinderSource() :
+    radius(1.0),
+    length(1.0),
+    axis(0.0, 0.0, 1.0)
 {
     position.SetZero();
-    radius = 1.0;
-    axis = UnitVecKR3;
-    length = 1.0;
 }
 
 AnnulusCylinderSource::AnnulusCylinderSource(const VectorR3 &p, double rad, VectorR3 L, double act)

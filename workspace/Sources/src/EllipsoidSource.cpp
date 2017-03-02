@@ -1,15 +1,15 @@
 #include <Sources/EllipsoidSource.h>
 #include <Random/Random.h>
 
-EllipsoidSource::EllipsoidSource()
+EllipsoidSource::EllipsoidSource() :
+    radius1(1.0),
+    radius2(1.0),
+    radius3(1.0),
+    axis1(1.0, 0.0, 0.0),
+    axis2(0.0, 1.0, 0.0),
+    axis3(0.0, 0.0, 1.0)
 {
     position.SetZero();
-    radius1 = 1.0;
-    radius2 = 1.0;
-    radius3 = 1.0;
-    axis1 = UnitVecIR3;
-    axis2 = UnitVecJR3;
-    axis3 = UnitVecKR3;
 }
 
 EllipsoidSource::EllipsoidSource(const VectorR3 &center, const VectorR3 &a1, const VectorR3 &a2, double r1, double r2, double r3, double act)

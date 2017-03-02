@@ -1,12 +1,12 @@
 #include <Sources/CylinderSource.h>
 #include <Random/Random.h>
 
-CylinderSource::CylinderSource()
+CylinderSource::CylinderSource() :
+    radius(1.0),
+    length(1.0),
+    axis(0.0, 0.0, 0.0)
 {
     position.SetZero();
-    radius = 1.0;
-    axis = UnitVecKR3;
-    length = 1.0;
 }
 
 CylinderSource::CylinderSource(const VectorR3 &p, double rad, VectorR3 L, double act)

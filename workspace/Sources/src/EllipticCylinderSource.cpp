@@ -1,13 +1,13 @@
 #include <Sources/EllipticCylinderSource.h>
 #include <Random/Random.h>
 
-EllipticCylinderSource::EllipticCylinderSource()
+EllipticCylinderSource::EllipticCylinderSource() :
+    radius1(1.0),
+    radius2(1.0),
+    length(1.0),
+    axis(0.0, 0.0, 1.0)
 {
     position.SetZero();
-    radius1 = 1.0;
-    radius2 = 1.0;
-    axis = UnitVecKR3;
-    length = 1.0;
 }
 
 EllipticCylinderSource::EllipticCylinderSource(const VectorR3 &p, double r1, double r2, VectorR3 &L, double act)

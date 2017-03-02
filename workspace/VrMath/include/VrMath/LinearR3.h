@@ -1,6 +1,6 @@
 /*
  *
- * RayTrace Software Package, release 3.0.  May 3, 2006.
+ * RayTrace Software Package, release 3.1.  December 20, 2006.
  *
  * Mathematics Subpackage (VrMath)
  *
@@ -48,7 +48,7 @@
 #include <math.h>
 #include <assert.h>
 #include <iostream>
-#include "MathMisc.h"
+#include <VrMath/MathMisc.h>
 using namespace std;
 
 class VectorR3;				// Space Vector (length 3)
@@ -248,11 +248,11 @@ public:
         return( MaxAbs()<=tolerance );
     }
     // tolerance should be non-negative
-    bool inline operator==(const VectorR3 u) const
+    inline bool operator==(const VectorR3& u) const
     {
         return (x==u.x && y==u.y && z==u.z);
     }
-    bool inline operator!=(const VectorR3 u) const
+    inline bool operator!=(const VectorR3& u) const
     {
         return (x!=u.x || y!=u.y || z!=u.z);
     }
@@ -302,11 +302,6 @@ inline double DistSq(const VectorR3& u, const VectorR3& v)
     return u.DistSq(v);
 }
 inline double NormalizeError (const VectorR3& u);
-
-// Deprecated due to unsafeness of global initialization
-extern const VectorR3 UnitVecIR3;
-extern const VectorR3 UnitVecJR3;
-extern const VectorR3 UnitVecKR3;
 
 inline VectorR3 ToVectorR3( const Quaternion& q )
 {
