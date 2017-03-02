@@ -1,6 +1,6 @@
 /*
  *
- * RayTrace Software Package, release 3.0.  May 3, 2006.
+ * RayTrace Software Package, release 3.1.  December 20, 2006.
  *
  * Mathematics Subpackage (VrMath)
  *
@@ -258,7 +258,7 @@ inline VectorR4 operator-( const VectorR4& u, const VectorR4& v );
 inline VectorR4 operator*( const VectorR4& u, double m);
 inline VectorR4 operator*( double m, const VectorR4& u);
 inline VectorR4 operator/( const VectorR4& u, double m);
-inline int operator==( const VectorR4& u, const VectorR4& v );
+inline bool operator==( const VectorR4& u, const VectorR4& v );
 
 inline double operator^ (const VectorR4& u, const VectorR4& v ); // Dot Product
 inline double InnerProduct(const VectorR4& u, const VectorR4& v )
@@ -602,7 +602,7 @@ inline VectorR4 operator/( const VectorR4& u, double m)
     return VectorR4( u.x*mInv, u.y*mInv, u.z*mInv, u.w*mInv );
 }
 
-inline int operator==( const VectorR4& u, const VectorR4& v )
+inline bool operator==( const VectorR4& u, const VectorR4& v )
 {
     return ( u.x==v.x && u.y==v.y && u.z==v.z && u.w==v.w );
 }
