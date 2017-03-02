@@ -21,7 +21,7 @@ bool LoadMaterials::LoadPhysicsFiles(SceneDescription& theScene)
     ifstream matfile(matfilelocation.c_str());
 
     if (!matfile.is_open()) {
-        cout << matfilelocation << " not found. Using hard coded material table " << endl;
+        cout << matfilelocation << " not found." << endl;
         return(false);
     }
     
@@ -40,8 +40,7 @@ bool LoadMaterials::LoadPhysicsFiles(SceneDescription& theScene)
         int matnumber;
         bool matsensitive;
         
-        stringstream line_ss;
-        line_ss << matstring;
+        stringstream line_ss(matstring);
         line_ss >> matname;
         line_ss >> matchemform;
         line_ss >> matdens;
@@ -52,16 +51,7 @@ bool LoadMaterials::LoadPhysicsFiles(SceneDescription& theScene)
     }
     cout << material_names.size() << " Materials Found " <<endl;
     matfile.close();
-    return(LoadMaterials::Load(material_names, material_sensitivities, theScene));
-}
 
-
-bool LoadMaterials::Load(
-        const std::vector<std::string> material_names,
-        const std::vector<bool> material_sensitivities,
-        SceneDescription& theScene)
-{
-    bool parseOk = true;
     int numMaterialLoaded = 0;
     for (size_t i = 0; i < material_names.size(); i++) {
         GammaMaterial * mat = new GammaMaterial();
@@ -71,7 +61,7 @@ bool LoadMaterials::Load(
         mat->SetFileName(material_filename);
         mat->SetMaterialType( i) ;
         if (!mat->Load()) {
-            return false;
+            return(false);
         }
         mat->log_material = material_sensitivities[i];
         if (i == 0) { // First material is default material
@@ -79,5 +69,5 @@ bool LoadMaterials::Load(
         }
         numMaterialLoaded++;
     }
-    return parseOk;
+    return(true);
 }
