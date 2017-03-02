@@ -1,6 +1,6 @@
 /*
  *
- * RayTrace Software Package, release 3.0.  May 3, 2006.
+ * RayTrace Software Package, release 3.1.  December 20, 2006.
  *
  * Mathematics Subpackage (VrMath)
  *
@@ -197,7 +197,7 @@ inline VectorR2 operator-( const VectorR2& u, const VectorR2& v );
 inline VectorR2 operator*( const VectorR2& u, double m);
 inline VectorR2 operator*( double m, const VectorR2& u);
 inline VectorR2 operator/( const VectorR2& u, double m);
-inline int operator==( const VectorR2& u, const VectorR2& v );
+inline bool operator==( const VectorR2& u, const VectorR2& v );
 
 inline double operator^ (const VectorR2& u, const VectorR2& v ); // Dot Product
 inline double InnerProduct(const VectorR2& u, const VectorR2& v )
@@ -205,6 +205,8 @@ inline double InnerProduct(const VectorR2& u, const VectorR2& v )
     return (u^v);
 }
 inline VectorR2 ArrayProd ( const VectorR2& u, const VectorR2& v );
+
+inline double CrossR2( const VectorR2& u, const VectorR2& v );	// A scalar valued cross product on two R2 vectors
 
 inline double Mag(const VectorR2& u)
 {
@@ -530,7 +532,7 @@ inline VectorR2 operator/( const VectorR2& u, double m)
     return VectorR2( u.x*mInv, u.y*mInv );
 }
 
-inline int operator==( const VectorR2& u, const VectorR2& v )
+inline bool operator==( const VectorR2& u, const VectorR2& v )
 {
     return ( u.x==v.x && u.y==v.y );
 }
@@ -544,6 +546,13 @@ inline VectorR2 ArrayProd ( const VectorR2& u, const VectorR2& v )
 {
     return ( VectorR2( u.x*v.x, u.y*v.y ) );
 }
+
+// A scalar valued cross product on two R2 vectors
+inline double CrossR2( const VectorR2& u, const VectorR2& v )
+{
+    return ( u.x*v.y - u.y*v.x );
+}
+
 
 inline VectorR2& VectorR2::AddScaled( const VectorR2& u, double s )
 {
