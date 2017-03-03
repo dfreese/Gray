@@ -19,7 +19,7 @@ cyl 0.0 0.0 0.0 0.0 0.0 1.0 10 70
 # create two cylindrical sources
 cyl_src 0.0 -2.0 0.0 0.0 0.0 1.0 0.01 68 2.7027
 cyl_src 0.0 2.0 0.0 0.0 0.0 1.0 0.01 68 2.7027
-log_all true
+log_all
 # set the simulation time to be 10 seconds
 time 10.0
 # lso detector

@@ -25,7 +25,7 @@ m 4
 push
 raxis 0 1 0 22.65
 scale 3.27
-t -1.208407 -1.539849 4.523287 
+t -1.208407 -1.539849 4.523287
 # place breast PET panels
 scale 1.0
 repeat 2 16 70 7.5 1.0 0.13 0.8 0.8 0.1
@@ -46583,11 +46583,8 @@ pop
 scale 0.86968085106382978723
 sp_src 2.8030 -3.9354 31.6020 4.5 300
 # sp_src 2.8030 -3.9354 27.6020 4.5 1000
-positron on
-log_all true
-log_det_id true
-# log_det_coord true
+log_positron
+log_all
+# log_det_coord
 save_detector ./data/pet_mam_det.txt
 seed 62389174
-save_coinc ./data/pet_mam_coinc.dat
-save_singles ./data/pet_mam_sing.dat
