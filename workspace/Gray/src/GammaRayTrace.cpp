@@ -39,6 +39,7 @@ void GammaRayTrace::SetSimulationTime(double time)
 
 void GammaRayTrace::SetKdTree(IntersectKdTree & tree) {
     kd_tree = &tree;
+    sources.SetKdTree(tree);
 }
 
 INTER_TYPE GammaRayTrace::GRayTrace(

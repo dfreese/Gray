@@ -41,6 +41,7 @@ public:
         negative = false;
         isotope = NULL;
         source_num = 0;
+        kd_tree = NULL;
     }
     virtual ~Source() {};
     void NextPhoton(Photon &p);
