@@ -13,7 +13,7 @@ resolution 256 256
 # create two bright white lightsources
 l -17.0 0.0 0.0 1.0 1.0 1.0
 l 17.0 0.0 0.0 1.0 1.0 1.0
-m 6
+m water
 # set air color: a d s t r ior
 color 0.1 0.1 0.1  0.0 0.0 0.0 0.5 0.5 0.5 0.5 0.5 1.0 0.0 0.0 0.0 1.03
 # create a sphere of air to contain source
@@ -30,7 +30,7 @@ pop
 # set the simulation time to be 0.5 seconds
 time 0.5
 # lso detector
-m 4
+m lso
 # set color of lso detector to blue
 color 0.05 0.20 0.05  0.1 0.4 0.1  0.3 0.3 0.3  0.0 0.0 0.0  0.2 0.50 0.2 1.05
 # save current transformation matrix
@@ -56,7 +56,7 @@ repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
 # return to previous transformation matrix
 pop
 # bgo detector
-m 2
+m bgo
 # set color of bgo detector to yellow
 color 0.3 0.3 0.05  0.6 0.6 0.1  0.3 0.3 0.3  0.0 0.0 0.0  0.5 0.5 0.1 1.05
 push

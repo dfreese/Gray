@@ -12,7 +12,7 @@ resolution 256 256
 l -17.0 0.0 0.0 1.0 1.0 1.0
 l 17.0 0.0 0.0 1.0 1.0 1.0
 # create water cylinder
-m 6
+m water
 # set water color: a d s t r ior
 color 0.1 0.1 0.1  0.0 0.0 0.0 0.5 0.5 0.5 0.5 0.5 1.0 0.0 0.0 0.0 1.03
 push

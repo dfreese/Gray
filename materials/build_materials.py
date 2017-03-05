@@ -31,7 +31,7 @@ with open(materials_file, 'r') as fid:
             continue
         # Assume five columns, separated by spaces  The first three are
         # relevant to this script
-        name, formula, density, sensitive, number = line.split()
+        name, formula, density, sensitive = line.split()
         density = float(density)
         # We grab 11keV to 511keV in steps of 10keV, plus the standard grid
         # which will have all of the important transitions

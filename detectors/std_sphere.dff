@@ -12,7 +12,7 @@ resolution 256 256
 l -17.0 0.0 0.0 1.0 1.0 1.0
 l 17.0 0.0 0.0 1.0 1.0 1.0
 # create water cylinder
-m 6
+m water
 # set water color: a d s t r ior
 push
 color 0.1 0.1 0.1  0.0 0.0 0.0 0.5 0.5 0.5 0.5 0.5 1.0 0.0 0.0 0.0 1.03
@@ -28,7 +28,7 @@ pop
 # set the simulation time to be 5 seconds
 time 0.2
 # lso detector
-m 4
+m lso
 # set color of lso detector to blue
 color 0.05 0.20 0.05  0.1 0.4 0.1  0.3 0.3 0.3  0.0 0.0 0.0  0.2 0.50 0.2 1.05
 # save current transformation matrix
@@ -54,7 +54,7 @@ repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
 # return to previous transformation matrix
 pop
 # bgo detector
-m 2
+m bgo
 # set color of bgo detector to yellow
 color 0.3 0.3 0.05  0.6 0.6 0.1  0.3 0.3 0.3  0.0 0.0 0.0  0.5 0.5 0.1 1.05
 push
@@ -79,7 +79,7 @@ raxis 0.0 0.0 1.0 45.0
 repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
 pop
 # tungsten septa
-m 5
+m tungsten
 color 0.05 0.05 0.05  0.05 0.05 0.05  0.0 0.0 0.0  0.0 0.0 0.0  0.1 0.1 0.1 1.05
 push
 t 0.0 -45.75 0.0
@@ -101,7 +101,7 @@ raxis 0.0 0.0 1.0 45.0
 repeat 1 1 5 0.0 0.0 10.0 32.0 5.0 0.05
 pop
 # endshielding
-m 3
+m lead
 color 0.05 0.05 0.05  0.05 0.05 0.05  0.0 0.0 0.0  0.0 0.0 0.0  0.1 0.1 0.1 1.05
 push
 t 0.0 -44.75 0.0

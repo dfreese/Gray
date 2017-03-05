@@ -18,7 +18,7 @@ m 0
 cyl_src 0.0 0.0 0.0 0.0 0.0 1.0 0.01 68 2.7027
 # set the simulation time to be 5 seconds
 time 10.0
-m 2
+m bgo
 color 0.2 0.1 0.1  0.2 0.0 0.0 1.0 1.0 1.0 0.5 0.5 1.0 0.0 0.0 0.0 1.05
 raxis 0 0 1 90
 p 3

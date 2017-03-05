@@ -304,9 +304,8 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                 break;
             }
             case 1: { // material index
-                int matIndex = -1;
-                int scanCode = sscanf(args.c_str(), "%d", &matIndex );
-                if (scanCode==1) {
+                int matIndex = theScene.GetMaterialIndex(args);
+                if (matIndex >= 0) {
                     curMaterial = dynamic_cast<GammaMaterial*>(&theScene.GetMaterial(matIndex));
                 } else {
                     parseErrorOccurred = true;

@@ -19,7 +19,7 @@ color 0.1 0.1 0.1 0.6 0.6 0.6 0.3 0.3 0.3 0.0 0.0 0.0 0.0 0.0 0.0 1.0
 time 0.14285714285
 # start pet detector
 # change coordinates for detector
-m 4
+m lso
 # from blender coords to gray coords
 # -1 * x swap z and y
 push
@@ -37,7 +37,7 @@ raxis 1.0 0.0 0.0 270.0
 raxis 0.0 0.0 1.0 180.0
 scale 3.27
 # tungsten shielding
-m 5
+m tungsten
 p 3
 8.930380 7.688163 -4.474087
 3.547464 7.189680 -4.474087
@@ -616,7 +616,7 @@ p 3
 -0.049965 2.475174 0.931106
 # fleur with 7 milicurie
 # 0.3 mCi in heart, 6.7 in patient
-m 6
+m water
 start_vecsrc 6700.0
 p 3
 -0.706272 7.309162 -32.557980

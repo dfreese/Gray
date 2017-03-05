@@ -30,7 +30,6 @@ bool LoadMaterials::ParseMaterialsFile(
         string matname;
         string matchemform;
         float matdens;
-        int matnumber;
         bool matsensitive;
 
         stringstream line_ss(matstring);
@@ -38,7 +37,6 @@ bool LoadMaterials::ParseMaterialsFile(
         line_ss >> matchemform;
         line_ss >> matdens;
         line_ss >> matsensitive;
-        line_ss >> matnumber;
         material_names.push_back(matname);
         material_sensitivities.push_back(matsensitive);
     }
@@ -70,11 +68,10 @@ bool LoadMaterials::LoadPhysicsFiles(SceneDescription& theScene)
     int numMaterialLoaded = 0;
     for (size_t i = 0; i < material_names.size(); i++) {
         GammaMaterial * mat = new GammaMaterial();
-        theScene.AddMaterial(mat);
         std::string material_filename = material_names[i] + ".dat";
         dynamic_cast<Material*>(mat)->SetName(material_names[i]);
         mat->SetFileName(material_filename);
-        mat->SetMaterialType( i) ;
+        mat->SetMaterialType(i);
         if (!mat->Load()) {
             return(false);
         }
@@ -83,6 +80,7 @@ bool LoadMaterials::LoadPhysicsFiles(SceneDescription& theScene)
             mat->DisableInteractions();
         }
         numMaterialLoaded++;
+        theScene.AddMaterial(mat);
     }
     return(true);
 }

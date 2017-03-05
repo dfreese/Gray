@@ -104,6 +104,9 @@ public:
     {
         return 50;
     }
+    std::string GetName() const {
+        return(name);
+    }
 
 protected:
 

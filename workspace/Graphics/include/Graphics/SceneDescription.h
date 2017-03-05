@@ -1,6 +1,7 @@
 #ifndef SCENE_DESCRIPTION_H
 #define SCENE_DESCRIPTION_H
 
+#include <map>
 #include <vector>
 #include <VrMath/LinearR3.h>
 #include <Graphics/CameraView.h>
@@ -182,6 +183,13 @@ public:
     const std::vector<ViewableBase*> & GetViewableArray() const {
         return(ViewableArray);
     }
+    int GetMaterialIndex(const std::string & name) {
+        if (material_names_map.count(name)) {
+            return(material_names_map[name]);
+        } else {
+            return(-1);
+        }
+    }
 
     void DeleteAllLights();
     void DeleteAllTextures();
@@ -206,6 +214,7 @@ private:
     std::vector<TextureMapBase*> TextureArray;
 
     std::vector<ViewableBase*> ViewableArray;
+    std::map<std::string, int> material_names_map;
 };
 
 inline SceneDescription::SceneDescription()
@@ -226,6 +235,7 @@ inline int SceneDescription::AddMaterial(MaterialBase * newMaterial )
 {
     int index = (int)MaterialArray.size();
     MaterialArray.push_back(newMaterial);
+    material_names_map[newMaterial->GetName()] = index;
     return index;
 }
 

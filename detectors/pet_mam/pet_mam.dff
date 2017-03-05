@@ -616,7 +616,7 @@ p 3
 -0.049965 2.475174 0.931106
 # fleur with 7 milicurie
 # 0.3 mCi in heart, 6.7 in patient
-m 6
+m water
 start_vecsrc 6700.0
 p 3
 -0.706272 7.309162 -32.557980
