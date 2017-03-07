@@ -17,7 +17,7 @@ public:
     static INTER_TYPE GammaInteraction(Photon &p, double dist, const GammaStats & mat_gamma_prop);
     static bool GammaAttenuation(double &dist, double u_attentuation);
     static INTER_TYPE PE(double sigma, double mu, Photon &p, const GammaStats & mat_gamma_prop);
-    static void Klein_Nishina(double dsdom, Photon &p, const GammaStats & mat_gamma_prop);
+    static void Klein_Nishina(Photon &p, const GammaStats & mat_gamma_prop);
     static double dsigma(double phi, double alpha);
     static bool XrayEscape(Photon &p, const GammaStats & mat_gamma_prop);
     static const double si1_SOL;

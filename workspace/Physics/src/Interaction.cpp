@@ -59,8 +59,6 @@ INTER_TYPE Interaction::GammaInteraction(Photon &photon, double dist, const Gamm
         // move photon to interaction point
         photon.pos += (dist * photon.dir.Normalize());
         photon.time += (dist * si1_SOL);
-        double dsdom;
-
         // test for Photoelectric interaction
         switch (PE(sigma, mu, photon, mat_gamma_prop)) {
         case PHOTOELECTRIC:
@@ -68,10 +66,8 @@ INTER_TYPE Interaction::GammaInteraction(Photon &photon, double dist, const Gamm
         case XRAY_ESCAPE:
             return XRAY_ESCAPE;
         case COMPTON:
-            // get scatter properties
-            dsdom = mat_gamma_prop.GetDsDom(photon.energy);
             // perform compton kinematics
-            Klein_Nishina(dsdom, photon, mat_gamma_prop);
+            Klein_Nishina(photon, mat_gamma_prop);
             // If the photon scatters on a non-detector, it is a scatter, checked inside SetScatter
             photon.SetScatter();
             return COMPTON;
@@ -104,11 +100,12 @@ INTER_TYPE Interaction::PE(double sigma, double mu, Photon &p, const GammaStats 
     }
 }
 
-void Interaction::Klein_Nishina(double dsdom, Photon &p, const GammaStats & mat_gamma_prop)
+void Interaction::Klein_Nishina(Photon &p, const GammaStats & mat_gamma_prop)
 {
     //alpha = *energy / 511.;
     // alpha is defined as the ratio between 511keV and energy
     double alpha = p.energy / ENERGY_511;
+    double dsdom = mat_gamma_prop.GetDsDom(p.energy);
 
     /* Generate scattering angles - phi and theta */
     // Theta is the compton angle
