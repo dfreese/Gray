@@ -3,7 +3,6 @@
 import os
 import sys
 import xcom
-import dsdom
 
 def usage():
     print 'build_materials (materials file) (export directory)'
@@ -49,6 +48,5 @@ with open(materials_file, 'r') as fid:
                     # interpolation doesn't choke.
                     e += 0.0000025
                 last_e = e
-                print >>out_fid, '%15.9f   %15.9f   %15.9f   %15.9f' % (
-                    e * 1000, pe * density, cs * density,
-                    dsdom.dsdom(e * 1000))
+                print >>out_fid, '%15.9f   %15.9f   %15.9f' % (
+                    e * 1000, pe * density, cs * density)

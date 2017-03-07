@@ -78,14 +78,12 @@ void GammaStats::SetSize(int s)
     mu = new double[s];
     sigma = new double[s];
     tau = new double[s];
-    dsdom = new double[s];
 
     for (int i = 0; i < s; i++) {
         energy[i] = -1.0;
         mu[i] = -1.0;
         sigma[i] = -1.0;
         tau[i] = -1.0;
-        dsdom[i] = -1.0;
     }
 }
 
@@ -119,7 +117,7 @@ int GammaStats::GetIndex(double e) const
 bool GammaStats::Load(void)
 {
     FILE* infile;
-    double e, m, t, s, d;
+    double e, m, t, s;
     m = 0.0;
     char tmpfile[400];
     char * pPath;
@@ -143,13 +141,12 @@ bool GammaStats::Load(void)
         cout << sz;
         cout << " points\n";
         for (int i = 0; i < sz; i++) {
-            if (EOF != fscanf(infile, "%lf%lf%lf%lf",&e,&t,&s,&d)) {
+            if (EOF != fscanf(infile, "%lf%lf%lf",&e,&t,&s)) {
                 line++;
                 energy[i] = e;
                 mu[i] = s+t;
                 sigma[i] = s;
                 tau[i] = t;
-                dsdom[i] = d;
             } else {
                 cout << "Error reading file: ";
                 cout << filename;
@@ -194,21 +191,6 @@ double GammaStats::GetMu(double e, int idx) const
 double GammaStats::GetTau(double e,int idx) const
 {
     return 0.0;
-}
-
-double GammaStats::GetDsDom(double e) const
-{
-    int idx = GetIndex(e);
-    if (idx == 0) {
-        return dsdom[0];
-    } else {
-        double delta = energy[idx] - energy[idx-1];
-        double alpha = (e - energy[idx-1])/delta;
-        if (alpha > 1.0) {
-            alpha = 1.0;
-        }
-        return (1.0-alpha) * dsdom[idx-1]		+ alpha*dsdom[idx];
-    }
 }
 
 void GammaStats::GetPE(double e, double &m, double &s) const
