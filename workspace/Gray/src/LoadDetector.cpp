@@ -130,16 +130,18 @@ void LoadDetector::PopMatrix()
     MatrixStack.pop();
 }
 
-void LoadDetector::ApplyTranslation(const VectorR3&t)
+void LoadDetector::ApplyTranslation(const VectorR3&t,
+                                    RigidMapR3 & current_matrix)
 {
 
     RigidMapR3 trans;
     trans.ApplyTranslationLeft(t);
-    curMatrix() *= trans;
+    current_matrix *= trans;
 
 }
 
-void LoadDetector::ApplyRotation(const VectorR3& axis, double theta)
+void LoadDetector::ApplyRotation(const VectorR3& axis, double theta,
+                                 RigidMapR3 & current_matrix)
 {
 
     //FIXME: This became a mega hack to try and get rotations working correctly
@@ -156,7 +158,7 @@ void LoadDetector::ApplyRotation(const VectorR3& axis, double theta)
     t1.SetColumn3(rot.Column3().x, rot.Column3().y, rot.Column3().z, 0.0);
     t1.SetColumn4(0.0, 0.0, 0.0, 1.0);
 
-    cur = curMatrix();
+    cur = current_matrix;
     t2.SetColumn1(cur.Column1().x, cur.Column1().y, cur.Column1().z, cur.m14);
     t2.SetColumn2(cur.Column2().x, cur.Column2().y, cur.Column2().z, cur.m24);
     t2.SetColumn3(cur.Column3().x, cur.Column3().y, cur.Column3().z, cur.m34);
@@ -167,7 +169,7 @@ void LoadDetector::ApplyRotation(const VectorR3& axis, double theta)
     cur.m24 = t2.m42;
     cur.m34 = t2.m43;
 
-    cur2 = curMatrix();
+    cur2 = current_matrix;
 
     rot.Set(axis, theta);
     t1.SetColumn1(rot.Column1().x, rot.Column1().y, rot.Column1().z, 0.0);
@@ -188,15 +190,13 @@ void LoadDetector::ApplyRotation(const VectorR3& axis, double theta)
     cur.SetColumn2(t2.Column2().x,t2.Column2().y, t2.Column2().z);
     cur.SetColumn3(t2.Column3().x,t2.Column3().y, t2.Column3().z);
 
-    curMatrix() = cur;
+    current_matrix = cur;
 
 
 }
 
 bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene, GammaRayTrace &Gray)
 {
-    ScenePtr = &theScene;
-    
     DetectorArray detector_array;
     std::string filename_detector = "";
 
@@ -359,9 +359,11 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                     if (curMaterial->log_material) {
                         global_id = detector_array.AddDetector(baseCenter, baseSize, curMatrix(), time_resolution, energy_resolution,0,0,0,block_id);
                         block_id++;
-                        ProcessDetector(baseCenter, baseSize, curMaterial, global_id);
+                        ProcessDetector(baseCenter, baseSize, curMaterial,
+                                        global_id, theScene, curMatrix());
                     } else {
-                        ProcessDetector(baseCenter, baseSize, curMaterial, -1);
+                        ProcessDetector(baseCenter, baseSize, curMaterial, -1,
+                                        theScene, curMatrix());
                     }
                 } else {
                     parseErrorOccurred = true;
@@ -467,7 +469,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                 if (scanCode != 4) {
                     break;
                 }
-                ApplyRotation(axis, degree * (M_PI/180.0) );
+                ApplyRotation(axis, degree * (M_PI/180.0), curMatrix());
                 break;
             }
             case 16: {
@@ -547,9 +549,13 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                                     global_id = detector_array.AddDetector(CurrentPos, UnitSize,
                                                                           curMatrix(), time_resolution, energy_resolution,
                                                                           i,j,k,block_id);
-                                    ProcessDetector(CurrentPos, UnitSize, curMaterial,global_id);
+                                    ProcessDetector(CurrentPos, UnitSize,
+                                                    curMaterial, global_id,
+                                                    theScene, curMatrix());
                                 }  else {
-                                    ProcessDetector(CurrentPos, UnitSize, curMaterial,-1);
+                                    ProcessDetector(CurrentPos, UnitSize,
+                                                    curMaterial, -1,
+                                                    theScene, curMatrix());
                                 }
                             }
                         }
@@ -1172,7 +1178,12 @@ int LoadDetector::GetCommandNumber( const char * cmd )
     return -1;		// Command not found
 }
 
-void LoadDetector::ProcessDetector( const VectorR3& detCenter, const VectorR3& detSize, const Material* curMaterial, int id )
+void LoadDetector::ProcessDetector(const VectorR3 & detCenter,
+                                   const VectorR3 & detSize,
+                                   const Material * curMaterial,
+                                   int id,
+                                   SceneDescription & scene,
+                                   const RigidMapR3 & current_matrix)
 {
 
     ViewableTriangle *vt[12];
@@ -1240,8 +1251,8 @@ void LoadDetector::ProcessDetector( const VectorR3& detCenter, const VectorR3& d
     vt[11]->Init(vh, vb, vd);
 
     for (int i = 0; i < 12; i++) {
-        TransformWithRigid(vt[i],curMatrix());
-        ScenePtr->AddViewable(vt[i]);
+        TransformWithRigid(vt[i], current_matrix);
+        scene.AddViewable(vt[i]);
     }
 }
 
