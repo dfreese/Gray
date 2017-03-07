@@ -3,9 +3,93 @@
 #include <Physics/GammaStats.h>
 #include <Random/Random.h>
 #include <stdlib.h>
-
+#include <algorithm>
 
 using namespace std;
+
+Interaction::KleinNishina::KleinNishina() :
+    // These energies were chosen, as they give less than 0.5% error from 0 to
+    // 1.5MeV when linear interpolation is performed.
+    energy_idx({
+        0.0, 0.010, 0.030, 0.050, 0.100, 0.200, 0.300, 0.400, 0.500, 0.600,
+        0.700, 0.900, 1.100, 1.300, 1.500})
+{
+    dsigma_max_val.resize(energy_idx.size());
+    std::transform(energy_idx.begin(), energy_idx.end(),
+                   dsigma_max_val.begin(), find_max);
+}
+
+/*!
+ * Calculates dsigma / dtheta for the Klein-Nishina formula to be used in a
+ * accept/reject monte carlo.  For this reason the constants at the front of the
+ * formula have been dropped out, as they will be divided out eventually by the
+ * max.
+ * In this case h is P(E, theta) as seen here:
+ * https://en.wikipedia.org/wiki/Klein–Nishina_formula
+ *
+ */
+double Interaction::KleinNishina::dsigma(double theta, double energy_mev)
+{
+    double alpha = energy_mev / ENERGY_511;
+    double cs = cos(theta);
+    double ss = sin(theta);
+    double h = 1. / (1. + alpha * (1. - cs));
+    double sigma = ss * h * h * (h + 1./ h - ss * ss);
+    return(sigma);
+}
+
+/*!
+ * Use std::upper_bound to binary search the closest value above the given
+ * energy and then linearly interpolate the actual value from the lookup table
+ * created in the constructor in energy_idx and dsigmal_max_val.
+ */
+double Interaction::KleinNishina::dsigma_max(double energy_mev)
+{
+    size_t idx = upper_bound(energy_idx.begin(), energy_idx.end(), energy_mev) -
+                 energy_idx.begin();
+
+    if (idx == 0) {
+        return(dsigma_max_val.front());
+    } else if (idx == energy_idx.size()) {
+        return(dsigma_max_val.back());
+    }
+    double delta = energy_idx[idx] - energy_idx[idx - 1];
+    double alpha = (energy_mev - energy_idx[idx - 1]) / delta;
+    if (alpha > 1.0) {
+        alpha = 1.0;
+    }
+    return((1.0 - alpha) * dsigma_max_val[idx - 1] +
+           alpha * dsigma_max_val[idx]);
+}
+
+
+/*!
+ * Calculate the pdf over it's max for use in an accept/reject monte carlo.  If
+ * this is greater than or equal to a random value [0,1] then the angle theta
+ * should be accepted.
+ */
+double Interaction::KleinNishina::dsigma_over_max(double theta,
+                                                  double energy_mev)
+{
+    return(dsigma(theta, energy_mev) / dsigma_max(energy_mev));
+}
+
+/*!
+ * For a particular energy, sweep theta for dsigma from 0 to pi in 100 steps to
+ * determine the max.  100 steps is adequate for less than 0.5% error.
+ */
+double Interaction::KleinNishina::find_max(double energy_mev)
+{
+    // dsigma value is always positive, zero is safe.
+    double max_val = 0;
+    for (double theta = 0; theta <= M_PI; theta += (M_PI/ 100)) {
+        max_val = std::max(max_val, dsigma(theta, energy_mev));
+    }
+    return(max_val);
+}
+
+
+Interaction::KleinNishina Interaction::klein_nishina;
 
 const double Interaction::si1_SOL = (1.0 / 29979245800.0);
 
@@ -67,7 +151,7 @@ INTER_TYPE Interaction::GammaInteraction(Photon &photon, double dist, const Gamm
             return XRAY_ESCAPE;
         case COMPTON:
             // perform compton kinematics
-            Klein_Nishina(photon, mat_gamma_prop);
+            Klein_Nishina(photon);
             // If the photon scatters on a non-detector, it is a scatter, checked inside SetScatter
             photon.SetScatter();
             return COMPTON;
@@ -100,29 +184,24 @@ INTER_TYPE Interaction::PE(double sigma, double mu, Photon &p, const GammaStats 
     }
 }
 
-void Interaction::Klein_Nishina(Photon &p, const GammaStats & mat_gamma_prop)
+void Interaction::Klein_Nishina(Photon &p)
 {
-    //alpha = *energy / 511.;
     // alpha is defined as the ratio between 511keV and energy
     double alpha = p.energy / ENERGY_511;
-    double dsdom = mat_gamma_prop.GetDsDom(p.energy);
 
     /* Generate scattering angles - phi and theta */
     // Theta is the compton angle
 
-    double phi = 0.0;
     double theta = M_PI * Random::Uniform();
-    double s = dsigma(theta,alpha);
     double r = Random::Uniform();
 
-    while (s / dsdom < r) {
+    while (klein_nishina.dsigma_over_max(theta, p.energy) < r) {
         theta = M_PI * Random::Uniform();
-        s = dsigma(theta,alpha);
         r = Random::Uniform();
     }
 
     // phi is symmetric around a circle of 360 degrees
-    phi = M_2_PI * Random::Uniform();
+    double phi = M_2_PI * Random::Uniform();
 
     // After collision the photon loses some energy to the electron
     double deposit = p.energy;
@@ -152,25 +231,6 @@ void Interaction::Klein_Nishina(Photon &p, const GammaStats & mat_gamma_prop)
 
     // next direction is from compton scattering angle
     p.dir = comp_dir;
-}
-
-double Interaction::dsigma(double theta, double alpha)
-{
-    double	cs;
-    double  ss;
-    double	h;
-    double	sigma;
-
-    cs = cos(theta);
-    ss = sin(theta);
-
-    h = 1. / (1. + alpha * (1. - cs));
-
-    sigma = h * h;
-    sigma = sigma * (h + 1./ h - ss * ss);
-    sigma = 2. * M_PI * ss * sigma;
-
-    return(sigma);
 }
 
 bool Interaction::XrayEscape(Photon &p, const GammaStats & mat_gamma_prop)

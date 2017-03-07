@@ -2,7 +2,7 @@
 #define CSE167_INTERACTION_H
 
 #include <iostream>
-#include <fstream>
+#include <vector>
 #include <Physics/Photon.h>
 
 class GammaStats;
@@ -17,10 +17,25 @@ public:
     static INTER_TYPE GammaInteraction(Photon &p, double dist, const GammaStats & mat_gamma_prop);
     static bool GammaAttenuation(double &dist, double u_attentuation);
     static INTER_TYPE PE(double sigma, double mu, Photon &p, const GammaStats & mat_gamma_prop);
-    static void Klein_Nishina(Photon &p, const GammaStats & mat_gamma_prop);
-    static double dsigma(double phi, double alpha);
+    static void Klein_Nishina(Photon &p);
     static bool XrayEscape(Photon &p, const GammaStats & mat_gamma_prop);
     static const double si1_SOL;
+
+private:
+    // A class for static initialization of the dsigma_max values as a function
+    // of energy
+    class KleinNishina {
+    public:
+        KleinNishina();
+        double dsigma_max(double energy_mev);
+        double dsigma_over_max(double theta, double energy_mev);
+        static double dsigma(double theta, double energy_mev);
+    private:
+        static double find_max(double energy_mev);
+        std::vector<double> energy_idx;
+        std::vector<double> dsigma_max_val;
+    };
+    static KleinNishina klein_nishina;
 };
 
 #endif
