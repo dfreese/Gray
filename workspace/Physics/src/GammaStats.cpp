@@ -18,6 +18,10 @@ GammaStats::GammaStats()
 
 GammaStats::~GammaStats()
 {
+    delete[] energy;
+    delete[] mu;
+    delete[] sigma;
+    delete[] tau;
 }
 
 void GammaStats::SetName(const std::string & n)

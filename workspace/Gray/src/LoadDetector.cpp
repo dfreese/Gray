@@ -125,11 +125,7 @@ void LoadDetector::PushMatrix()
 
 void LoadDetector::PopMatrix()
 {
-    // RigidMapR3 * old = MatrixStack.Pop();
-    // don't delete old matrix, but keep it in memory for detector structure
-    //  THIS IS NOT A MEMORY LEAK
-    //	but care should be taken that the pointers are still alive
-    // delete old;
+    delete MatrixStack.top();
     MatrixStack.pop();
 }
 
