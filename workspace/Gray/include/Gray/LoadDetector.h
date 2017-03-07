@@ -18,9 +18,8 @@ public:
     bool Load(const std::string & filename, SceneDescription& theScene, GammaRayTrace &Gray );
 private:
     SceneDescription* ScenePtr;
-    long FileLineNumber;
-    int GetCommandNumber( const char * cmd );
-    bool ReadVertexR3(VectorR3 & vert, std::ifstream & curFile);
+    static int GetCommandNumber(const char * cmd);
+    static bool ReadVertexR3(VectorR3 & vert, std::ifstream & curFile);
     void ProcessDetector( const VectorR3& detCenter, const VectorR3& detSize, const Material* curMaterial, int id );
     void SetCameraViewInfo( CameraView& theView,
                             const VectorR3& viewPos, const VectorR3& lookAtPos,
@@ -30,9 +29,12 @@ private:
     void PopMatrix();
     void ApplyTranslation(const VectorR3&t);
     void ApplyRotation(const VectorR3& axis, double theta);
-    bool ProcessFaceDFF(int numVerts, const Material* mat,
-                        std::ifstream & curFile, VectorSource * s,
-                        bool parse_VectorSource, unsigned id);
+    static bool ProcessFaceDFF(int numVerts, const Material* mat,
+                               std::ifstream & curFile, VectorSource * s,
+                               bool parse_VectorSource, unsigned id,
+                               SceneDescription & theScene,
+                               double polygonScale,
+                               const RigidMapR3 & current_matrix);
     RigidMapR3 &curMatrix();
     std::stack<RigidMapR3*> MatrixStack;
     double polygonScale;
@@ -52,8 +54,6 @@ private:
     double positronK2;
     double positronMaxRange;
     unsigned int block_id;
-
-    int global_id;
 
     static std::string ScanForSecondField(const std::string & inbuf);
 

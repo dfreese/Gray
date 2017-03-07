@@ -23,6 +23,7 @@
 #include <Sources/VectorSource.h>
 #include <Sources/VoxelSource.h>
 
+namespace {
 const int numCommands = 60;
 const char * dffCommandList[numCommands] = {
     "p",                // 0 Polygon patches
@@ -86,6 +87,7 @@ const char * dffCommandList[numCommands] = {
     "sp_annulus_cyl",	// 58 annulus cylinder source
     "binary_format"     // 59 set the binary output format
 };
+}
 
 LoadDetector::LoadDetector()
 {
@@ -107,7 +109,6 @@ LoadDetector::LoadDetector()
     positronRangeCusp = false;
 
     block_id = 0;
-    global_id = -1;
 
 }
 
@@ -202,7 +203,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
     stack<ifstream> file_stack;
     file_stack.emplace(filename.c_str());
 
-    FileLineNumber = 0;
+    long FileLineNumber = 0;
 
     if (!file_stack.top()) {
         cerr << "LoadDffFile: Unable to open file: " << filename << endl;
@@ -278,6 +279,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
         int cmdNum = GetCommandNumber( theCommand );
 
         string args = ScanForSecondField(line);
+        int global_id = -1;
 
         switch ( cmdNum ) {
             case 0: {
@@ -292,9 +294,15 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                     // FIXED: arbitrary triangles must use increment to advance detector ids
                     // FIXED: detector only is used when material is sensitive
                     if (curMaterial->log_material) {
-                        ProcessFaceDFF( numVerts, curMaterial, file_stack.top(), curVectorSource, parse_VectorSource,global_id  );
+                        ProcessFaceDFF(numVerts, curMaterial, file_stack.top(),
+                                       curVectorSource, parse_VectorSource,
+                                       global_id, theScene, polygonScale,
+                                       curMatrix());
                     } else {
-                        ProcessFaceDFF( numVerts, curMaterial, file_stack.top(), curVectorSource, parse_VectorSource,-1);
+                        ProcessFaceDFF(numVerts, curMaterial, file_stack.top(),
+                                       curVectorSource, parse_VectorSource, -1,
+                                       theScene, polygonScale,
+                                       curMatrix());
                     }
                 }
                 break;
@@ -948,8 +956,10 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                 UnitSize.z = 1.0;
 
                 global_id = detector_array.AddDetector(StartPos, UnitSize,
-                                                      curMatrix(), time_resolution, energy_resolution,
-                                                      0,0,0,0);
+                                                           curMatrix(),
+                                                           time_resolution,
+                                                           energy_resolution,
+                                                           0, 0, 0, 0);
                 break;
             }
             case 53: { // ellipse geometry
@@ -1268,7 +1278,10 @@ bool LoadDetector::ProcessFaceDFF(int numVerts,
                                   std::ifstream & curFile,
                                   VectorSource *s,
                                   bool parse_VectorSource,
-                                  unsigned id)
+                                  unsigned id,
+                                  SceneDescription & scene,
+                                  double polygonScale,
+                                  const RigidMapR3 & current_matrix)
 {
     VectorR3 firstVert, prevVert, thisVert;
     if ( !ReadVertexR3(firstVert, curFile) ) {
@@ -1291,7 +1304,7 @@ bool LoadDetector::ProcessFaceDFF(int numVerts,
         vt->Init( firstVert, prevVert, thisVert );
         vt->SetMaterialFront( curMaterial );
         vt->SetMaterialBack( curMaterial );
-        TransformWithRigid(vt,curMatrix());
+        TransformWithRigid(vt, current_matrix);
 
         if (parse_VectorSource) {
             s->SetMin(vt->GetVertexA());
@@ -1305,7 +1318,7 @@ bool LoadDetector::ProcessFaceDFF(int numVerts,
             vt->SetSrcId(0);
         }
 
-        ScenePtr->AddViewable( vt );
+        scene.AddViewable( vt );
         prevVert = thisVert;
     }
     return true;
