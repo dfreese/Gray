@@ -221,8 +221,6 @@ void Output::LogErrorBinary(const Photon &p, ErrorType t, int detmaterial )
     }
 }
 
-
-
 bool Output::SetLogfile(const std::string & name)
 {
     log_file.open(name.c_str(), ios::out);

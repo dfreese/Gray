@@ -1,7 +1,7 @@
 #include <Physics/GammaStats.h>
-#include <stdlib.h>
-#include <stdio.h>
+#include <fstream>
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
@@ -14,14 +14,6 @@ GammaStats::GammaStats()
     enable_interactions = true;
     num_escape = 0;
     material = -1;
-}
-
-GammaStats::~GammaStats()
-{
-    delete[] energy;
-    delete[] mu;
-    delete[] sigma;
-    delete[] tau;
 }
 
 void GammaStats::SetName(const std::string & n)
@@ -78,17 +70,14 @@ double GammaStats::GetAugerProb(int i) const
 void GammaStats::SetSize(int s)
 {
     size = s;
-    energy = new double[s];
-    mu = new double[s];
-    sigma = new double[s];
-    tau = new double[s];
-
-    for (int i = 0; i < s; i++) {
-        energy[i] = -1.0;
-        mu[i] = -1.0;
-        sigma[i] = -1.0;
-        tau[i] = -1.0;
-    }
+    energy.clear();
+    energy.resize(s, -1);
+    mu.clear();
+    mu.resize(s, -1);
+    sigma.clear();
+    sigma.resize(s, -1);
+    tau.clear();
+    tau.resize(s, -1);
 }
 
 int GammaStats::search(double e, int b_idx, int s_idx) const
@@ -118,55 +107,43 @@ int GammaStats::GetIndex(double e) const
     return cache_idx;
 }
 
-bool GammaStats::Load(void)
+bool GammaStats::Load()
 {
-    FILE* infile;
-    double e, m, t, s;
-    m = 0.0;
-    char tmpfile[400];
-    char * pPath;
-    pPath = getenv ("GRAY_INCLUDE");
-    sprintf(tmpfile,"%s/%s", pPath, filename.c_str());
-    infile = fopen( tmpfile , "rb" );
-    if ( !infile ) {
-        fprintf(stderr, " Unable to open file: %s\nExiting..\n",
-                tmpfile);
-        exit(0);
+    ifstream infile(filename);
+    if (!infile) {
+        cerr << " Unable to open file: " << filename << endl;
         return false;
     }
-    int sz = 0;
-    fscanf(infile, "%d", &sz);
-    int line = 0;
-    if (sz > 0) {
-        SetSize(sz);
-        cout << "Opening file: ";
-        cout << tmpfile;
-        cout << " with ";
-        cout << sz;
-        cout << " points\n";
-        for (int i = 0; i < sz; i++) {
-            if (EOF != fscanf(infile, "%lf%lf%lf",&e,&t,&s)) {
-                line++;
-                energy[i] = e;
-                mu[i] = s+t;
-                sigma[i] = s;
-                tau[i] = t;
-            } else {
-                cout << "Error reading file: ";
-                cout << filename;
-                cout << " on line: ";
-                cout << line;
-                cout << "\n";
-                fclose(infile);
-                exit(1);
-            }
+    string line;
+    getline(infile, line);
+    stringstream line_stream(line);
+    int no_points;
+    if ((line_stream >> no_points).fail()) {
+        return(false);
+    }
+    if (0 >= no_points) {
+        return(false);
+    }
+    cout << "Opening file: " << filename << " with " << no_points
+         << " points\n";
+    SetSize(no_points);
+    for (int i = 0; i < no_points; i++) {
+        string pt_line;
+        getline(infile, pt_line);
+        stringstream pt_stream(pt_line);
+        bool line_fail = false;
+        line_fail |= (pt_stream >> energy[i]).fail();
+        line_fail |= (pt_stream >> tau[i]).fail();
+        line_fail |= (pt_stream >> sigma[i]).fail();
+
+        if (line_fail) {
+            cerr << "Error reading file: " << filename << " on line: "
+                 << (i + 1) << endl;
+            return(false);
         }
-    } else {
-        fclose(infile);
-        return false;
+        mu[i] = tau[i] + sigma[i];
     }
-    fclose(infile);
-    return true;
+    return(true);
 }
 
 

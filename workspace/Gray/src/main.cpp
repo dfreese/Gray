@@ -21,11 +21,11 @@ int main( int argc, char** argv)
     }
 
     GammaRayTrace Gray;
-    SceneDescription FileScene;
-    if (!LoadMaterials::LoadPhysicsFiles(FileScene)) {
+    SceneDescription scene;
+    if (!LoadMaterials::LoadPhysicsFiles(scene)) {
         return(1);
     }
-    if (!LoadDetector::Load(config.filename_detector, FileScene, Gray)) {
+    if (!LoadDetector::Load(config.filename_detector, scene, Gray)) {
         cerr << "Loading file \"" << config.filename_detector << "\" failed" << endl;
         return(1);
     }
@@ -35,12 +35,12 @@ int main( int argc, char** argv)
         cout << "Seeding Gray: " << config.seed << endl;
     }
 
-    IntersectKdTree intersect_kd_tree(FileScene);
+    IntersectKdTree intersect_kd_tree(scene);
     Gray.SetKdTree(intersect_kd_tree);
 
     if (config.run_viewer_flag) {
 #ifdef USE_OPENGL
-        run_viewer(argc, argv, FileScene, intersect_kd_tree);
+        run_viewer(argc, argv, scene, intersect_kd_tree);
 #endif
     }
     if (config.run_physics_flag) {

@@ -68,7 +68,8 @@ bool LoadMaterials::LoadPhysicsFiles(SceneDescription& theScene)
     int numMaterialLoaded = 0;
     for (size_t i = 0; i < material_names.size(); i++) {
         GammaMaterial * mat = new GammaMaterial();
-        std::string material_filename = material_names[i] + ".dat";
+        std::string material_filename = include_location + "/" +
+                                        material_names[i] + ".dat";
         dynamic_cast<Material*>(mat)->SetName(material_names[i]);
         mat->SetFileName(material_filename);
         mat->SetMaterialType(i);

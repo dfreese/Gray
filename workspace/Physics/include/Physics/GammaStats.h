@@ -2,18 +2,18 @@
 #define GAMMA_STATS_H
 
 #include <string>
+#include <vector>
 
 class GammaStats
 {
 public:
 
     GammaStats();
-    ~GammaStats();
     void SetName(const std::string & n);
     void SetFileName(const std::string & n);
     void SetSize(int s);
     void SetMaterialType(int s);
-    bool Load(void);
+    bool Load();
     int GetIndex(double e) const;
     int GetMaterial() const;
     double GetSigma(double e, int idx) const;
@@ -37,10 +37,10 @@ private:
 
     std::string name;
     std::string filename;
-    double * energy;
-    double * mu;
-    double * sigma;
-    double * tau;
+    std::vector<double> energy;
+    std::vector<double> mu;
+    std::vector<double> sigma;
+    std::vector<double> tau;
     double * xray_escape;
     double * xray_escape_probability;
     double * auger;
