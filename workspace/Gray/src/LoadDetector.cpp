@@ -97,19 +97,7 @@ LoadDetector::LoadDetector()
 
     polygonScale = 1.0;
     actScale = 1.0;
-
-    time_resolution = 10.0e-9;	/* specified in ns FWHM */
-    energy_resolution = 0.10;	/* specifiend in % FHWM */
-
-    time_gate = 10.0e-9;	/* ns */
-    energy_gate_lower = 0.400 /* 400 keV */;
-    energy_gate_upper = 0.550 /* 550 keV */;
-
-    positronRange = false;
-    positronRangeCusp = false;
-
     block_id = 0;
-
 }
 
 RigidMapR3& LoadDetector::curMatrix()
@@ -357,7 +345,11 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                     baseSize *= polygonScale;
                     // FIXED: detector only is used when material is sensitive
                     if (curMaterial->log_material) {
-                        global_id = detector_array.AddDetector(baseCenter, baseSize, curMatrix(), time_resolution, energy_resolution,0,0,0,block_id);
+                        global_id = detector_array.AddDetector(baseCenter,
+                                                               baseSize,
+                                                               curMatrix(),
+                                                               0, 0, 0,
+                                                               block_id);
                         block_id++;
                         ProcessDetector(baseCenter, baseSize, curMaterial,
                                         global_id, theScene, curMatrix());
@@ -546,9 +538,9 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                                 CurrentPos.y += (double)j * UnitStep.y;
                                 CurrentPos.z += (double)k * UnitStep.z;
                                 if (curMaterial->log_material == true) {
-                                    global_id = detector_array.AddDetector(CurrentPos, UnitSize,
-                                                                          curMatrix(), time_resolution, energy_resolution,
-                                                                          i,j,k,block_id);
+                                    global_id = detector_array.AddDetector(
+                                            CurrentPos, UnitSize, curMatrix(),
+                                            i, j, k, block_id);
                                     ProcessDetector(CurrentPos, UnitSize,
                                                     curMaterial, global_id,
                                                     theScene, curMatrix());
@@ -709,11 +701,6 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                     BeamPointSource * s = new BeamPointSource(position, axis, angle, actScale*activity);
                     s->SetMaterial(curMaterial);
                     Gray.AddSource(s);
-                    if (positronRange) {
-                        // PositronRange is set by selecting Isotope
-                        //s->SetPositronRange(positronC,
-                        //positronK1,positronK2,positronMaxRange);
-                    }
                 } else {
                     parseErrorOccurred = true;
                     break;
@@ -749,10 +736,6 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                     cout << "Starting Vector Source\n";
                     curVectorSource = new VectorSource(actScale*activity);
                     curVectorSource->SetMaterial(curMaterial);
-                    if (positronRange) {
-                        //curVectorSource->SetPositronRange(positronC,
-                        //positronK1,positronK2,positronMaxRange);
-                    }
                     parse_VectorSource = true;
                 } else {
                     parseErrorOccurred = true;
@@ -825,26 +808,11 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                 break;
             }
             case 42: { // set time resolution of detectors
-                double t_time_resolution = -1.0;
-                int scanCode = sscanf(args.c_str(), "%lf", &t_time_resolution);
-                if (scanCode ==1) {
-                    // Convert paired time resolution to single detector time resolution
-                    time_resolution = t_time_resolution/sqrt(2.0);
-                } else {
-                    parseErrorOccurred = true;
-                    break;
-                }
+                cout << "Warning: Singles Processor has been removed: " << endl;
                 break;
             }
             case 43: { // set energy resolution of detectors
-                double t_energy_resolution = -1.0;
-                int scanCode = sscanf(args.c_str(), "%lf", &t_energy_resolution);
-                if (scanCode ==1) {
-                    energy_resolution = t_energy_resolution;
-                } else {
-                    parseErrorOccurred = true;
-                    break;
-                }
+                cout << "Warning: Singles Processor has been removed: " << endl;
                 break;
             }
             case 44: { // set time gate of coincidence processor
@@ -860,27 +828,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                 break;
             }
             case 47: { // set time gate of coincidence processor
-                double t_c = -1.0;
-                double t_k1 = -1.0;
-                double t_k2 = -1.0;
-                double t_max_range = -1.0;
-                int scanCode = sscanf(args.c_str(), "%lf%lf%lf%lf", &t_c,&t_k1,&t_k2,&t_max_range);
-                if (scanCode ==4) {
-                    // set state variables
-                    positronRange = true;
-                    positronRangeCusp = true;
-
-                    positronC = t_c;
-                    positronK1 = t_k1;
-                    positronK2 = t_k2;
-                    positronMaxRange = t_max_range;
-
-                    cout << "PositronRangeCusp\n";
-
-                } else {
-                    parseErrorOccurred = true;
-                    break;
-                }
+                cout << "Warning: Coincidence Processor has been removed: " << endl;
                 break;
             }
             case 48: { // gateCoincidences by ring difference
@@ -963,8 +911,6 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
 
                 global_id = detector_array.AddDetector(StartPos, UnitSize,
                                                            curMatrix(),
-                                                           time_resolution,
-                                                           energy_resolution,
                                                            0, 0, 0, 0);
                 break;
             }

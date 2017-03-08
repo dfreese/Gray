@@ -13,7 +13,9 @@ public:
     ~DetectorArray();
 
     // returns detector_id
-    unsigned AddDetector(const VectorR3 & pos, const VectorR3 &size, const RigidMapR3 & map, const double time_res, const double eres,unsigned x, unsigned y, unsigned z, unsigned bl);
+    unsigned AddDetector(const VectorR3 & pos, const VectorR3 &size,
+                         const RigidMapR3 & map,unsigned x, unsigned y,
+                         unsigned z, unsigned bl);
     void OutputDetectorArray();
     friend ostream& operator<< ( ostream& os, const DetectorArray& d );
 public:

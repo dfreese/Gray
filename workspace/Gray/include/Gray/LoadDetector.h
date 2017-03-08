@@ -48,20 +48,6 @@ private:
     std::stack<RigidMapR3*> MatrixStack;
     double polygonScale;
     double actScale;
-
-    double time_resolution;
-    double energy_resolution;
-
-    double time_gate;
-    double energy_gate_lower;
-    double energy_gate_upper;
-
-    bool positronRange;
-    bool positronRangeCusp;
-    double positronC;
-    double positronK1;
-    double positronK2;
-    double positronMaxRange;
     unsigned int block_id;
 
     static std::string ScanForSecondField(const std::string & inbuf);
