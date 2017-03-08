@@ -10,11 +10,11 @@
 class Material;
 class VectorSource;
 
-class LoadDetector
-{
+class LoadDetector {
 public:
-    LoadDetector();
-    bool Load(const std::string & filename, SceneDescription& theScene, GammaRayTrace &Gray );
+    static bool Load(const std::string & filename,
+                     SceneDescription & theScene,
+                     GammaRayTrace & Gray);
 private:
     static int GetCommandNumber(const char * cmd);
     static bool ReadVertexR3(VectorR3 & vert, std::ifstream & curFile);
@@ -30,8 +30,6 @@ private:
                                   const VectorR3& upVector, double fovy,
                                   int screenWidth, int screenHeight,
                                   double nearClipping);
-    void PushMatrix();
-    void PopMatrix();
     static void ApplyTranslation(const VectorR3&t,
                                  RigidMapR3 & current_matrix);
     static void ApplyRotation(const VectorR3& axis,
@@ -43,8 +41,6 @@ private:
                                SceneDescription & theScene,
                                double polygonScale,
                                const RigidMapR3 & current_matrix);
-    RigidMapR3 &curMatrix();
-    std::stack<RigidMapR3*> MatrixStack;
     static std::string ScanForSecondField(const std::string & inbuf);
 
 };

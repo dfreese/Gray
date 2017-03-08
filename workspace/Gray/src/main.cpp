@@ -25,8 +25,7 @@ int main( int argc, char** argv)
     if (!LoadMaterials::LoadPhysicsFiles(FileScene)) {
         return(1);
     }
-    LoadDetector myLoader;
-    if (!myLoader.Load(config.filename_detector, FileScene, Gray)) {
+    if (!LoadDetector::Load(config.filename_detector, FileScene, Gray)) {
         cerr << "Loading file \"" << config.filename_detector << "\" failed" << endl;
         return(1);
     }

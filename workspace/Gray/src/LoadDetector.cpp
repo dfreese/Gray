@@ -89,31 +89,6 @@ const char * dffCommandList[numCommands] = {
 };
 }
 
-LoadDetector::LoadDetector()
-{
-    RigidMapR3 * newMatrix = new RigidMapR3();
-    newMatrix->SetIdentity();
-    MatrixStack.push(newMatrix);
-}
-
-RigidMapR3& LoadDetector::curMatrix()
-{
-    return (*MatrixStack.top());
-}
-
-void LoadDetector::PushMatrix()
-{
-    RigidMapR3 * newMatrix = new RigidMapR3();
-    *newMatrix = curMatrix();
-    MatrixStack.push(newMatrix);
-}
-
-void LoadDetector::PopMatrix()
-{
-    delete MatrixStack.top();
-    MatrixStack.pop();
-}
-
 void LoadDetector::ApplyTranslation(const VectorR3&t,
                                     RigidMapR3 & current_matrix)
 {
@@ -179,13 +154,20 @@ void LoadDetector::ApplyRotation(const VectorR3& axis, double theta,
 
 }
 
-bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene, GammaRayTrace &Gray)
+bool LoadDetector::Load(const std::string & filename,
+                        SceneDescription& theScene,
+                        GammaRayTrace &Gray)
 {
     DetectorArray detector_array;
     std::string filename_detector = "";
     double polygonScale = 1.0;
     double actScale = 1.0;
     unsigned int block_id = 0;
+
+    // Setup the matrix stack with one initial identity matrix.
+    std::stack<RigidMapR3> MatrixStack;
+    MatrixStack.push(RigidMapR3());
+    MatrixStack.top().SetIdentity();
 
 
     stack<ifstream> file_stack;
@@ -285,12 +267,12 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                         ProcessFaceDFF(numVerts, curMaterial, file_stack.top(),
                                        curVectorSource, parse_VectorSource,
                                        global_id, theScene, polygonScale,
-                                       curMatrix());
+                                       MatrixStack.top());
                     } else {
                         ProcessFaceDFF(numVerts, curMaterial, file_stack.top(),
                                        curVectorSource, parse_VectorSource, -1,
                                        theScene, polygonScale,
-                                       curMatrix());
+                                       MatrixStack.top());
                     }
                 }
                 break;
@@ -347,15 +329,15 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                     if (curMaterial->log_material) {
                         global_id = detector_array.AddDetector(baseCenter,
                                                                baseSize,
-                                                               curMatrix(),
+                                                               MatrixStack.top(),
                                                                0, 0, 0,
                                                                block_id);
                         block_id++;
                         ProcessDetector(baseCenter, baseSize, curMaterial,
-                                        global_id, theScene, curMatrix());
+                                        global_id, theScene, MatrixStack.top());
                     } else {
                         ProcessDetector(baseCenter, baseSize, curMaterial, -1,
-                                        theScene, curMatrix());
+                                        theScene, MatrixStack.top());
                     }
                 } else {
                     parseErrorOccurred = true;
@@ -429,19 +411,20 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                 trans *= polygonScale;
 
                 if (scanCode == 3) {
-                    //curMatrix().Transform3x3(&trans);
-                    curMatrix().ApplyTranslationLeft(trans);
+                    //MatrixStack.top().Transform3x3(&trans);
+                    MatrixStack.top().ApplyTranslationLeft(trans);
                 } else {
                     parseErrorOccurred = true;
                 }
                 break;
             }
             case 12: { // push matrix
-                PushMatrix();
+                // Add a copy of the current matrix to the top of the stack
+                MatrixStack.push(MatrixStack.top());
                 break;
             }
             case 13: { // pop matrix
-                PopMatrix();
+                MatrixStack.pop();
                 break;
             }
             case 14: { // background color
@@ -461,7 +444,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                 if (scanCode != 4) {
                     break;
                 }
-                ApplyRotation(axis, degree * (M_PI/180.0), curMatrix());
+                ApplyRotation(axis, degree * (M_PI/180.0), MatrixStack.top());
                 break;
             }
             case 16: {
@@ -476,9 +459,9 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                     }
 
                     ViewableSphere * sp = new ViewableSphere(position, radius);
-                    TransformWithRigid(sp,curMatrix());
+                    TransformWithRigid(sp,MatrixStack.top());
 
-                    curMatrix().Transform(&position);
+                    MatrixStack.top().Transform(&position);
                     SphereSource * s = new SphereSource(position, radius, actScale*activity);
                     s->SetMaterial(curMaterial);
                     Gray.AddSource(s);
@@ -497,7 +480,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                                    &baseSize.x, &baseSize.y, &baseSize.z, &activity );
                 if (scanCode == 7) {
                     //TODO: FIX RECTANGULAR SOURCE ROTATION!
-                    curMatrix().Transform(&baseCenter);
+                    MatrixStack.top().Transform(&baseCenter);
                     RectSource * s = new RectSource(baseCenter, baseSize,actScale*activity);
                     s->SetMaterial(curMaterial);
                     Gray.AddSource(s);
@@ -539,15 +522,15 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                                 CurrentPos.z += (double)k * UnitStep.z;
                                 if (curMaterial->log_material == true) {
                                     global_id = detector_array.AddDetector(
-                                            CurrentPos, UnitSize, curMatrix(),
+                                            CurrentPos, UnitSize, MatrixStack.top(),
                                             i, j, k, block_id);
                                     ProcessDetector(CurrentPos, UnitSize,
                                                     curMaterial, global_id,
-                                                    theScene, curMatrix());
+                                                    theScene, MatrixStack.top());
                                 }  else {
                                     ProcessDetector(CurrentPos, UnitSize,
                                                     curMaterial, -1,
-                                                    theScene, curMatrix());
+                                                    theScene, MatrixStack.top());
                                 }
                             }
                         }
@@ -579,7 +562,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                     vc->SetCenter(center);
                     vc->SetHeight(height);
                     vc->SetMaterial(curMaterial);
-                    TransformWithRigid(vc,curMatrix());
+                    TransformWithRigid(vc,MatrixStack.top());
                     theScene.AddViewable(vc);
                 }
                 break;
@@ -603,10 +586,10 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                     vc->SetCenter(center);
                     vc->SetHeight(height);
                     vc->SetMaterial(curMaterial);
-                    TransformWithRigid(vc,curMatrix());
+                    TransformWithRigid(vc,MatrixStack.top());
 
-                    curMatrix().Transform(&center);
-                    curMatrix().Transform3x3(&axis);
+                    MatrixStack.top().Transform(&center);
+                    MatrixStack.top().Transform3x3(&axis);
                     axis *= height;
                     cout << " New Center :: "  << (double)center.x  << "  " ;
                     cout << (double) center.y << "  " << (double) center.z <<  endl;
@@ -675,7 +658,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                 if (scanCode == 4) {
                     ViewableSphere * s = new ViewableSphere(position, radius);
                     s->SetMaterial(curMaterial);
-                    TransformWithRigid(s,curMatrix());
+                    TransformWithRigid(s,MatrixStack.top());
                     theScene.AddViewable(s);
                 } else {
                     parseErrorOccurred = true;
@@ -696,8 +679,8 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                                    &activity );
                 if (scanCode == 8) {
                     axis.Normalize();
-                    curMatrix().Transform(&position);
-                    curMatrix().Transform3x3(&axis);
+                    MatrixStack.top().Transform(&position);
+                    MatrixStack.top().Transform3x3(&axis);
                     BeamPointSource * s = new BeamPointSource(position, axis, angle, actScale*activity);
                     s->SetMaterial(curMaterial);
                     Gray.AddSource(s);
@@ -910,7 +893,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                 UnitSize.z = 1.0;
 
                 global_id = detector_array.AddDetector(StartPos, UnitSize,
-                                                           curMatrix(),
+                                                           MatrixStack.top(),
                                                            0, 0, 0, 0);
                 break;
             }
@@ -936,7 +919,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                     ve->SetAxes(axis1, axis2);
                     ve->SetRadii(radius3, radius2, radius1);
                     ve->SetMaterial(curMaterial);
-                    TransformWithRigid(ve,curMatrix());
+                    TransformWithRigid(ve,MatrixStack.top());
                     theScene.AddViewable(ve);
                 }
                 break;
@@ -991,7 +974,7 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                     vc->SetRadii(radius2,radius1);
                     vc->SetHeight(height);
                     vc->SetMaterial(curMaterial);
-                    TransformWithRigid(vc,curMatrix());
+                    TransformWithRigid(vc,MatrixStack.top());
                     theScene.AddViewable(vc);
                 } else {
                     parseErrorOccurred = true;
@@ -1012,8 +995,8 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                                        &radius1, &radius2, &height, &activity);
                 cout << "Reading Elliptic Cylinder Source " <<endl;
                 if (scanCode == 10) {
-                    curMatrix().Transform(&center);
-                    curMatrix().Transform3x3(&axis);
+                    MatrixStack.top().Transform(&center);
+                    MatrixStack.top().Transform3x3(&axis);
                     axis *= height;
                     cout << " New Center :: "  << (double)center.x  << "  " ;
                     cout << (double) center.y << "  " << (double) center.z <<  endl;
@@ -1041,8 +1024,8 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                                        &radius1, &radius2, &height, &activity);
                 cout << "Reading Annulus Elliptic Cylinder Source " <<endl;
                 if (scanCode == 10) {
-                    curMatrix().Transform(&center);
-                    curMatrix().Transform3x3(&axis);
+                    MatrixStack.top().Transform(&center);
+                    MatrixStack.top().Transform3x3(&axis);
                     axis *= height;
                     cout << " New Center :: "  << (double)center.x  << "  " ;
                     cout << (double) center.y << "  " << (double) center.z <<  endl;
@@ -1070,8 +1053,8 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
                 cout << "Reading Annulus Cylinder Source " <<endl;
                 if (scanCode == 9) {
 
-                    curMatrix().Transform(&center);
-                    curMatrix().Transform3x3(&axis);
+                    MatrixStack.top().Transform(&center);
+                    MatrixStack.top().Transform3x3(&axis);
                     axis *= height;
                     cout << " New Center :: "  << (double)center.x  << "  " ;
                     cout << (double) center.y << "  " << (double) center.z <<  endl;
