@@ -869,7 +869,7 @@ inline void KdTree::InitDoubleRecurse( double minOnAxis, double maxOnAxis,
         CF_ExponentToBeat = log((costToBeat-CF_D)/CF_C) * CF_LogTNOCinv;
         // Set the lower bound to allow zero, as sometimes the scale between
         // costToBeat and CF_D are drastically different.
-        assert((0 < CF_ExponentToBeat) && (CF_ExponentToBeat < 1.0));
+        assert((0 <= CF_ExponentToBeat) && (CF_ExponentToBeat < 1.0));
 	}
 	else {
 		CF_EndArea = 0.0;		// End area is small enough to treat as being exactly zero
@@ -970,7 +970,7 @@ bool KdTree::CalcDoubleRecurseGS( double splitValue, double costLeft, double cos
                 CF_ExponentToBeat = log( (newCost-CF_D)/CF_C ) * CF_LogTNOCinv;
                 // Set the lower bound to allow zero, as sometimes the scale
                 // between costToBeat and CF_D are drastically different.
-                assert((0 < CF_ExponentToBeat) && (CF_ExponentToBeat < 1.0));
+                assert((0 <= CF_ExponentToBeat) && (CF_ExponentToBeat < 1.0));
             }
             return true;
 		}
