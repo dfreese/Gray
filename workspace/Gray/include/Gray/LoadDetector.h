@@ -9,7 +9,6 @@
 
 class Material;
 class VectorSource;
-#define MAX_INCLUDE 256
 
 class LoadDetector
 {
@@ -46,10 +45,6 @@ private:
                                const RigidMapR3 & current_matrix);
     RigidMapR3 &curMatrix();
     std::stack<RigidMapR3*> MatrixStack;
-    double polygonScale;
-    double actScale;
-    unsigned int block_id;
-
     static std::string ScanForSecondField(const std::string & inbuf);
 
 };

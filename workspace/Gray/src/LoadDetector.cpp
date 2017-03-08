@@ -94,10 +94,6 @@ LoadDetector::LoadDetector()
     RigidMapR3 * newMatrix = new RigidMapR3();
     newMatrix->SetIdentity();
     MatrixStack.push(newMatrix);
-
-    polygonScale = 1.0;
-    actScale = 1.0;
-    block_id = 0;
 }
 
 RigidMapR3& LoadDetector::curMatrix()
@@ -187,6 +183,10 @@ bool LoadDetector::Load(const std::string & filename, SceneDescription& theScene
 {
     DetectorArray detector_array;
     std::string filename_detector = "";
+    double polygonScale = 1.0;
+    double actScale = 1.0;
+    unsigned int block_id = 0;
+
 
     stack<ifstream> file_stack;
     file_stack.emplace(filename.c_str());
