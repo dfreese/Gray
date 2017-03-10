@@ -122,7 +122,8 @@ Interaction::INTER_TYPE Interaction::GammaInteraction(
         Photon &photon, double dist, const GammaStats & mat_gamma_prop)
 {
     double mu = 0.0;
-    double sigma = 0.0;
+    double pe = 0.0;
+    double compton = 0.0;
     double rayleigh = 0.0;
 
     // TODO: Add Rayleigh physics
@@ -133,7 +134,7 @@ Interaction::INTER_TYPE Interaction::GammaInteraction(
 
     // Get attenuation coefficient and sigma, the pe/compton ratio at photon energy
     // change MeV to KeV
-    mat_gamma_prop.GetPE(photon.energy, mu, sigma);
+    mat_gamma_prop.GetPE(photon.energy, mu, pe, compton, rayleigh);
 
     // determine if there is an interaction inter material
     bool interaction = GammaAttenuation(dist, mu);
@@ -144,7 +145,7 @@ Interaction::INTER_TYPE Interaction::GammaInteraction(
         photon.pos += (dist * photon.dir.Normalize());
         photon.time += (dist * si1_SOL);
         // test for Photoelectric interaction
-        switch (PE(sigma, mu, photon, mat_gamma_prop)) {
+        switch (PE(mu, pe, compton, rayleigh, photon, mat_gamma_prop)) {
         case PHOTOELECTRIC:
             return PHOTOELECTRIC;
         case XRAY_ESCAPE:
@@ -165,13 +166,13 @@ Interaction::INTER_TYPE Interaction::GammaInteraction(
     }
 }
 
-Interaction::INTER_TYPE Interaction::PE(double sigma,
-                                        double mu, Photon &p,
+Interaction::INTER_TYPE Interaction::PE(double mu, double pe, double compton,
+                                        double rayleigh, Photon &p,
                                         const GammaStats & mat_gamma_prop)
 {
     double rand = Random::Uniform();
     // determine photofraction
-    if (rand > sigma/mu) {
+    if (rand > compton/mu) {
         Photon ptmp;
         ptmp = p;
         if (XrayEscape(p, mat_gamma_prop)) {
@@ -235,10 +236,52 @@ void Interaction::Klein_Nishina(Photon &p)
     p.dir = comp_dir;
 }
 
+/*!
+ * The pdf of rayleigh scattering as a function of theta, normalized to a max
+ * of one so that it can be used with an accept/reject method.
+ */
+double Interaction::RayleighProbability(double theta) {
+    double cs = cos(theta);
+    return((1.0 - cs * cs) / 2.0);
+}
+
+void Interaction::Rayleigh(Photon &p)
+{
+    double theta = M_PI * Random::Uniform();
+    while (RayleighProbability(theta) < Random::Uniform()) {
+        theta = M_PI * Random::Uniform();
+    }
+
+    // phi is symmetric around a circle of 360 degrees
+    double phi = M_2_PI * Random::Uniform();
+
+    // Create rotation axis this is perpendicular to Y axis
+    // to generate the scattering angle theta
+    RotationMapR3 rotation;
+    VectorR3 rot_axis = p.dir;
+    VectorR3 UnitY;
+    UnitY.SetUnitY();
+    rot_axis *= UnitY;
+    rot_axis.Normalize();
+
+    // save direction for phi rotatation
+    VectorR3 comp_dir = p.dir;
+
+    // rotate incline
+    rotation.Set(rot_axis, theta);
+    rotation.Transform(&comp_dir);
+
+    // rotate theta using original direction as axis
+    p.dir.Normalize();
+    rotation.Set(p.dir,phi);
+    rotation.Transform(&comp_dir);
+
+    // next direction is from scattering angle
+    p.dir = comp_dir;
+}
+
 bool Interaction::XrayEscape(Photon &p, const GammaStats & mat_gamma_prop)
 {
-    int i;
-
     int num_escape = mat_gamma_prop.GetNumEscape();
     double photon_energy = p.energy;
     double * xray_escape = mat_gamma_prop.GetXrayEscape();
@@ -266,7 +309,7 @@ bool Interaction::XrayEscape(Photon &p, const GammaStats & mat_gamma_prop)
             // photon energy too small, no escapes
             return false;
         }
-        for (i = 0; i < num_escape; i++) {
+        for (int i = 0; i < num_escape; i++) {
             if (rand < xray_escape_probability[i]) {
                 // Inner shell interaction
                 if (photon_energy <= xray_escape[i]) // complete absorption

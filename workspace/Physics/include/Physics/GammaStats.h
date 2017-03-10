@@ -16,10 +16,8 @@ public:
     bool Load();
     int GetIndex(double e) const;
     int GetMaterial() const;
-    double GetSigma(double e, int idx) const;
-    double GetMu(double e, int idx) const;
-    double GetTau(double e, int idx) const;
-    void GetPE(double e, double &m, double &s) const;
+    void GetPE(double e, double &m, double & pe,
+               double & comp, double & ray) const;
     void AddEscape(double * xray_escapes, double * xray_probs, double * auger_probs, int num);
     bool GetEscape(double rand, const double photon_energy, double &xray_energy) const;
     int GetNumEscape() const;
@@ -39,8 +37,9 @@ private:
     std::string filename;
     std::vector<double> energy;
     std::vector<double> mu;
-    std::vector<double> sigma;
-    std::vector<double> tau;
+    std::vector<double> photoelectric;
+    std::vector<double> compton;
+    std::vector<double> rayleigh;
     double * xray_escape;
     double * xray_escape_probability;
     double * auger;

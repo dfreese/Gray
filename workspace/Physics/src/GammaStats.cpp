@@ -74,10 +74,12 @@ void GammaStats::SetSize(int s)
     energy.resize(s, -1);
     mu.clear();
     mu.resize(s, -1);
-    sigma.clear();
-    sigma.resize(s, -1);
-    tau.clear();
-    tau.resize(s, -1);
+    photoelectric.clear();
+    photoelectric.resize(s, -1);
+    compton.clear();
+    compton.resize(s, -1);
+    rayleigh.clear();
+    rayleigh.resize(s, -1);
 }
 
 int GammaStats::search(double e, int b_idx, int s_idx) const
@@ -133,61 +135,40 @@ bool GammaStats::Load()
         stringstream pt_stream(pt_line);
         bool line_fail = false;
         line_fail |= (pt_stream >> energy[i]).fail();
-        line_fail |= (pt_stream >> tau[i]).fail();
-        line_fail |= (pt_stream >> sigma[i]).fail();
+        line_fail |= (pt_stream >> photoelectric[i]).fail();
+        line_fail |= (pt_stream >> compton[i]).fail();
+        line_fail |= (pt_stream >> rayleigh[i]).fail();
 
         if (line_fail) {
             cerr << "Error reading file: " << filename << " on line: "
                  << (i + 1) << endl;
             return(false);
         }
-        mu[i] = tau[i] + sigma[i];
+        mu[i] = compton[i] + photoelectric[i];// + rayleigh[i];
     }
     return(true);
 }
 
-
-double GammaStats::GetSigma(double e, int idx) const
-{
-    double val;
-
-    if (idx == -1) {
-        idx = GetIndex(e);
-    }
-    if (idx == 0) {
-        return sigma[0];
-    } else {
-        double delta = energy[idx] - energy[idx-1];
-        double alpha = (e - energy[idx-1])/delta;
-        val = (1.0-alpha) * sigma[idx-1] + alpha*sigma[idx];
-        return val;
-    }
-}
-
-double GammaStats::GetMu(double e, int idx) const
-{
-    return 0.0;
-}
-
-double GammaStats::GetTau(double e,int idx) const
-{
-    return 0.0;
-}
-
-void GammaStats::GetPE(double e, double &m, double &s) const
+void GammaStats::GetPE(double e, double &m, double & pe,
+                       double & comp, double & ray) const
 {
     int idx = GetIndex(e);
     if (idx == 0) {
         m = mu[0];
-        s = sigma[0];
+        pe = photoelectric[0];
+        comp = compton[0];
+        ray = rayleigh[0];
     } else {
         double delta = energy[idx] - energy[idx-1];
         double alpha = (e - energy[idx-1])/delta;
         if (alpha > 1.0) {
             alpha = 1.0;
         }
-        m = (1.0-alpha) * mu[idx-1]		+ alpha*mu[idx];
-        s = (1.0-alpha) * sigma[idx-1]	+ alpha*sigma[idx];
+//        m = (1.0 - alpha) * mu[idx - 1] + alpha * mu[idx];
+        pe = (1.0 - alpha) * photoelectric[idx - 1] + alpha * photoelectric[idx];
+        comp = (1.0 - alpha) * compton[idx - 1] + alpha * compton[idx];
+        ray = (1.0 - alpha) * rayleigh[idx - 1] + alpha * rayleigh[idx];
+        m = pe + comp;
     }
 }
 
