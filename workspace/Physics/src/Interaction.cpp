@@ -124,7 +124,6 @@ Interaction::INTER_TYPE Interaction::GammaInteraction(
     double mu = 0.0;
     double sigma = 0.0;
     double rayleigh = 0.0;
-    const double MEV_TO_KEY = 1000.0;
 
     // TODO: Add Rayleigh physics
     rayleigh = -1.0;
@@ -134,7 +133,7 @@ Interaction::INTER_TYPE Interaction::GammaInteraction(
 
     // Get attenuation coefficient and sigma, the pe/compton ratio at photon energy
     // change MeV to KeV
-    mat_gamma_prop.GetPE(MEV_TO_KEY*photon.energy, mu, sigma);
+    mat_gamma_prop.GetPE(photon.energy, mu, sigma);
 
     // determine if there is an interaction inter material
     bool interaction = GammaAttenuation(dist, mu);
