@@ -16,8 +16,9 @@ public:
     bool Load();
     int GetIndex(double e) const;
     int GetMaterial() const;
-    void GetPE(double e, double &m, double & pe,
-               double & comp, double & ray) const;
+    double GetMu(double e) const;
+    void GetInteractionProbs(double e, double & pe, double & comp,
+                             double & ray) const;
     void AddEscape(double * xray_escapes, double * xray_probs, double * auger_probs, int num);
     bool GetEscape(double rand, const double photon_energy, double &xray_energy) const;
     int GetNumEscape() const;

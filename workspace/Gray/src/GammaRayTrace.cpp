@@ -72,19 +72,20 @@ Interaction::INTER_TYPE GammaRayTrace::GRayTrace(
         case Interaction::PHOTOELECTRIC: {
             output.LogPhotoElectric(photon, (*curMaterial));
             return Interaction::PHOTOELECTRIC;
-            break;
         }
         case Interaction::XRAY_ESCAPE: {
             return Interaction::XRAY_ESCAPE;
-            break;
         }
         case Interaction::COMPTON: {
             // log interaction to file
             double deposit = prev_energy - photon.energy;
             output.LogCompton(photon, deposit, *curMaterial);
             return GRayTrace(visPoint, TraceDepth - 1, photon,MatStack, avoidK);
-            return Interaction::COMPTON;
-            break;
+        }
+        case Interaction::RAYLEIGH: {
+            // log interaction to file
+            output.LogRayleigh(photon, *curMaterial);
+            return GRayTrace(visPoint, TraceDepth - 1, photon, MatStack, avoidK);
         }
         case Interaction::NO_INTERACTION: {
             // If not interaction, recursively traverse the in the direction the photon was travelling
@@ -119,7 +120,6 @@ Interaction::INTER_TYPE GammaRayTrace::GRayTrace(
         default: {
             cout << "ERROR: Interaction not specified\n";
             return Interaction::NO_INTERACTION;
-            break;
         }
     }
 }

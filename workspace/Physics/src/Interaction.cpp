@@ -121,60 +121,53 @@ bool Interaction::GammaAttenuation(double &dist, double mu)
 Interaction::INTER_TYPE Interaction::GammaInteraction(
         Photon &photon, double dist, const GammaStats & mat_gamma_prop)
 {
-    double mu = 0.0;
-    double pe = 0.0;
-    double compton = 0.0;
-    double rayleigh = 0.0;
-
-    // TODO: Add Rayleigh physics
-    rayleigh = -1.0;
     if (!mat_gamma_prop.enable_interactions) {
         return NO_INTERACTION;
     }
 
-    // Get attenuation coefficient and sigma, the pe/compton ratio at photon energy
-    // change MeV to KeV
-    mat_gamma_prop.GetPE(photon.energy, mu, pe, compton, rayleigh);
+    double mu = mat_gamma_prop.GetMu(photon.energy);
 
     // determine if there is an interaction inter material
     bool interaction = GammaAttenuation(dist, mu);
     // set distance to the distance to interaction if true
+    if (!interaction) {
+        return(NO_INTERACTION);
+    }
 
-    if (interaction) { // TODO: Add RAYLEIGH SCATTERING
-        // move photon to interaction point
-        photon.pos += (dist * photon.dir.Normalize());
-        photon.time += (dist * si1_SOL);
-        // test for Photoelectric interaction
-        switch (PE(mu, pe, compton, rayleigh, photon, mat_gamma_prop)) {
-        case PHOTOELECTRIC:
-            return PHOTOELECTRIC;
-        case XRAY_ESCAPE:
-            return XRAY_ESCAPE;
-        case COMPTON:
-            // perform compton kinematics
-            Klein_Nishina(photon);
-            // If the photon scatters on a non-detector, it is a scatter, checked inside SetScatter
-            photon.SetScatter();
-            return COMPTON;
-        default:
-            cerr << "ERROR: Incorrect interaction\n";
-            exit(0);
-            break;
-        }
-    } else {
-        return NO_INTERACTION;
+    // move photon to interaction point
+    photon.pos += (dist * photon.dir.Normalize());
+    photon.time += (dist * si1_SOL);
+    // test for Photoelectric interaction
+    switch (InteractionType(photon, mat_gamma_prop)) {
+    case PHOTOELECTRIC:
+        return PHOTOELECTRIC;
+    case XRAY_ESCAPE:
+        return XRAY_ESCAPE;
+    case COMPTON:
+        // perform compton kinematics
+        Klein_Nishina(photon);
+        // If the photon scatters on a non-detector, it is a scatter, checked inside SetScatter
+        photon.SetScatter();
+        return COMPTON;
+    case RAYLEIGH:
+        Rayleigh(photon);
+        return RAYLEIGH;
+    default:
+        cerr << "ERROR: Incorrect interaction\n";
+        exit(0);
+        break;
     }
 }
 
-Interaction::INTER_TYPE Interaction::PE(double mu, double pe, double compton,
-                                        double rayleigh, Photon &p,
-                                        const GammaStats & mat_gamma_prop)
+Interaction::INTER_TYPE Interaction::InteractionType(
+        Photon &p,
+        const GammaStats & mat_gamma_prop)
 {
-    double rand = Random::Uniform();
-    // determine photofraction
-    if (rand > compton/mu) {
-        Photon ptmp;
-        ptmp = p;
+    double pe, compton, rayleigh;
+    mat_gamma_prop.GetInteractionProbs(p.energy, pe, compton, rayleigh);
+
+    double rand = (pe + compton + rayleigh) * Random::Uniform();
+    if (rand < pe) {
         if (XrayEscape(p, mat_gamma_prop)) {
             // TODO: Get x-ray escape physics working again
             // 		 Xray needs to deposit majority of energy, and send small x-ray off
@@ -182,8 +175,10 @@ Interaction::INTER_TYPE Interaction::PE(double mu, double pe, double compton,
         } else {
             return PHOTOELECTRIC;
         }
-    } else {
+    } else if (rand < (pe + compton)) {
         return COMPTON;
+    } else {
+        return RAYLEIGH;
     }
 }
 

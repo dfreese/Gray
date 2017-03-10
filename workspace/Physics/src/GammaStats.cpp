@@ -144,17 +144,30 @@ bool GammaStats::Load()
                  << (i + 1) << endl;
             return(false);
         }
-        mu[i] = compton[i] + photoelectric[i];// + rayleigh[i];
+        mu[i] = compton[i] + photoelectric[i] + rayleigh[i];
     }
     return(true);
 }
 
-void GammaStats::GetPE(double e, double &m, double & pe,
-                       double & comp, double & ray) const
+double GammaStats::GetMu(double e) const {
+    int idx = GetIndex(e);
+    if (idx == 0) {
+        return(mu[0]);
+    } else {
+        double delta = energy[idx] - energy[idx-1];
+        double alpha = (e - energy[idx-1])/delta;
+        if (alpha > 1.0) {
+            alpha = 1.0;
+        }
+        return((1.0 - alpha) * mu[idx - 1] + alpha * mu[idx]);
+    }
+}
+
+void GammaStats::GetInteractionProbs(double e, double & pe, double & comp,
+                                     double & ray) const
 {
     int idx = GetIndex(e);
     if (idx == 0) {
-        m = mu[0];
         pe = photoelectric[0];
         comp = compton[0];
         ray = rayleigh[0];
@@ -164,11 +177,9 @@ void GammaStats::GetPE(double e, double &m, double & pe,
         if (alpha > 1.0) {
             alpha = 1.0;
         }
-//        m = (1.0 - alpha) * mu[idx - 1] + alpha * mu[idx];
         pe = (1.0 - alpha) * photoelectric[idx - 1] + alpha * photoelectric[idx];
         comp = (1.0 - alpha) * compton[idx - 1] + alpha * compton[idx];
         ray = (1.0 - alpha) * rayleigh[idx - 1] + alpha * rayleigh[idx];
-        m = pe + comp;
     }
 }
 

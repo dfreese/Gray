@@ -20,11 +20,12 @@ Output::~Output()
         log_file.close();
     }
     if (counter_nuclear_decay || counter_photoelectric ||
-        counter_compton || counter_error)
+        counter_compton || counter_error || counter_rayleigh)
     {
         cout << "Nuclear Decays: " << counter_nuclear_decay << endl;
         cout << "Photoelectrics: " << counter_photoelectric << endl;
         cout << "Comptons      : " << counter_compton << endl;
+        cout << "Rayleighs     : " << counter_rayleigh << endl;
         cout << "Errors        : " << counter_error << endl;
     }
 }
@@ -97,6 +98,20 @@ void Output::LogNuclearDecayBinary(NuclearDecay *p)
     }
 }
 
+void Output::LogRayleigh(const Photon &p, const GammaStats & mat_gamma_prop)
+{
+    bool log_event = (log_data & mat_gamma_prop.log_material) | log_all;
+    if (log_event) {
+        if (binary_output) {
+            LogBinary(p, Interaction::RAYLEIGH, 0, mat_gamma_prop);
+        } else {
+            LogASCII(p, Interaction::RAYLEIGH, 0, mat_gamma_prop);
+        }
+        counter_rayleigh++;
+    }
+}
+
+
 void Output::LogCompton(const Photon &p, double deposit, const GammaStats & mat_gamma_prop)
 {
     bool log_event = (log_data & mat_gamma_prop.log_material) | log_all;
@@ -135,12 +150,12 @@ void Output::LogASCII(const Photon &p,
     ptmp.energy = deposit;
     if (type == Interaction::COMPTON) {
         log_file << " " << 1 << " ";
+    } else if (type == Interaction::PHOTOELECTRIC) {
+        log_file << " " << 3 << " ";
+    } else if (type == Interaction::RAYLEIGH) {
+        log_file << " " << 5 << " ";
     } else {
-        if (type == Interaction::PHOTOELECTRIC) {
-            log_file << " " << 3 << " ";
-        } else {
-            log_file << " " << 5 << " ";
-        }
+        log_file << " " << 7 << " ";
     }
     log_file << ptmp;
     char str[256];

@@ -23,6 +23,7 @@ public:
     void LogNuclearDecay(NuclearDecay *p);
     void SetLogAll(bool val);
     void SetLogPositron(bool val);
+    void LogRayleigh(const Photon &p, const GammaStats & mat_gamma_prop);
     void LogCompton(const Photon &p, double deposit, const GammaStats & mat_gamma_prop);
     void LogPhotoElectric(const Photon &p, const GammaStats & mat_gamma_prop);
     void SetBinary(bool val);
@@ -66,6 +67,7 @@ private:
     long counter_nuclear_decay;
     long counter_photoelectric;
     long counter_compton;
+    long counter_rayleigh;
     long counter_error;
 
 };
