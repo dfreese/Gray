@@ -35,18 +35,18 @@ with open(materials_file, 'r') as fid:
         # We grab 11keV to 511keV in steps of 10keV, plus the standard grid
         # which will have all of the important transitions
         energies_mev = [0.011 + x * 0.010 for x in range(51)]
-        energy, incoh_scat, coh_scat, photoelec = xcom.compound(formula,
+        energy, coh_scat, incoh_scat, photoelec = xcom.compound(formula,
             energies_mev=energies_mev, standard_grid=True, window_min=0.011,
             window_max=1.5)
         with open(name + '.dat', 'w') as out_fid:
             print >>out_fid, '%d' % len(energy)
             last_e = 0.0
-            for e, cs, pe in zip(energy, coh_scat, photoelec):
+            for e, ics, cs, pe in zip(energy, incoh_scat, coh_scat, photoelec):
                 if e == last_e:
                     # If we've come across a transition, we add a small offset
                     # to the following edge to make sure Gray's linear
                     # interpolation doesn't choke.
                     e += 0.0000025
                 last_e = e
-                print >>out_fid, '%15.9f   %15.9f   %15.9f' % (
-                    e * 1000, pe * density, cs * density)
+                print >>out_fid, '%15.9f   %15.9f   %15.9f   %15.9f' % (
+                    e * 1000, pe * density, ics * density, cs * density)
