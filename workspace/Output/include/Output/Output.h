@@ -2,6 +2,7 @@
 #define OUTPUT_H_
 #include <Graphics/MaterialBase.h>
 #include <Physics/Photon.h>
+#include <Physics/Interaction.h>
 #include <Physics/NuclearDecay.h>
 #include <Output/BinaryFormat.h>
 #include <stdlib.h>
@@ -42,8 +43,14 @@ private:
     void LogNuclearDecayASCII(NuclearDecay *p);
     void LogErrorASCII(const Photon &p, ErrorType t, int detmaterial);
     void LogErrorBinary(const Photon &p, ErrorType t, int detmaterial) ;
-    void LogASCII(const Photon &p, INTER_TYPE type, double deposit, const GammaStats & mat_gamma_prop);
-    void LogBinary(const Photon &p, INTER_TYPE type, double deposit, const GammaStats & mat_gamma_prop);
+    void LogASCII(const Photon &p,
+                  Interaction::INTER_TYPE type,
+                  double deposit,
+                  const GammaStats & mat_gamma_prop);
+    void LogBinary(const Photon &p,
+                   Interaction::INTER_TYPE type,
+                   double deposit,
+                   const GammaStats & mat_gamma_prop);
 
     ofstream log_file;
     bool log_data;

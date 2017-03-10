@@ -4,9 +4,7 @@
 #include <VrMath/MathMisc.h>
 #include <VrMath/LinearR3.h>
 
-
 #define ENERGY_511 0.510998903;
-enum INTER_TYPE {COMPTON, PHOTOELECTRIC, AUGER, XRAY_ESCAPE, RAYLEIGH, INTERACTION, NO_INTERACTION, ESCAPE_INTERACTION,ERROR};
 
 const int P_BLUE = 0;
 const int P_RED = 1;

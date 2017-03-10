@@ -5,6 +5,7 @@
 #include <string>
 #include <Sources/SourceList.h>
 #include <Output/Output.h>
+#include <Physics/Interaction.h>
 
 class GammaMaterial;
 class Photon;
@@ -24,7 +25,7 @@ public:
     SourceList sources;
     void SetKdTree(IntersectKdTree & tree);
 private:
-    INTER_TYPE GRayTrace(VisiblePoint &visPoint,
+    Interaction::INTER_TYPE GRayTrace(VisiblePoint &visPoint,
                          int TraceDepth, Photon &photon,
                          std::stack<GammaMaterial const * const> & MatStack, long avoidK);
     GammaMaterial * defaultMat;

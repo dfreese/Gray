@@ -42,20 +42,20 @@ void GammaRayTrace::SetKdTree(IntersectKdTree & tree) {
     sources.SetKdTree(tree);
 }
 
-INTER_TYPE GammaRayTrace::GRayTrace(
+Interaction::INTER_TYPE GammaRayTrace::GRayTrace(
         VisiblePoint &visPoint, int TraceDepth, Photon &photon,
         std::stack<GammaMaterial const * const> & MatStack, long avoidK=-1)
 {
     if (MatStack.empty()) {
         output.LogError(photon, Output::ERROR_EMPTY,  0);
         cout << "ERROR" << endl;
-        return ERROR;
+        return Interaction::ERROR;
     }
     GammaMaterial const * const curMaterial = MatStack.top();
     if (TraceDepth <= 0) {
         output.LogError(photon, Output::ERROR_TRACE_DEPTH, curMaterial->GetMaterial());
         cout << "ERROR_TRACE_DEPTH" << endl;
-        return NO_INTERACTION;
+        return Interaction::NO_INTERACTION;
     }
 
     double hitDist;
@@ -63,30 +63,30 @@ INTER_TYPE GammaRayTrace::GRayTrace(
                                                  &hitDist, visPoint, avoidK);
 
     if ( intersectNum<0 ) {
-        return NO_INTERACTION;
+        return Interaction::NO_INTERACTION;
     }
 
     // set detector id in photon
     double prev_energy = photon.energy;
     switch(Interaction::GammaInteraction(photon, hitDist, *curMaterial)) {
-        case PHOTOELECTRIC: {
+        case Interaction::PHOTOELECTRIC: {
             output.LogPhotoElectric(photon, (*curMaterial));
-            return PHOTOELECTRIC;
+            return Interaction::PHOTOELECTRIC;
             break;
         }
-        case XRAY_ESCAPE: {
-            return XRAY_ESCAPE;
+        case Interaction::XRAY_ESCAPE: {
+            return Interaction::XRAY_ESCAPE;
             break;
         }
-        case COMPTON: {
+        case Interaction::COMPTON: {
             // log interaction to file
             double deposit = prev_energy - photon.energy;
             output.LogCompton(photon, deposit, *curMaterial);
             return GRayTrace(visPoint, TraceDepth - 1, photon,MatStack, avoidK);
-            return COMPTON;
+            return Interaction::COMPTON;
             break;
         }
-        case NO_INTERACTION: {
+        case Interaction::NO_INTERACTION: {
             // If not interaction, recursively traverse the in the direction the photon was travelling
             if (visPoint.IsFrontFacing()) {
                 // to enter a detector, we must first go into it, then out
@@ -118,7 +118,7 @@ INTER_TYPE GammaRayTrace::GRayTrace(
         }
         default: {
             cout << "ERROR: Interaction not specified\n";
-            return NO_INTERACTION;
+            return Interaction::NO_INTERACTION;
             break;
         }
     }

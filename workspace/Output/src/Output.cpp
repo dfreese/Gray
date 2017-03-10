@@ -48,7 +48,7 @@ void Output::SetBinaryFormat(BinaryOutputFormat format) {
     binary_format = format;
 }
 
-void Output::LogNuclearDecay(NuclearDecay *p )
+void Output::LogNuclearDecay(NuclearDecay * p)
 {
     if (log_positron) {
         counter_nuclear_decay++;
@@ -102,9 +102,9 @@ void Output::LogCompton(const Photon &p, double deposit, const GammaStats & mat_
     bool log_event = (log_data & mat_gamma_prop.log_material) | log_all;
     if (log_event) {
         if (binary_output) {
-            LogBinary(p, COMPTON, deposit, mat_gamma_prop);
+            LogBinary(p, Interaction::COMPTON, deposit, mat_gamma_prop);
         } else {
-            LogASCII(p, COMPTON, deposit,mat_gamma_prop);
+            LogASCII(p, Interaction::COMPTON, deposit,mat_gamma_prop);
         }
         counter_compton++;
     }
@@ -116,24 +116,27 @@ void Output::LogPhotoElectric(const Photon &p, const GammaStats & mat_gamma_prop
     bool log_event = (log_data & mat_gamma_prop.log_material) | log_all;
     if (log_event) {
         if (binary_output) {
-            LogBinary(p,PHOTOELECTRIC, p.energy, mat_gamma_prop);
+            LogBinary(p, Interaction::PHOTOELECTRIC, p.energy, mat_gamma_prop);
         } else {
-            LogASCII(p,PHOTOELECTRIC, p.energy, mat_gamma_prop);
+            LogASCII(p, Interaction::PHOTOELECTRIC, p.energy, mat_gamma_prop);
         }
         counter_photoelectric++;
     }
 }
 
 
-void Output::LogASCII(const Photon &p, INTER_TYPE type, double deposit, const GammaStats & mat_gamma_prop)
+void Output::LogASCII(const Photon &p,
+                      Interaction::INTER_TYPE type,
+                      double deposit,
+                      const GammaStats & mat_gamma_prop)
 {
     Photon ptmp;
     ptmp = p;
     ptmp.energy = deposit;
-    if (type == COMPTON ) {
+    if (type == Interaction::COMPTON) {
         log_file << " " << 1 << " ";
     } else {
-        if (type == PHOTOELECTRIC ) {
+        if (type == Interaction::PHOTOELECTRIC) {
             log_file << " " << 3 << " ";
         } else {
             log_file << " " << 5 << " ";
@@ -149,7 +152,10 @@ void Output::LogASCII(const Photon &p, INTER_TYPE type, double deposit, const Ga
 
 }
 
-void Output::LogBinary(const Photon &p, INTER_TYPE type, double deposit, const GammaStats & mat_gamma_prop)
+void Output::LogBinary(const Photon &p,
+                       Interaction::INTER_TYPE type,
+                       double deposit,
+                       const GammaStats & mat_gamma_prop)
 {
     if (binary_format == FULL_OUTPUT) {
         GRAY_BINARY b;

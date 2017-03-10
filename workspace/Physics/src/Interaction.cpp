@@ -118,7 +118,8 @@ bool Interaction::GammaAttenuation(double &dist, double mu)
 // determine if photoelectric or compton interaction
 //		perform compton kinematics if comption interaction
 //		TODO: perform rayleigh kinematics if rayleigh interaction
-INTER_TYPE Interaction::GammaInteraction(Photon &photon, double dist, const GammaStats & mat_gamma_prop)
+Interaction::INTER_TYPE Interaction::GammaInteraction(
+        Photon &photon, double dist, const GammaStats & mat_gamma_prop)
 {
     double mu = 0.0;
     double sigma = 0.0;
@@ -165,7 +166,9 @@ INTER_TYPE Interaction::GammaInteraction(Photon &photon, double dist, const Gamm
     }
 }
 
-INTER_TYPE Interaction::PE(double sigma, double mu, Photon &p, const GammaStats & mat_gamma_prop)
+Interaction::INTER_TYPE Interaction::PE(double sigma,
+                                        double mu, Photon &p,
+                                        const GammaStats & mat_gamma_prop)
 {
     double rand = Random::Uniform();
     // determine photofraction

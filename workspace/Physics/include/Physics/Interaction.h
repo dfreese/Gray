@@ -14,6 +14,18 @@ class GammaStats;
 
 class Interaction {
 public:
+    enum INTER_TYPE {
+        COMPTON,
+        PHOTOELECTRIC,
+        AUGER,
+        XRAY_ESCAPE,
+        RAYLEIGH,
+        INTERACTION,
+        NO_INTERACTION,
+        ESCAPE_INTERACTION,
+        ERROR
+    };
+
     static INTER_TYPE GammaInteraction(Photon &p, double dist, const GammaStats & mat_gamma_prop);
     static bool GammaAttenuation(double &dist, double u_attentuation);
     static INTER_TYPE PE(double sigma, double mu, Photon &p, const GammaStats & mat_gamma_prop);
