@@ -25,9 +25,9 @@ public:
     SourceList sources;
     void SetKdTree(IntersectKdTree & tree);
 private:
-    Interaction::INTER_TYPE GRayTrace(VisiblePoint &visPoint,
-                         int TraceDepth, Photon &photon,
-                         std::stack<GammaMaterial const * const> & MatStack, long avoidK);
+    Interaction::INTER_TYPE GRayTrace(Photon &photon,
+                                      GammaMaterial const * const start_material,
+                                      int MaxTraceDepth);
     GammaMaterial * defaultMat;
     double simulationTime;
     const double Epsilon = 1e-10;
