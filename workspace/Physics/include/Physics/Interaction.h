@@ -27,13 +27,15 @@ public:
     };
 
     static INTER_TYPE GammaInteraction(Photon &p, double dist, const GammaStats & mat_gamma_prop);
-    static bool GammaAttenuation(double &dist, double u_attentuation);
     static INTER_TYPE InteractionType(Photon &p,
                                       const GammaStats & mat_gamma_prop);
     static void Klein_Nishina(Photon &p);
     static bool XrayEscape(Photon &p, const GammaStats & mat_gamma_prop);
     static const double si1_SOL;
     static void Rayleigh(Photon &p);
+    static bool PhotonInteracts(double energy, double & dist,
+                                const GammaStats & mat_gamma_prop);
+    static double RandomExponentialDistance(double mu);
 
 private:
     // A class for static initialization of the dsigma_max values as a function

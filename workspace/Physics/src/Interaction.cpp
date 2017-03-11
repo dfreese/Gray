@@ -93,44 +93,41 @@ Interaction::KleinNishina Interaction::klein_nishina;
 
 const double Interaction::si1_SOL = (1.0 / 29979245800.0);
 
-// determine interaction in along line in material
-bool Interaction::GammaAttenuation(double &dist, double mu)
-{
-    bool interaction = false;
-
+double Interaction::RandomExponentialDistance(double mu) {
     double r = Random::Uniform();
-    double int_dis;
-
-    if(r > 0.0 ) {
-        int_dis = - log(r) / mu;
+    if (r > 0.0) {
+        return(- log(r) / mu);
     } else {
-        int_dis = 1.e300;
+        return(DBL_MAX);
     }
-
-    if(dist > int_dis) {
-        interaction = true;
-        dist = int_dis;
-    }
-    return interaction;
 }
 
+/*!
+ * Takes an energy (MeV) and uses that to calculate if there was an interaction
+ * or not by calling RandomExponentialDistance.  dist is modified to be the
+ * random distance if an interaction occurs.
+ */
+bool Interaction::PhotonInteracts(double energy,
+                                  double & dist,
+                                  const GammaStats & mat_gamma_prop)
+{
+    if (!mat_gamma_prop.enable_interactions) {
+        return(false);
+    }
+    double mu = mat_gamma_prop.GetMu(energy);
+    double rand_dist = RandomExponentialDistance(mu);
+    if (dist > rand_dist) {
+        dist = rand_dist;
+        return(true);
+    } else {
+        return(false);
+    }
+}
 
-// determine if photoelectric or compton interaction
-//		perform compton kinematics if comption interaction
-//		TODO: perform rayleigh kinematics if rayleigh interaction
 Interaction::INTER_TYPE Interaction::GammaInteraction(
         Photon &photon, double dist, const GammaStats & mat_gamma_prop)
 {
-    if (!mat_gamma_prop.enable_interactions) {
-        return NO_INTERACTION;
-    }
-
-    double mu = mat_gamma_prop.GetMu(photon.energy);
-
-    // determine if there is an interaction inter material
-    bool interaction = GammaAttenuation(dist, mu);
-    // set distance to the distance to interaction if true
-    if (!interaction) {
+    if (!PhotonInteracts(photon.energy, dist, mat_gamma_prop)) {
         return(NO_INTERACTION);
     }
 
