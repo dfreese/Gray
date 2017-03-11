@@ -55,18 +55,23 @@ Interaction::INTER_TYPE GammaRayTrace::GRayTrace(
         VisiblePoint visPoint;
         int intersectNum = kd_tree->SeekIntersection(photon.pos, photon.dir,
                                                      &hitDist, visPoint, -1);
+        // There was nothing further in the environment to hit, so return.
+        if (intersectNum < 0) {
+            return Interaction::NO_INTERACTION;
+        }
+
         if (MatStack.empty()) {
+            // Should always have the default material at the bottom of the
+            // stack.  If we somehow pop that out, it means we somehow detected
+            // an intersection with a back face that wasn't out of the inital
+            // material or preceded by a front face.  This will happen if there
+            // some sort of setup error in the KdTree.
             output.LogError(photon, Output::ERROR_EMPTY,  0);
             cout << "ERROR" << endl;
             return Interaction::ERROR;
         }
         GammaMaterial const * const curMaterial = MatStack.top();
 
-
-        // There was nothing further in the environment to hit, so return.
-        if (intersectNum < 0) {
-            return Interaction::NO_INTERACTION;
-        }
 
         // set detector id in photon
         double prev_energy = photon.energy;
