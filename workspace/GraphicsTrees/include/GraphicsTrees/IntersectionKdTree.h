@@ -38,7 +38,6 @@ protected:
     VectorR3 kdStartPos;
     VectorR3 kdStartPosAvoid;
     VectorR3 kdTraverseDir;
-    VisiblePoint tempPoint;
     VisiblePoint* bestHitPoint;
     const double isectEpsilon = 1.0e-6;
 };

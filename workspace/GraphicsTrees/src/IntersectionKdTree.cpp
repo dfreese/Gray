@@ -37,7 +37,7 @@ bool IntersectKdTree::ObjectCallback(long objectNum, double* retStopDistance)
 {
     double thisHitDistance;
     bool hitFlag;
-
+    VisiblePoint tempPoint;
     if (objectNum == kdTraverseAvoid) {
         hitFlag = ActiveScene->GetViewable(objectNum).FindIntersection(
                 kdStartPosAvoid, kdTraverseDir, bestHitDistance,
