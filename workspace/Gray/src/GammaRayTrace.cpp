@@ -48,7 +48,12 @@ Interaction::INTER_TYPE GammaRayTrace::GRayTrace(
         int MaxTraceDepth)
 {
     std::stack<GammaMaterial const * const> MatStack;
+    // We don't get the material information from the visible point as we are
+    // exiting a material.  This may be problem with the scene setup, but we
+    // need to have the default material to enter into once we've exited a
+    // material.
     MatStack.push(defaultMat);
+    // Add the material that the photon started in.
     MatStack.push(start_material);
     for (int trace_depth = 0; trace_depth < MaxTraceDepth; trace_depth++) {
         double hitDist;
