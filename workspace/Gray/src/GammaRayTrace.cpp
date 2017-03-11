@@ -153,6 +153,10 @@ void GammaRayTrace::GRayTraceSources(void)
     for (int i = 1; i < num_rays; i++) {
         Source * source = sources.Decay();
         Isotope * isotope = source->GetIsotope();
+        if (isotope == NULL) {
+            cerr << "Empty Decay: ERROR\n";
+            continue;
+        }
 
         output.LogNuclearDecay(((Positron*)isotope)->GetPositron());
 
@@ -163,11 +167,6 @@ void GammaRayTrace::GRayTraceSources(void)
             cout.flush();
         }
         while(!isotope->IsEmpty()) {
-            if (isotope == NULL) {
-                cerr << "Empty Decay: ERROR\n";
-                continue;
-            }
-
             Photon photon = isotope->NextPhoton();
 
             TraceDepth = 100;
