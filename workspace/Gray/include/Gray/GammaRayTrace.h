@@ -31,7 +31,6 @@ private:
     GammaMaterial * defaultMat;
     double simulationTime;
     const double Epsilon = 1e-10;
-    const double s1_SOL = (1.0 / 29979245800.0);
     IntersectKdTree * kd_tree;
 };
 

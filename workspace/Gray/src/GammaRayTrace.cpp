@@ -62,9 +62,12 @@ Interaction::INTER_TYPE GammaRayTrace::GRayTrace(
     int intersectNum = kd_tree->SeekIntersection(photon.pos, photon.dir,
                                                  &hitDist, visPoint, avoidK);
 
-    if ( intersectNum<0 ) {
+    // There was nothing further in the environment to hit, so return.
+    if (intersectNum < 0) {
         return Interaction::NO_INTERACTION;
     }
+
+    
 
     // set detector id in photon
     double prev_energy = photon.energy;
@@ -104,7 +107,7 @@ Interaction::INTER_TYPE GammaRayTrace::GRayTrace(
                 exit(1);
             }
             // calculate the time taken to travel distance of the non-interaction
-            photon.time += (hitDist * s1_SOL);
+            photon.time += (hitDist * Interaction::si1_SOL);
 
             // Make sure not to hit same place in kdtree
             photon.pos = visPoint.GetPosition() + photon.dir * Epsilon;
