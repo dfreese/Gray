@@ -35,18 +35,6 @@ public:
     void Init( const float* vertexpositions);
     void Init( const VectorR3& vA, const VectorR3& vB, const VectorR3& vC );
 
-    void SetMaterial( const MaterialBase* material );
-    void SetMaterialFront( const MaterialBase* frontmaterial );
-    void SetMaterialBack( const MaterialBase* backmaterial );
-    const MaterialBase* GetMaterialFront() const
-    {
-        return FrontMat;
-    }
-    const MaterialBase* GetMaterialBack() const
-    {
-        return BackMat;
-    }
-
     bool IsTwoSided() const
     {
         return (BackMat!=0);
@@ -132,22 +120,6 @@ inline void ViewableTriangle::Init( const VectorR3& vA,
     VertexB = vB;
     VertexC = vC;
     PreCalcInfo();
-}
-
-inline void ViewableTriangle::SetMaterial(const MaterialBase* material )
-{
-    SetMaterialFront(material);
-    SetMaterialBack(material);
-}
-
-inline void ViewableTriangle::SetMaterialFront(const MaterialBase* frontmaterial )
-{
-    FrontMat = frontmaterial;
-}
-
-inline void ViewableTriangle::SetMaterialBack( const MaterialBase* backmaterial )
-{
-    BackMat = backmaterial;
 }
 
 inline void ViewableTriangle::GetVertices( double* v ) const

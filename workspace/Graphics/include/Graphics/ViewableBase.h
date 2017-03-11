@@ -118,6 +118,18 @@ public:
         return src_id;
     }
 
+    void SetMaterial( const MaterialBase* material );
+    void SetMaterialFront( const MaterialBase* frontmaterial );
+    void SetMaterialBack( const MaterialBase* backmaterial );
+    const MaterialBase* GetMaterialFront() const
+    {
+        return FrontMat;
+    }
+    const MaterialBase* GetMaterialBack() const
+    {
+        return BackMat;
+    }
+
     // For run time typing, we use the following "type code":
     enum ViewableType {
         Viewable_BezierSet,
@@ -187,6 +199,22 @@ inline void ViewableBase::TextureMapOuter( const TextureMapBase* texture )
 inline void ViewableBase::TextureMapInner( const TextureMapBase* texture )
 {
     TextureMapBack( texture );
+}
+
+inline void ViewableBase::SetMaterial(const MaterialBase* material )
+{
+    SetMaterialFront(material);
+    SetMaterialBack(material);
+}
+
+inline void ViewableBase::SetMaterialFront(const MaterialBase* frontmaterial )
+{
+    FrontMat = frontmaterial;
+}
+
+inline void ViewableBase::SetMaterialBack( const MaterialBase* backmaterial )
+{
+    BackMat = backmaterial;
 }
 
 inline bool ViewableBase::FindIntersection (

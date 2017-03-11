@@ -21,9 +21,9 @@
 #ifndef VIEWABLEPARALLELOGRAM_H
 #define VIEWABLEPARALLELOGRAM_H
 
-#include "ViewableBase.h"
-#include "Material.h"
-#include "assert.h"
+#include <Graphics/ViewableBase.h>
+#include <Graphics/Material.h>
+#include <assert.h>
 
 // This class subsumes reactangles and squares
 
@@ -38,18 +38,6 @@ public:
     void Init( const double* vertexpositions);
     void Init( const float* vertexpositions);
     void Init( const VectorR3& vA, const VectorR3& vB, const VectorR3& vC );
-
-    void SetMaterial( const MaterialBase* material );
-    void SetMaterialFront( const MaterialBase* frontmaterial );
-    void SetMaterialBack( const MaterialBase* backmaterial );
-    const MaterialBase* GetMaterialFront() const
-    {
-        return FrontMat;
-    }
-    const MaterialBase* GetMaterialBack() const
-    {
-        return BackMat;
-    }
 
     bool IsTwoSided() const
     {
@@ -151,22 +139,6 @@ inline void ViewableParallelogram::Init(const VectorR3& vA, const VectorR3& vB, 
     VertexB = vB;
     VertexC = vC;
     PreCalcInfo();
-}
-
-inline void ViewableParallelogram::SetMaterial(const MaterialBase* material )
-{
-    SetMaterialFront(material);
-    SetMaterialBack(material);
-}
-
-inline void ViewableParallelogram::SetMaterialFront(const MaterialBase* frontmaterial )
-{
-    FrontMat = frontmaterial;
-}
-
-inline void ViewableParallelogram::SetMaterialBack( const MaterialBase* backmaterial )
-{
-    BackMat = backmaterial;
 }
 
 inline void ViewableParallelogram::GetVertices( double* verts ) const
