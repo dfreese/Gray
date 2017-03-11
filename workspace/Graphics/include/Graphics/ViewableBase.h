@@ -154,8 +154,8 @@ protected:
 };
 
 inline ViewableBase::ViewableBase() :
-    src_id(0),
     detector_id(-1),
+    src_id(0),
     FrontMat(&Material::Default),
     BackMat(&Material::Default)
 {
