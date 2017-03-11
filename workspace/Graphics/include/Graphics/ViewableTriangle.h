@@ -23,7 +23,6 @@
 
 #include <Graphics/ViewableBase.h>
 #include <VrMath/LinearR2.h>
-#include <Graphics/Material.h>
 
 class ViewableTriangle : public ViewableBase
 {
@@ -92,30 +91,10 @@ public:
         return Normal;
     }
 
-    unsigned GetDetectorId() const
-    {
-        return detector_id;
-    }
-    void SetDetectorId(unsigned id)
-    {
-        detector_id = id;
-    }
-    void SetSrcId(unsigned char id)
-    {
-        src_id = id;
-    }
-    unsigned char GetSrcId() const
-    {
-        return src_id;
-    }
-
 protected:
     VectorR3 VertexA;
     VectorR3 VertexB;
     VectorR3 VertexC;
-
-    const MaterialBase* FrontMat;
-    const MaterialBase* BackMat;	// Null point if not visible from back
 
     VectorR3 Normal;	// Unit normal to the plane of triangle
     double PlaneCoef;	// Constant coef in def'n of the plane
@@ -123,17 +102,10 @@ protected:
     VectorR3 Ugamma;	// Vector for finding gamma coef
 
     void PreCalcInfo();				// Precalculations for intersection testing speed
-
-    unsigned detector_id;
-    unsigned char src_id;
-
 };
 
 inline ViewableTriangle::ViewableTriangle()
 {
-    src_id = 0;
-    FrontMat = &Material::Default;
-    BackMat = &Material::Default;
 }
 
 inline void ViewableTriangle::Init( const double* v )

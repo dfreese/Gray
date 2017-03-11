@@ -27,6 +27,8 @@
 
 #include <VrMath/LinearR3.h>
 #include <VrMath/Aabb.h>
+#include <Graphics/MaterialBase.h>
+#include <Graphics/Material.h>
 #include <Graphics/TextureMapBase.h>
 #include <Graphics/VisiblePoint.h>
 
@@ -99,7 +101,22 @@ public:
     virtual bool CalcPartials( const VisiblePoint& visPoint,
                                VectorR3& retPartialU, VectorR3& retPartialV ) const = 0;
 
-
+    unsigned GetDetectorId() const
+    {
+        return detector_id;
+    }
+    void SetDetectorId(unsigned id)
+    {
+        detector_id = id;
+    }
+    void SetSrcId(unsigned char id)
+    {
+        src_id = id;
+    }
+    unsigned char GetSrcId() const
+    {
+        return src_id;
+    }
 
     // For run time typing, we use the following "type code":
     enum ViewableType {
@@ -120,6 +137,13 @@ protected:
     const TextureMapBase* TextureFront;		// Front texture map
     const TextureMapBase* TextureBack;		// Back Texture map
 
+    unsigned detector_id;
+    unsigned char src_id;
+
+    const MaterialBase* FrontMat;
+    const MaterialBase* BackMat;	// Null point if not visible from back
+
+
     // The "NT" version is the one that does all the work of finding
     //		the intersection point, and computing u,v coordinates.
     //	The "NT" version does not call the texture map: this is left for
@@ -129,9 +153,13 @@ protected:
         double *intersectDistance, VisiblePoint& returnedPoint ) const = 0;
 };
 
-inline ViewableBase::ViewableBase()
+inline ViewableBase::ViewableBase() :
+    src_id(0),
+    detector_id(-1),
+    FrontMat(&Material::Default),
+    BackMat(&Material::Default)
 {
-    TextureMap( 0 );
+    TextureMap(0);
 }
 
 inline void ViewableBase::TextureMap(

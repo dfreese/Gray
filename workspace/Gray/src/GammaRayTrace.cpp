@@ -88,19 +88,12 @@ Interaction::INTER_TYPE GammaRayTrace::GRayTrace(
             return GRayTrace(visPoint, TraceDepth - 1, photon, MatStack, avoidK);
         }
         case Interaction::NO_INTERACTION: {
-            // If not interaction, recursively traverse the in the direction the photon was travelling
+            // If not interaction, recursively traverse the in the direction the
+            // photon was travelling
             if (visPoint.IsFrontFacing()) {
-                // to enter a detector, we must first go into it, then out
-                switch (visPoint.GetObject().GetViewableType()) {
-                case ViewableBase::Viewable_Triangle:
-                    // This detector id will be used to determine if we scatter in a detector
-                    // or inside a phantom
-                    photon.det_id = ((const ViewableTriangle&)(visPoint.GetObject())).GetDetectorId();
-                    break;
-                default:
-                    photon.det_id = -1;
-                    break;
-                }
+                // This detector id will be used to determine if we scatter in
+                // a detector or inside a phantom
+                photon.det_id = visPoint.GetObject().GetDetectorId();
                 MatStack.push(dynamic_cast<GammaMaterial const * const>(
                         &visPoint.GetMaterial()));
             } else if (visPoint.IsBackFacing()) {
