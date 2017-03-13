@@ -1,8 +1,6 @@
 #ifndef GAMMARAYTRACE_H
 #define GAMMARAYTRACE_H
 
-#include <Physics/Interaction.h>
-
 class GammaMaterial;
 class IntersectKdTree;
 class Output;
@@ -16,11 +14,11 @@ public:
                              IntersectKdTree & tree,
                              GammaMaterial const * const default_material);
 private:
-    static Interaction::INTER_TYPE GrayTrace(Photon &photon, Output & output,
-                                             IntersectKdTree & tree,
-                                             GammaMaterial const * const default_material,
-                                             GammaMaterial const * const start_material,
-                                             int MaxTraceDepth);
+    static void TracePhoton(Photon &photon, Output & output,
+                            IntersectKdTree & tree,
+                            GammaMaterial const * const default_material,
+                            GammaMaterial const * const start_material,
+                            int MaxTraceDepth);
     static const double Epsilon;
 };
 
