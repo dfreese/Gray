@@ -17,7 +17,7 @@ double Positron::GetEnergy() const
     return energy;
 }
 
-PositronDecay * Positron::GetPositron()
+PositronDecay * Positron::GetPositronDecay()
 {
     return(&p);
 }
