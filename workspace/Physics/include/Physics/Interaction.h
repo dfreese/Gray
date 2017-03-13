@@ -6,6 +6,7 @@
 #include <Physics/Photon.h>
 
 class GammaStats;
+class Positron;
 
 //#define XRAY_ESCAPE_ENERGY_LSO 63.314
 //#define XRAY_ESCAPE_ENERGY_CD 26.711
@@ -23,7 +24,8 @@ public:
         INTERACTION,
         NO_INTERACTION,
         ESCAPE_INTERACTION,
-        ERROR
+        ERROR,
+        POSITRON
     };
 
     Interaction();
@@ -50,6 +52,8 @@ public:
                                const GammaStats & mat_gamma_prop);
     static Interaction Rayleigh(const Photon & p,
                                 const GammaStats & mat_gamma_prop);
+    static Interaction NuclearDecay(const Positron & p, double deposit,
+                                    const GammaStats & mat_gamma_prop);
 
     static Interaction GammaInteraction(Photon &p,
                                         double dist,

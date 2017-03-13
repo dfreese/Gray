@@ -1,6 +1,7 @@
 #include <Physics/Interaction.h>
 #include <math.h>
 #include <Physics/GammaStats.h>
+#include <Physics/Positron.h>
 #include <Random/Random.h>
 #include <stdlib.h>
 #include <algorithm>
@@ -103,6 +104,27 @@ Interaction Interaction::Rayleigh(const Photon & p,
     // This is a phantom scatter flag, so only flag if the material isn't
     // sensitive.
     hit.scatter = !mat_gamma_prop.log_material;
+    hit.sensitive_mat = mat_gamma_prop.log_material;
+    return(hit);
+}
+
+Interaction Interaction::NuclearDecay(const Positron &p, double deposit,
+                                      const GammaStats & mat_gamma_prop)
+{
+    Interaction hit;
+    hit.type = POSITRON;
+    hit.id = p.GetId();
+    hit.time = p.time;
+    hit.pos = p.GetPosition();
+    hit.energy = 0;
+    hit.color = Photon::P_YELLOW;
+    hit.src_id = p.source_num;
+    hit.mat_id = mat_gamma_prop.GetMaterial();
+    hit.det_id = -1;
+    hit.error = false;
+    // This is a phantom scatter flag, so only flag if the material isn't
+    // sensitive.
+    hit.scatter = false;
     hit.sensitive_mat = mat_gamma_prop.log_material;
     return(hit);
 }
