@@ -147,7 +147,7 @@ void GammaRayTrace::TraceSources(SourceList & sources,
             continue;
         }
 
-        output.LogNuclearDecay(((Positron*)isotope)->GetPositron());
+        output.LogNuclearDecay(((Positron*)isotope)->GetPositronDecay());
 
         // Fun ANSI graphics to do while waiting for simulation
         // this is a simple spinner code

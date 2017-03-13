@@ -13,7 +13,7 @@ public:
     double GetEnergy() const;
     void SetPositronRange(double c, double e1, double e2, double max_range);
     void SetPositronRange(double gauss, double max_range);
-    PositronDecay * GetPositron();
+    PositronDecay * GetPositronDecay();
 
 protected:
     double energy;
