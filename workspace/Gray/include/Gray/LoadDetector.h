@@ -14,7 +14,8 @@ class LoadDetector {
 public:
     static bool Load(const std::string & filename,
                      SceneDescription & theScene,
-                     GammaRayTrace & Gray);
+                     Output & output,
+                     SourceList & sources);
 private:
     static int GetCommandNumber(const char * cmd);
     static bool ReadVertexR3(VectorR3 & vert, std::ifstream & curFile);

@@ -15,12 +15,8 @@ class GammaRayTrace
 {
 public:
     GammaRayTrace();
-    ~GammaRayTrace();
     void GRayTraceSources(void);
-    void AddSource(Source * s);
     void SetDefaultMaterial(GammaMaterial * mat);
-    void SetFileNameOutput(const std::string & name);
-    void SetSimulationTime(double time);
     Output output;
     SourceList sources;
     void SetKdTree(IntersectKdTree & tree);
@@ -29,7 +25,6 @@ private:
                                       GammaMaterial const * const start_material,
                                       int MaxTraceDepth);
     GammaMaterial * defaultMat;
-    double simulationTime;
     const double Epsilon = 1e-10;
     IntersectKdTree * kd_tree;
 };

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <Graphics/SceneDescription.h>
 #include <GraphicsTrees/IntersectionKdTree.h>
+#include <Gray/GammaMaterial.h>
 #include <Gray/GammaRayTrace.h>
 #include <Gray/LoadMaterials.h>
 #include <Gray/LoadDetector.h>
@@ -25,11 +26,12 @@ int main( int argc, char** argv)
     if (!LoadMaterials::LoadPhysicsFiles(scene)) {
         return(1);
     }
-    if (!LoadDetector::Load(config.filename_detector, scene, Gray)) {
+    if (!LoadDetector::Load(config.filename_detector, scene, Gray.output, Gray.sources)) {
         cerr << "Loading file \"" << config.filename_detector << "\" failed" << endl;
         return(1);
     }
-    Gray.SetFileNameOutput(config.filename_output);
+    Gray.output.SetLogfile(config.filename_output);
+    Gray.SetDefaultMaterial(dynamic_cast<GammaMaterial*>(&scene.GetMaterial(0)));
     if (config.seed != 0) {
         Random::Seed(config.seed);
         cout << "Seeding Gray: " << config.seed << endl;

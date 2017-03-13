@@ -9,33 +9,15 @@
 #include <Physics/Photon.h>
 #include <Sources/Source.h>
 
-GammaRayTrace::GammaRayTrace()
+GammaRayTrace::GammaRayTrace() :
+    defaultMat(NULL)
 {
-    defaultMat = NULL;
-
-    // Default simulation time is 1 second
-    simulationTime = 1.0;
-
-}
-
-GammaRayTrace::~GammaRayTrace()
-{
-}
-
-void GammaRayTrace::SetFileNameOutput(const std::string & name)
-{
-    output.SetLogfile(name);
 }
 
 void GammaRayTrace::SetDefaultMaterial(GammaMaterial * mat)
 {
     defaultMat = mat;
 }
-
-void GammaRayTrace::SetSimulationTime(double time)
-{
-    simulationTime = time;
-};
 
 void GammaRayTrace::SetKdTree(IntersectKdTree & tree) {
     kd_tree = &tree;
@@ -141,7 +123,7 @@ void GammaRayTrace::GRayTraceSources(void)
     // calculate the number of positrons to throw
     // TODO: need to fix the number of rays because of negative sources
     // FIXME: time should not increase when Inside() of a negative source
-    int num_rays = sources.GetTotalEvents(simulationTime);
+    int num_rays = sources.GetTotalEvents();
 
     // create a tick mark so that we fill up 40 chars
     int tick_mark = (int)(num_rays / num_chars);
@@ -180,9 +162,4 @@ void GammaRayTrace::GRayTraceSources(void)
         }
     }
     cout << "=] Done.\n";
-}
-
-void GammaRayTrace::AddSource(Source * s)
-{
-    sources.AddSource(s);
 }

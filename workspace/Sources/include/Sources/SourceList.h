@@ -20,7 +20,10 @@ public:
     bool SetCurIsotope(const std::string & iso);
     double GetMeanTotalEvents(double time);
     double GetTotalEvents(double time);
+    double GetMeanTotalEvents();
+    double GetTotalEvents();
     void SetKdTree(IntersectKdTree & tree);
+    void SetSimulationTime(double time);
 
 private:
     static const int MAX_REJECT_COUNTER = 100000;
@@ -40,6 +43,7 @@ private:
     std::string current_isotope;
     // a microcurie is 37kevents/second
     const double microCurie = 37.0e3;
+    double simulation_time;
 };
 
 #endif

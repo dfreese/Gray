@@ -147,6 +147,17 @@ double SourceList::GetTotalEvents(double time)
     return(Random::Poisson(GetMeanTotalEvents(time)));
 }
 
+
+double SourceList::GetMeanTotalEvents()
+{
+    return(GetMeanTotalEvents(simulation_time));
+}
+
+double SourceList::GetTotalEvents()
+{
+    return(GetTotalEvents(simulation_time));
+}
+
 bool SourceList::Inside(const VectorR3 & pos)
 {
     for (int i = 0; i < neg_list.size(); i++) {
@@ -171,4 +182,9 @@ bool SourceList::SetCurIsotope(const std::string & iso)
         return(false);
     }
 
+}
+
+void SourceList::SetSimulationTime(double time)
+{
+    simulation_time = time;
 }
