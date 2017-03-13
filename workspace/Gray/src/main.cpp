@@ -23,14 +23,16 @@ int main( int argc, char** argv)
 
     GammaRayTrace Gray;
     SceneDescription scene;
+    Output output;
+    SourceList sources;
     if (!LoadMaterials::LoadPhysicsFiles(scene)) {
         return(1);
     }
-    if (!LoadDetector::Load(config.filename_detector, scene, Gray.output, Gray.sources)) {
+    if (!LoadDetector::Load(config.filename_detector, scene, output, sources)) {
         cerr << "Loading file \"" << config.filename_detector << "\" failed" << endl;
         return(1);
     }
-    Gray.output.SetLogfile(config.filename_output);
+    output.SetLogfile(config.filename_output);
     Gray.SetDefaultMaterial(dynamic_cast<GammaMaterial*>(&scene.GetMaterial(0)));
     if (config.seed != 0) {
         Random::Seed(config.seed);
@@ -39,6 +41,7 @@ int main( int argc, char** argv)
 
     IntersectKdTree intersect_kd_tree(scene);
     Gray.SetKdTree(intersect_kd_tree);
+    sources.SetKdTree(intersect_kd_tree);
 
     if (config.run_viewer_flag) {
 #ifdef USE_OPENGL
@@ -46,7 +49,7 @@ int main( int argc, char** argv)
 #endif
     }
     if (config.run_physics_flag) {
-        Gray.GRayTraceSources();
+        Gray.GRayTraceSources(sources, output);
     }
     return(0);
 }

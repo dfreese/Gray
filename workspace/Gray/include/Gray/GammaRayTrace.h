@@ -15,13 +15,11 @@ class GammaRayTrace
 {
 public:
     GammaRayTrace();
-    void GRayTraceSources(void);
+    void GRayTraceSources(SourceList & sources, Output & output);
     void SetDefaultMaterial(GammaMaterial * mat);
-    Output output;
-    SourceList sources;
     void SetKdTree(IntersectKdTree & tree);
 private:
-    Interaction::INTER_TYPE GRayTrace(Photon &photon,
+    Interaction::INTER_TYPE GRayTrace(Photon &photon, Output & output,
                                       GammaMaterial const * const start_material,
                                       int MaxTraceDepth);
     GammaMaterial * defaultMat;

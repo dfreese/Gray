@@ -21,11 +21,11 @@ void GammaRayTrace::SetDefaultMaterial(GammaMaterial * mat)
 
 void GammaRayTrace::SetKdTree(IntersectKdTree & tree) {
     kd_tree = &tree;
-    sources.SetKdTree(tree);
 }
 
 Interaction::INTER_TYPE GammaRayTrace::GRayTrace(
         Photon &photon,
+        Output & output,
         GammaMaterial const * const start_material,
         int MaxTraceDepth)
 {
@@ -116,7 +116,7 @@ Interaction::INTER_TYPE GammaRayTrace::GRayTrace(
     return(Interaction::NO_INTERACTION);
 }
 
-void GammaRayTrace::GRayTraceSources(void)
+void GammaRayTrace::GRayTraceSources(SourceList & sources, Output & output)
 {
     const int num_chars = 70;
 
@@ -158,7 +158,7 @@ void GammaRayTrace::GRayTraceSources(void)
         }
         while(!isotope->IsEmpty()) {
             Photon photon = isotope->NextPhoton();
-            GRayTrace(photon, source->GetMaterial(), 100);
+            GRayTrace(photon, output, source->GetMaterial(), 100);
         }
     }
     cout << "=] Done.\n";
