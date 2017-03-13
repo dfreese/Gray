@@ -47,11 +47,11 @@ private:
     void LogASCII(const Photon &p,
                   Interaction::INTER_TYPE type,
                   double deposit,
-                  const GammaStats & mat_gamma_prop);
+                  int material_id);
     void LogBinary(const Photon &p,
                    Interaction::INTER_TYPE type,
                    double deposit,
-                   const GammaStats & mat_gamma_prop);
+                   int material_id);
 
     ofstream log_file;
     bool log_data;

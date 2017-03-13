@@ -103,9 +103,9 @@ void Output::LogRayleigh(const Photon &p, const GammaStats & mat_gamma_prop)
     bool log_event = (log_data & mat_gamma_prop.log_material) | log_all;
     if (log_event) {
         if (binary_output) {
-            LogBinary(p, Interaction::RAYLEIGH, 0, mat_gamma_prop);
+            LogBinary(p, Interaction::RAYLEIGH, 0, mat_gamma_prop.GetMaterial());
         } else {
-            LogASCII(p, Interaction::RAYLEIGH, 0, mat_gamma_prop);
+            LogASCII(p, Interaction::RAYLEIGH, 0, mat_gamma_prop.GetMaterial());
         }
         counter_rayleigh++;
     }
@@ -117,9 +117,9 @@ void Output::LogCompton(const Photon &p, double deposit, const GammaStats & mat_
     bool log_event = (log_data & mat_gamma_prop.log_material) | log_all;
     if (log_event) {
         if (binary_output) {
-            LogBinary(p, Interaction::COMPTON, deposit, mat_gamma_prop);
+            LogBinary(p, Interaction::COMPTON, deposit, mat_gamma_prop.GetMaterial());
         } else {
-            LogASCII(p, Interaction::COMPTON, deposit,mat_gamma_prop);
+            LogASCII(p, Interaction::COMPTON, deposit, mat_gamma_prop.GetMaterial());
         }
         counter_compton++;
     }
@@ -131,9 +131,9 @@ void Output::LogPhotoElectric(const Photon &p, const GammaStats & mat_gamma_prop
     bool log_event = (log_data & mat_gamma_prop.log_material) | log_all;
     if (log_event) {
         if (binary_output) {
-            LogBinary(p, Interaction::PHOTOELECTRIC, p.energy, mat_gamma_prop);
+            LogBinary(p, Interaction::PHOTOELECTRIC, p.energy, mat_gamma_prop.GetMaterial());
         } else {
-            LogASCII(p, Interaction::PHOTOELECTRIC, p.energy, mat_gamma_prop);
+            LogASCII(p, Interaction::PHOTOELECTRIC, p.energy, mat_gamma_prop.GetMaterial());
         }
         counter_photoelectric++;
     }
@@ -143,7 +143,7 @@ void Output::LogPhotoElectric(const Photon &p, const GammaStats & mat_gamma_prop
 void Output::LogASCII(const Photon &p,
                       Interaction::INTER_TYPE type,
                       double deposit,
-                      const GammaStats & mat_gamma_prop)
+                      int material_id)
 {
     Photon ptmp;
     ptmp = p;
@@ -159,22 +159,21 @@ void Output::LogASCII(const Photon &p,
     }
     log_file << ptmp;
     char str[256];
-    sprintf(str,"%2d ",mat_gamma_prop.GetMaterial());
+    sprintf(str,"%2d ", material_id);
     log_file << str;
     sprintf(str,"%3d ",p.det_id );
     log_file << str;
     log_file << "\n";
-
 }
 
 void Output::LogBinary(const Photon &p,
                        Interaction::INTER_TYPE type,
                        double deposit,
-                       const GammaStats & mat_gamma_prop)
+                       int material_id)
 {
     if (binary_format == FULL_OUTPUT) {
         GRAY_BINARY b;
-        b.log = MakeLogWord( (int) type, p.color, p.phantom_scatter ,  mat_gamma_prop.GetMaterial() ,p.src_id);
+        b.log = MakeLogWord((int)type, p.color, p.phantom_scatter, material_id, p.src_id);
         b.i = p.id;
         b.time = p.time;
         b.energy = deposit;
@@ -185,7 +184,7 @@ void Output::LogBinary(const Photon &p,
         write(b);
     } else if (binary_format == NO_POS) {
         BinaryDetectorOutput b;
-        b.log = MakeLogWord( (int) type, p.color, p.phantom_scatter ,  mat_gamma_prop.GetMaterial() ,p.src_id);
+        b.log = MakeLogWord((int)type, p.color, p.phantom_scatter, material_id, p.src_id);
         b.i = p.id;
         b.time = p.time;
         b.energy = deposit;
