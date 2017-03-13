@@ -18,6 +18,7 @@ const double GammaRayTrace::Epsilon = 1e-10;
 void GammaRayTrace::TracePhoton(
         Photon &photon,
         Output & output,
+        std::vector<Interaction> & interactions,
         IntersectKdTree & tree,
         GammaMaterial const * const default_material,
         GammaMaterial const * const start_material,
@@ -58,6 +59,7 @@ void GammaRayTrace::TracePhoton(
         double prev_energy = photon.energy;
         Interaction interact = Interaction::GammaInteraction(photon, hitDist,
                                                              *curMaterial);
+        interactions.push_back(interact);
         switch (interact.type) {
             case Interaction::PHOTOELECTRIC: {
                 output.LogPhotoElectric(photon, (*curMaterial));
@@ -147,6 +149,10 @@ void GammaRayTrace::TraceSources(SourceList & sources,
             continue;
         }
 
+        vector<Interaction> interactions;
+        interactions.push_back(Interaction::NuclearDecay(
+                *static_cast<Positron*>(isotope)->GetPositronDecay(),
+                *source->GetMaterial()));
         output.LogNuclearDecay(((Positron*)isotope)->GetPositronDecay());
 
         // Fun ANSI graphics to do while waiting for simulation
@@ -157,7 +163,7 @@ void GammaRayTrace::TraceSources(SourceList & sources,
         }
         while(!isotope->IsEmpty()) {
             Photon photon = isotope->NextPhoton();
-            TracePhoton(photon, output, tree, default_material,
+            TracePhoton(photon, output, interactions, tree, default_material,
                         source->GetMaterial(), 100);
         }
     }

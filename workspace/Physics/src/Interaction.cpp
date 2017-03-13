@@ -1,7 +1,7 @@
 #include <Physics/Interaction.h>
 #include <math.h>
 #include <Physics/GammaStats.h>
-#include <Physics/Positron.h>
+#include <Physics/NuclearDecay.h>
 #include <Random/Random.h>
 #include <stdlib.h>
 #include <algorithm>
@@ -108,15 +108,15 @@ Interaction Interaction::Rayleigh(const Photon & p,
     return(hit);
 }
 
-Interaction Interaction::NuclearDecay(const Positron &p, double deposit,
+Interaction Interaction::NuclearDecay(const class NuclearDecay &p,
                                       const GammaStats & mat_gamma_prop)
 {
     Interaction hit;
-    hit.type = POSITRON;
-    hit.id = p.GetId();
+    hit.type = NUCLEAR_DECAY;
+    hit.id = p.decay_number;
     hit.time = p.time;
-    hit.pos = p.GetPosition();
-    hit.energy = 0;
+    hit.pos = p.pos;
+    hit.energy = p.energy;
     hit.color = Photon::P_YELLOW;
     hit.src_id = p.source_num;
     hit.mat_id = mat_gamma_prop.GetMaterial();

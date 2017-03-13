@@ -1,7 +1,10 @@
 #ifndef GAMMARAYTRACE_H
 #define GAMMARAYTRACE_H
 
+#include <vector>
+
 class GammaMaterial;
+class Interaction;
 class IntersectKdTree;
 class Output;
 class Photon;
@@ -15,6 +18,7 @@ public:
                              GammaMaterial const * const default_material);
 private:
     static void TracePhoton(Photon &photon, Output & output,
+                            std::vector<Interaction> & interactions,
                             IntersectKdTree & tree,
                             GammaMaterial const * const default_material,
                             GammaMaterial const * const start_material,
