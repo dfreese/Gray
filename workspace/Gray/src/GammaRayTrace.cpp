@@ -56,7 +56,9 @@ void GammaRayTrace::TracePhoton(
 
         // set detector id in photon
         double prev_energy = photon.energy;
-        switch(Interaction::GammaInteraction(photon, hitDist, *curMaterial)) {
+        Interaction interact = Interaction::GammaInteraction(photon, hitDist,
+                                                             *curMaterial);
+        switch (interact.type) {
             case Interaction::PHOTOELECTRIC: {
                 output.LogPhotoElectric(photon, (*curMaterial));
                 return;

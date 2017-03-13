@@ -1,33 +1,11 @@
 #include <Physics/InteractionList.h>
+#include <Physics/Deposit.h>
 #include <Physics/GammaStats.h>
 #include <Physics/Photon.h>
 #include <Physics/Positron.h>
 
 InteractionList::InteractionList()
 {
-    /* set default values for EMPTY */
-    hits.clear();
-}
-InteractionList::~InteractionList() {}
-
-bool InteractionList::isEmpty() const
-{
-    return hits.empty();
-}
-
-inline void InteractionList::AddHit(Deposit & d)
-{
-    hits.push_back(d);
-}
-
-inline Deposit InteractionList::NextHit()
-{
-    if (hits.empty()) {
-        return EMPTY;
-    }
-    Deposit deposit = hits.back();
-    hits.pop_back();
-    return deposit;
 }
 
 ostream& operator<< (ostream &os, const InteractionList & l)
@@ -42,7 +20,7 @@ ostream& operator<< (ostream &os, const InteractionList & l)
 
 void InteractionList::HitPositron(const Positron &p, double deposit)
 {
-    hit.Reset();
+    Deposit hit;
     // TODO: Calculate the energy that is deposited based on the beta energy of the positron
     hit.pos = p.GetPosition();
     hit.id = p.GetId();
@@ -56,7 +34,7 @@ void InteractionList::HitPositron(const Positron &p, double deposit)
 
 void InteractionList::HitCompton(const Photon &p, double deposit, const GammaStats & mat_gamma_prop)
 {
-    hit.Reset();
+    Deposit hit;
     hit.pos = p.pos;
     hit.id = p.id;
     hit.det_id = p.det_id;
@@ -68,9 +46,10 @@ void InteractionList::HitCompton(const Photon &p, double deposit, const GammaSta
     hit.mat_id = mat_gamma_prop.GetMaterial();
     hits.push_back(hit);
 }
+
 void InteractionList::HitPhotoelectric(const Photon &p, double deposit, const GammaStats & mat_gamma_prop)
 {
-    hit.Reset();
+    Deposit hit;
     hit.pos = p.pos;
     hit.id = p.id;
     hit.det_id = p.det_id;
@@ -78,6 +57,21 @@ void InteractionList::HitPhotoelectric(const Photon &p, double deposit, const Ga
     hit.time = p.time;
     hit.energy = deposit;
     hit.type = I_PHOTOELECTRIC;
+    hit.src_id = p.GetSrc();
+    hit.mat_id = mat_gamma_prop.GetMaterial();
+    hits.push_back(hit);
+}
+
+void InteractionList::HitRayleigh(const Photon &p, const GammaStats & mat_gamma_prop)
+{
+    Deposit hit;
+    hit.pos = p.pos;
+    hit.id = p.id;
+    hit.det_id = p.det_id;
+    hit.color = p.color;
+    hit.time = p.time;
+    hit.energy = 0;
+    hit.type = I_COMPTON;
     hit.src_id = p.GetSrc();
     hit.mat_id = mat_gamma_prop.GetMaterial();
     hits.push_back(hit);

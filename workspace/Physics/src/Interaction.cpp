@@ -7,6 +7,106 @@
 
 using namespace std;
 
+Interaction::Interaction() :
+    type(NO_INTERACTION),
+    id(0),
+    time(0),
+    pos(0, 0, 0),
+    energy(0),
+    color(Photon::P_BLUE),
+    src_id(0),
+    mat_id(0),
+    det_id(-1),
+    error(false),
+    scatter(false),
+    sensitive_mat(false)
+{
+}
+
+Interaction Interaction::NoInteraction() {
+    return(Interaction());
+}
+
+Interaction Interaction::Photoelectric(const Photon & p,
+                                       const GammaStats & mat_gamma_prop)
+{
+    Interaction hit;
+    hit.type = PHOTOELECTRIC;
+    hit.id = p.id;
+    hit.time = p.time;
+    hit.pos = p.pos;
+    hit.energy = p.energy;
+    hit.color = p.color;
+    hit.src_id = p.GetSrc();
+    hit.mat_id = mat_gamma_prop.GetMaterial();
+    hit.det_id = p.det_id;
+    hit.error = false;
+    hit.scatter = false;
+    hit.sensitive_mat = mat_gamma_prop.log_material;
+    return(hit);
+}
+
+Interaction Interaction::XrayEscape(const Photon & p, double deposit,
+                                 const GammaStats & mat_gamma_prop)
+{
+    Interaction hit;
+    hit.type = XRAY_ESCAPE;
+    hit.id = p.id;
+    hit.time = p.time;
+    hit.pos = p.pos;
+    hit.energy = deposit;
+    hit.color = p.color;
+    hit.src_id = p.GetSrc();
+    hit.mat_id = mat_gamma_prop.GetMaterial();
+    hit.det_id = p.det_id;
+    hit.error = false;
+    hit.scatter = false;
+    hit.sensitive_mat = mat_gamma_prop.log_material;
+    return(hit);
+}
+
+Interaction Interaction::Compton(const Photon & p, double deposit,
+                                 const GammaStats & mat_gamma_prop)
+{
+    Interaction hit;
+    hit.type = COMPTON;
+    hit.id = p.id;
+    hit.time = p.time;
+    hit.pos = p.pos;
+    hit.energy = deposit;
+    hit.color = p.color;
+    hit.src_id = p.GetSrc();
+    hit.mat_id = mat_gamma_prop.GetMaterial();
+    hit.det_id = p.det_id;
+    hit.error = false;
+    // This is a phantom scatter flag, so only flag if the material isn't
+    // sensitive.
+    hit.scatter = !mat_gamma_prop.log_material;
+    hit.sensitive_mat = mat_gamma_prop.log_material;
+    return(hit);
+}
+
+Interaction Interaction::Rayleigh(const Photon & p,
+                                  const GammaStats & mat_gamma_prop)
+{
+    Interaction hit;
+    hit.type = RAYLEIGH;
+    hit.id = p.id;
+    hit.time = p.time;
+    hit.pos = p.pos;
+    hit.energy = 0;
+    hit.color = p.color;
+    hit.src_id = p.GetSrc();
+    hit.mat_id = mat_gamma_prop.GetMaterial();
+    hit.det_id = p.det_id;
+    hit.error = false;
+    // This is a phantom scatter flag, so only flag if the material isn't
+    // sensitive.
+    hit.scatter = !mat_gamma_prop.log_material;
+    hit.sensitive_mat = mat_gamma_prop.log_material;
+    return(hit);
+}
+
 Interaction::KleinNishina::KleinNishina() :
     // These energies were chosen, as they give less than 0.5% error from 0 to
     // 1.5MeV when linear interpolation is performed.
@@ -124,31 +224,31 @@ bool Interaction::PhotonInteracts(double energy,
     }
 }
 
-Interaction::INTER_TYPE Interaction::GammaInteraction(
+Interaction Interaction::GammaInteraction(
         Photon &photon, double dist, const GammaStats & mat_gamma_prop)
 {
     if (!PhotonInteracts(photon.energy, dist, mat_gamma_prop)) {
-        return(NO_INTERACTION);
+        return(NoInteraction());
     }
 
     // move photon to interaction point
     photon.pos += (dist * photon.dir.Normalize());
     photon.time += (dist * si1_SOL);
+
     // test for Photoelectric interaction
     switch (InteractionType(photon, mat_gamma_prop)) {
     case PHOTOELECTRIC:
-        return PHOTOELECTRIC;
+        return(Photoelectric(photon, mat_gamma_prop));
     case XRAY_ESCAPE:
-        return XRAY_ESCAPE;
+        return(XrayEscape(photon, 0, mat_gamma_prop));
     case COMPTON:
         // perform compton kinematics
-        Klein_Nishina(photon);
-        // If the photon scatters on a non-detector, it is a scatter, checked inside SetScatter
-        photon.SetScatter();
-        return COMPTON;
+        double deposit;
+        Klein_Nishina(photon, deposit);
+        return(Compton(photon, deposit, mat_gamma_prop));
     case RAYLEIGH:
         Rayleigh(photon);
-        return RAYLEIGH;
+        return(Rayleigh(photon, mat_gamma_prop));
     default:
         cerr << "ERROR: Incorrect interaction\n";
         exit(0);
@@ -179,29 +279,37 @@ Interaction::INTER_TYPE Interaction::InteractionType(
     }
 }
 
-void Interaction::Klein_Nishina(Photon &p)
+void Interaction::Klein_Nishina_Angle(double energy, double & theta,
+                                      double & phi)
 {
-    // alpha is defined as the ratio between 511keV and energy
-    double alpha = p.energy / ENERGY_511;
-
     /* Generate scattering angles - phi and theta */
     // Theta is the compton angle
 
-    double theta = M_PI * Random::Uniform();
+    theta = M_PI * Random::Uniform();
     double r = Random::Uniform();
 
-    while (klein_nishina.dsigma_over_max(theta, p.energy) < r) {
+    while (klein_nishina.dsigma_over_max(theta, energy) < r) {
         theta = M_PI * Random::Uniform();
         r = Random::Uniform();
     }
 
     // phi is symmetric around a circle of 360 degrees
-    double phi = M_2_PI * Random::Uniform();
+    phi = M_2_PI * Random::Uniform();
+}
 
+double Interaction::Klein_Nishina_Energy(double energy, double theta)
+{
+    return(energy / (1.0 + (energy / ENERGY_511) * (1. - cos(theta))));
+}
+
+void Interaction::Klein_Nishina(Photon &p, double & deposit)
+{
+    double theta, phi;
+    Klein_Nishina_Angle(p.energy, theta, phi);
     // After collision the photon loses some energy to the electron
-    double deposit = p.energy;
-    p.energy = p.energy /(1.0 + alpha * (1. - cos(theta)));
-    deposit = (deposit-p.energy);
+    deposit = p.energy;
+    p.energy = Klein_Nishina_Energy(p.energy, theta);
+    deposit -= p.energy;
 
     // Create rotation axis this is perpendicular to Y axis
     // to generate the scattering angle theta
@@ -226,6 +334,10 @@ void Interaction::Klein_Nishina(Photon &p)
 
     // next direction is from compton scattering angle
     p.dir = comp_dir;
+
+    // If the photon scatters on a non-detector, it is a scatter, checked
+    // inside SetScatter
+    p.SetScatter();
 }
 
 /*!

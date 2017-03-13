@@ -10,8 +10,9 @@
 #define INTERACTION_LIST_H
 
 #include <vector>
-#include <Physics/Deposit.h>
+#include <ostream>
 
+class Deposit;
 class Photon;
 class Positron;
 class Isotope;
@@ -21,22 +22,14 @@ class InteractionList
 {
 public:
     InteractionList();
-    ~InteractionList();
-    bool isEmpty() const;
-    Deposit NextHit();
     void Reset();
     void HitPositron(const Positron &p, double deposit);
     void HitCompton(const Photon &p, double deposit, const GammaStats & mat_gamma_prop);
     void HitPhotoelectric(const Photon &p, double deposit, const GammaStats & mat_gamma_prop);
-    void HitRayleigh(const Photon &p, const GammaStats & mat_gamma_prop) { };
+    void HitRayleigh(const Photon &p, const GammaStats & mat_gamma_prop);
     std::vector<Deposit> hits;
-    friend ostream& operator<< (ostream &os, const InteractionList & l);
-protected:
-    void AddHit(Deposit & d);
-    Isotope * cur_Isotope;
-    Photon * cur_Photon;
-    Deposit EMPTY;
-    Deposit hit;
+    friend std::ostream& operator<< (std::ostream &os,
+                                     const InteractionList & l);
 };
 
 #endif

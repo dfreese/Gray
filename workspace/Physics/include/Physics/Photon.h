@@ -4,7 +4,7 @@
 #include <VrMath/MathMisc.h>
 #include <VrMath/LinearR3.h>
 
-#define ENERGY_511 0.510998903;
+#define ENERGY_511 0.510998903
 
 class Photon
 {
@@ -49,7 +49,7 @@ public:
     double energy;
     double time;
     int id;
-    int color;
+    Color color;
     int det_id;
     bool phantom_scatter;
     int src_id;

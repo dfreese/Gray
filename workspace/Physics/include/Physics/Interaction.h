@@ -26,10 +26,40 @@ public:
         ERROR
     };
 
-    static INTER_TYPE GammaInteraction(Photon &p, double dist, const GammaStats & mat_gamma_prop);
+    Interaction();
+
+    INTER_TYPE type;
+    int id;
+    double time;
+    VectorR3 pos;
+    double energy;
+    Photon::Color color;
+    int src_id;
+    int mat_id;
+    int det_id;
+    bool error;
+    bool scatter;
+    bool sensitive_mat;
+
+    static Interaction NoInteraction();
+    static Interaction Photoelectric(const Photon & p,
+                                     const GammaStats & mat_gamma_prop);
+    static Interaction XrayEscape(const Photon & p, double deposit,
+                                  const GammaStats & mat_gamma_prop);
+    static Interaction Compton(const Photon & p, double deposit,
+                               const GammaStats & mat_gamma_prop);
+    static Interaction Rayleigh(const Photon & p,
+                                const GammaStats & mat_gamma_prop);
+
+    static Interaction GammaInteraction(Photon &p,
+                                        double dist,
+                                        const GammaStats & mat_gamma_prop);
     static INTER_TYPE InteractionType(Photon &p,
                                       const GammaStats & mat_gamma_prop);
-    static void Klein_Nishina(Photon &p);
+    static void Klein_Nishina(Photon &p, double & deposit);
+    static void Klein_Nishina_Angle(double energy, double & theta,
+                                    double & phi);
+    static double Klein_Nishina_Energy(double energy, double theta);
     static bool XrayEscape(Photon &p, const GammaStats & mat_gamma_prop);
     static const double si1_SOL;
     static void Rayleigh(Photon &p);
