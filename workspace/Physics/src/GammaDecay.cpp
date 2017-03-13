@@ -5,7 +5,7 @@
 
 GammaDecay::GammaDecay()
 {
-    gamma.color = P_YELLOW;
+    gamma.color = Photon::P_YELLOW;
 }
 
 void GammaDecay::Decay(unsigned int photon_number)
@@ -17,7 +17,7 @@ void GammaDecay::Decay(unsigned int photon_number)
     gamma.energy = energy;
     gamma.id = photon_number;
     gamma.det_id = -1;
-    gamma.color = P_YELLOW;
+    gamma.color = Photon::P_YELLOW;
     gamma.dir.SetUnitZ();
     gamma.src_id = source_num;
     Random::UniformSphere(gamma.dir);

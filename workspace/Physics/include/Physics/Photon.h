@@ -6,15 +6,16 @@
 
 #define ENERGY_511 0.510998903;
 
-const int P_BLUE = 0;
-const int P_RED = 1;
-const int P_YELLOW = 2;
-
 class Photon
 {
 public:
     Photon();
     Photon(int set_id, double e, const VectorR3 & p, const VectorR3 & d);
+    enum Color {
+        P_BLUE = 0,
+        P_RED = 1,
+        P_YELLOW = 2
+    };
     void SetRed()
     {
         color = P_RED;

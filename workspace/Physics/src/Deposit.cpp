@@ -17,7 +17,7 @@ void Deposit::Reset()
     src_id = -1;
     det_id = -1;
     mat_id = -1;
-    color = P_BLUE;
+    color = Photon::P_BLUE;
     type = I_EMPTY;
 }
 

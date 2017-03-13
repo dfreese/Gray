@@ -13,7 +13,7 @@ public:
     virtual void Reset()
     {
         gamma.Reset();
-        gamma.color = P_YELLOW;
+        gamma.color = Photon::P_YELLOW;
     }
     virtual ostream & print_on( ostream& os ) const;
     virtual DECAY_TYPE GetType() const
