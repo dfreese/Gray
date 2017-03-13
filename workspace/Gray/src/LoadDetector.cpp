@@ -4,6 +4,7 @@
 #include <Random/Random.h>
 #include <Gray/LoadDetector.h>
 #include <Gray/GammaMaterial.h>
+#include <Graphics/SceneDescription.h>
 #include <Graphics/TransformViewable.h>
 #include <Graphics/VisiblePoint.h>
 #include <Graphics/ViewableBase.h>
@@ -12,6 +13,7 @@
 #include <Graphics/ViewableTriangle.h>
 #include <Graphics/ViewableCylinder.h>
 #include <Output/DetectorArray.h>
+#include <Output/Output.h>
 #include <Sources/AnnulusCylinderSource.h>
 #include <Sources/AnnulusEllipticCylinderSource.h>
 #include <Sources/BeamPointSource.h>
@@ -22,6 +24,9 @@
 #include <Sources/SphereSource.h>
 #include <Sources/VectorSource.h>
 #include <Sources/VoxelSource.h>
+#include <Sources/SourceList.h>
+#include <VrMath/LinearR3.h>
+#include <stack>
 
 namespace {
 const int numCommands = 60;

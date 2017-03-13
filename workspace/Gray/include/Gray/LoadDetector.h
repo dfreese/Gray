@@ -1,14 +1,16 @@
 #ifndef LOAD_DETECTOR_H_
 #define LOAD_DETECTOR_H_
 
-#include <stack>
 #include <string>
-#include <VrMath/LinearR3.h>
-#include <Gray/GammaRayTrace.h>
-#include <Graphics/SceneDescription.h>
 
+class CameraView;
 class Material;
+class Output;
+class RigidMapR3;
+class SourceList;
+class SceneDescription;
 class VectorSource;
+class VectorR3;
 
 class LoadDetector {
 public:

@@ -1,30 +1,27 @@
 #ifndef GAMMARAYTRACE_H
 #define GAMMARAYTRACE_H
 
-#include <stack>
-#include <string>
-#include <Sources/SourceList.h>
-#include <Output/Output.h>
 #include <Physics/Interaction.h>
 
 class GammaMaterial;
-class Photon;
 class IntersectKdTree;
+class Output;
+class Photon;
+class SourceList;
 
-class GammaRayTrace
-{
+class GammaRayTrace {
 public:
-    GammaRayTrace();
-    void GRayTraceSources(SourceList & sources, Output & output);
-    void SetDefaultMaterial(GammaMaterial * mat);
-    void SetKdTree(IntersectKdTree & tree);
+    static void TraceSources(SourceList & sources,
+                             Output & output,
+                             IntersectKdTree & tree,
+                             GammaMaterial const * const default_material);
 private:
-    Interaction::INTER_TYPE GRayTrace(Photon &photon, Output & output,
-                                      GammaMaterial const * const start_material,
-                                      int MaxTraceDepth);
-    GammaMaterial * defaultMat;
-    const double Epsilon = 1e-10;
-    IntersectKdTree * kd_tree;
+    static Interaction::INTER_TYPE GrayTrace(Photon &photon, Output & output,
+                                             IntersectKdTree & tree,
+                                             GammaMaterial const * const default_material,
+                                             GammaMaterial const * const start_material,
+                                             int MaxTraceDepth);
+    static const double Epsilon;
 };
 
 #endif /*GAMMARAYTRACE_H*/

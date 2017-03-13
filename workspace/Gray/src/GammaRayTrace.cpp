@@ -7,25 +7,19 @@
 #include <Physics/Interaction.h>
 #include <Physics/Positron.h>
 #include <Physics/Photon.h>
+#include <Output/Output.h>
 #include <Sources/Source.h>
+#include <Sources/SourceList.h>
+#include <stack>
 
-GammaRayTrace::GammaRayTrace() :
-    defaultMat(NULL)
-{
-}
 
-void GammaRayTrace::SetDefaultMaterial(GammaMaterial * mat)
-{
-    defaultMat = mat;
-}
+const double GammaRayTrace::Epsilon = 1e-10;
 
-void GammaRayTrace::SetKdTree(IntersectKdTree & tree) {
-    kd_tree = &tree;
-}
-
-Interaction::INTER_TYPE GammaRayTrace::GRayTrace(
+Interaction::INTER_TYPE GammaRayTrace::GrayTrace(
         Photon &photon,
         Output & output,
+        IntersectKdTree & tree,
+        GammaMaterial const * const default_material,
         GammaMaterial const * const start_material,
         int MaxTraceDepth)
 {
@@ -34,14 +28,14 @@ Interaction::INTER_TYPE GammaRayTrace::GRayTrace(
     // exiting a material.  This may be problem with the scene setup, but we
     // need to have the default material to enter into once we've exited a
     // material.
-    MatStack.push(defaultMat);
+    MatStack.push(default_material);
     // Add the material that the photon started in.
     MatStack.push(start_material);
     for (int trace_depth = 0; trace_depth < MaxTraceDepth; trace_depth++) {
         double hitDist;
         VisiblePoint visPoint;
-        int intersectNum = kd_tree->SeekIntersection(photon.pos, photon.dir,
-                                                     &hitDist, visPoint, -1);
+        int intersectNum = tree.SeekIntersection(photon.pos, photon.dir,
+                                                 &hitDist, visPoint, -1);
         // There was nothing further in the environment to hit, so return.
         if (intersectNum < 0) {
             return Interaction::NO_INTERACTION;
@@ -116,7 +110,10 @@ Interaction::INTER_TYPE GammaRayTrace::GRayTrace(
     return(Interaction::NO_INTERACTION);
 }
 
-void GammaRayTrace::GRayTraceSources(SourceList & sources, Output & output)
+void GammaRayTrace::TraceSources(SourceList & sources,
+                                     Output & output,
+                                     IntersectKdTree & tree,
+                                     GammaMaterial const * const default_material)
 {
     const int num_chars = 70;
 
@@ -158,7 +155,8 @@ void GammaRayTrace::GRayTraceSources(SourceList & sources, Output & output)
         }
         while(!isotope->IsEmpty()) {
             Photon photon = isotope->NextPhoton();
-            GRayTrace(photon, output, source->GetMaterial(), 100);
+            GrayTrace(photon, output, tree, default_material,
+                      source->GetMaterial(), 100);
         }
     }
     cout << "=] Done.\n";

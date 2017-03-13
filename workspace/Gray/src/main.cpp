@@ -6,6 +6,8 @@
 #include <Gray/LoadMaterials.h>
 #include <Gray/LoadDetector.h>
 #include <Gray/Config.h>
+#include <Output/Output.h>
+#include <Sources/SourceList.h>
 #include <Random/Random.h>
 #ifdef USE_OPENGL
 #include <Viewer/Viewer.h>
@@ -21,7 +23,6 @@ int main( int argc, char** argv)
         return(-1);
     }
 
-    GammaRayTrace Gray;
     SceneDescription scene;
     Output output;
     SourceList sources;
@@ -33,14 +34,12 @@ int main( int argc, char** argv)
         return(1);
     }
     output.SetLogfile(config.filename_output);
-    Gray.SetDefaultMaterial(dynamic_cast<GammaMaterial*>(&scene.GetMaterial(0)));
     if (config.seed != 0) {
         Random::Seed(config.seed);
         cout << "Seeding Gray: " << config.seed << endl;
     }
 
     IntersectKdTree intersect_kd_tree(scene);
-    Gray.SetKdTree(intersect_kd_tree);
     sources.SetKdTree(intersect_kd_tree);
 
     if (config.run_viewer_flag) {
@@ -49,7 +48,8 @@ int main( int argc, char** argv)
 #endif
     }
     if (config.run_physics_flag) {
-        Gray.GRayTraceSources(sources, output);
+        GammaRayTrace::TraceSources(sources, output, intersect_kd_tree,
+                                    dynamic_cast<GammaMaterial*>(&scene.GetMaterial(0)));
     }
     return(0);
 }
