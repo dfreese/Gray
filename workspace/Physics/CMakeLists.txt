@@ -3,8 +3,6 @@ add_library(Physics
     include/Physics/BackBack.h
     src/Beam.cpp
     include/Physics/Beam.h
-    src/Compton.cpp
-    include/Physics/Compton.h
     src/F18.cpp
     include/Physics/F18.h
     src/GammaDecay.cpp
