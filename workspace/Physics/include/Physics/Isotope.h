@@ -24,10 +24,9 @@ public:
     virtual std::ostream & print_on(std::ostream &) const = 0;
     Photon NextPhoton();
     bool IsEmpty() const;
-    int source_num;
+protected:
     long id;
     double time;
-protected:
     VectorR3 pos;
     double half_life;
     VectorR3 position;

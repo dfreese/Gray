@@ -61,9 +61,6 @@ public:
     void SetSourceNum(int i)
     {
         source_num = i;
-        if (isotope != NULL) {
-            isotope->source_num = source_num;
-        }
     }
     GammaMaterial * GetMaterial();
     bool isNegative();

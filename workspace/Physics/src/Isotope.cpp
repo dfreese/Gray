@@ -1,7 +1,6 @@
 #include <Physics/Isotope.h>
 
-Isotope::Isotope() :
-    source_num(-1)
+Isotope::Isotope()
 {
 }
 
