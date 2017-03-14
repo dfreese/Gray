@@ -112,31 +112,22 @@ void GammaRayTrace::TracePhoton(
 void GammaRayTrace::TraceSources(SourceList & sources,
                                  Output & output,
                                  IntersectKdTree & tree,
+                                 int num_decays,
                                  GammaMaterial const * const default_material)
 {
     const int num_chars = 70;
 
-    // calculate the number of positrons to throw
-    // TODO: need to fix the number of rays because of negative sources
-    // FIXME: time should not increase when Inside() of a negative source
-    int num_rays = sources.GetTotalEvents();
-
     // create a tick mark so that we fill up 40 chars
-    int tick_mark = (int)(num_rays / num_chars);
+    int tick_mark = (int)(num_decays / num_chars);
     if (tick_mark == 0) {
         // Make sure we don't have an error later on because of num % 0
         tick_mark = 1;
     }
 
-    // done for PET Benchmark
-    //num_rays = 34076000;
-    //num_rays = 2938374;
-
-    //TODO: Make a photon stack, then race trace it
     // text graphics preamble
     cout << "[";
 
-    for (int i = 0; i < num_rays; i++) {
+    for (int i = 0; i < num_decays; i++) {
         Source * source = sources.Decay();
         Isotope * isotope = source->GetIsotope();
         if (isotope == NULL) {

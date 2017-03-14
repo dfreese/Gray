@@ -48,7 +48,13 @@ int main( int argc, char** argv)
 #endif
     }
     if (config.run_physics_flag) {
+
+        // calculate the number of positrons to throw
+        // TODO: need to fix the number of rays because of negative sources
+        // FIXME: time should not increase when Inside() of a negative source
+        int num_decays = sources.GetTotalEvents();
         GammaRayTrace::TraceSources(sources, output, intersect_kd_tree,
+                                    num_decays,
                                     dynamic_cast<GammaMaterial*>(&scene.GetMaterial(0)));
     }
     return(0);

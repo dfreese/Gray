@@ -15,6 +15,7 @@ public:
     static void TraceSources(SourceList & sources,
                              Output & output,
                              IntersectKdTree & tree,
+                             int num_decays,
                              GammaMaterial const * const default_material);
 private:
     static void TracePhoton(Photon &photon,
