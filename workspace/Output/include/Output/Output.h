@@ -42,6 +42,8 @@ public:
 
 private:
     int MakeLogWord(int interaction, int color,bool scatter, int det_mat, int src_id);
+    int MakeLogWord(Interaction::INTER_TYPE interaction, int color,
+                    bool scatter, int det_mat, int src_id);
     void LogNuclearDecayBinary(NuclearDecay *p);
     void LogNuclearDecayASCII(NuclearDecay *p);
     void LogErrorASCII(const Photon &p, ErrorType t, int detmaterial);

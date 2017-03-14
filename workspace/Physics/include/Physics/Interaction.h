@@ -24,8 +24,9 @@ public:
         INTERACTION,
         NO_INTERACTION,
         ESCAPE_INTERACTION,
-        ERROR,
-        NUCLEAR_DECAY
+        NUCLEAR_DECAY,
+        ERROR_EMPTY,
+        ERROR_TRACE_DEPTH
     };
 
     Interaction();
@@ -39,7 +40,6 @@ public:
     int src_id;
     int mat_id;
     int det_id;
-    bool error;
     bool scatter;
     bool sensitive_mat;
 
@@ -54,6 +54,9 @@ public:
                                 const GammaStats & mat_gamma_prop);
     static Interaction NuclearDecay(const NuclearDecay & p,
                                     const GammaStats & mat_gamma_prop);
+    static Interaction ErrorTraceDepth(const Photon & p,
+                                       const GammaStats & mat_gamma_prop);
+    static Interaction ErrorEmtpy(const Photon & p);
 
     static Interaction GammaInteraction(Photon &p,
                                         double dist,

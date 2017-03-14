@@ -48,7 +48,8 @@ void GammaRayTrace::TracePhoton(
             // an intersection with a back face that wasn't out of the inital
             // material or preceded by a front face.  This will happen if there
             // some sort of setup error in the KdTree.
-            output.LogError(photon, Output::ERROR_EMPTY,  0);
+            interactions.push_back(Interaction::ErrorEmtpy(photon));
+            output.LogInteraction(interactions.back());
             cout << "ERROR" << endl;
             return;
         }
@@ -105,7 +106,9 @@ void GammaRayTrace::TracePhoton(
         }
     }
 
-    output.LogError(photon, Output::ERROR_TRACE_DEPTH, MatStack.top()->GetMaterial());
+    interactions.push_back(Interaction::ErrorTraceDepth(
+            photon, *MatStack.top()));
+    output.LogInteraction(interactions.back());
     cout << "ERROR_TRACE_DEPTH" << endl;
     return;
 }
