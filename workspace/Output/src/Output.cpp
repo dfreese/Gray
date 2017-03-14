@@ -1,5 +1,7 @@
 #include <Output/Output.h>
 #include <Physics/GammaStats.h>
+#include <Physics/Interaction.h>
+
 
 Output::Output()
 {
@@ -47,6 +49,93 @@ int Output::MakeLogWord(int interaction, int color, bool scatter, int det_mat, i
 
 void Output::SetBinaryFormat(BinaryOutputFormat format) {
     binary_format = format;
+}
+
+void Output::LogInteraction(const Interaction & interact) {
+    bool log_event = (log_data & interact.sensitive_mat) | log_all |
+            (log_positron & (interact.type == Interaction::NUCLEAR_DECAY));
+    if (!log_event) {
+        return;
+    }
+    if (binary_output) {
+        if (binary_format == FULL_OUTPUT) {
+            switch (interact.type) {
+                case Interaction::PHOTOELECTRIC:
+                    break;
+                case Interaction::COMPTON:
+                    break;
+                case Interaction::RAYLEIGH:
+                    break;
+                case Interaction::NUCLEAR_DECAY:
+                    GRAY_BINARY b;
+                    b.log = MakeLogWord(0, 1, 0, 0, interact.src_id);
+                    b.i = interact.id;
+                    b.time = interact.time;
+                    b.energy = interact.energy;
+                    b.x = (float) interact.pos.x;
+                    b.y = (float) interact.pos.y;
+                    b.z = (float) interact.pos.z;
+                    b.det_id = -1;
+                    write(b);
+                    break;
+                default:
+                    break;
+            }
+        } else if (binary_format == NO_POS) {
+            switch (interact.type) {
+                case Interaction::PHOTOELECTRIC:
+                    break;
+                case Interaction::COMPTON:
+                    break;
+                case Interaction::RAYLEIGH:
+                    break;
+                case Interaction::NUCLEAR_DECAY:
+                    BinaryDetectorOutput b;
+                    b.log = MakeLogWord(0, 1, 0, 0, interact.src_id);
+                    b.i = interact.id;
+                    b.time = interact.time;
+                    b.energy = interact.energy;
+                    b.det_id = -1;
+                    write(b);
+                    break;
+                default:
+                    break;
+            }
+        }
+    } else {
+        switch (interact.type) {
+            case Interaction::PHOTOELECTRIC:
+                break;
+            case Interaction::COMPTON:
+                break;
+            case Interaction::RAYLEIGH:
+                break;
+            case Interaction::NUCLEAR_DECAY:
+                char str[256];
+                log_file << " 0 ";
+                log_file << interact.id;
+                log_file << " ";
+                log_file << interact.src_id;
+                log_file << " ";
+                sprintf(str, "%23.16e ", interact.time);
+                log_file << str;
+                sprintf(str, "%12.6e ", interact.energy);
+                log_file << str;
+                // positron is a first interaction
+                sprintf(str,"%15.8e %15.8e %15.8e ", interact.pos.x,
+                        interact.pos.y, interact.pos.z);
+                log_file << str;
+                if (log_all) {
+                    sprintf(str,"%2d %2d %2d ", interact.src_id, -2, -2);
+                    log_file << str;
+                }
+                log_file << " -1";
+                log_file << "\n";
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 void Output::LogNuclearDecay(NuclearDecay * p)

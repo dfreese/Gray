@@ -13,6 +13,7 @@
 #include <string>
 
 class GammaStats;
+class Interaction;
 
 class Output
 {
@@ -23,6 +24,7 @@ public:
     void LogNuclearDecay(NuclearDecay *p);
     void SetLogAll(bool val);
     void SetLogPositron(bool val);
+    void LogInteraction(const Interaction & interact);
     void LogRayleigh(const Photon &p, const GammaStats & mat_gamma_prop);
     void LogCompton(const Photon &p, double deposit, const GammaStats & mat_gamma_prop);
     void LogPhotoElectric(const Photon &p, const GammaStats & mat_gamma_prop);
