@@ -5,8 +5,6 @@ add_library(Physics
     include/Physics/Beam.h
     src/Compton.cpp
     include/Physics/Compton.h
-    src/Deposit.cpp
-    include/Physics/Deposit.h
     src/F18.cpp
     include/Physics/F18.h
     src/GammaDecay.cpp
@@ -17,8 +15,6 @@ add_library(Physics
     include/Physics/IN110.h
     src/Interaction.cpp
     include/Physics/Interaction.h
-    src/InteractionList.cpp
-    include/Physics/InteractionList.h
     src/Isotope.cpp
     include/Physics/Isotope.h
     src/NuclearDecay.cpp
