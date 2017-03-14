@@ -1,6 +1,8 @@
 #include <Physics/Deposit.h>
 #include <stdio.h>
 
+using namespace std;
+
 Deposit::Deposit()
 {
     Reset();

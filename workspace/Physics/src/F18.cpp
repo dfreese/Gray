@@ -1,5 +1,7 @@
 #include <Physics/F18.h>
 
+using namespace std;
+
 // TODO: Get true max endpoint in MeV
 const double F18_MAX_BETA_ENERGY=0.315;
 

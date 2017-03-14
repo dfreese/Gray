@@ -4,6 +4,8 @@
 #include <Physics/Photon.h>
 #include <Physics/Positron.h>
 
+using namespace std;
+
 InteractionList::InteractionList()
 {
 }

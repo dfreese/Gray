@@ -20,7 +20,7 @@ public:
     virtual void SetPosition(const VectorR3 & p);
     virtual void Decay(unsigned int photon_number);
     virtual void Reset();
-    virtual ostream& print_on( ostream& os ) const;
+    virtual std::ostream & print_on(std::ostream & os) const;
     virtual DECAY_TYPE GetType() const
     {
         return POSITRON;

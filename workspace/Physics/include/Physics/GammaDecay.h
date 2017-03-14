@@ -15,7 +15,7 @@ public:
         gamma.Reset();
         gamma.color = Photon::P_YELLOW;
     }
-    virtual ostream & print_on( ostream& os ) const;
+    virtual std::ostream & print_on(std::ostream & os) const;
     virtual DECAY_TYPE GetType() const
     {
         return GAMMA;

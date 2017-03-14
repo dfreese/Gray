@@ -10,7 +10,7 @@ public:
     IN110();
     virtual void Decay(unsigned int photon_number);
     virtual void Reset();
-    virtual ostream & print_on(ostream & os) const;
+    virtual std::ostream & print_on(std::ostream & os) const;
 private:
     // TODO: Model time between Gamma and Positron Decay accurately
     GammaDecay g;

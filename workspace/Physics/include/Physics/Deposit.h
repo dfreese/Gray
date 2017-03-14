@@ -18,7 +18,7 @@ public:
     Deposit();
     ~Deposit();
     void Reset();
-    friend ostream& operator<< ( ostream& os, const Deposit& d );
+    friend std::ostream & operator<< (std::ostream & os, const Deposit & d);
     bool operator<(const Deposit &d2);
 public:
     VectorR3 pos;

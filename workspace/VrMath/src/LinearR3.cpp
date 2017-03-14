@@ -23,6 +23,8 @@
 #include <VrMath/MathMisc.h>
 #include <VrMath/LinearR3.h>
 
+using namespace std;
+
 // ******************************************************
 // * VectorR3 class - math library functions				*
 // * * * * * * * * * * * * * * * * * * * * * * * * * * **

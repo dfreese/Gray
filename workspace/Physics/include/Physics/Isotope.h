@@ -33,7 +33,7 @@ public:
     }
     virtual void Decay(unsigned int photon_number) = 0;
     virtual void Reset() = 0;
-    virtual ostream & print_on(ostream &) const = 0;
+    virtual std::ostream & print_on(std::ostream &) const = 0;
     Photon NextPhoton();
     bool IsEmpty() const
     {
@@ -48,7 +48,8 @@ protected:
     double half_life;
     VectorR3 position;
     void AddPhoton(Photon &p);
-    inline friend ostream& operator<< (ostream&os,const Isotope &i)
+    inline friend std::ostream& operator<< (std::ostream & os,
+                                            const Isotope & i)
     {
         return i.print_on(os);
     }

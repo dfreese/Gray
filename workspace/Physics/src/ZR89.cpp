@@ -1,6 +1,8 @@
 #include <Physics/ZR89.h>
 #include <Random/Random.h>
 
+using namespace std;
+
 ZR89::ZR89()
 {
     /*******************************************************************************

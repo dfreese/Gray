@@ -10,7 +10,7 @@ public:
     void SetBeam(const VectorR3 & axis, double angle);
     virtual void Decay(unsigned int photon_number);
     virtual void Reset();
-    virtual ostream & print_on(ostream & os) const;
+    virtual std::ostream & print_on(std::ostream & os) const;
 private:
     VectorR3 beam_axis;
     double beam_angle;

@@ -9,7 +9,7 @@ public:
     BackBack();
     virtual void Decay(unsigned int photon_number);
     virtual void Reset();
-    virtual ostream & print_on(ostream & os) const;
+    virtual std::ostream & print_on(std::ostream & os) const;
 };
 
 #endif /* BackBack_H */

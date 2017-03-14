@@ -38,7 +38,7 @@ public:
     {
         return phantom_scatter;
     }
-    friend ostream& operator<< ( ostream& os, const Photon& p );
+    friend std::ostream & operator<< (std::ostream & os, const Photon & p);
     friend bool operator==(const Photon &p1, const Photon &p2);
     Photon& operator=(const Photon &p2);
     bool operator<(const Photon &p2);

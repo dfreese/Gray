@@ -1,6 +1,8 @@
 #include <Physics/IN110.h>
 #include <Random/Random.h>
 
+using namespace std;
+
 IN110::IN110()
 {
     /*******************************************************************************

@@ -3,6 +3,8 @@
 #include <math.h>
 #include <Random/Random.h>
 
+using namespace std;
+
 GammaDecay::GammaDecay()
 {
     gamma.color = Photon::P_YELLOW;

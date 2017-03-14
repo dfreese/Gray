@@ -49,7 +49,6 @@
 #include <assert.h>
 #include <iostream>
 #include <VrMath/MathMisc.h>
-using namespace std;
 
 class VectorR3;				// Space Vector (length 3)
 class VectorHgR3;			// Homogenous Space Vector
@@ -271,7 +270,7 @@ public:
     VectorR3& Rotate( const Quaternion& );	// Rotate according to quaternion
     // Defined in Quaternion.cpp
 
-    friend ostream& operator<< ( ostream& os, const VectorR3& u );
+    friend std::ostream& operator<< ( std::ostream& os, const VectorR3& u );
 
 };
 
@@ -423,7 +422,7 @@ protected:
 
 inline VectorR3 operator* ( const Matrix3x3&, const VectorR3& );
 
-ostream& operator<< ( ostream& os, const Matrix3x3& A );
+std::ostream & operator<< (std::ostream& os, const Matrix3x3& A);
 
 
 // *****************************************
@@ -508,7 +507,7 @@ protected:
 
 inline VectorR3 operator* ( const Matrix3x4&, const VectorR3& );
 
-ostream& operator<< ( ostream& os, const Matrix3x4& A );
+std::ostream & operator << (std::ostream & os, const Matrix3x4 & A);
 
 // *****************************************
 // LinearMapR3 class                       *
@@ -714,7 +713,7 @@ inline RotationMapR3 ToRotationMapR3( const Quaternion& q )
     return( RotationMapR3().Set(q) );
 }
 
-ostream& operator<< ( ostream& os, const RotationMapR3& A );
+std::ostream & operator<< (std::ostream & os, const RotationMapR3 & A);
 
 
 
@@ -833,7 +832,7 @@ RotationMapR3 RotateToMap( const VectorR3& fromVec, const VectorR3& toVec);
 // * Stream Output Routines	(Prototypes)						 *
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-ostream& operator<< ( ostream& os, const VectorR3& u );
+std::ostream & operator << (std::ostream & os, const VectorR3 & u);
 
 
 // *****************************************************

@@ -16,7 +16,7 @@ public:
         time = t;
     };
     double Random();
-    friend ostream& operator<< ( ostream& os, const NuclearDecay& n );
+    friend std::ostream & operator<< (std::ostream & os, const NuclearDecay & n);
     MaterialBase * GetMaterial();
     void SetMaterial(MaterialBase * mat);
     void SetBeam(const VectorR3 &axis, const double angle);
@@ -27,7 +27,7 @@ public:
     virtual void SetPosition(const VectorR3 & p) = 0;
     virtual void Decay(unsigned int photon_number) = 0;
     virtual void Reset() = 0;
-    virtual ostream & print_on(ostream &) const = 0;
+    virtual std::ostream & print_on(std::ostream &) const = 0;
     virtual DECAY_TYPE GetType() const = 0;
 
 
@@ -47,7 +47,8 @@ protected:
 
     MaterialBase * material;
 
-    inline friend ostream& operator<< (ostream&os,const NuclearDecay &n)
+    inline friend std::ostream & operator<< (std::ostream &os,
+                                             const NuclearDecay & n)
     {
         return n.print_on(os);
     }
