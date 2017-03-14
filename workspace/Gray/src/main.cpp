@@ -48,14 +48,35 @@ int main( int argc, char** argv)
 #endif
     }
     if (config.run_physics_flag) {
-
         // calculate the number of positrons to throw
         // TODO: need to fix the number of rays because of negative sources
         // FIXME: time should not increase when Inside() of a negative source
-        int num_decays = sources.GetTotalEvents();
-        GammaRayTrace::TraceSources(sources, output, intersect_kd_tree,
-                                    num_decays,
-                                    dynamic_cast<GammaMaterial*>(&scene.GetMaterial(0)));
+        int num_decays_total = sources.GetTotalEvents();
+        int num_decays_cur = 0;
+
+        const int num_chars = 70;
+        int tick_mark = (int)(num_decays_total / num_chars);
+        if (tick_mark == 0) {
+            // Make sure we don't have an error later on because of num % 0
+            tick_mark = 1;
+        }
+        int current_tick = 0;
+        cout << "[";
+        while (num_decays_cur < num_decays_total) {
+            vector<Interaction> interactions;
+            num_decays_cur += GammaRayTrace::TraceSources(
+                    sources, intersect_kd_tree,
+                    num_decays_total - num_decays_cur, interactions,
+                    10000, dynamic_cast<GammaMaterial*>(&scene.GetMaterial(0)));
+            for (const auto & interact: interactions) {
+                output.LogInteraction(interact);
+            }
+            for (; current_tick < (num_decays_cur / tick_mark); current_tick++) {
+                cout << "=";
+            }
+            cout.flush();
+        }
+        cout << "=] Done." << endl;
     }
     return(0);
 }

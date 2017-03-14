@@ -109,24 +109,13 @@ void GammaRayTrace::TracePhoton(
     return;
 }
 
-void GammaRayTrace::TraceSources(SourceList & sources,
-                                 Output & output,
-                                 IntersectKdTree & tree,
-                                 int num_decays,
-                                 GammaMaterial const * const default_material)
+int GammaRayTrace::TraceSources(SourceList & sources,
+                                IntersectKdTree & tree,
+                                int num_decays,
+                                std::vector<Interaction> & interactions,
+                                size_t soft_max_interactions,
+                                GammaMaterial const * const default_material)
 {
-    const int num_chars = 70;
-
-    // create a tick mark so that we fill up 40 chars
-    int tick_mark = (int)(num_decays / num_chars);
-    if (tick_mark == 0) {
-        // Make sure we don't have an error later on because of num % 0
-        tick_mark = 1;
-    }
-
-    // text graphics preamble
-    cout << "[";
-
     for (int i = 0; i < num_decays; i++) {
         Source * source = sources.Decay();
         Isotope * isotope = source->GetIsotope();
@@ -135,25 +124,19 @@ void GammaRayTrace::TraceSources(SourceList & sources,
             continue;
         }
 
-        vector<Interaction> interactions;
         interactions.push_back(Interaction::NuclearDecay(
                 *static_cast<Positron*>(isotope)->GetPositronDecay(),
                 *source->GetMaterial()));
 
-        // Fun ANSI graphics to do while waiting for simulation
-        // this is a simple spinner code
-        if ((i % tick_mark) == 0) {
-            cout << "=";
-            cout.flush();
-        }
         while(!isotope->IsEmpty()) {
             Photon photon = isotope->NextPhoton();
             TracePhoton(photon, interactions, tree, default_material,
                         source->GetMaterial(), 100);
         }
-        for (const auto & interact: interactions) {
-            output.LogInteraction(interact);
+
+        if (interactions.size() >= soft_max_interactions) {
+            return(i + 1);
         }
     }
-    cout << "=] Done.\n";
+    return(num_decays);
 }

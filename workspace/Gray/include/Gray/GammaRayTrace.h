@@ -12,11 +12,12 @@ class SourceList;
 
 class GammaRayTrace {
 public:
-    static void TraceSources(SourceList & sources,
-                             Output & output,
-                             IntersectKdTree & tree,
-                             int num_decays,
-                             GammaMaterial const * const default_material);
+    static int TraceSources(SourceList & sources,
+                            IntersectKdTree & tree,
+                            int num_decays,
+                            std::vector<Interaction> & interactions,
+                            size_t soft_max_interactions,
+                            GammaMaterial const * const default_material);
 private:
     static void TracePhoton(Photon &photon,
                             std::vector<Interaction> & interactions,
