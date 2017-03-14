@@ -72,6 +72,8 @@ void GammaRayTrace::TracePhoton(
                 break;
             }
             case Interaction::NO_INTERACTION: {
+                // No need to hold onto non-interactions.
+                interactions.pop_back();
                 // If not interaction, recursively traverse the in the direction the
                 // photon was travelling
                 if (visPoint.IsFrontFacing()) {
@@ -134,7 +136,7 @@ void GammaRayTrace::TraceSources(SourceList & sources,
     // text graphics preamble
     cout << "[";
 
-    for (int i = 1; i < num_rays; i++) {
+    for (int i = 0; i < num_rays; i++) {
         Source * source = sources.Decay();
         Isotope * isotope = source->GetIsotope();
         if (isotope == NULL) {
