@@ -63,8 +63,9 @@ void Output::SetBinaryFormat(BinaryOutputFormat format) {
 }
 
 void Output::LogInteraction(const Interaction & interact) {
-    bool log_event = (log_data & interact.sensitive_mat) | log_all |
-            (log_positron & (interact.type == Interaction::NUCLEAR_DECAY));
+    bool log_event = ((log_data & interact.sensitive_mat) | log_all |
+            (log_positron & (interact.type == Interaction::NUCLEAR_DECAY))) &
+            (interact.type != Interaction::NO_INTERACTION);
     if (!log_event) {
         return;
     }

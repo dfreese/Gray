@@ -17,7 +17,6 @@ const double GammaRayTrace::Epsilon = 1e-10;
 
 void GammaRayTrace::TracePhoton(
         Photon &photon,
-        Output & output,
         std::vector<Interaction> & interactions,
         IntersectKdTree & tree,
         GammaMaterial const * const default_material,
@@ -49,7 +48,6 @@ void GammaRayTrace::TracePhoton(
             // material or preceded by a front face.  This will happen if there
             // some sort of setup error in the KdTree.
             interactions.push_back(Interaction::ErrorEmtpy(photon));
-            output.LogInteraction(interactions.back());
             cout << "ERROR" << endl;
             return;
         }
@@ -62,18 +60,15 @@ void GammaRayTrace::TracePhoton(
         interactions.push_back(interact);
         switch (interact.type) {
             case Interaction::PHOTOELECTRIC: {
-                output.LogInteraction(interact);
                 return;
             }
             case Interaction::XRAY_ESCAPE: {
                 return;
             }
             case Interaction::COMPTON: {
-                output.LogInteraction(interact);
                 break;
             }
             case Interaction::RAYLEIGH: {
-                output.LogInteraction(interact);
                 break;
             }
             case Interaction::NO_INTERACTION: {
@@ -108,7 +103,6 @@ void GammaRayTrace::TracePhoton(
 
     interactions.push_back(Interaction::ErrorTraceDepth(
             photon, *MatStack.top()));
-    output.LogInteraction(interactions.back());
     cout << "ERROR_TRACE_DEPTH" << endl;
     return;
 }
@@ -152,7 +146,6 @@ void GammaRayTrace::TraceSources(SourceList & sources,
         interactions.push_back(Interaction::NuclearDecay(
                 *static_cast<Positron*>(isotope)->GetPositronDecay(),
                 *source->GetMaterial()));
-        output.LogInteraction(interactions.back());
 
         // Fun ANSI graphics to do while waiting for simulation
         // this is a simple spinner code
@@ -162,8 +155,11 @@ void GammaRayTrace::TraceSources(SourceList & sources,
         }
         while(!isotope->IsEmpty()) {
             Photon photon = isotope->NextPhoton();
-            TracePhoton(photon, output, interactions, tree, default_material,
+            TracePhoton(photon, interactions, tree, default_material,
                         source->GetMaterial(), 100);
+        }
+        for (const auto & interact: interactions) {
+            output.LogInteraction(interact);
         }
     }
     cout << "=] Done.\n";

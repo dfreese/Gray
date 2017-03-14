@@ -17,7 +17,7 @@ public:
                              IntersectKdTree & tree,
                              GammaMaterial const * const default_material);
 private:
-    static void TracePhoton(Photon &photon, Output & output,
+    static void TracePhoton(Photon &photon,
                             std::vector<Interaction> & interactions,
                             IntersectKdTree & tree,
                             GammaMaterial const * const default_material,
