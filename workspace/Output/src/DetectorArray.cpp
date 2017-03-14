@@ -6,43 +6,28 @@ DetectorArray::DetectorArray()
 {
 }
 
-DetectorArray::~DetectorArray()
+int DetectorArray::AddDetector(const VectorR3 & pos, const VectorR3 &size,
+                               const RigidMapR3 & map, int x, int y, int z,
+                               int bl)
 {
-    // delete elements in the array
-    while (!d.empty()) {
-        delete d.back();
-        d.pop_back();
-    }
-}
-
-unsigned DetectorArray::AddDetector(const VectorR3 & pos, const VectorR3 &size,
-                                    const RigidMapR3 & map, const unsigned x,
-                                    unsigned y, unsigned z, unsigned bl)
-{
-    unsigned detector_id = d.size();
+    int detector_id = detectors.size();
     VectorR3 tpos = pos;
     map.Transform(&tpos);
-    Detector * nd = new Detector(detector_id, tpos, size, map, x, y, z, bl);
-
-    // Decay time is set to 10e-9, because this is the approximate time that the DAQ can distinguish events
-
-    nd->SetDecayTime(10e-9);
-    d.push_back(nd);
+    detectors.push_back(Detector(detector_id, tpos, size, map, x, y, z, bl));
     return detector_id;
 }
 
 void DetectorArray::OutputDetectorArray()
 {
-    for (int i = 0; i < d.size(); i++) {
-        cout << *(d[i]);
+    for (int i = 0; i < detectors.size(); i++) {
+        cout << (detectors[i]);
     }
 }
 
 ostream& operator<< ( ostream& os, const DetectorArray& d )
 {
-    for(int i = 0; i < d.d.size(); i++) {
-        os << *d.d.at(i);
-        os << endl;
+    for (const auto & detector: d.detectors) {
+        os << detector << endl;
     }
     return os;
 }

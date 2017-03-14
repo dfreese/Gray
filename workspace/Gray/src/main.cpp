@@ -55,7 +55,7 @@ int main( int argc, char** argv)
         int num_decays_cur = 0;
 
         const int num_chars = 70;
-        int tick_mark = (int)(num_decays_total / num_chars);
+        int tick_mark = num_decays_total / num_chars;
         if (tick_mark == 0) {
             // Make sure we don't have an error later on because of num % 0
             tick_mark = 1;

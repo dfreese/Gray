@@ -1,65 +1,43 @@
 #include <Output/Detector.h>
-#include <Physics/Photon.h>
 #include <stdio.h>
-#include <Random/Random.h>
 
-Detector::Detector()
+Detector::Detector() :
+    detector_id(0),
+    size(-1.0f, -1.0f, -1.0f),
+    pos(-1.0f, -1.0f, -1.0f),
+    idx{0, 0, 0},
+    block(0)
 {
-    detector_id = 0;
-    pos.Set(-1.0f, -1.0f, -1.0f);
-    size.Set(-1.0f, -1.0f, -1.0f);
-    count = 0;
-    idx[0] = 0;
-    idx[1] = 0;
-    idx[2] = 0;
-    block = 0;
 }
 
-Detector::Detector(unsigned id, const VectorR3 & p, const VectorR3 &s,
+Detector::Detector(int id, const VectorR3 & p, const VectorR3 &s,
                    const RigidMapR3 & m)
 {
     Init(id,p,s,m,0,0,0,0);
 }
 
-Detector::Detector(unsigned id, const VectorR3 & p, const VectorR3 &s,
-                   const RigidMapR3 & m, const unsigned x, const unsigned y,
-                   const unsigned z, const unsigned bl)
+Detector::Detector(int id, const VectorR3 & p, const VectorR3 &s,
+                   const RigidMapR3 & m, int x, int y, int z, int bl)
 {
     Init(id, p, s, m, x, y, z, bl);
 }
 
-void Detector::Init(unsigned id, const VectorR3 & p, const VectorR3 &s,
-                    const RigidMapR3 & m, const unsigned x, const unsigned y,
-                    const unsigned z, const unsigned bl)
+void Detector::Init(int id, const VectorR3 & p, const VectorR3 &s,
+                    const RigidMapR3 & m, int x, int y, int z, int bl)
 {
     detector_id = id;
     pos = p;
     size = s;
     map = m;
-    count = 0;
     idx[0] = x;
     idx[1] = y;
     idx[2] = z;
     block = bl;
 }
 
-void Detector::SetDecayTime(double t)
-{
-    decay_time = t;
-}
-
-void Detector::SetBlock(unsigned int bl)
+void Detector::SetBlock(int bl)
 {
     block = bl;
-}
-unsigned long Detector::GetHitCount() const
-{
-    return count;
-}
-
-void Detector::IncrementHit()
-{
-    count++;
 }
 
 ostream& operator<< ( ostream& os, const Detector& d )
