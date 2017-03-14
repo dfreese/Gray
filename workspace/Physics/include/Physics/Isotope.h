@@ -4,43 +4,27 @@
 #include <map>
 #include <stack>
 #include <string>
+#include <VrMath/LinearR3.h>
 #include <Physics/Photon.h>
+
+class Photon;
 
 class Isotope
 {
 public:
     Isotope();
     virtual ~Isotope() {};
-    void SetTime (const double t)
-    {
-        time = t;
-    }
-    void SetPosition (const VectorR3 &pos)
-    {
-        position = pos;
-    }
-    void SetId(long i)
-    {
-        id = i;
-    }
-    long GetId() const
-    {
-        return id;
-    }
-    const VectorR3 & GetPosition() const
-    {
-        return position;
-    }
+    void SetTime (const double t);
+    void SetPosition (const VectorR3 &pos);
+    void SetId(long i);
+    long GetId() const;
+    const VectorR3 & GetPosition() const;
     virtual void Decay(unsigned int photon_number) = 0;
     virtual void Reset() = 0;
     virtual std::ostream & print_on(std::ostream &) const = 0;
     Photon NextPhoton();
-    bool IsEmpty() const
-    {
-        return daughter.empty();
-    }
+    bool IsEmpty() const;
     int source_num;
-public:
     long id;
     double time;
 protected:
@@ -48,28 +32,8 @@ protected:
     double half_life;
     VectorR3 position;
     void AddPhoton(Photon &p);
-    inline friend std::ostream& operator<< (std::ostream & os,
-                                            const Isotope & i)
-    {
-        return i.print_on(os);
-    }
-    Photon EMPTY;
+    friend std::ostream& operator<< (std::ostream & os, const Isotope & i);
     std::stack<Photon> daughter;
 };
-
-inline Photon Isotope::NextPhoton()
-{
-    if (daughter.empty()) {
-        return EMPTY;
-    }
-    Photon val = daughter.top();
-    daughter.pop();
-    return val;
-}
-
-inline void Isotope::AddPhoton(Photon &p)
-{
-    daughter.push(p);
-}
 
 #endif /* ISOTOPE_H */
