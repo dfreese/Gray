@@ -42,7 +42,7 @@ Interaction Interaction::Photoelectric(const Photon & p,
     hit.mat_id = mat_gamma_prop.GetMaterial();
     hit.det_id = p.det_id;
     hit.error = false;
-    hit.scatter = false;
+    hit.scatter = p.phantom_scatter;
     hit.sensitive_mat = mat_gamma_prop.log_material;
     return(hit);
 }
@@ -61,7 +61,7 @@ Interaction Interaction::XrayEscape(const Photon & p, double deposit,
     hit.mat_id = mat_gamma_prop.GetMaterial();
     hit.det_id = p.det_id;
     hit.error = false;
-    hit.scatter = false;
+    hit.scatter = p.phantom_scatter;
     hit.sensitive_mat = mat_gamma_prop.log_material;
     return(hit);
 }
@@ -82,7 +82,7 @@ Interaction Interaction::Compton(const Photon & p, double deposit,
     hit.error = false;
     // This is a phantom scatter flag, so only flag if the material isn't
     // sensitive.
-    hit.scatter = !mat_gamma_prop.log_material;
+    hit.scatter = p.phantom_scatter || (!mat_gamma_prop.log_material);
     hit.sensitive_mat = mat_gamma_prop.log_material;
     return(hit);
 }
@@ -103,7 +103,7 @@ Interaction Interaction::Rayleigh(const Photon & p,
     hit.error = false;
     // This is a phantom scatter flag, so only flag if the material isn't
     // sensitive.
-    hit.scatter = !mat_gamma_prop.log_material;
+    hit.scatter = p.phantom_scatter || (!mat_gamma_prop.log_material);
     hit.sensitive_mat = mat_gamma_prop.log_material;
     return(hit);
 }
@@ -404,6 +404,10 @@ void Interaction::Rayleigh(Photon &p)
 
     // next direction is from scattering angle
     p.dir = comp_dir;
+
+    // If the photon scatters on a non-detector, it is a scatter, checked
+    // inside SetScatter
+    p.SetScatter();
 }
 
 bool Interaction::XrayEscape(Photon &p, const GammaStats & mat_gamma_prop)

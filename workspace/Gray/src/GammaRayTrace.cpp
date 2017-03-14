@@ -56,27 +56,23 @@ void GammaRayTrace::TracePhoton(
 
 
         // set detector id in photon
-        double prev_energy = photon.energy;
         Interaction interact = Interaction::GammaInteraction(photon, hitDist,
                                                              *curMaterial);
         interactions.push_back(interact);
         switch (interact.type) {
             case Interaction::PHOTOELECTRIC: {
-                output.LogPhotoElectric(photon, (*curMaterial));
+                output.LogInteraction(interact);
                 return;
             }
             case Interaction::XRAY_ESCAPE: {
                 return;
             }
             case Interaction::COMPTON: {
-                // log interaction to file
-                double deposit = prev_energy - photon.energy;
-                output.LogCompton(photon, deposit, *curMaterial);
+                output.LogInteraction(interact);
                 break;
             }
             case Interaction::RAYLEIGH: {
-                // log interaction to file
-                output.LogRayleigh(photon, *curMaterial);
+                output.LogInteraction(interact);
                 break;
             }
             case Interaction::NO_INTERACTION: {

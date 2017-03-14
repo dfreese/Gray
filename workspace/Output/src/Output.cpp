@@ -57,61 +57,135 @@ void Output::LogInteraction(const Interaction & interact) {
     if (!log_event) {
         return;
     }
+    switch (interact.type) {
+        case Interaction::PHOTOELECTRIC:
+            counter_photoelectric++;
+            break;
+        case Interaction::COMPTON:
+            counter_compton++;
+            break;
+        case Interaction::RAYLEIGH:
+            counter_rayleigh++;
+            break;
+        case Interaction::NUCLEAR_DECAY:
+            counter_nuclear_decay++;
+            break;
+        default:
+            break;
+    }
     if (binary_output) {
         if (binary_format == FULL_OUTPUT) {
-            switch (interact.type) {
-                case Interaction::PHOTOELECTRIC:
-                    break;
-                case Interaction::COMPTON:
-                    break;
-                case Interaction::RAYLEIGH:
-                    break;
-                case Interaction::NUCLEAR_DECAY:
-                    GRAY_BINARY b;
-                    b.log = MakeLogWord(0, 1, 0, 0, interact.src_id);
-                    b.i = interact.id;
-                    b.time = interact.time;
-                    b.energy = interact.energy;
-                    b.x = (float) interact.pos.x;
-                    b.y = (float) interact.pos.y;
-                    b.z = (float) interact.pos.z;
-                    b.det_id = -1;
-                    write(b);
-                    break;
-                default:
-                    break;
+            GRAY_BINARY b;
+            b.i = interact.id;
+            b.time = interact.time;
+            b.energy = interact.energy;
+            b.x = (float) interact.pos.x;
+            b.y = (float) interact.pos.y;
+            b.z = (float) interact.pos.z;
+            b.det_id = interact.det_id;
+            if (interact.type == Interaction::NUCLEAR_DECAY) {
+                b.log = MakeLogWord(0, 1, 0, 0, interact.src_id);
+                b.det_id = -1;
+            } else {
+                b.det_id = interact.det_id;
+                b.log = MakeLogWord(interact.type, interact.color,
+                                    interact.scatter, interact.mat_id,
+                                    interact.src_id);
             }
+            write(b);
         } else if (binary_format == NO_POS) {
-            switch (interact.type) {
-                case Interaction::PHOTOELECTRIC:
-                    break;
-                case Interaction::COMPTON:
-                    break;
-                case Interaction::RAYLEIGH:
-                    break;
-                case Interaction::NUCLEAR_DECAY:
-                    BinaryDetectorOutput b;
-                    b.log = MakeLogWord(0, 1, 0, 0, interact.src_id);
-                    b.i = interact.id;
-                    b.time = interact.time;
-                    b.energy = interact.energy;
-                    b.det_id = -1;
-                    write(b);
-                    break;
-                default:
-                    break;
+            BinaryDetectorOutput b;
+            b.i = interact.id;
+            b.time = interact.time;
+            b.energy = interact.energy;
+            b.det_id = interact.det_id;
+            if (interact.type == Interaction::NUCLEAR_DECAY) {
+                b.log = MakeLogWord(0, 1, 0, 0, interact.src_id);
+                b.det_id = -1;
+            } else {
+                b.det_id = interact.det_id;
+                b.log = MakeLogWord(interact.type, interact.color,
+                                    interact.scatter, interact.mat_id,
+                                    interact.src_id);
             }
+            write(b);
         }
     } else {
         switch (interact.type) {
             case Interaction::PHOTOELECTRIC:
+                char str[256];
+                log_file << " " << 3 << " ";
+                log_file << interact.id;
+                log_file << " " << interact.color << " ";
+                sprintf(str,"%23.16e ", interact.time);
+                log_file << str;
+                sprintf(str,"%12.6e ", interact.energy);
+                log_file << str;
+                sprintf(str,"%15.8e %15.8e %15.8e %2d ", (float) interact.pos.x,
+                        (float) interact.pos.y,
+                        (float) interact.pos.z,
+                        interact.src_id);
+                log_file << str;
+                if (interact.scatter) {
+                    log_file << " 1 ";
+                } else {
+                    log_file << " 0 ";
+                }
+                sprintf(str,"%2d ", interact.mat_id);
+                log_file << str;
+                sprintf(str,"%3d ", interact.det_id);
+                log_file << str;
+                log_file << "\n";
                 break;
             case Interaction::COMPTON:
+                log_file << " " << 1 << " ";
+                log_file << interact.id;
+                log_file << " " << interact.color << " ";
+                sprintf(str,"%23.16e ", interact.time);
+                log_file << str;
+                sprintf(str,"%12.6e ", interact.energy);
+                log_file << str;
+                sprintf(str,"%15.8e %15.8e %15.8e %2d ", (float) interact.pos.x,
+                        (float) interact.pos.y,
+                        (float) interact.pos.z,
+                        interact.src_id);
+                log_file << str;
+                if (interact.scatter) {
+                    log_file << " 1 ";
+                } else {
+                    log_file << " 0 ";
+                }
+                sprintf(str,"%2d ", interact.mat_id);
+                log_file << str;
+                sprintf(str,"%3d ", interact.det_id);
+                log_file << str;
+                log_file << "\n";
                 break;
             case Interaction::RAYLEIGH:
+                log_file << " " << 5 << " ";
+                log_file << interact.id;
+                log_file << " " << interact.color << " ";
+                sprintf(str,"%23.16e ", interact.time);
+                log_file << str;
+                sprintf(str,"%12.6e ", interact.energy);
+                log_file << str;
+                sprintf(str,"%15.8e %15.8e %15.8e %2d ", (float) interact.pos.x,
+                                                         (float) interact.pos.y,
+                                                         (float) interact.pos.z,
+                                                         interact.src_id);
+                log_file << str;
+                if (interact.scatter) {
+                    log_file << " 1 ";
+                } else {
+                    log_file << " 0 ";
+                }
+                sprintf(str,"%2d ", interact.mat_id);
+                log_file << str;
+                sprintf(str,"%3d ", interact.det_id);
+                log_file << str;
+                log_file << "\n";
                 break;
             case Interaction::NUCLEAR_DECAY:
-                char str[256];
                 log_file << " 0 ";
                 log_file << interact.id;
                 log_file << " ";
