@@ -29,7 +29,6 @@ void ZR89::Decay(unsigned int photon_number)
     SetEnergy(0.315);
     p.source_num = source_num;
     g.source_num = source_num;
-    SetId(photon_number);
     p.SetTime(time);
     g.SetTime(time);
     p.SetPosition(position);

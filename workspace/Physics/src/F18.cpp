@@ -31,15 +31,11 @@ void F18::Decay(unsigned int photon_number)
     p.source_num = source_num;
     p.SetTime(time);
     p.SetPosition(position);
-    SetId(photon_number);
     // Get Rid of Redundant Positron Range code in Isotopes
     PositronRange(p);
     p.Decay(photon_number);
     AddPhoton(p.blue);
     AddPhoton(p.red);
-    //cout << "Adding two photons:\n";
-    //cout << "1:" << p.blue << endl;
-    //cout << "2:" << p.red << endl;
 }
 
 void F18::Reset()

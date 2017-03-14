@@ -16,8 +16,6 @@ public:
     virtual ~Isotope() {};
     void SetTime (const double t);
     void SetPosition (const VectorR3 &pos);
-    void SetId(long i);
-    long GetId() const;
     const VectorR3 & GetPosition() const;
     virtual void Decay(unsigned int photon_number) = 0;
     virtual void Reset() = 0;
@@ -25,7 +23,6 @@ public:
     Photon NextPhoton();
     bool IsEmpty() const;
 protected:
-    long id;
     double time;
     VectorR3 pos;
     double half_life;

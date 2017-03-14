@@ -8,7 +8,6 @@ class Positron: public Isotope
 {
 public:
     Positron();
-    int source_num;
     void SetEnergy(double e);
     double GetEnergy() const;
     void SetPositronRange(double c, double e1, double e2, double max_range);
@@ -17,6 +16,7 @@ public:
 
 protected:
     double energy;
+    int source_num;
     bool positronRange;
     bool positronRangeGaussian;
     bool positronRangeCusp;

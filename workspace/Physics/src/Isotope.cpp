@@ -14,16 +14,6 @@ void Isotope::SetPosition(const VectorR3 & pos)
     position = pos;
 }
 
-void Isotope::SetId(long i)
-{
-    id = i;
-}
-
-long Isotope::GetId() const
-{
-    return id;
-}
-
 const VectorR3 & Isotope::GetPosition() const
 {
     return position;
