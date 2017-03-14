@@ -116,7 +116,7 @@ ostream& PositronDecay::print_on( ostream& os ) const
 {
     char str[256];
 
-    os << blue.id;
+    os << decay_number;
     os << " ";
     os << source_num;
     os << " ";
