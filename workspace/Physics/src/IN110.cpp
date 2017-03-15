@@ -47,11 +47,11 @@ void IN110::Decay(int photon_number, double time, int src_id,
     // Calculate Physics to determine when and if Positron and Gamma are emitted together
 
     if (Random::Uniform() < CONST_PROB_IN110m_POS) {
-        p.AddPhoton(p.blue);
-        p.AddPhoton(p.red);
+        p.AddPhoton(&p.blue);
+        p.AddPhoton(&p.red);
     }
     // Gamma is emitted for every positron
-    p.AddPhoton(g.gamma);
+    p.AddPhoton(&g.gamma);
 }
 
 void IN110::Reset()

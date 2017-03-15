@@ -22,9 +22,9 @@ public:
     virtual void Decay(int photon_number) = 0;
     virtual void Reset() = 0;
     virtual std::ostream & print_on(std::ostream &) const = 0;
-    Photon NextPhoton();
+    Photon * NextPhoton();
     bool IsEmpty() const;
-    void AddPhoton(Photon &p);
+    void AddPhoton(Photon * p);
 
 public:
     double time;
@@ -45,7 +45,7 @@ protected:
     {
         return n.print_on(os);
     }
-    std::stack<Photon> daughter;
+    std::stack<Photon *> daughter;
 };
 
 #endif /* NUCLEARDECAY_H */

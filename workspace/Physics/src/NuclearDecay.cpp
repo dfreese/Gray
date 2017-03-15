@@ -38,9 +38,9 @@ void NuclearDecay::SetPosition(const VectorR3 & p)
     pos = p;
 }
 
-Photon NuclearDecay::NextPhoton()
+Photon * NuclearDecay::NextPhoton()
 {
-    Photon val = daughter.top();
+    Photon * val = daughter.top();
     daughter.pop();
     return val;
 }
@@ -50,7 +50,7 @@ bool NuclearDecay::IsEmpty() const
     return(daughter.empty());
 }
 
-void NuclearDecay::AddPhoton(Photon &p)
+void NuclearDecay::AddPhoton(Photon * p)
 {
     daughter.push(p);
 }

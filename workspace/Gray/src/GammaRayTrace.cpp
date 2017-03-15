@@ -129,7 +129,7 @@ int GammaRayTrace::TraceSources(SourceList & sources,
             interactions.push_back(Interaction::NuclearDecay(*decay,
                                                              *source->GetMaterial()));
             while (!decay->IsEmpty()) {
-                Photon photon = decay->NextPhoton();
+                Photon & photon = *decay->NextPhoton();
                 TracePhoton(photon, interactions, tree, default_material,
                             source->GetMaterial(), 100);
             }
