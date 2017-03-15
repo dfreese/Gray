@@ -16,12 +16,22 @@ NuclearDecay::NuclearDecay()
     Random::Gaussian();
 }
 
+void NuclearDecay::SetTime(const double t)
+{
+    time = t;
+};
+
 void NuclearDecay::SetBeam(const VectorR3 &axis, const double angle)
 {
     beam_axis = axis;
     beam_angle = angle;
     beamDecay = true;
 }
+
+int NuclearDecay::GetSourceNum() const
+{
+    return(source_num);
+};
 
 void NuclearDecay::SetPosition(const VectorR3 & p)
 {
@@ -44,3 +54,14 @@ void NuclearDecay::AddPhoton(Photon &p)
 {
     daughter.push(p);
 }
+
+MaterialBase * NuclearDecay::GetMaterial()
+{
+    return material;
+}
+
+void NuclearDecay::SetMaterial(MaterialBase * mat)
+{
+    material = mat;
+}
+

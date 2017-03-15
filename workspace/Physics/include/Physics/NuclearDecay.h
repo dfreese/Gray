@@ -11,19 +11,13 @@ class NuclearDecay
 {
 public:
     NuclearDecay();
-    void SetTime(const double t)
-    {
-        time = t;
-    };
+    void SetTime(const double t);
     double Random();
     friend std::ostream & operator<< (std::ostream & os, const NuclearDecay & n);
     MaterialBase * GetMaterial();
     void SetMaterial(MaterialBase * mat);
     void SetBeam(const VectorR3 &axis, const double angle);
-    int GetSourceNum(void)
-    {
-        return source_num;
-    };
+    int GetSourceNum(void) const;
     virtual void SetPosition(const VectorR3 & p) = 0;
     virtual void Decay(int photon_number) = 0;
     virtual void Reset() = 0;
@@ -43,9 +37,7 @@ public:
 protected:
     double beam_angle;
     void BeamCone();
-
     VectorR3 beam_axis;
-
     MaterialBase * material;
 
     inline friend std::ostream & operator<< (std::ostream &os,
@@ -55,15 +47,5 @@ protected:
     }
     std::stack<Photon> daughter;
 };
-
-inline MaterialBase * NuclearDecay::GetMaterial()
-{
-    return material;
-}
-
-inline void NuclearDecay::SetMaterial(MaterialBase * mat)
-{
-    material = mat;
-}
 
 #endif /* NUCLEARDECAY_H */
