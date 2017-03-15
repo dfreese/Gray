@@ -26,6 +26,8 @@ IN110::IN110()
 void IN110::Decay(int photon_number, double time, int src_id,
                   const VectorR3 & position)
 {
+    p.Reset();
+    g.Reset();
     p.source_num = src_id;
     g.source_num = src_id;
     p.SetTime(time);
@@ -35,19 +37,21 @@ void IN110::Decay(int photon_number, double time, int src_id,
     // Get Rid of Redundant Positron Range code in Isotopes
 
     PositronRange(p);
+    AddNuclearDecay(&p);
     p.Decay(photon_number);
 
     // No Gamma Decay for Gamma Rays
+    AddNuclearDecay(&g);
     g.Decay(photon_number);
 
     // Calculate Physics to determine when and if Positron and Gamma are emitted together
 
     if (Random::Uniform() < CONST_PROB_IN110m_POS) {
-        AddPhoton(p.blue);
-        AddPhoton(p.red);
+        p.AddPhoton(p.blue);
+        p.AddPhoton(p.red);
     }
     // Gamma is emitted for every positron
-    AddPhoton(g.gamma);
+    p.AddPhoton(g.gamma);
 }
 
 void IN110::Reset()

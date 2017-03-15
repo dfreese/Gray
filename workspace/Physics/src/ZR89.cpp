@@ -26,6 +26,8 @@ ZR89::ZR89()
 void ZR89::Decay(int photon_number, double time, int src_id,
                  const VectorR3 & position)
 {
+    p.Reset();
+    g.Reset();
     p.source_num = src_id;
     g.source_num = src_id;
     p.SetTime(time);
@@ -33,21 +35,22 @@ void ZR89::Decay(int photon_number, double time, int src_id,
     p.SetPosition(position);
     g.SetPosition(position);
     // Get Rid of Redundant Positron Range code in Isotopes
-
     PositronRange(p);
-    p.Decay(photon_number);
+
+    // Calculate Physics to determine when and if Positron and Gamma are
+    // emitted together
+    if (Random::Uniform() < CONST_PROB_ZR89_POS) {
+        AddNuclearDecay(&p);
+        p.Decay(photon_number);
+        p.AddPhoton(p.blue);
+        p.AddPhoton(p.red);
+    }
 
     // No Gamma Decay for Gamma Rays
+    AddNuclearDecay(&g);
     g.Decay(photon_number);
-
-    // Calculate Physics to determine when and if Positron and Gamma are emitted together
-
-    if (Random::Uniform() < CONST_PROB_ZR89_POS) {
-        AddPhoton(p.blue);
-        AddPhoton(p.red);
-    }
     // Gamma is emitted for every positron
-    AddPhoton(g.gamma);
+    g.AddPhoton(g.gamma);
 }
 
 void ZR89::Reset()

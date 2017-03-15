@@ -24,13 +24,15 @@ BackBack::BackBack()
 void BackBack::Decay(int photon_number, double time, int src_id,
                      const VectorR3 & position)
 {
+    p.Reset();
     p.source_num = src_id;
     p.SetTime(time);
     p.SetPosition(position);
     PositronRange(p);
+    AddNuclearDecay(&p);
     p.Decay(photon_number);
-    AddPhoton(p.blue);
-    AddPhoton(p.red);
+    p.AddPhoton(p.blue);
+    p.AddPhoton(p.red);
 }
 
 void BackBack::Reset()

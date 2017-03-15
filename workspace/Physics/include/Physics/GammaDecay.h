@@ -10,19 +10,13 @@ public:
     GammaDecay();
     virtual void SetPosition(const VectorR3 & p);
     virtual void Decay(int photon_number);
-    virtual void Reset()
-    {
-        gamma.Reset();
-        gamma.color = Photon::P_YELLOW;
-    }
+    virtual void Reset();
     virtual std::ostream & print_on(std::ostream & os) const;
-    void SetEnergy(double e)
-    {
-        energy = e;
-    };
+    void SetEnergy(double e);
 
-public:
     Photon gamma;
+
+private:
     double energy;
 };
 

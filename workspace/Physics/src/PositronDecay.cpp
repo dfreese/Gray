@@ -38,11 +38,14 @@ void PositronDecay::Reset()
     positronK1 = -1.0;
     positronK2 = -1.0;
     positronMaxRange = -1.0;
+
+    while (!daughter.empty()) {
+        daughter.pop();
+    }
 }
 
 void PositronDecay::Decay(int photon_number)
 {
-
     blue.Reset();
     red.Reset();
 

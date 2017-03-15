@@ -4,9 +4,9 @@ Isotope::Isotope()
 {
 }
 
-Photon Isotope::NextPhoton()
+NuclearDecay * Isotope::NextNuclearDecay()
 {
-    Photon val = daughter.top();
+    NuclearDecay * val = daughter.top();
     daughter.pop();
     return val;
 }
@@ -16,9 +16,9 @@ bool Isotope::IsEmpty() const
     return(daughter.empty());
 }
 
-void Isotope::AddPhoton(Photon &p)
+void Isotope::AddNuclearDecay(NuclearDecay * nd)
 {
-    daughter.push(p);
+    daughter.push(nd);
 }
 
 std::ostream& operator<< (std::ostream & os, const Isotope & i)

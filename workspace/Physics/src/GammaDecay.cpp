@@ -10,6 +10,15 @@ GammaDecay::GammaDecay()
     gamma.color = Photon::P_YELLOW;
 }
 
+void GammaDecay::Reset()
+{
+    gamma.Reset();
+    gamma.color = Photon::P_YELLOW;
+    while (!daughter.empty()) {
+        daughter.pop();
+    }
+}
+
 void GammaDecay::Decay(int photon_number)
 {
 
@@ -24,6 +33,11 @@ void GammaDecay::Decay(int photon_number)
     gamma.src_id = source_num;
     Random::UniformSphere(gamma.dir);
 }
+
+void GammaDecay::SetEnergy(double e)
+{
+    energy = e;
+};
 
 void GammaDecay::SetPosition(const VectorR3 & p)
 {

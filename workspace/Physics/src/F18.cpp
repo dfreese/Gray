@@ -28,14 +28,16 @@ F18::F18()
 void F18::Decay(int photon_number, double time, int src_id,
                 const VectorR3 & position)
 {
+    p.Reset();
     p.source_num = src_id;
     p.SetTime(time);
     p.SetPosition(position);
     // Get Rid of Redundant Positron Range code in Isotopes
     PositronRange(p);
+    AddNuclearDecay(&p);
     p.Decay(photon_number);
-    AddPhoton(p.blue);
-    AddPhoton(p.red);
+    p.AddPhoton(p.blue);
+    p.AddPhoton(p.red);
 }
 
 void F18::Reset()

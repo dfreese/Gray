@@ -44,7 +44,6 @@ public:
         kd_tree = NULL;
     }
     virtual ~Source() {};
-    void NextPhoton(Photon &p);
     double GetActivity();
     void SetIsotope(Isotope * i)
     {
@@ -112,11 +111,6 @@ inline void Source::SetMaterial(GammaMaterial * mat)
 inline GammaMaterial * Source::GetMaterial()
 {
     return material;
-}
-
-inline void Source::NextPhoton(Photon & p)
-{
-    p = isotope->NextPhoton();
 }
 
 inline void Source::Reset()

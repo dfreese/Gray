@@ -5,9 +5,7 @@
 #include <stack>
 #include <string>
 #include <VrMath/LinearR3.h>
-#include <Physics/Photon.h>
-
-class Photon;
+#include <Physics/NuclearDecay.h>
 
 class Isotope
 {
@@ -18,13 +16,13 @@ public:
                        const VectorR3 & position) = 0;
     virtual void Reset() = 0;
     virtual std::ostream & print_on(std::ostream &) const = 0;
-    Photon NextPhoton();
+    NuclearDecay * NextNuclearDecay();
     bool IsEmpty() const;
 protected:
     double half_life;
-    void AddPhoton(Photon &p);
+    void AddNuclearDecay(NuclearDecay * nd);
     friend std::ostream& operator<< (std::ostream & os, const Isotope & i);
-    std::stack<Photon> daughter;
+    std::stack<NuclearDecay*> daughter;
 };
 
 #endif /* ISOTOPE_H */

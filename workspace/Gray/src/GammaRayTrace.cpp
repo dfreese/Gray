@@ -124,14 +124,15 @@ int GammaRayTrace::TraceSources(SourceList & sources,
             continue;
         }
 
-        interactions.push_back(Interaction::NuclearDecay(
-                *static_cast<Positron*>(isotope)->GetPositronDecay(),
-                *source->GetMaterial()));
-
         while(!isotope->IsEmpty()) {
-            Photon photon = isotope->NextPhoton();
-            TracePhoton(photon, interactions, tree, default_material,
-                        source->GetMaterial(), 100);
+            NuclearDecay * decay = isotope->NextNuclearDecay();
+            interactions.push_back(Interaction::NuclearDecay(*decay,
+                                                             *source->GetMaterial()));
+            while (!decay->IsEmpty()) {
+                Photon photon = decay->NextPhoton();
+                TracePhoton(photon, interactions, tree, default_material,
+                            source->GetMaterial(), 100);
+            }
         }
 
         if (interactions.size() >= soft_max_interactions) {
