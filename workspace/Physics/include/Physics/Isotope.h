@@ -14,17 +14,14 @@ class Isotope
 public:
     Isotope();
     virtual ~Isotope() {};
-    void SetPosition (const VectorR3 &pos);
-    const VectorR3 & GetPosition() const;
-    virtual void Decay(unsigned int photon_number, double time) = 0;
+    virtual void Decay(unsigned int photon_number, double time,
+                       const VectorR3 & position) = 0;
     virtual void Reset() = 0;
     virtual std::ostream & print_on(std::ostream &) const = 0;
     Photon NextPhoton();
     bool IsEmpty() const;
 protected:
-    VectorR3 pos;
     double half_life;
-    VectorR3 position;
     void AddPhoton(Photon &p);
     friend std::ostream& operator<< (std::ostream & os, const Isotope & i);
     std::stack<Photon> daughter;

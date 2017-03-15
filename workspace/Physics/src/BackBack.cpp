@@ -21,7 +21,8 @@ BackBack::BackBack()
     Reset();
 }
 
-void BackBack::Decay(unsigned int photon_number, double time)
+void BackBack::Decay(unsigned int photon_number, double time,
+                     const VectorR3 & position)
 {
     p.source_num = source_num;
     p.SetTime(time);

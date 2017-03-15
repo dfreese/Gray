@@ -4,16 +4,6 @@ Isotope::Isotope()
 {
 }
 
-void Isotope::SetPosition(const VectorR3 & pos)
-{
-    position = pos;
-}
-
-const VectorR3 & Isotope::GetPosition() const
-{
-    return position;
-}
-
 Photon Isotope::NextPhoton()
 {
     Photon val = daughter.top();

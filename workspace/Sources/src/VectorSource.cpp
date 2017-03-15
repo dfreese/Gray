@@ -24,11 +24,11 @@ VectorSource::VectorSource(const double act, const VectorR3& boxMin, const Vecto
     aabb.Set(boxMin, boxMax);
 }
 
-void VectorSource::Decay(unsigned int photon_number, double time)
+VectorR3 VectorSource::Decay(unsigned int photon_number, double time)
 {
 
     if (isotope == NULL) {
-        return;
+        return(VectorR3(0, 0, 0));
     }
 
     VectorR3 pos;
@@ -42,10 +42,10 @@ void VectorSource::Decay(unsigned int photon_number, double time)
         pos.z = aabb.GetBoxMin().z + Random::Uniform()*delta.z;
     } while (RejectionTest(pos));
 
-    isotope->SetPosition(pos);
-    isotope->Decay(photon_number, time);
+    isotope->Decay(photon_number, time, pos);
     // no positron range for vector sources
-    isotope->SetPosition(pos);
+//    isotope->SetPosition(pos);
+    return(pos);
 }
 
 bool VectorSource::RejectionTest(const VectorR3 &pos)

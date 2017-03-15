@@ -24,7 +24,7 @@ F18::F18()
     Reset();
 }
 
-void F18::Decay(unsigned int photon_number, double time)
+void F18::Decay(unsigned int photon_number, double time, const VectorR3 & position)
 {
     // TODO: Generate energy from beta distribution
     SetEnergy(F18_MAX_BETA_ENERGY);

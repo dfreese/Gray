@@ -28,10 +28,10 @@ CylinderSource::CylinderSource(const VectorR3 &p, double rad, VectorR3 L, double
 
 }
 
-void CylinderSource::Decay(unsigned int photon_number, double time)
+VectorR3 CylinderSource::Decay(unsigned int photon_number, double time)
 {
     if (isotope == NULL) {
-        return;
+        return(VectorR3(0,0,0));
     }
 
     VectorR3 positron;
@@ -45,8 +45,8 @@ void CylinderSource::Decay(unsigned int photon_number, double time)
     VectorR3 roted;
     roted = RotMtrx*positron;
     roted += position;
-    isotope->SetPosition(roted);
-    isotope->Decay(photon_number, time);
+    isotope->Decay(photon_number, time, roted);
+    return(roted);
 }
 
 void CylinderSource::SetRadius(double r)

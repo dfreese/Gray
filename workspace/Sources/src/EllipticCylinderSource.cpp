@@ -28,14 +28,14 @@ EllipticCylinderSource::EllipticCylinderSource(const VectorR3 &p, double r1, dou
     RotMtrxInv.MakeTranspose();
 }
 
-void EllipticCylinderSource::Decay(unsigned int photon_number, double time)
+VectorR3 EllipticCylinderSource::Decay(unsigned int photon_number, double time)
 {
 
     //FIXME: Sources are not rotating -- FIXED 01-13-2020 AVDB
     //FIXME: Inside is not rotating -- BUG PDO
 
     if (isotope == NULL) {
-        return;
+        return(VectorR3(0,0,0));
     }
     double r1sq = radius1*radius1;
     double r2sq = radius2*radius2;
@@ -51,8 +51,8 @@ void EllipticCylinderSource::Decay(unsigned int photon_number, double time)
     VectorR3 roted;
     roted = RotMtrx*positron;
     roted += position;
-    isotope->SetPosition(roted);
-    isotope->Decay(photon_number, time);
+    isotope->Decay(photon_number, time, roted);
+    return(roted);
 }
 
 void EllipticCylinderSource::SetRadius(double r1, double r2)

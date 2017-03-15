@@ -23,7 +23,8 @@ IN110::IN110()
     Reset();
 }
 
-void IN110::Decay(unsigned int photon_number, double time)
+void IN110::Decay(unsigned int photon_number, double time,
+                  const VectorR3 & position)
 {
     // TODO: Get Beta energy from distribution
     SetEnergy(0.311);

@@ -112,11 +112,12 @@ Source * SourceList::Decay()
 
     // FIXME Event ID is hosed
     unsigned int idx = 0;
+    VectorR3 decay_pos;
     do {
         idx = search(Random::Uniform()*total_activity,0,s_idx);
         list[idx]->Reset();
-        list[idx]->Decay(photon_number, curTime);
-    } while ( Inside(list[idx]->GetDecayPosition()) && ( (counter++) < MAX_REJECT_COUNTER));
+        decay_pos = list[idx]->Decay(photon_number, curTime);
+    } while (Inside(decay_pos) && ( (counter++) < MAX_REJECT_COUNTER));
     if (counter == MAX_REJECT_COUNTER) {
         return NULL;
     } else {

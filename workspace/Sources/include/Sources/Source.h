@@ -66,18 +66,13 @@ public:
     {
         return isotope;
     }
-    const VectorR3 & GetDecayPosition() const
-    {
-        return isotope->GetPosition();
-    }
     void Reset();
-
     void SetKdTree(IntersectKdTree & tree) {
         kd_tree = &tree;
     }
 
     virtual bool Inside(const VectorR3 &pos) const = 0;
-    virtual void Decay(unsigned int photon_number, double time) = 0;
+    virtual VectorR3 Decay(unsigned int photon_number, double time) = 0;
 
 protected:
     Isotope * isotope;
