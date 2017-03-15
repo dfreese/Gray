@@ -21,10 +21,6 @@ public:
     virtual void Decay(unsigned int photon_number);
     virtual void Reset();
     virtual std::ostream & print_on(std::ostream & os) const;
-    virtual DECAY_TYPE GetType() const
-    {
-        return POSITRON;
-    };
 
 public:
     Photon blue;

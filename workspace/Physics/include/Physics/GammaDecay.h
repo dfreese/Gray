@@ -16,10 +16,6 @@ public:
         gamma.color = Photon::P_YELLOW;
     }
     virtual std::ostream & print_on(std::ostream & os) const;
-    virtual DECAY_TYPE GetType() const
-    {
-        return GAMMA;
-    };
     void SetEnergy(double e)
     {
         energy = e;

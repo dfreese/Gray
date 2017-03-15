@@ -5,8 +5,6 @@
 
 class MaterialBase;
 
-enum DECAY_TYPE {DECAY_ERROR, POSITRON, GAMMA};
-
 class NuclearDecay
 {
 public:
@@ -28,8 +26,6 @@ public:
     virtual void Decay(unsigned int photon_number) = 0;
     virtual void Reset() = 0;
     virtual std::ostream & print_on(std::ostream &) const = 0;
-    virtual DECAY_TYPE GetType() const = 0;
-
 
 public:
     double time;
