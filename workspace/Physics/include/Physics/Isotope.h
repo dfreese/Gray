@@ -14,7 +14,7 @@ class Isotope
 public:
     Isotope();
     virtual ~Isotope() {};
-    virtual void Decay(unsigned int photon_number, double time,
+    virtual void Decay(int photon_number, double time, int src_id,
                        const VectorR3 & position) = 0;
     virtual void Reset() = 0;
     virtual std::ostream & print_on(std::ostream &) const = 0;

@@ -14,7 +14,7 @@ SphereSource::SphereSource(const VectorR3 &p, double rad, double act)
     radius = rad;
 }
 
-VectorR3 SphereSource::Decay(unsigned int photon_number, double time)
+VectorR3 SphereSource::Decay(int photon_number, double time)
 {
     if (isotope == NULL) {
         return(VectorR3(0,0,0));
@@ -30,7 +30,7 @@ VectorR3 SphereSource::Decay(unsigned int photon_number, double time)
     
     pos *= radius;
     pos += position;
-    isotope->Decay(photon_number, time, pos);
+    isotope->Decay(photon_number, time, source_num, pos);
     return(pos);
 }
 

@@ -10,7 +10,7 @@ GammaDecay::GammaDecay()
     gamma.color = Photon::P_YELLOW;
 }
 
-void GammaDecay::Decay(unsigned int photon_number)
+void GammaDecay::Decay(int photon_number)
 {
 
     gamma.Reset();

@@ -2,8 +2,9 @@
 
 using namespace std;
 
+// TODO: Generate energy from beta distribution
 // TODO: Get true max endpoint in MeV
-const double F18_MAX_BETA_ENERGY=0.315;
+// const double F18_MAX_BETA_ENERGY=0.315;
 
 F18::F18()
 {
@@ -24,11 +25,10 @@ F18::F18()
     Reset();
 }
 
-void F18::Decay(unsigned int photon_number, double time, const VectorR3 & position)
+void F18::Decay(int photon_number, double time, int src_id,
+                const VectorR3 & position)
 {
-    // TODO: Generate energy from beta distribution
-    SetEnergy(F18_MAX_BETA_ENERGY);
-    p.source_num = source_num;
+    p.source_num = src_id;
     p.SetTime(time);
     p.SetPosition(position);
     // Get Rid of Redundant Positron Range code in Isotopes

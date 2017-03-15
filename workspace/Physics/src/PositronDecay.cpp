@@ -40,7 +40,7 @@ void PositronDecay::Reset()
     positronMaxRange = -1.0;
 }
 
-void PositronDecay::Decay(unsigned int photon_number)
+void PositronDecay::Decay(int photon_number)
 {
 
     blue.Reset();

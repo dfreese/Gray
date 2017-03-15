@@ -8,7 +8,7 @@ class IN110 : public Positron
 {
 public:
     IN110();
-    virtual void Decay(unsigned int photon_number, double time,
+    virtual void Decay(int photon_number, double time, int src_id,
                        const VectorR3 & position);
     virtual void Reset();
     virtual std::ostream & print_on(std::ostream & os) const;

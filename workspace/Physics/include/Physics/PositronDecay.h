@@ -18,7 +18,7 @@ public:
     };
 
     virtual void SetPosition(const VectorR3 & p);
-    virtual void Decay(unsigned int photon_number);
+    virtual void Decay(int photon_number);
     virtual void Reset();
     virtual std::ostream & print_on(std::ostream & os) const;
 

@@ -23,7 +23,7 @@ public:
         return source_num;
     };
     virtual void SetPosition(const VectorR3 & p) = 0;
-    virtual void Decay(unsigned int photon_number) = 0;
+    virtual void Decay(int photon_number) = 0;
     virtual void Reset() = 0;
     virtual std::ostream & print_on(std::ostream &) const = 0;
 

@@ -72,7 +72,7 @@ public:
     }
 
     virtual bool Inside(const VectorR3 &pos) const = 0;
-    virtual VectorR3 Decay(unsigned int photon_number, double time) = 0;
+    virtual VectorR3 Decay(int photon_number, double time) = 0;
 
 protected:
     Isotope * isotope;

@@ -23,13 +23,11 @@ ZR89::ZR89()
     Reset();
 }
 
-void ZR89::Decay(unsigned int photon_number, double time,
+void ZR89::Decay(int photon_number, double time, int src_id,
                  const VectorR3 & position)
 {
-    // TODO: Find ZR89 Beta energy
-    SetEnergy(0.315);
-    p.source_num = source_num;
-    g.source_num = source_num;
+    p.source_num = src_id;
+    g.source_num = src_id;
     p.SetTime(time);
     g.SetTime(time);
     p.SetPosition(position);

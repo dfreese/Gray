@@ -24,7 +24,7 @@ class ZR89 : public Positron
 {
 public:
     ZR89();
-    virtual void Decay(unsigned int photon_number, double time,
+    virtual void Decay(int photon_number, double time, int src_id,
                        const VectorR3 & position);
     virtual void Reset();
     virtual std::ostream & print_on(std::ostream & os) const;
@@ -32,6 +32,7 @@ protected:
     GammaDecay g;
     const double CONST_E_ZR89_GAMMA = 0.90915; /* MeV */
     const double CONST_PROB_ZR89_POS = 0.227;	/* 22.7% of decays lead to a positron */
+    const double zr89_max_beta_energy_mev = 0.315;
 
 };
 

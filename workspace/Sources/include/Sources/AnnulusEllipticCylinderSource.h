@@ -12,7 +12,7 @@ class AnnulusEllipticCylinderSource : public Source
 public:
     AnnulusEllipticCylinderSource();
     AnnulusEllipticCylinderSource(const VectorR3 &pos, double radius1, double radius2, VectorR3 &L, double act);
-    virtual VectorR3 Decay(unsigned int photon_number, double time);
+    virtual VectorR3 Decay(int photon_number, double time);
     bool virtual Inside(const VectorR3 & pos) const;
     void SetRadius(double r1, double r2);
     void SetAxis(VectorR3 &L);

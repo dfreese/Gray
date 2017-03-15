@@ -15,7 +15,7 @@ SourceList::SourceList()
 {
     curTime = 0.0;
     total_activity = 0.0;
-    photon_number = 0;
+    decay_number = 0;
     current_isotope = "BackBack";
     valid_isotopes.insert("F18");
     valid_isotopes.insert("IN110");
@@ -66,8 +66,8 @@ void SourceList::AddSource(Source * s)
         neg_list.push_back(s);
         s->SetSourceNum(-1*neg_list.size());
     } else {
-        list.push_back(s);
         s->SetSourceNum(list.size());
+        list.push_back(s);
         total_activity += s->GetActivity();
         mean_time_between_events = (1.0) / (total_activity * microCurie);
         prob.push_back(total_activity);
@@ -111,18 +111,18 @@ Source * SourceList::Decay()
     int counter = 0;
 
     // FIXME Event ID is hosed
-    unsigned int idx = 0;
+    int idx = 0;
     VectorR3 decay_pos;
     do {
         idx = search(Random::Uniform()*total_activity,0,s_idx);
         list[idx]->Reset();
-        decay_pos = list[idx]->Decay(photon_number, curTime);
+        decay_pos = list[idx]->Decay(decay_number, curTime);
     } while (Inside(decay_pos) && ( (counter++) < MAX_REJECT_COUNTER));
     if (counter == MAX_REJECT_COUNTER) {
         return NULL;
     } else {
         CalculateTime();
-        photon_number++;
+        decay_number++;
         return list[idx];
     }
 }

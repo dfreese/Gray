@@ -10,24 +10,24 @@ BackBack::BackBack()
      *  k1   27.9 (37.9)     24.5 (23.8)      25.4 (20.2)       33.2 (18.1)        *
      *  k2   2.91 (3.1)      1.76 (1.8)       1.44 (1.4)        1.0 (0.9)          *
      *******************************************************************************/
-    positronRange = true;
+    positronRange = false;
     positronRangeGaussian = false;
-    positronRangeCusp = true;
-    positronFWHM = 1.0; // expressed in meters
-    positronC = 0.519;
-    positronK1 = 27.9;
-    positronK2 = 2.91;
-    positronMaxRange = 3.0;
+    positronRangeCusp = false;
+    positronFWHM = 0; // expressed in meters
+    positronC = 0;
+    positronK1 = 0;
+    positronK2 = 0;
+    positronMaxRange = 0;
     Reset();
 }
 
-void BackBack::Decay(unsigned int photon_number, double time,
+void BackBack::Decay(int photon_number, double time, int src_id,
                      const VectorR3 & position)
 {
-    p.source_num = source_num;
+    p.source_num = src_id;
     p.SetTime(time);
     p.SetPosition(position);
-    //PositronRange(p);
+    PositronRange(p);
     p.Decay(photon_number);
     AddPhoton(p.blue);
     AddPhoton(p.red);

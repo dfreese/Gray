@@ -58,7 +58,7 @@ int VoxelSource::search(double e, int b_idx, int s_idx)
     }
 }
 
-VectorR3 VoxelSource::Decay(unsigned int photon_number, double time)
+VectorR3 VoxelSource::Decay(int photon_number, double time)
 {
     if (isotope == NULL) {
         return(VectorR3(0, 0, 0));
@@ -74,7 +74,7 @@ VectorR3 VoxelSource::Decay(unsigned int photon_number, double time)
 
     pos += position;
 
-    isotope->Decay(photon_number, time, pos);
+    isotope->Decay(photon_number, time, source_num, pos);
     return(pos);
 }
 

@@ -27,11 +27,11 @@ void Beam::SetBeam(const VectorR3 & axis, double angle)
     beam_angle = angle;
 }
 
-void Beam::Decay(unsigned int photon_number, double time,
+void Beam::Decay(int photon_number, double time, int src_id,
                  const VectorR3 & position)
 {
     p.Reset();
-    p.source_num = source_num;
+    p.source_num = src_id;
     p.SetTime(time);
     p.SetPosition(position);
     //PositronRange(p);

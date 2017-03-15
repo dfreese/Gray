@@ -21,7 +21,7 @@ public:
         return aabb.GetBoxMax();
     }
 
-    virtual VectorR3 Decay(unsigned int photon_number, double time);
+    virtual VectorR3 Decay(int photon_number, double time);
     bool virtual Inside(const VectorR3 & pos) const;
 
 private:

@@ -276,7 +276,7 @@ double AnnulusEllipticCylinderSource::IncompleteEllipticE(double phi, double m)
 }
 
 
-VectorR3 AnnulusEllipticCylinderSource::Decay(unsigned int photon_number, double time)
+VectorR3 AnnulusEllipticCylinderSource::Decay(int photon_number, double time)
 {
 
     //FIXME: Sources are not rotating -- FIXED 01-13-2020 AVDB
@@ -315,7 +315,7 @@ VectorR3 AnnulusEllipticCylinderSource::Decay(unsigned int photon_number, double
     VectorR3 roted;
     roted = RotMtrx*positron;
     roted += position;
-    isotope->Decay(photon_number, time, roted);
+    isotope->Decay(photon_number, time, source_num, roted);
     return(roted);
 }
 
