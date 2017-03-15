@@ -64,7 +64,7 @@ int main( int argc, char** argv)
         cout << "[";
         while (num_decays_cur < num_decays_total) {
             vector<Interaction> interactions;
-            interactions.reserve(10000);
+            interactions.reserve(100000);
             num_decays_cur += GammaRayTrace::TraceSources(
                     sources, intersect_kd_tree,
                     num_decays_total - num_decays_cur, interactions,

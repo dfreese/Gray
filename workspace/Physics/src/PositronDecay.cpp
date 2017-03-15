@@ -77,6 +77,8 @@ void PositronDecay::Decay(int photon_number)
         beamDecay = false;
     }
     // clear beamDecay for next photon
+    AddPhoton(&blue);
+    AddPhoton(&red);
 }
 
 void PositronDecay::SetAcolinearity(double theta)

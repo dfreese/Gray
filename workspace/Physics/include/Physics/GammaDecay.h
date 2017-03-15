@@ -14,10 +14,9 @@ public:
     virtual std::ostream & print_on(std::ostream & os) const;
     void SetEnergy(double e);
 
-    Photon gamma;
-
 private:
     double energy;
+    Photon gamma;
 };
 
 #endif /* GAMMADECAY_H */

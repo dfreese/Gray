@@ -22,7 +22,7 @@ public:
     virtual void Reset();
     virtual std::ostream & print_on(std::ostream & os) const;
 
-public:
+private:
     Photon blue;
     Photon red;
 

@@ -37,8 +37,6 @@ void Beam::Decay(int photon_number, double time, int src_id,
     //PositronRange(p);
     p.SetBeam(beam_axis, beam_angle);
     p.Decay(photon_number);
-    p.AddPhoton(&p.blue);
-    p.AddPhoton(&p.red);
 }
 
 void Beam::Reset()

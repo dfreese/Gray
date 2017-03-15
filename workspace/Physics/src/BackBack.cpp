@@ -31,8 +31,6 @@ void BackBack::Decay(int photon_number, double time, int src_id,
     PositronRange(p);
     AddNuclearDecay(&p);
     p.Decay(photon_number);
-    p.AddPhoton(&p.blue);
-    p.AddPhoton(&p.red);
 }
 
 void BackBack::Reset()

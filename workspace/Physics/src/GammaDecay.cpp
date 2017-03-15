@@ -21,7 +21,6 @@ void GammaDecay::Reset()
 
 void GammaDecay::Decay(int photon_number)
 {
-
     gamma.Reset();
     gamma.time = time;
     gamma.pos = pos;
@@ -32,6 +31,7 @@ void GammaDecay::Decay(int photon_number)
     gamma.dir.SetUnitZ();
     gamma.src_id = source_num;
     Random::UniformSphere(gamma.dir);
+    AddPhoton(&gamma);
 }
 
 void GammaDecay::SetEnergy(double e)
