@@ -189,3 +189,8 @@ void PositronDecay::PositronRange(VectorR3 & p)
     // TODO:  Set max range if there are errors in the photons?!
     // ie, use the geometery to determine the max_range
 }
+
+void PositronDecay::PositronRange()
+{
+    PositronRange(pos);
+}

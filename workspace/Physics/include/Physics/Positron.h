@@ -8,9 +8,6 @@ class Positron: public Isotope
 {
 public:
     Positron();
-    void SetPositronRange(double c, double e1, double e2, double max_range);
-    void SetPositronRange(double gauss, double max_range);
-    PositronDecay * GetPositronDecay();
 
 protected:
     bool positronRange;
@@ -21,7 +18,6 @@ protected:
     double positronK1;
     double positronK2;
     double positronMaxRange;
-    void PositronRange(PositronDecay &p);
     PositronDecay p;
 };
 

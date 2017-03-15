@@ -34,7 +34,6 @@ void Beam::Decay(int photon_number, double time, int src_id,
     p.source_num = src_id;
     p.SetTime(time);
     p.SetPosition(position);
-    //PositronRange(p);
     p.SetBeam(beam_axis, beam_angle);
     p.Decay(photon_number);
 }

@@ -32,8 +32,8 @@ void F18::Decay(int photon_number, double time, int src_id,
     p.source_num = src_id;
     p.SetTime(time);
     p.SetPosition(position);
-    // Get Rid of Redundant Positron Range code in Isotopes
-    PositronRange(p);
+    p.SetPositronRange(positronC, positronK1, positronK2, positronMaxRange);
+    p.PositronRange();
     AddNuclearDecay(&p);
     p.Decay(photon_number);
 }

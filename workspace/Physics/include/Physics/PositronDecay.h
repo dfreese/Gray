@@ -11,6 +11,7 @@ public:
     void SetPositronRange(double c, double e1, double e2, double max_range);
     void SetPositronRange(double gauss, double max_range);
     void SetAcolinearity(double theta);
+    void PositronRange();
     void PositronRange(VectorR3 & p);
     void ClearPositronRange()
     {

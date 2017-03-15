@@ -33,9 +33,10 @@ void ZR89::Decay(int photon_number, double time, int src_id,
     p.SetTime(time);
     g.SetTime(time);
     p.SetPosition(position);
-    g.SetPosition(position);
-    // Get Rid of Redundant Positron Range code in Isotopes
-    PositronRange(p);
+    p.SetPositronRange(positronC, positronK1, positronK2, positronMaxRange);
+    p.PositronRange();
+    g.SetPosition(p.pos);
+
 
     // Calculate Physics to determine when and if Positron and Gamma are
     // emitted together
