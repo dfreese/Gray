@@ -8,7 +8,7 @@ class Beam : public Positron
 public:
     Beam();
     void SetBeam(const VectorR3 & axis, double angle);
-    virtual void Decay(unsigned int photon_number);
+    virtual void Decay(unsigned int photon_number, double time);
     virtual void Reset();
     virtual std::ostream & print_on(std::ostream & os) const;
 private:

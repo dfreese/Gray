@@ -58,7 +58,7 @@ int VoxelSource::search(double e, int b_idx, int s_idx)
     }
 }
 
-void VoxelSource::Decay(unsigned int photon_number)
+void VoxelSource::Decay(unsigned int photon_number, double time)
 {
     if (isotope == NULL) {
         return;
@@ -75,7 +75,7 @@ void VoxelSource::Decay(unsigned int photon_number)
     pos += position;
 
     isotope->SetPosition(pos);
-    isotope->Decay(photon_number);
+    isotope->Decay(photon_number, time);
 }
 
 bool VoxelSource::Load(const char * filename)

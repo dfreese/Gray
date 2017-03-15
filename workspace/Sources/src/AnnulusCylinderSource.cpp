@@ -32,7 +32,7 @@ AnnulusCylinderSource::AnnulusCylinderSource(const VectorR3 &p, double rad, Vect
 
 }
 
-void AnnulusCylinderSource::Decay(unsigned int photon_number)
+void AnnulusCylinderSource::Decay(unsigned int photon_number, double time)
 {
 
     //FIXME: Sources are not rotating -- FIXED 01-13-2020 AVDB
@@ -52,7 +52,7 @@ void AnnulusCylinderSource::Decay(unsigned int photon_number)
     roted = RotMtrx*positron;
     roted += position;
     isotope->SetPosition(roted);
-    isotope->Decay(photon_number);
+    isotope->Decay(photon_number, time);
 }
 
 void AnnulusCylinderSource::SetRadius(double r)

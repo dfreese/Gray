@@ -11,7 +11,7 @@ public:
     VoxelSource(const VectorR3 &p, int dims[3], const VectorR3 & vox_scale, double act);
     bool Load(const char * filename);
 
-    void virtual Decay(unsigned int photon_number);
+    void virtual Decay(unsigned int photon_number, double time);
     bool virtual Inside(const VectorR3 & pos) const;
 private:
     int dimension[3];

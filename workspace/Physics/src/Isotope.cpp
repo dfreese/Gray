@@ -4,11 +4,6 @@ Isotope::Isotope()
 {
 }
 
-void Isotope::SetTime(const double t)
-{
-    time = t;
-}
-
 void Isotope::SetPosition(const VectorR3 & pos)
 {
     position = pos;

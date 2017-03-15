@@ -12,7 +12,7 @@ class EllipsoidSource : public Source
 public:
     EllipsoidSource();
     EllipsoidSource(const VectorR3 &center, const VectorR3 &a1, const VectorR3 &a2, double r1, double r2, double r3, double act);
-    void virtual Decay(unsigned int photon_number);
+    void virtual Decay(unsigned int photon_number, double time);
     bool virtual Inside(const VectorR3 & pos) const;
     void SetRadius(double r1, double r2, double r3);
     void SetAxis(const VectorR3 &a1,const VectorR3 &a2);

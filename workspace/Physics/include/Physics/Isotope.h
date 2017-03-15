@@ -14,16 +14,14 @@ class Isotope
 public:
     Isotope();
     virtual ~Isotope() {};
-    void SetTime (const double t);
     void SetPosition (const VectorR3 &pos);
     const VectorR3 & GetPosition() const;
-    virtual void Decay(unsigned int photon_number) = 0;
+    virtual void Decay(unsigned int photon_number, double time) = 0;
     virtual void Reset() = 0;
     virtual std::ostream & print_on(std::ostream &) const = 0;
     Photon NextPhoton();
     bool IsEmpty() const;
 protected:
-    double time;
     VectorR3 pos;
     double half_life;
     VectorR3 position;

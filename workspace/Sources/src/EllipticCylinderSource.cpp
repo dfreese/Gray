@@ -28,7 +28,7 @@ EllipticCylinderSource::EllipticCylinderSource(const VectorR3 &p, double r1, dou
     RotMtrxInv.MakeTranspose();
 }
 
-void EllipticCylinderSource::Decay(unsigned int photon_number)
+void EllipticCylinderSource::Decay(unsigned int photon_number, double time)
 {
 
     //FIXME: Sources are not rotating -- FIXED 01-13-2020 AVDB
@@ -52,7 +52,7 @@ void EllipticCylinderSource::Decay(unsigned int photon_number)
     roted = RotMtrx*positron;
     roted += position;
     isotope->SetPosition(roted);
-    isotope->Decay(photon_number);
+    isotope->Decay(photon_number, time);
 }
 
 void EllipticCylinderSource::SetRadius(double r1, double r2)

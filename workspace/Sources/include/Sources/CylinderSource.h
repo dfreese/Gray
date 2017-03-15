@@ -10,7 +10,7 @@ class CylinderSource : public Source
 public:
     CylinderSource();
     CylinderSource(const VectorR3 &pos, double radius, VectorR3 L, double act);
-    void virtual Decay(unsigned int photon_number);
+    void virtual Decay(unsigned int photon_number, double time);
     bool virtual Inside(const VectorR3 & pos) const;
     void SetRadius(double r);
     void SetAxis(VectorR3 L);

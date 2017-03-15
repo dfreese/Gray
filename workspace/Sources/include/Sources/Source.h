@@ -46,7 +46,6 @@ public:
     virtual ~Source() {};
     void NextPhoton(Photon &p);
     double GetActivity();
-    VectorR3 position;
     void SetIsotope(Isotope * i)
     {
         isotope = i;
@@ -57,7 +56,6 @@ public:
     {
         position = pos;
     }
-    void SetTime(double t);
     void SetSourceNum(int i)
     {
         source_num = i;
@@ -79,16 +77,16 @@ public:
     }
 
     virtual bool Inside(const VectorR3 &pos) const = 0;
-    virtual void Decay(unsigned int photon_number) = 0;
+    virtual void Decay(unsigned int photon_number, double time) = 0;
 
 protected:
     Isotope * isotope;
     double activity;
-    double time;
     GammaMaterial * material;
     bool negative;
     int source_num;
     IntersectKdTree * kd_tree;
+    VectorR3 position;
 };
 
 inline bool Source::isNegative()
@@ -124,15 +122,6 @@ inline GammaMaterial * Source::GetMaterial()
 inline void Source::NextPhoton(Photon & p)
 {
     p = isotope->NextPhoton();
-}
-
-inline void Source::SetTime(double t)
-{
-    // FIXME: Time may be redudant in Source
-    time = t;
-    if (isotope != NULL) {
-        isotope->SetTime(t);
-    }
 }
 
 inline void Source::Reset()

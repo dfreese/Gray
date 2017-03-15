@@ -10,7 +10,7 @@ BeamPointSource::BeamPointSource(const VectorR3 &p, const VectorR3 &a, double an
     beam_angle = (angle/180.0)*PI/2.35482005;
 }
 
-void BeamPointSource::Decay(unsigned int photon_number)
+void BeamPointSource::Decay(unsigned int photon_number, double time)
 {
     if (isotope == NULL) {
         return;
@@ -20,7 +20,7 @@ void BeamPointSource::Decay(unsigned int photon_number)
     //SetBeam(beam_axis, beam_angle);
     ((Beam*)isotope)->SetBeam(beam_axis, beam_angle);
     isotope->SetPosition(position);
-    isotope->Decay(photon_number);
+    isotope->Decay(photon_number, time);
 }
 
 bool BeamPointSource::Inside(const VectorR3 & pos) const

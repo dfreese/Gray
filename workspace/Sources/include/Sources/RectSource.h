@@ -13,7 +13,7 @@ public:
     RectSource(const VectorR3 &pos, const VectorR3 &sz, double act);
     void SetSize(const VectorR3 &size);
 
-    void virtual Decay(unsigned int photon_number);
+    void virtual Decay(unsigned int photon_number, double time);
     bool virtual Inside(const VectorR3 & pos) const;
 private:
     VectorR3 size;

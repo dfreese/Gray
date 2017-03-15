@@ -10,7 +10,7 @@ public:
     SphereSource(const VectorR3 &pos, double radius, double act);
     void SetRadius(double r);
 
-    void virtual Decay(unsigned int photon_number);
+    void virtual Decay(unsigned int photon_number, double time);
     bool virtual Inside(const VectorR3 & pos) const;
 private:
     double radius;

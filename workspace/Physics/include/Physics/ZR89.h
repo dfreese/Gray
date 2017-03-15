@@ -24,7 +24,7 @@ class ZR89 : public Positron
 {
 public:
     ZR89();
-    virtual void Decay(unsigned int photon_number);
+    virtual void Decay(unsigned int photon_number, double time);
     virtual void Reset();
     virtual std::ostream & print_on(std::ostream & os) const;
 protected:

@@ -15,7 +15,7 @@ RectSource::RectSource(const VectorR3 &p, const VectorR3 &sz, double act)
     SetActivity(act);
 }
 
-void RectSource::Decay(unsigned int photon_number)
+void RectSource::Decay(unsigned int photon_number, double time)
 {
     if (isotope == NULL) {
         return;
@@ -27,7 +27,7 @@ void RectSource::Decay(unsigned int photon_number)
     pos.ArrayProd(size);
     pos += position;
     isotope->SetPosition(pos);
-    isotope->Decay(photon_number);
+    isotope->Decay(photon_number, time);
 }
 
 void RectSource::SetSize(const VectorR3 &sz)

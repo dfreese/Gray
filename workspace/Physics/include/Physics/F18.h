@@ -7,7 +7,7 @@ class F18 : public Positron
 {
 public:
     F18();
-    virtual void Decay(unsigned int photon_number);
+    virtual void Decay(unsigned int photon_number, double time);
     virtual void Reset();
     virtual std::ostream & print_on(std::ostream & os) const;
 protected:

@@ -27,7 +27,7 @@ void Beam::SetBeam(const VectorR3 & axis, double angle)
     beam_angle = angle;
 }
 
-void Beam::Decay(unsigned int photon_number)
+void Beam::Decay(unsigned int photon_number, double time)
 {
     p.Reset();
     p.source_num = source_num;

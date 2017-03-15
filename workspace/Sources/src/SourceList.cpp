@@ -115,12 +115,11 @@ Source * SourceList::Decay()
     do {
         idx = search(Random::Uniform()*total_activity,0,s_idx);
         list[idx]->Reset();
-        list[idx]->Decay(photon_number);
+        list[idx]->Decay(photon_number, curTime);
     } while ( Inside(list[idx]->GetDecayPosition()) && ( (counter++) < MAX_REJECT_COUNTER));
     if (counter == MAX_REJECT_COUNTER) {
         return NULL;
     } else {
-        list[idx]->SetTime(GetTime());
         CalculateTime();
         photon_number++;
         return list[idx];

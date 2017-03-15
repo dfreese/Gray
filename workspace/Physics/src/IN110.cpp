@@ -23,7 +23,7 @@ IN110::IN110()
     Reset();
 }
 
-void IN110::Decay(unsigned int photon_number)
+void IN110::Decay(unsigned int photon_number, double time)
 {
     // TODO: Get Beta energy from distribution
     SetEnergy(0.311);

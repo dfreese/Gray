@@ -33,7 +33,7 @@ EllipsoidSource::EllipsoidSource(const VectorR3 &center, const VectorR3 &a1, con
 
 }
 
-void EllipsoidSource::Decay(unsigned int photon_number)
+void EllipsoidSource::Decay(unsigned int photon_number, double time)
 {
 
     //FIXME: Sources are not rotating -- FIXED 01-13-2020 AVDB
@@ -59,7 +59,7 @@ void EllipsoidSource::Decay(unsigned int photon_number)
     roted = RotMtrx*p;
     roted += position;
     isotope->SetPosition(roted);
-    isotope->Decay(photon_number);
+    isotope->Decay(photon_number, time);
 }
 
 void EllipsoidSource::SetRadius(double r1, double r2, double r3)
