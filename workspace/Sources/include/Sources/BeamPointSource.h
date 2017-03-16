@@ -10,6 +10,7 @@ public:
     // gets a beam positron instead of a regular one
     virtual VectorR3 Decay(int photon_number, double time);
     bool virtual Inside(const VectorR3 & pos) const;
+    virtual void SetIsotope(Isotope * i);
 private:
     VectorR3 beam_axis;
     double beam_angle;

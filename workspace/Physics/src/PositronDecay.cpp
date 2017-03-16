@@ -21,7 +21,6 @@ void PositronDecay::Reset()
     pos.SetZero();
     blue.SetBlue();
     red.SetRed();
-    beamDecay = false;
 
     // 120keV positron energy for FDG
     energy = 0.120;
@@ -51,15 +50,8 @@ void PositronDecay::Decay(int photon_number)
     red.SetRed();
 
     blue.dir.SetUnitZ();
-    if (beamDecay == false) {
-        Random::UniformSphere(blue.dir);
-        Random::Acolinearity(blue.dir, red.dir, acolinearity);
-    } else { // if (beamDecay == true) {
-        Random::Acolinearity(beam_axis, blue.dir, beam_angle);
-        red.dir = blue.dir;
-        red.dir.Negate();
-        beamDecay = false;
-    }
+    Random::UniformSphere(blue.dir);
+    Random::Acolinearity(blue.dir, red.dir, acolinearity);
     // clear beamDecay for next photon
     AddPhoton(&blue);
     AddPhoton(&red);

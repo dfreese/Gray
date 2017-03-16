@@ -45,7 +45,7 @@ public:
     }
     virtual ~Source() {};
     double GetActivity();
-    void SetIsotope(Isotope * i)
+    virtual void SetIsotope(Isotope * i)
     {
         isotope = i;
     };

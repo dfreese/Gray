@@ -10,15 +10,21 @@ BeamPointSource::BeamPointSource(const VectorR3 &p, const VectorR3 &a, double an
     beam_angle = (angle/180.0)*PI/2.35482005;
 }
 
+void BeamPointSource::SetIsotope(Isotope * i)
+{
+    isotope = dynamic_cast<Beam*>(i);
+    if (!isotope) {
+        throw(runtime_error("BeamPointSource requires Beam Isotope"));
+    }
+};
+
 VectorR3 BeamPointSource::Decay(int photon_number, double time)
 {
     if (isotope == NULL) {
         return(VectorR3(0,0,0));
     }
 
-    //TODO: Fix beams!
-    //SetBeam(beam_axis, beam_angle);
-    ((Beam*)isotope)->SetBeam(beam_axis, beam_angle);
+    dynamic_cast<Beam*>(isotope)->SetBeam(beam_axis, beam_angle);
     isotope->Decay(photon_number, time, source_num, position);
     return(position);
 }

@@ -6,6 +6,7 @@
 #include <Physics/BackBack.h>
 #include <Physics/Beam.h>
 #include <Sources/Source.h>
+#include <Sources/BeamPointSource.h>
 #include <VrMath/LinearR3.h>
 //#include <GraphicsTrees/>
 
@@ -38,25 +39,34 @@ SourceList::~SourceList()
     while (!isotopes.empty()) {
         delete isotopes.back();
         isotopes.pop_back();
-    }}
+    }
+}
 
 void SourceList::AddSource(Source * s)
 {
     Isotope * isotope;
-    if (current_isotope == "F18") {
-        isotope = static_cast<Isotope *>(new F18());
-    } else if (current_isotope == "IN110") {
-        isotope = static_cast<Isotope *>(new IN110());
-    } else if (current_isotope == "ZR89") {
-        isotope = static_cast<Isotope *>(new ZR89());
-    } else if (current_isotope == "BackBack") {
-        isotope = static_cast<Isotope *>(new BackBack());
-    } else if (current_isotope == "Beam") {
+
+    // BeamPointSource requires a beam isotope, so override the current isotope
+    // setting to make sure that is given.
+    BeamPointSource * beam_pt_src = dynamic_cast<BeamPointSource *>(s);
+    if (beam_pt_src) {
         isotope = static_cast<Isotope *>(new Beam());
     } else {
-        string error = "Isotope named " + current_isotope
-        + " passed valid_isotope test, but was not implemented";
-        throw(runtime_error(error));
+        if (current_isotope == "F18") {
+            isotope = static_cast<Isotope *>(new F18());
+        } else if (current_isotope == "IN110") {
+            isotope = static_cast<Isotope *>(new IN110());
+        } else if (current_isotope == "ZR89") {
+            isotope = static_cast<Isotope *>(new ZR89());
+        } else if (current_isotope == "BackBack") {
+            isotope = static_cast<Isotope *>(new BackBack());
+        } else if (current_isotope == "Beam") {
+            isotope = static_cast<Isotope *>(new Beam());
+        } else {
+            string error = "Isotope named " + current_isotope
+            + " passed valid_isotope test, but was not implemented";
+            throw(runtime_error(error));
+        }
     }
     isotopes.push_back(isotope);
     

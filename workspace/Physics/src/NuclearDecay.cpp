@@ -7,7 +7,6 @@ NuclearDecay::NuclearDecay()
     // 2.35482005 * sigma = FWHM
 
     pos.SetZero();
-    beamDecay = false;
 
     // 120keV positron energy for FDG
     energy = 0.0;
@@ -18,13 +17,6 @@ void NuclearDecay::SetTime(const double t)
 {
     time = t;
 };
-
-void NuclearDecay::SetBeam(const VectorR3 &axis, const double angle)
-{
-    beam_axis = axis;
-    beam_angle = angle;
-    beamDecay = true;
-}
 
 int NuclearDecay::GetSourceNum() const
 {
