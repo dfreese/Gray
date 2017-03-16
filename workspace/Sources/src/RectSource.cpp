@@ -3,16 +3,16 @@
 
 using namespace std;
 
-RectSource::RectSource()
+RectSource::RectSource():
+    Source(),
+    size(0, 0, 0)
 {
-    position.SetZero();
 }
 
-RectSource::RectSource(const VectorR3 &p, const VectorR3 &sz, double act)
+RectSource::RectSource(const VectorR3 &p, const VectorR3 &sz, double act) :
+    Source(p, act),
+    size(sz)
 {
-    SetPosition(p);
-    SetSize(sz);
-    SetActivity(act);
 }
 
 VectorR3 RectSource::Decay(int photon_number, double time)

@@ -2,17 +2,16 @@
 #include <Random/Random.h>
 
 CylinderSource::CylinderSource() :
+    Source(),
     radius(1.0),
     length(1.0),
     axis(0.0, 0.0, 0.0)
 {
-    position.SetZero();
 }
 
-CylinderSource::CylinderSource(const VectorR3 &p, double rad, VectorR3 L, double act)
+CylinderSource::CylinderSource(const VectorR3 &p, double rad, VectorR3 L, double act) :
+    Source(p, act)
 {
-    position = p;
-    SetActivity(act);
     radius = rad;
     length = L.Norm();
     axis = L.MakeUnit();

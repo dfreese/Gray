@@ -12,30 +12,22 @@ VoxelSource::~VoxelSource()
     }
 }
 
-VoxelSource::VoxelSource()
+VoxelSource::VoxelSource() :
+    Source(),
+    dimension{0, 0, 0},
+    scale(0, 0, 0)
 {
-    position.SetZero();
-    scale.SetZero();
-    dimension[0] = 0;
-    dimension[1] = 0;
-    dimension[2] = 0;
 }
 
-VoxelSource::VoxelSource(const VectorR3 &p, int dims[3], const VectorR3 & vox_scale, double act)
+VoxelSource::VoxelSource(const VectorR3 &p, int dims[3], const VectorR3 & vox_scale, double act) :
+    Source(p, act),
+    dimension{dims[0], dims[1], dims[2]},
+    scale(vox_scale)
 {
-    SetActivity(act);
-    dimension[0] = dims[0];
-    dimension[1] = dims[1];
-    dimension[2] = dims[2];
-    scale = vox_scale;
-    position = p;
-
     // Divide the size of the voxel_array in cm by dimensions to allow for correct positioning
     scale.x = scale.x / (double)dims[0];
     scale.y = scale.y / (double)dims[1];
     scale.z = scale.z / (double)dims[2];
-
-
 
     // Center array
     position.x -= scale.x * ((double)dims[0])/2.0;

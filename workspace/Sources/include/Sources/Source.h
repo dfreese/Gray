@@ -35,13 +35,25 @@ class IntersectKdTree;
 class Source
 {
 public:
-    Source() {
-        material = NULL;
-        activity = 0.0;
-        negative = false;
-        isotope = NULL;
-        source_num = 0;
-        kd_tree = NULL;
+    Source() :
+        isotope(NULL),
+        activity(0),
+        material(NULL),
+        negative(false),
+        source_num(0),
+        kd_tree(NULL),
+        position(0, 0, 0)
+    {
+    }
+    Source(const VectorR3 & pos, double act) :
+        isotope(NULL),
+        activity(act),
+        material(NULL),
+        negative(false),
+        source_num(0),
+        kd_tree(NULL),
+        position(pos)
+    {
     }
     virtual ~Source() {};
     double GetActivity();

@@ -2,17 +2,16 @@
 #include <Random/Random.h>
 
 AnnulusCylinderSource::AnnulusCylinderSource() :
+    Source(),
     radius(1.0),
     length(1.0),
     axis(0.0, 0.0, 1.0)
 {
-    position.SetZero();
 }
 
-AnnulusCylinderSource::AnnulusCylinderSource(const VectorR3 &p, double rad, VectorR3 L, double act)
+AnnulusCylinderSource::AnnulusCylinderSource(const VectorR3 &p, double rad, VectorR3 L, double act) :
+    Source(p, act)
 {
-    position = p;
-    SetActivity(act);
     radius = rad;
     length = L.Norm();
     axis = L.MakeUnit();

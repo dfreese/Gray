@@ -2,6 +2,7 @@
 #include <Random/Random.h>
 
 EllipsoidSource::EllipsoidSource() :
+    Source(),
     radius1(1.0),
     radius2(1.0),
     radius3(1.0),
@@ -12,19 +13,18 @@ EllipsoidSource::EllipsoidSource() :
     position.SetZero();
 }
 
-EllipsoidSource::EllipsoidSource(const VectorR3 &center, const VectorR3 &a1, const VectorR3 &a2, double r1, double r2, double r3, double act)
+EllipsoidSource::EllipsoidSource(const VectorR3 &center, const VectorR3 &a1,
+                                 const VectorR3 &a2, double r1, double r2,
+                                 double r3, double act) :
+    Source(center, act),
+    radius1(r1),
+    radius2(r2),
+    radius3(r3),
+    axis1(a2),
+    axis2(a1 * a2),
+    axis3(a1)
 {
-
     //FIXME: Ellipsoids DO NOT ROTATE
-
-    position = center;
-    SetActivity(act);
-    radius1 = r1;
-    radius2 = r2;
-    radius3 = r3;
-    axis1 = a2;
-    axis2 = a1*a2;
-    axis3 = a1;
     RotMtrx.Set(1, 0, 0,
                 0, 1, 0,
                 0, 0, 1);

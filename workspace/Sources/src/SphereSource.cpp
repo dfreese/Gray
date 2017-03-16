@@ -1,17 +1,16 @@
 #include <Sources/SphereSource.h>
 #include <Random/Random.h>
 
-SphereSource::SphereSource()
+SphereSource::SphereSource() :
+    Source(),
+    radius(1.0)
 {
-    position.SetZero();
-    radius = 1.0;
 }
 
-SphereSource::SphereSource(const VectorR3 &p, double rad, double act)
+SphereSource::SphereSource(const VectorR3 &p, double rad, double act) :
+    Source(p, act),
+    radius(rad)
 {
-    position = p;
-    SetActivity(act);
-    radius = rad;
 }
 
 VectorR3 SphereSource::Decay(int photon_number, double time)

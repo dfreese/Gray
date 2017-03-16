@@ -1,13 +1,12 @@
 #include <Sources/BeamPointSource.h>
 #include <Physics/Beam.h>
 
-BeamPointSource::BeamPointSource(const VectorR3 &p, const VectorR3 &a, double angle, double act)
-{
-    position = p;
-    SetActivity(act);
-    beam_axis = a;
+BeamPointSource::BeamPointSource(const VectorR3 &p, const VectorR3 &a, double angle, double act) :
+    Source(p, act),
+    beam_axis(a),
     // convert Angle FWHM to radians sigma
-    beam_angle = (angle/180.0)*PI/2.35482005;
+    beam_angle((angle/180.0) * M_PI/2.35482005)
+{
 }
 
 void BeamPointSource::SetIsotope(Isotope * i)

@@ -2,6 +2,7 @@
 #include <Random/Random.h>
 
 EllipticCylinderSource::EllipticCylinderSource() :
+    Source(),
     radius1(1.0),
     radius2(1.0),
     length(1.0),
@@ -10,14 +11,15 @@ EllipticCylinderSource::EllipticCylinderSource() :
     position.SetZero();
 }
 
-EllipticCylinderSource::EllipticCylinderSource(const VectorR3 &p, double r1, double r2, VectorR3 &L, double act)
+EllipticCylinderSource::EllipticCylinderSource(const VectorR3 &p, double r1,
+                                               double r2, VectorR3 &L,
+                                               double act) :
+    Source(p, act),
+    radius1(r1),
+    radius2(r2),
+    length(L.Norm()),
+    axis(L.MakeUnit())
 {
-    position = p;
-    SetActivity(act);
-    radius1 = r1;
-    radius2 = r2;
-    length = L.Norm();
-    axis = L.MakeUnit();
     /* Rotation Matrix based on Logbook 4 p72, AVDB) */
     double c= axis.z;
     double s=(axis.x*axis.x+axis.y*axis.y);

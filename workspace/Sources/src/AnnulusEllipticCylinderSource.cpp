@@ -5,25 +5,26 @@
 using namespace std;
 
 AnnulusEllipticCylinderSource::AnnulusEllipticCylinderSource() :
+    Source(),
     radius1(1.0),
     radius2(1.0),
     length(1.0),
     axis(0.0, 0.0, 1.0)
 {
-    position.SetZero();
 }
 
-AnnulusEllipticCylinderSource::AnnulusEllipticCylinderSource(const VectorR3 &p, double r1, double r2, VectorR3 &L, double act)
+AnnulusEllipticCylinderSource::AnnulusEllipticCylinderSource(const VectorR3 &p,
+                                                             double r1,
+                                                             double r2,
+                                                             VectorR3 &L,
+                                                             double act) :
+    Source(p, act),
+    radius1(r1),
+    radius2(r2),
+    length(L.Norm()),
+    axis(L.MakeUnit())
 {
-    unsigned int i;
-    position = p;
-    SetActivity(act);
-    radius1 = r1;
-    radius2 = r2;
-    length = L.Norm();
-    axis = L.MakeUnit();
     // calculate Rotation Matrix
-
     //cout << "L.x = " << L.x << "  L.y = " << L.y << "  L.z = " << L.z <<endl;
     //cout << "axis.x = " << axis.x << "  axis.y = " << axis.y << "  axis.z = " << axis.z <<endl;
     /* Rotation Matrix based on Logbook 4 p72, AVDB) */
@@ -38,7 +39,7 @@ AnnulusEllipticCylinderSource::AnnulusEllipticCylinderSource(const VectorR3 &p, 
     double step = (2.0 * M_PI)/((double)NUM_TABLE);
     double m = 1-(radius2/radius1)*(radius2/radius1);
     cout << "Test elliptic integrals:m[" << m << "]\n";
-    for (i = 0; i < NUM_TABLE; i++) {
+    for (int i = 0; i < NUM_TABLE; i++) {
         //cout << "i:[" << i << "][";
         circ.push_back(radius1 * IncompleteEllipticE(((double)i)*step, m));
         //cout << circ[i] << "\n";

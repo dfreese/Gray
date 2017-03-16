@@ -5,23 +5,24 @@
 
 using namespace std;
 
-VectorSource::VectorSource(const double act)
+VectorSource::VectorSource(const double act) :
+    Source({0, 0, 0}, act)
 {
     if (act < 0.0) {
         cout << "Cannot have negative vector sources\n";
         exit(0);
     }
-    SetActivity(act);
 }
 
-VectorSource::VectorSource(const double act, const VectorR3& boxMin, const VectorR3& boxMax)
+VectorSource::VectorSource(const double act, const VectorR3& boxMin,
+                           const VectorR3& boxMax) :
+    Source({0, 0, 0}, act),
+    aabb(boxMin, boxMax)
 {
     if (act < 0.0) {
         cout << "Cannot have negative vector sources\n";
         exit(0);
     }
-    SetActivity(act);
-    aabb.Set(boxMin, boxMax);
 }
 
 VectorR3 VectorSource::Decay(int photon_number, double time)
