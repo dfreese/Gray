@@ -5,8 +5,6 @@
 #include <Physics/Photon.h>
 #include <stack>
 
-class MaterialBase;
-
 class NuclearDecay
 {
 public:
@@ -14,8 +12,6 @@ public:
     void SetTime(const double t);
     double Random();
     friend std::ostream & operator<< (std::ostream & os, const NuclearDecay & n);
-    MaterialBase * GetMaterial();
-    void SetMaterial(MaterialBase * mat);
     void SetBeam(const VectorR3 &axis, const double angle);
     int GetSourceNum(void) const;
     virtual void SetPosition(const VectorR3 & p) = 0;
@@ -31,14 +27,12 @@ public:
     bool beamDecay;
     double energy;
     VectorR3 pos;
-    unsigned int decay_number;
+    int decay_number;
     int source_num;
 
 protected:
     double beam_angle;
-    void BeamCone();
     VectorR3 beam_axis;
-    MaterialBase * material;
 
     inline friend std::ostream & operator<< (std::ostream &os,
                                              const NuclearDecay & n)

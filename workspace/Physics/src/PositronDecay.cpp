@@ -25,8 +25,6 @@ void PositronDecay::Reset()
 
     // 120keV positron energy for FDG
     energy = 0.120;
-    material = NULL;
-
     acolinearity = CONST_ACOL;
 
     while (!daughter.empty()) {

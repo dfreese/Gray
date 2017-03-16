@@ -11,8 +11,6 @@ NuclearDecay::NuclearDecay()
 
     // 120keV positron energy for FDG
     energy = 0.0;
-    material = NULL;
-
     Random::Gaussian();
 }
 
@@ -54,14 +52,3 @@ void NuclearDecay::AddPhoton(Photon * p)
 {
     daughter.push(p);
 }
-
-MaterialBase * NuclearDecay::GetMaterial()
-{
-    return material;
-}
-
-void NuclearDecay::SetMaterial(MaterialBase * mat)
-{
-    material = mat;
-}
-
