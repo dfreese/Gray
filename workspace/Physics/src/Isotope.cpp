@@ -20,8 +20,3 @@ void Isotope::AddNuclearDecay(NuclearDecay * nd)
 {
     daughter.push(nd);
 }
-
-std::ostream& operator<< (std::ostream & os, const Isotope & i)
-{
-    return i.print_on(os);
-}

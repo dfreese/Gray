@@ -77,25 +77,6 @@ void PositronDecay::SetPosition(const VectorR3 & p)
     blue.pos = p;
 }
 
-ostream& PositronDecay::print_on( ostream& os ) const
-{
-    char str[256];
-
-    os << decay_number;
-    os << " ";
-    os << source_num;
-    os << " ";
-    sprintf(str,"%23.16e ",time);
-    os << str;
-    sprintf(str,"%12.6e ",energy);
-    os << str;
-    // positron is a first interaction
-    sprintf(str,"%15.8e %15.8e %15.8e ",pos.x, pos.y, pos.z);
-    os << str;
-
-    return os;
-}
-
 void PositronDecay::PositronRange(VectorR3 & p, double positronC,
                                   double positronK1, double positronK2,
                                   double positronMaxRange)

@@ -31,10 +31,3 @@ void Beam::Reset()
         daughter.pop();
     }
 }
-
-ostream & Beam::print_on(ostream & os) const
-{
-    os << "Beam: ";
-    os << p;
-    return os;
-}

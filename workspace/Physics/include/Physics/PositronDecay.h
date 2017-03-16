@@ -12,7 +12,6 @@ public:
     virtual void SetPosition(const VectorR3 & p);
     virtual void Decay(int photon_number);
     virtual void Reset();
-    virtual std::ostream & print_on(std::ostream & os) const;
     static void PositronRange(VectorR3 & p, double positronC,
                               double positronK1, double positronK2,
                               double positronMaxRange);

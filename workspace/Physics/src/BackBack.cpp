@@ -25,10 +25,3 @@ void BackBack::Reset()
         daughter.pop();
     }
 }
-
-ostream & BackBack::print_on(ostream & os) const
-{
-    os << "BackBack: ";
-    os << p;
-    return os;
-}

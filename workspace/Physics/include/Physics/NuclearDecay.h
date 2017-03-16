@@ -11,13 +11,11 @@ public:
     NuclearDecay();
     void SetTime(const double t);
     double Random();
-    friend std::ostream & operator<< (std::ostream & os, const NuclearDecay & n);
     void SetBeam(const VectorR3 &axis, const double angle);
     int GetSourceNum(void) const;
     virtual void SetPosition(const VectorR3 & p) = 0;
     virtual void Decay(int photon_number) = 0;
     virtual void Reset() = 0;
-    virtual std::ostream & print_on(std::ostream &) const = 0;
     Photon * NextPhoton();
     bool IsEmpty() const;
     void AddPhoton(Photon * p);
@@ -33,12 +31,6 @@ public:
 protected:
     double beam_angle;
     VectorR3 beam_axis;
-
-    inline friend std::ostream & operator<< (std::ostream &os,
-                                             const NuclearDecay & n)
-    {
-        return n.print_on(os);
-    }
     std::stack<Photon *> daughter;
 };
 

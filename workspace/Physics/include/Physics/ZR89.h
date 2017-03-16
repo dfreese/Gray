@@ -27,7 +27,6 @@ public:
     virtual void Decay(int photon_number, double time, int src_id,
                        const VectorR3 & position);
     virtual void Reset();
-    virtual std::ostream & print_on(std::ostream & os) const;
 protected:
     GammaDecay g;
     const double CONST_E_ZR89_GAMMA = 0.90915; /* MeV */

@@ -52,10 +52,3 @@ void ZR89::Reset()
         daughter.pop();
     }
 }
-
-ostream & ZR89::print_on(ostream & os) const
-{
-    os << "ZR89: ";
-    os << p;
-    return os;
-}

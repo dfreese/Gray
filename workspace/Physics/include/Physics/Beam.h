@@ -11,7 +11,6 @@ public:
     virtual void Decay(int photon_number, double time, int src_id,
                        const VectorR3 & position);
     virtual void Reset();
-    virtual std::ostream & print_on(std::ostream & os) const;
 private:
     VectorR3 beam_axis;
     double beam_angle;

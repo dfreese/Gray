@@ -40,12 +40,3 @@ void F18::Reset()
         daughter.pop();
     }
 }
-
-ostream & F18::print_on(ostream & os) const
-{
-    os << "F18: ";
-    os << p;
-    return os;
-}
-
-

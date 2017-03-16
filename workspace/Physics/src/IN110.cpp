@@ -54,10 +54,3 @@ void IN110::Reset()
         daughter.pop();
     }
 }
-
-ostream & IN110::print_on(ostream & os) const
-{
-    os << "IN110: ";
-    os << p;
-    return os;
-}
