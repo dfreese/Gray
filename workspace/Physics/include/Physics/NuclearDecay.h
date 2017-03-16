@@ -2,8 +2,9 @@
 #define NUCLEARDECAY_H
 
 #include <VrMath/LinearR3.h>
-#include <Physics/Photon.h>
 #include <stack>
+
+class Photon;
 
 class NuclearDecay
 {

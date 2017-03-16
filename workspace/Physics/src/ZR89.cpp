@@ -25,19 +25,19 @@ void ZR89::Decay(int photon_number, double time, int src_id,
     g.Reset();
     g.SetEnergy(CONST_E_ZR89_GAMMA);
 
-    p.SetPosition(position);
-    p.PositronRange(positronC, positronK1, positronK2, positronMaxRange);
-
+    VectorR3 pos = position;
+    PositronDecay::PositronRange(pos, positronC, positronK1, positronK2,
+                                 positronMaxRange);
     // Calculate Physics to determine when and if Positron and Gamma are
     // emitted together
     if (Random::Uniform() < CONST_PROB_ZR89_POS) {
         AddNuclearDecay(&p);
-        p.Decay(photon_number, time, src_id, p.GetPosition());
+        p.Decay(photon_number, time, src_id, pos);
     }
 
     // Gamma is emitted for every positron
     AddNuclearDecay(&g);
-    g.Decay(photon_number, time, src_id, p.GetPosition());
+    g.Decay(photon_number, time, src_id, pos);
 }
 
 void ZR89::Reset()

@@ -65,13 +65,6 @@ void PositronDecay::SetAcolinearity(double theta)
     acolinearity = theta;
 }
 
-void PositronDecay::SetPosition(const VectorR3 & p)
-{
-    position = p;
-    red.pos = p;
-    blue.pos = p;
-}
-
 void PositronDecay::PositronRange(VectorR3 & p, double positronC,
                                   double positronK1, double positronK2,
                                   double positronMaxRange)
@@ -119,15 +112,21 @@ void PositronDecay::PositronRange(VectorR3 & p, double positronFWHM,
     p += positronDir;
 }
 
-void PositronDecay::PositronRange(double positronC, double positronK1,
-                                  double positronK2, double positronMaxRange)
+void PositronDecay::Decay(int photon_number, double time, int src_id,
+                          VectorR3 position, double positronC,
+                          double positronK1, double positronK2,
+                          double positronMaxRange)
 {
     PositronRange(position, positronC, positronK1, positronK2,
                   positronMaxRange);
+    Decay(photon_number, time, src_id, position);
 }
 
-void PositronDecay::PositronRange(double positronFWHM, double positronMaxRange)
+void PositronDecay::Decay(int photon_number, double time, int src_id,
+                          VectorR3 position, double positronFWHM,
+                          double positronMaxRange)
 {
     PositronRange(position, positronFWHM, positronMaxRange);
+    Decay(photon_number, time, src_id, position);
 }
 

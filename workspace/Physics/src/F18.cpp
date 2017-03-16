@@ -25,10 +25,9 @@ void F18::Decay(int photon_number, double time, int src_id,
                 const VectorR3 & position)
 {
     p.Reset();
-    p.SetPosition(position);
-    p.PositronRange(positronC, positronK1, positronK2, positronMaxRange);
     AddNuclearDecay(&p);
-    p.Decay(photon_number, time, src_id, position);
+    p.Decay(photon_number, time, src_id, position, positronC, positronK1,
+            positronK2, positronMaxRange);
 }
 
 void F18::Reset()
