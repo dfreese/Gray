@@ -11,15 +11,10 @@ ZR89::ZR89()
      *  k1   27.9 (37.9)     24.5 (23.8)      25.4 (20.2)       33.2 (18.1)        *
      *  k2   2.91 (3.1)      1.76 (1.8)       1.44 (1.4)        1.0 (0.9)          *
      *******************************************************************************/
-    positronRange = true;
-    positronRangeGaussian = false;
-    positronRangeCusp = true;
-    positronFWHM = 1.0; // expressed in meters
     positronC = 0.519;
     positronK1 = 27.9;
     positronK2 = 2.91;
     positronMaxRange = 3.0;
-    g.SetEnergy(CONST_E_ZR89_GAMMA);
     Reset();
 }
 
@@ -28,15 +23,14 @@ void ZR89::Decay(int photon_number, double time, int src_id,
 {
     p.Reset();
     g.Reset();
+    g.SetEnergy(CONST_E_ZR89_GAMMA);
     p.source_num = src_id;
     g.source_num = src_id;
     p.SetTime(time);
     g.SetTime(time);
     p.SetPosition(position);
-    p.SetPositronRange(positronC, positronK1, positronK2, positronMaxRange);
-    p.PositronRange();
+    p.PositronRange(positronC, positronK1, positronK2, positronMaxRange);
     g.SetPosition(p.pos);
-
 
     // Calculate Physics to determine when and if Positron and Gamma are
     // emitted together

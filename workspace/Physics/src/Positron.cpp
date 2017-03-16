@@ -4,5 +4,4 @@ using namespace std;
 
 Positron::Positron()
 {
-    positronRange = false;
 }

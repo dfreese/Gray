@@ -10,9 +10,6 @@ public:
     Positron();
 
 protected:
-    bool positronRange;
-    bool positronRangeGaussian;
-    bool positronRangeCusp;
     double positronFWHM; // expressed in meters
     double positronC;
     double positronK1;
