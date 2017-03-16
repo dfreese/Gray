@@ -17,11 +17,8 @@ void Beam::Decay(int photon_number, double time, int src_id,
                  const VectorR3 & position)
 {
     beam.Reset();
-    beam.source_num = src_id;
-    beam.SetTime(time);
-    beam.SetPosition(position);
     beam.SetBeam(beam_axis, beam_angle);
-    beam.Decay(photon_number);
+    beam.Decay(photon_number, time, src_id, position);
 }
 
 void Beam::Reset()

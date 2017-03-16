@@ -1,31 +1,14 @@
 #include <Physics/NuclearDecay.h>
 #include <Random/Random.h>
 
-NuclearDecay::NuclearDecay()
+NuclearDecay::NuclearDecay() :
+    energy(0),
+    decay_number(0),
+    src_id(0),
+    position(0, 0, 0),
+    time(0)
 {
-    // Use default angle of 0.487 deg FWHM
-    // 2.35482005 * sigma = FWHM
-
-    pos.SetZero();
-
-    // 120keV positron energy for FDG
-    energy = 0.0;
     Random::Gaussian();
-}
-
-void NuclearDecay::SetTime(const double t)
-{
-    time = t;
-};
-
-int NuclearDecay::GetSourceNum() const
-{
-    return(source_num);
-};
-
-void NuclearDecay::SetPosition(const VectorR3 & p)
-{
-    pos = p;
 }
 
 Photon * NuclearDecay::NextPhoton()
@@ -43,4 +26,24 @@ bool NuclearDecay::IsEmpty() const
 void NuclearDecay::AddPhoton(Photon * p)
 {
     daughter.push(p);
+}
+
+double NuclearDecay::GetEnergy() const {
+    return(energy);
+}
+
+int NuclearDecay::GetDecayNumber() const {
+    return(decay_number);
+}
+
+int NuclearDecay::GetSourceId() const {
+    return(src_id);
+}
+
+VectorR3 NuclearDecay::GetPosition() const {
+    return(position);
+}
+
+double NuclearDecay::GetTime() const {
+    return(time);
 }

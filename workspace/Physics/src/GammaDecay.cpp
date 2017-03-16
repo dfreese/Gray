@@ -19,17 +19,22 @@ void GammaDecay::Reset()
     }
 }
 
-void GammaDecay::Decay(int photon_number)
+void GammaDecay::Decay(int photon_number, double time, int src_id,
+                       const VectorR3 & position)
 {
     gamma.Reset();
+    this->position = position;
+    this->decay_number = photon_number;
+    this->time = time;
+    this->src_id = src_id;
     gamma.time = time;
-    gamma.pos = pos;
+    gamma.pos = position;
     gamma.energy = energy;
     gamma.id = photon_number;
     gamma.det_id = -1;
     gamma.color = Photon::P_YELLOW;
     gamma.dir.SetUnitZ();
-    gamma.src_id = source_num;
+    gamma.src_id = src_id;
     Random::UniformSphere(gamma.dir);
     AddPhoton(&gamma);
 }
@@ -38,26 +43,3 @@ void GammaDecay::SetEnergy(double e)
 {
     energy = e;
 };
-
-void GammaDecay::SetPosition(const VectorR3 & p)
-{
-    pos = p;
-    gamma.pos = p;
-}
-
-ostream& GammaDecay::print_on( ostream& os ) const
-{
-    char str[256];
-
-    os << gamma.id;
-    os << " -1 ";
-    sprintf(str,"%08.16e ",time);
-    os << str;
-    sprintf(str,"%04e ",energy);
-    os << str;
-    // positron is a first interaction
-    sprintf(str,"%04e %04e %04e ",pos.x, pos.y, pos.z);
-    os << str;
-
-    return os;
-}

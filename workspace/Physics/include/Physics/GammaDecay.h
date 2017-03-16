@@ -8,10 +8,9 @@ class GammaDecay : public NuclearDecay
 {
 public:
     GammaDecay();
-    virtual void SetPosition(const VectorR3 & p);
-    virtual void Decay(int photon_number);
+    virtual void Decay(int photon_number, double time, int src_id,
+                       const VectorR3 & position);
     virtual void Reset();
-    virtual std::ostream & print_on(std::ostream & os) const;
     void SetEnergy(double e);
 
 private:

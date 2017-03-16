@@ -54,14 +54,18 @@ public:
         kd_tree(NULL),
         position(pos)
     {
+        if (act < 0.0) {
+            negative = true;
+        } else {
+            negative = false;
+        }
     }
     virtual ~Source() {};
-    double GetActivity();
+    double GetActivity() const;
     virtual void SetIsotope(Isotope * i)
     {
         isotope = i;
     };
-    void SetActivity(double act);
     void SetMaterial(GammaMaterial * mat);
     void SetPosition(const VectorR3 & pos)
     {
@@ -100,19 +104,9 @@ inline bool Source::isNegative()
     return negative;
 }
 
-inline double Source::GetActivity()
+inline double Source::GetActivity() const
 {
     return activity;
-}
-
-inline void Source::SetActivity(double act)
-{
-    activity = act;
-    if (act < 0.0) {
-        negative = true;
-    } else {
-        negative = false;
-    }
 }
 
 inline void Source::SetMaterial(GammaMaterial * mat)

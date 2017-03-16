@@ -108,12 +108,12 @@ Interaction Interaction::NuclearDecay(const class NuclearDecay &p,
 {
     Interaction hit;
     hit.type = NUCLEAR_DECAY;
-    hit.id = p.decay_number;
-    hit.time = p.time;
-    hit.pos = p.pos;
-    hit.energy = p.energy;
+    hit.id = p.GetDecayNumber();
+    hit.time = p.GetTime();
+    hit.pos = p.GetPosition();
+    hit.energy = p.GetEnergy();
     hit.color = Photon::P_YELLOW;
-    hit.src_id = p.source_num;
+    hit.src_id = p.GetSourceId();
     hit.mat_id = mat_gamma_prop.GetMaterial();
     hit.det_id = -1;
     // This is a phantom scatter flag, so only flag if the material isn't

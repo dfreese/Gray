@@ -9,25 +9,25 @@ class NuclearDecay
 {
 public:
     NuclearDecay();
-    void SetTime(const double t);
-    double Random();
-    int GetSourceNum(void) const;
-    virtual void SetPosition(const VectorR3 & p) = 0;
-    virtual void Decay(int photon_number) = 0;
+    virtual void Decay(int photon_number, double time, int src_id,
+                       const VectorR3 & position) = 0;
     virtual void Reset() = 0;
     Photon * NextPhoton();
     bool IsEmpty() const;
     void AddPhoton(Photon * p);
-
-public:
-    double time;
-    double energy;
-    VectorR3 pos;
-    int decay_number;
-    int source_num;
+    double GetEnergy() const;
+    int GetDecayNumber() const;
+    int GetSourceId() const;
+    VectorR3 GetPosition() const;
+    double GetTime() const;
 
 protected:
     std::stack<Photon *> daughter;
+    double energy;
+    int decay_number;
+    int src_id;
+    VectorR3 position;
+    double time;
 };
 
 #endif /* NUCLEARDECAY_H */

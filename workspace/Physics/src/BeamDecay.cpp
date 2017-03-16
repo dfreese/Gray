@@ -13,27 +13,24 @@ void BeamDecay::SetBeam(const VectorR3 &axis, const double angle)
     this->angle = angle;
 }
 
-
-void BeamDecay::SetPosition(const VectorR3 & p)
-{
-    pos = p;
-    red.pos = p;
-    blue.pos = p;
-}
-
-void BeamDecay::Decay(int photon_number)
+void BeamDecay::Decay(int photon_number, double time, int src_id,
+                      const VectorR3 & position)
 {
     blue.Reset();
     red.Reset();
+    this->src_id = src_id;
+    this->time = time;
+    this->position = position;
+    this->decay_number = photon_number;
 
     decay_number = photon_number;
 
     blue.time = time;
-    blue.pos = pos;
+    blue.pos = position;
     blue.energy = ENERGY_511;
     blue.id = photon_number;
     blue.det_id = -1;
-    blue.src_id =  source_num;
+    blue.src_id = src_id;
     red = blue;
 
     blue.SetBlue();
@@ -52,7 +49,7 @@ void BeamDecay::Decay(int photon_number)
 
 void BeamDecay::Reset()
 {
-    pos.SetZero();
+    position.SetZero();
     blue.SetBlue();
     red.SetRed();
 

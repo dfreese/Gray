@@ -18,7 +18,7 @@ void PositronDecay::Reset()
     // Use default angle of 0.487 deg FWHM
     // 2.35482005 * sigma = FWHM
 
-    pos.SetZero();
+    position.SetZero();
     blue.SetBlue();
     red.SetRed();
 
@@ -31,19 +31,22 @@ void PositronDecay::Reset()
     }
 }
 
-void PositronDecay::Decay(int photon_number)
+void PositronDecay::Decay(int photon_number, double time, int src_id,
+                          const VectorR3 & position)
 {
     blue.Reset();
     red.Reset();
-
-    decay_number = photon_number;
+    this->decay_number = photon_number;
+    this->time = time;
+    this->src_id = src_id;
+    this->position = position;
 
     blue.time = time;
-    blue.pos = pos;
+    blue.pos = position;
     blue.energy = ENERGY_511;
     blue.id = photon_number;
     blue.det_id = -1;
-    blue.src_id =  source_num;
+    blue.src_id = src_id;
     red = blue;
 
     blue.SetBlue();
@@ -64,7 +67,7 @@ void PositronDecay::SetAcolinearity(double theta)
 
 void PositronDecay::SetPosition(const VectorR3 & p)
 {
-    pos = p;
+    position = p;
     red.pos = p;
     blue.pos = p;
 }
@@ -119,11 +122,12 @@ void PositronDecay::PositronRange(VectorR3 & p, double positronFWHM,
 void PositronDecay::PositronRange(double positronC, double positronK1,
                                   double positronK2, double positronMaxRange)
 {
-    PositronRange(pos, positronC, positronK1, positronK2, positronMaxRange);
+    PositronRange(position, positronC, positronK1, positronK2,
+                  positronMaxRange);
 }
 
 void PositronDecay::PositronRange(double positronFWHM, double positronMaxRange)
 {
-    PositronRange(pos, positronFWHM, positronMaxRange);
+    PositronRange(position, positronFWHM, positronMaxRange);
 }
 
