@@ -24,7 +24,6 @@ void ZR89::Decay(int photon_number, double time, int src_id,
 {
     p.Reset();
     g.Reset();
-    g.SetEnergy(CONST_E_ZR89_GAMMA);
 
     VectorR3 pos = position;
     PositronDecay::PositronRange(pos, positronC, positronK1, positronK2,
@@ -38,7 +37,7 @@ void ZR89::Decay(int photon_number, double time, int src_id,
 
     // Gamma is emitted for every positron
     AddNuclearDecay(&g);
-    g.Decay(photon_number, time, src_id, pos);
+    g.Decay(photon_number, time, src_id, pos, CONST_E_ZR89_GAMMA);
 }
 
 void ZR89::Reset()

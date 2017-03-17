@@ -17,7 +17,6 @@ public:
     virtual void Decay(int photon_number, double time, int src_id,
                        VectorR3 position, double positronFWHM,
                        double positronMaxRange);
-    virtual void Reset();
     static void PositronRange(VectorR3 & p, double positronC,
                               double positronK1, double positronK2,
                               double positronMaxRange);

@@ -47,3 +47,9 @@ VectorR3 NuclearDecay::GetPosition() const {
 double NuclearDecay::GetTime() const {
     return(time);
 }
+
+void NuclearDecay::Reset() {
+    while (!daughter.empty()) {
+        daughter.pop();
+    }
+}

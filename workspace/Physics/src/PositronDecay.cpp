@@ -15,35 +15,21 @@ const double PositronDecay::default_acolinearity = 0.47;
 PositronDecay::PositronDecay(double acolinearity_deg_fwhm) :
     acolinearity(acolinearity_deg_fwhm / 180.0 * M_PI * CONST_FWHM_TO_SIGMA)
 {
-    Reset();
-}
-
-void PositronDecay::Reset()
-{
-    // Use default angle of 0.487 deg FWHM
-    // 2.35482005 * sigma = FWHM
-
-    position.SetZero();
-    blue.SetBlue();
-    red.SetRed();
-
-    // 120keV positron energy for FDG
-    energy = 0.120;
-
-    while (!daughter.empty()) {
-        daughter.pop();
-    }
 }
 
 void PositronDecay::Decay(int photon_number, double time, int src_id,
                           const VectorR3 & position)
 {
-    blue.Reset();
-    red.Reset();
+    // 120keV positron energy for FDG
+    // TODO: put an energy in the Positron class that is overridden by it's
+    // children.  Pass it during the call to PoistronDecay::Decay, and generate
+    // an energy for the PositronDecay instance randomly from a beta decay
+    // spectrum.
+    this->energy = 0.120;
     this->decay_number = photon_number;
-    this->time = time;
     this->src_id = src_id;
     this->position = position;
+    this->time = time;
 
     blue.time = time;
     blue.pos = position;
@@ -51,15 +37,14 @@ void PositronDecay::Decay(int photon_number, double time, int src_id,
     blue.id = photon_number;
     blue.det_id = -1;
     blue.src_id = src_id;
+    blue.phantom_scatter = false;
     red = blue;
 
     blue.SetBlue();
     red.SetRed();
 
-    blue.dir.SetUnitZ();
     Random::UniformSphere(blue.dir);
     Random::Acolinearity(blue.dir, red.dir, acolinearity);
-    // clear beamDecay for next photon
     AddPhoton(&blue);
     AddPhoton(&red);
 }

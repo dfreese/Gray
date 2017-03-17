@@ -12,7 +12,7 @@ public:
     NuclearDecay();
     virtual void Decay(int photon_number, double time, int src_id,
                        const VectorR3 & position) = 0;
-    virtual void Reset() = 0;
+    virtual void Reset();
     Photon * NextPhoton();
     bool IsEmpty() const;
     void AddPhoton(Photon * p);

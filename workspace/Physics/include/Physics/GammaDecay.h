@@ -10,10 +10,10 @@ public:
     GammaDecay();
     virtual void Decay(int photon_number, double time, int src_id,
                        const VectorR3 & position);
-    virtual void Reset();
-    void SetEnergy(double e);
+    void Decay(int photon_number, double time, int src_id,
+               const VectorR3 & position, double energy);
 
-private:
+protected:
     double energy;
     Photon gamma;
 };

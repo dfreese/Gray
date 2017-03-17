@@ -24,7 +24,6 @@ void IN110::Decay(int photon_number, double time, int src_id,
 {
     p.Reset();
     g.Reset();
-    g.SetEnergy(CONST_E_IN110m_GAMMA);
     VectorR3 pos = position;
     PositronDecay::PositronRange(pos, positronC, positronK1, positronK2,
                                  positronMaxRange);
@@ -38,7 +37,7 @@ void IN110::Decay(int photon_number, double time, int src_id,
     // Gamma is emitted for every positron
     // No Gamma Decay for Gamma Rays
     AddNuclearDecay(&g);
-    g.Decay(photon_number, time, src_id, pos);
+    g.Decay(photon_number, time, src_id, pos, CONST_E_IN110m_GAMMA);
 }
 
 void IN110::Reset()

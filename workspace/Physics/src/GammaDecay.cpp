@@ -5,24 +5,16 @@
 
 using namespace std;
 
-GammaDecay::GammaDecay()
+GammaDecay::GammaDecay() :
+    energy(0),
+    gamma()
 {
-    gamma.color = Photon::P_YELLOW;
 }
 
-void GammaDecay::Reset()
-{
-    gamma.Reset();
-    gamma.color = Photon::P_YELLOW;
-    while (!daughter.empty()) {
-        daughter.pop();
-    }
-}
 
 void GammaDecay::Decay(int photon_number, double time, int src_id,
                        const VectorR3 & position)
 {
-    gamma.Reset();
     this->position = position;
     this->decay_number = photon_number;
     this->time = time;
@@ -35,11 +27,14 @@ void GammaDecay::Decay(int photon_number, double time, int src_id,
     gamma.color = Photon::P_YELLOW;
     gamma.dir.SetUnitZ();
     gamma.src_id = src_id;
+    gamma.phantom_scatter = false;
     Random::UniformSphere(gamma.dir);
     AddPhoton(&gamma);
 }
 
-void GammaDecay::SetEnergy(double e)
+void GammaDecay::Decay(int photon_number, double time, int src_id,
+                       const VectorR3 & position, double energy)
 {
-    energy = e;
-};
+    this->energy = energy;
+    Decay(photon_number, time, src_id, position);
+}

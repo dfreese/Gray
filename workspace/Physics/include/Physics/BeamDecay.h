@@ -12,7 +12,6 @@ public:
     void SetBeam(const VectorR3 &axis, const double angle);
     virtual void Decay(int photon_number, double time, int src_id,
                        const VectorR3 & position);
-    void Reset();
 
 private:
     Photon blue;
