@@ -5,10 +5,15 @@
 
 using namespace std;
 
-const double CONST_ACOL = (0.47 / 180.0) * M_PI / 2.35482005;
+namespace {
 const double CONST_FWHM_TO_SIGMA = (1.0)/(2.35482005);
 const double CONST_MM_TO_CM = (0.1); // 10 mm per cm
-PositronDecay::PositronDecay()
+}
+
+const double PositronDecay::default_acolinearity = 0.47;
+
+PositronDecay::PositronDecay(double acolinearity_deg_fwhm) :
+    acolinearity(acolinearity_deg_fwhm / 180.0 * M_PI * CONST_FWHM_TO_SIGMA)
 {
     Reset();
 }
@@ -24,7 +29,6 @@ void PositronDecay::Reset()
 
     // 120keV positron energy for FDG
     energy = 0.120;
-    acolinearity = CONST_ACOL;
 
     while (!daughter.empty()) {
         daughter.pop();
@@ -58,11 +62,6 @@ void PositronDecay::Decay(int photon_number, double time, int src_id,
     // clear beamDecay for next photon
     AddPhoton(&blue);
     AddPhoton(&red);
-}
-
-void PositronDecay::SetAcolinearity(double theta)
-{
-    acolinearity = theta;
 }
 
 void PositronDecay::PositronRange(VectorR3 & p, double positronC,

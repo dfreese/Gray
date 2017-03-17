@@ -2,7 +2,8 @@
 
 using namespace std;
 
-BackBack::BackBack()
+BackBack::BackBack(double acolinearity_deg_fwhm) :
+    Positron(acolinearity_deg_fwhm)
 {
     Reset();
 }

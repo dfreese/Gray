@@ -18,6 +18,7 @@ public:
     Source * Decay();
     void AddSource(Source * s);
     bool SetCurIsotope(const std::string & iso);
+    void SetAcolinearity(double acolinearity_deg_fwhm);
     double GetMeanTotalEvents(double time);
     double GetTotalEvents(double time);
     double GetMeanTotalEvents();
@@ -44,6 +45,7 @@ private:
     // a microcurie is 37kevents/second
     const double microCurie = 37.0e3;
     double simulation_time;
+    double acolinearity;
 };
 
 #endif

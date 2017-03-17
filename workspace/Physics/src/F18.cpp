@@ -6,7 +6,8 @@ using namespace std;
 // TODO: Get true max endpoint in MeV
 // const double F18_MAX_BETA_ENERGY=0.315;
 
-F18::F18()
+F18::F18(double acolinearity_deg_fwhm) :
+    Positron(acolinearity_deg_fwhm)
 {
     /*******************************************************************************
      *            18F             11C            13N               15O             *

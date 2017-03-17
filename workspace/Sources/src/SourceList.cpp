@@ -17,6 +17,7 @@ SourceList::SourceList()
     curTime = 0.0;
     total_activity = 0.0;
     decay_number = 0;
+    acolinearity = PositronDecay::default_acolinearity;
     current_isotope = "BackBack";
     valid_isotopes.insert("F18");
     valid_isotopes.insert("IN110");
@@ -53,13 +54,13 @@ void SourceList::AddSource(Source * s)
         isotope = static_cast<Isotope *>(new Beam());
     } else {
         if (current_isotope == "F18") {
-            isotope = static_cast<Isotope *>(new F18());
+            isotope = static_cast<Isotope *>(new F18(acolinearity));
         } else if (current_isotope == "IN110") {
-            isotope = static_cast<Isotope *>(new IN110());
+            isotope = static_cast<Isotope *>(new IN110(acolinearity));
         } else if (current_isotope == "ZR89") {
-            isotope = static_cast<Isotope *>(new ZR89());
+            isotope = static_cast<Isotope *>(new ZR89(acolinearity));
         } else if (current_isotope == "BackBack") {
-            isotope = static_cast<Isotope *>(new BackBack());
+            isotope = static_cast<Isotope *>(new BackBack(acolinearity));
         } else if (current_isotope == "Beam") {
             isotope = static_cast<Isotope *>(new Beam());
         } else {
@@ -192,6 +193,15 @@ bool SourceList::SetCurIsotope(const std::string & iso)
         return(false);
     }
 
+}
+
+void SourceList::SetAcolinearity(double acolinearity_deg_fwhm)
+{
+    if (acolinearity_deg_fwhm < 0) {
+        acolinearity = PositronDecay::default_acolinearity;
+    } else {
+        acolinearity = acolinearity_deg_fwhm;
+    }
 }
 
 void SourceList::SetSimulationTime(double time)

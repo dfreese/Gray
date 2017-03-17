@@ -23,7 +23,7 @@
 class ZR89 : public Positron
 {
 public:
-    ZR89();
+    ZR89(double acolinearity_deg_fwhm);
     virtual void Decay(int photon_number, double time, int src_id,
                        const VectorR3 & position);
     virtual void Reset();

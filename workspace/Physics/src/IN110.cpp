@@ -3,7 +3,8 @@
 
 using namespace std;
 
-IN110::IN110()
+IN110::IN110(double acolinearity_deg_fwhm) :
+    Positron(acolinearity_deg_fwhm)
 {
     /*******************************************************************************
      *            18F             11C            13N               15O             *

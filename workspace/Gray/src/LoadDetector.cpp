@@ -695,10 +695,11 @@ bool LoadDetector::Load(const std::string & filename,
                 }
                 break;
             }
-            case 29: { // acolinearity double_radians
+            case 29: { // acolinearity degrees fwhm
                 double acon = -1.0;
                 scanCode = sscanf(args.c_str(), "%lf", &acon);
                 if (scanCode == 1) {
+                    sources.SetAcolinearity(acon);
                 } else {
                     parseErrorOccurred = true;
                     break;
