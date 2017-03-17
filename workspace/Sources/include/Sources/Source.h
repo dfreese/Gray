@@ -30,7 +30,6 @@
 
 using namespace std;
 class GammaMaterial;
-class IntersectKdTree;
 
 class Source
 {
@@ -41,7 +40,6 @@ public:
         material(NULL),
         negative(false),
         source_num(0),
-        kd_tree(NULL),
         position(0, 0, 0)
     {
     }
@@ -51,7 +49,6 @@ public:
         material(NULL),
         negative(false),
         source_num(0),
-        kd_tree(NULL),
         position(pos)
     {
         if (act < 0.0) {
@@ -82,9 +79,6 @@ public:
         return isotope;
     }
     void Reset();
-    void SetKdTree(IntersectKdTree & tree) {
-        kd_tree = &tree;
-    }
 
     virtual bool Inside(const VectorR3 &pos) const = 0;
     virtual VectorR3 Decay(int photon_number, double time) = 0;
@@ -95,7 +89,6 @@ protected:
     GammaMaterial * material;
     bool negative;
     int source_num;
-    IntersectKdTree * kd_tree;
     VectorR3 position;
 };
 

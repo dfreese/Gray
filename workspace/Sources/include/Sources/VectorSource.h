@@ -5,6 +5,8 @@
 #include <VrMath/LinearR3.h>
 #include <VrMath/Aabb.h>
 
+class IntersectKdTree;
+
 class VectorSource : public Source
 {
 public:
@@ -23,10 +25,14 @@ public:
 
     virtual VectorR3 Decay(int photon_number, double time);
     bool virtual Inside(const VectorR3 & pos) const;
+    void SetKdTree(IntersectKdTree & tree) {
+        kd_tree = &tree;
+    }
 
 private:
     AABB aabb;
     bool RejectionTest(const VectorR3 &pos);
+    IntersectKdTree * kd_tree;
 };
 
 #endif /*VECTORSOURCE_H_*/

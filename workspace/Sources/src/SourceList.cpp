@@ -7,8 +7,8 @@
 #include <Physics/Beam.h>
 #include <Sources/Source.h>
 #include <Sources/BeamPointSource.h>
+#include <Sources/VectorSource.h>
 #include <VrMath/LinearR3.h>
-//#include <GraphicsTrees/>
 
 using namespace std;
 
@@ -86,12 +86,17 @@ void SourceList::AddSource(Source * s)
 }
 
 void SourceList::SetKdTree(IntersectKdTree & tree) {
+    // We add the KdTree to the sources later, as the tree is not constructed
+    // until after all of the sources are made, and the geometry is determined.
+    // Probably could pass along a pointer initially into LoadDetector, but
+    // this also works for now.
     for (auto source: list) {
-        source->SetKdTree(tree);
+        VectorSource * vec_src = dynamic_cast<VectorSource *>(source);
+        if (vec_src) {
+            vec_src->SetKdTree(tree);
+        }
     }
-    for (auto source: neg_list) {
-        source->SetKdTree(tree);
-    }
+    // A vector source cannot be negative, so we do not check the neg_list
 }
 
 double SourceList::GetTime()

@@ -6,7 +6,8 @@
 using namespace std;
 
 VectorSource::VectorSource(const double act) :
-    Source({0, 0, 0}, act)
+    Source({0, 0, 0}, act),
+    kd_tree(NULL)
 {
     if (act < 0.0) {
         cout << "Cannot have negative vector sources\n";
@@ -17,7 +18,8 @@ VectorSource::VectorSource(const double act) :
 VectorSource::VectorSource(const double act, const VectorR3& boxMin,
                            const VectorR3& boxMax) :
     Source({0, 0, 0}, act),
-    aabb(boxMin, boxMax)
+    aabb(boxMin, boxMax),
+    kd_tree(NULL)
 {
     if (act < 0.0) {
         cout << "Cannot have negative vector sources\n";
