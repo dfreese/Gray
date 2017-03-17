@@ -9,7 +9,6 @@ public:
     F18(double acolinearity_deg_fwhm);
     virtual void Decay(int photon_number, double time, int src_id,
                        const VectorR3 & position);
-    virtual void Reset();
 protected:
 };
 

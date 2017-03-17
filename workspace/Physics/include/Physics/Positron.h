@@ -8,6 +8,7 @@ class Positron: public Isotope
 {
 public:
     Positron(double acolinearity_deg_fwhm);
+    virtual void Reset();
 
 protected:
     double positronFWHM; // expressed in meters

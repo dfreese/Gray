@@ -20,3 +20,9 @@ void Isotope::AddNuclearDecay(NuclearDecay * nd)
 {
     daughter.push(nd);
 }
+
+void Isotope::Reset() {
+    while (!daughter.empty()) {
+        daughter.pop();
+    }
+}

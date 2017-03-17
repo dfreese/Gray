@@ -22,9 +22,6 @@ ZR89::ZR89(double acolinearity_deg_fwhm) :
 void ZR89::Decay(int photon_number, double time, int src_id,
                  const VectorR3 & position)
 {
-    p.Reset();
-    g.Reset();
-
     VectorR3 pos = position;
     PositronDecay::PositronRange(pos, positronC, positronK1, positronK2,
                                  positronMaxRange);
@@ -42,9 +39,6 @@ void ZR89::Decay(int photon_number, double time, int src_id,
 
 void ZR89::Reset()
 {
-    p.Reset();
     g.Reset();
-    while (!daughter.empty()) {
-        daughter.pop();
-    }
+    Positron::Reset();
 }

@@ -22,8 +22,6 @@ IN110::IN110(double acolinearity_deg_fwhm) :
 void IN110::Decay(int photon_number, double time, int src_id,
                   const VectorR3 & position)
 {
-    p.Reset();
-    g.Reset();
     VectorR3 pos = position;
     PositronDecay::PositronRange(pos, positronC, positronK1, positronK2,
                                  positronMaxRange);
@@ -40,11 +38,7 @@ void IN110::Decay(int photon_number, double time, int src_id,
     g.Decay(photon_number, time, src_id, pos, CONST_E_IN110m_GAMMA);
 }
 
-void IN110::Reset()
-{
-    p.Reset();
+void IN110::Reset() {
     g.Reset();
-    while (!daughter.empty()) {
-        daughter.pop();
-    }
+    Positron::Reset();
 }

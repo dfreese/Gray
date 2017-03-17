@@ -30,11 +30,3 @@ void F18::Decay(int photon_number, double time, int src_id,
     p.Decay(photon_number, time, src_id, position, positronC, positronK1,
             positronK2, positronMaxRange);
 }
-
-void F18::Reset()
-{
-    p.Reset();
-    while (!daughter.empty()) {
-        daughter.pop();
-    }
-}
