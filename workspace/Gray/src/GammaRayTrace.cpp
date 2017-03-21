@@ -135,7 +135,12 @@ int GammaRayTrace::TraceSources(SourceList & sources,
             }
         }
 
-        if (interactions.size() >= soft_max_interactions) {
+        int next_decay_projected_interactions = interactions.size() +
+                static_cast<int>(static_cast<float>(interactions.size()) /
+                                 (i + 1));
+        if ((interactions.size() >= soft_max_interactions) ||
+            (next_decay_projected_interactions >= soft_max_interactions))
+        {
             return(i + 1);
         }
     }
