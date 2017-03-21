@@ -1,22 +1,14 @@
 #ifndef IN110_H
 #define IN110_H
 
-#include <Physics/Positron.h>
-#include <Physics/GammaDecay.h>
+#include <Physics/GammaPositron.h>
 
-class IN110 : public Positron
+class IN110 : public GammaPositron
 {
 public:
     IN110(double acolinearity_deg_fwhm);
     virtual void Decay(int photon_number, double time, int src_id,
                        const VectorR3 & position);
-    virtual void Reset();
-private:
-    // TODO: Model time between Gamma and Positron Decay accurately
-    GammaDecay g;
-    const double CONST_E_IN110m_GAMMA = 0.657750; /* MeV */
-    const double CONST_PROB_IN110m_POS = 0.61;	/* 61% of decays lead to a positron */
-
 };
 
 #endif /* IN110_H */

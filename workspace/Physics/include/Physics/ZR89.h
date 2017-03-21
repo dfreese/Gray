@@ -17,20 +17,15 @@
 #ifndef ZR89_H
 #define ZR89_H
 
-#include <Physics/Positron.h>
-#include <Physics/GammaDecay.h>
+#include <Physics/GammaPositron.h>
 
-class ZR89 : public Positron
+class ZR89 : public GammaPositron
 {
 public:
     ZR89(double acolinearity_deg_fwhm);
     virtual void Decay(int photon_number, double time, int src_id,
                        const VectorR3 & position);
-    virtual void Reset();
 protected:
-    GammaDecay g;
-    const double CONST_E_ZR89_GAMMA = 0.90915; /* MeV */
-    const double CONST_PROB_ZR89_POS = 0.227;	/* 22.7% of decays lead to a positron */
     const double zr89_max_beta_energy_mev = 0.315;
 
 };
