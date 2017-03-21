@@ -298,10 +298,10 @@ Interaction Interaction::GammaInteraction(
     case COMPTON:
         // perform compton kinematics
         double deposit;
-        Klein_Nishina(photon, deposit);
+        ComptonScatter(photon, deposit);
         return(Compton(photon, deposit, mat_gamma_prop));
     case RAYLEIGH:
-        Rayleigh(photon);
+        RayleighScatter(photon);
         return(Rayleigh(photon, mat_gamma_prop));
     default:
         cerr << "ERROR: Incorrect interaction\n";
@@ -356,7 +356,7 @@ double Interaction::Klein_Nishina_Energy(double energy, double theta)
     return(energy / (1.0 + (energy / ENERGY_511) * (1. - cos(theta))));
 }
 
-void Interaction::Klein_Nishina(Photon &p, double & deposit)
+void Interaction::ComptonScatter(Photon &p, double & deposit)
 {
     double theta, phi;
     Klein_Nishina_Angle(p.energy, theta, phi);
@@ -403,7 +403,7 @@ double Interaction::RayleighProbability(double theta) {
     return((1.0 - cs * cs) / 2.0);
 }
 
-void Interaction::Rayleigh(Photon &p)
+void Interaction::RayleighScatter(Photon &p)
 {
     double theta = M_PI * Random::Uniform();
     while (RayleighProbability(theta) < Random::Uniform()) {

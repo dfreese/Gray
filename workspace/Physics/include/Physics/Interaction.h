@@ -63,13 +63,13 @@ public:
                                         const GammaStats & mat_gamma_prop);
     static INTER_TYPE InteractionType(Photon &p,
                                       const GammaStats & mat_gamma_prop);
-    static void Klein_Nishina(Photon &p, double & deposit);
+    static void ComptonScatter(Photon &p, double & deposit);
     static void Klein_Nishina_Angle(double energy, double & theta,
                                     double & phi);
     static double Klein_Nishina_Energy(double energy, double theta);
     static bool XrayEscape(Photon &p, const GammaStats & mat_gamma_prop);
     static const double si1_SOL;
-    static void Rayleigh(Photon &p);
+    static void RayleighScatter(Photon &p);
     static bool PhotonInteracts(double energy, double & dist,
                                 const GammaStats & mat_gamma_prop);
     static double RandomExponentialDistance(double mu);
