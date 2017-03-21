@@ -135,6 +135,8 @@ int GammaRayTrace::TraceSources(SourceList & sources,
             }
         }
 
+        // Perhaps keep a histogram of the number of interactions and keep our
+        // probability of overrunning the softmax at a certain threshold.
         int next_decay_projected_interactions = interactions.size() +
                 static_cast<int>(static_cast<float>(interactions.size()) /
                                  (i + 1));
