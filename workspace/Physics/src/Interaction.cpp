@@ -333,7 +333,7 @@ Interaction::INTER_TYPE Interaction::InteractionType(
     }
 }
 
-void Interaction::Klein_Nishina_Angle(double energy, double & theta,
+void Interaction::KleinNishinaAngle(double energy, double & theta,
                                       double & phi)
 {
     /* Generate scattering angles - phi and theta */
@@ -351,7 +351,7 @@ void Interaction::Klein_Nishina_Angle(double energy, double & theta,
     phi = M_2_PI * Random::Uniform();
 }
 
-double Interaction::Klein_Nishina_Energy(double energy, double theta)
+double Interaction::KleinNishinaEnergy(double energy, double theta)
 {
     return(energy / (1.0 + (energy / ENERGY_511) * (1. - cos(theta))));
 }
@@ -359,10 +359,10 @@ double Interaction::Klein_Nishina_Energy(double energy, double theta)
 void Interaction::ComptonScatter(Photon &p, double & deposit)
 {
     double theta, phi;
-    Klein_Nishina_Angle(p.energy, theta, phi);
+    KleinNishinaAngle(p.energy, theta, phi);
     // After collision the photon loses some energy to the electron
     deposit = p.energy;
-    p.energy = Klein_Nishina_Energy(p.energy, theta);
+    p.energy = KleinNishinaEnergy(p.energy, theta);
     deposit -= p.energy;
 
     // Create rotation axis this is perpendicular to Y axis
@@ -405,6 +405,7 @@ double Interaction::RayleighProbability(double theta) {
 
 void Interaction::RayleighScatter(Photon &p)
 {
+    // FIXME: This implements Thompson scattering, not Rayleigh scattering
     double theta = M_PI * Random::Uniform();
     while (RayleighProbability(theta) < Random::Uniform()) {
         theta = M_PI * Random::Uniform();
