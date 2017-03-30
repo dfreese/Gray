@@ -1,28 +1,61 @@
 #!/usr/bin/env python
 import urllib2
 
-def endftod(string):
+def retreive_dataset(filename, url):
     """
-    Takes a string of a number in the ENDF format and transforms it into a
-    python float.  The ENDF format has scientific notation as number+/-exponent
-    with no 'e' indicator making it not compatible with float().  We replace
-    '+' with 'e' and '-' with 'e-' and then passing to float()
-
-    Parameters
-    ----------
-    string : str
-        an ENDF float represented as a string
-
-    Returns
-    ----------
-    value : float
-        a python float of the scientific notation value.
+    Download datasets, like the EADL or EPDL on the IAEA website, by blatantly
+    spoofing the User-Agent. Spoofing based on this reference:
+        http://stackoverflow.com/a/802246/2465202
+    Downloading based on this one:
+        http://stackoverflow.com/a/22721/2465202
     """
-    string = string.replace('+', 'e')
-    string = string.replace('-', 'e-')
-    return(float(string))
+    opener = urllib2.build_opener()
+    opener.addheaders = [('User-Agent', 'Mozilla/5.0')]
+    remote_fid = opener.open(url)
+    with open(filename, 'w') as local_fid:
+        local_fid.write(remote_fid.read())
+    remote_fid.close()
 
-def get_head_record(line):
+def check_dataset(filename=None, url=None):
+    """
+    Check if a dataset, such as the EADL library, exists, and if it doesn't,
+    then use retreive_dataset() to grab it.
+    """
+    try:
+        with open(filename, 'r') as fid:
+            exists = True
+    except IOError:
+        exists = False
+
+    if not exists:
+        retreive_dataset(filename, url)
+
+def read_float(v):
+    """
+    Convert ENDF6 string to float
+    (the ENDF6 float representation omits the e for exponent and may contain
+     blanks)
+    """
+    try:
+        val = float(v[0] +
+                    v[1:].replace(' ', '').replace('+', 'e+').replace('-', 'e-'))
+    except ValueError:
+        val = None
+    return val
+
+def parse_int(v):
+    """Convert ENDF6 string to int"""
+    return int(read_float(v))
+
+_data_slices = tuple((slice(x, x + 11) for x in range(0, 66, 11)))
+
+def parse_data(line):
+    """Read first 6*11 characters of a line as floats"""
+    return [read_float(line[s]) for s in _data_slices]
+
+_head_funcs = zip(_data_slices, (parse_int, read_float, int, int, int, int))
+
+def parse_head_record(line):
     """
     Takes a string of a HEAD record in the ENDF format and transforms it into a
     list of values with types based on the six record locations.
@@ -38,15 +71,11 @@ def get_head_record(line):
         A list containing the six values in the head record ZA (int), AWR
         (float), L1 (int), L2 (int), N1 (int), N2 (int).
     """
-    ZA = int(endftod(line[:11]))
-    AWR = endftod(line[11:22])
-    L1 = int(line[22:33])
-    L2 = int(line[33:44])
-    N1 = int(line[44:55])
-    N2 = int(line[55:66])
-    return [ZA, AWR, L1, L2, N1, N2]
+    return [f(line[s]) for s, f in _head_funcs]
 
-def get_cont_record(line, skipC=False):
+_cont_funcs = zip(_data_slices, (read_float, read_float, int, int, int, int))
+
+def parse_cont_record(line, skipC=False):
     """
     Takes a string of a CONT record in the ENDF format and transforms it into a
     list of values with types based on the six/four record locations.
@@ -66,46 +95,22 @@ def get_cont_record(line, skipC=False):
         (float), L1 (int), L2 (int), N1 (int), N2 (int).  Four values L1, L2,
         N1, N2 are returned if skipC is True.
     """
-    if not skipC:
-        C1 = endftod(line[:11])
-        C2 = endftod(line[11:22])
-    L1 = int(line[22:33])
-    L2 = int(line[33:44])
-    N1 = int(line[44:55])
-    N2 = int(line[55:66])
     if skipC:
-        return [L1, L2, N1, N2]
+        return [f(line[s]) for s, f in _cont_funcs[2:]]
     else:
-        return [C1, C2, L1, L2, N1, N2]
+        return [f(line[s]) for s, f in _cont_funcs]
 
-def get_text_record(line):
+def parse_list_record(lines):
     """
-    Takes a string of a TEXT record line in the ENDF format and returns the
-    appropriate section of the line representing the actual text record and not
-    information at the end of the line.
-
-    Parameters
-    ----------
-    line : str
-        a line representing an ENDF TEXT record line.
-
-    Returns
-    ----------
-    line : str
-        The text portion of the TEXT record line.
-    """
-    return line[0:66]
-
-def get_list_record(fid):
-    """
-    Takes an open file that is currently pointing to the beginning of a LIST
-    record and processes it by reading the first CONT control record and then
+    Takes a list of lines, starting with the beginning of a LIST record and
+    parses it by reading the first CONT control record and then
     the subsequent LIST records, using readline() to process through the file.
 
     Parameters
     ----------
-    fid : file object
-        an open file object currently point to the start of a LIST record
+    lines : list of str
+        a set of lines with the list record starting at lines[0] and being
+        fully contained in lines.
 
     Returns
     ----------
@@ -113,27 +118,271 @@ def get_list_record(fid):
         output of get_cont_record() on the first CONT record line.
     itemsList : list
         generally 6 floats for each line in the list.
+    no_lines : int
+        number of lines in the list
     """
     # determine how many items are in list
-    items = get_cont_record(fid.readline())
+    items = parse_cont_record(lines[0])
     NPL = items[4]
     # read items
     itemsList = []
     m = 0
-    for i in range((NPL-1)//6 + 1):
-        line = fid.readline()
+    no_lines = (NPL-1)//6 + 1
+    for i in range(1, no_lines + 1):
+        line = lines[i]
+        data = parse_data(lines[i])
         toRead = min(6, NPL-m)
-        for j in range(toRead):
-            val = endftod(line[0:11])
+        for val in data[:toRead]:
             itemsList.append(val)
-            line = line[11:]
         m = m + toRead
-    return items, itemsList
+    return items, itemsList, no_lines
 
-def read_header(fid):
+def parse_tab1_record(lines):
     """
-    Processes the information in the header of the element and returns a dict
-    with the follwoing fields:
+    Takes a list of lines, starting with the beginning of a LIST record and
+    parses it by reading the first CONT control record and then
+    the subsequent LIST records, using readline() to process through the file.
+
+    Parameters
+    ----------
+    lines : list of str
+        a set of lines with the list record starting at lines[0] and being
+        fully contained in lines.
+
+    Returns
+    ----------
+    items : list
+        output of get_cont_record() on the first CONT record line.
+    itemsList : list
+        generally 6 floats for each line in the list.
+    no_lines : int
+        number of lines in the list
+    """
+    # determine how many items are in list
+    items = parse_cont_record(lines[0])
+    NR = items[4]
+    NP = items[5]
+
+    # Read interpolation values
+    NBT = []
+    INT = []
+    m = 0
+    no_lines = (NR - 1) // 3 + 1
+    for i in range(1, no_lines + 1):
+        data = parse_data(lines[i])
+        toRead = min(6, (NR - m) * 2)
+        for xval, yval in zip(data[:toRead:2], data[1:toRead:2]):
+            NBT.append(xval)
+            INT.append(yval)
+
+    # Read 1-d paired list
+    x = []
+    y = []
+    m = 0
+    start_line = 1 + no_lines
+    no_lines = (NP - 1) // 3 + 1
+    for i in range(start_line, start_line + no_lines):
+        data = parse_data(lines[i])
+        toRead = min(6, (NP - m) * 2)
+        for xval, yval in zip(data[:toRead:2], data[1:toRead:2]):
+            x.append(xval)
+            y.append(yval)
+        m = m + toRead / 2
+    no_lines_total = start_line + no_lines
+    return items, NBT, INT, x, y, no_lines_total
+
+# Used for MF = 23, Photon Interaction Cross Sections
+_photon_cross_section_types = {
+    501: 'total',
+    502: 'coherent_scattering',
+    504: 'incoherent_scattering',
+    515: 'pp_electron',
+    516: 'pp_total',
+    517: 'pp_nuclear',
+    522: 'total_photoionization',
+    534: 'K', 535: 'L1', 536: 'L2', 537: 'L3', 538: 'M1', 539: 'M2',
+    540: 'M3', 541: 'M4', 542: 'M5', 543: 'N1', 544: 'N2', 545: 'N3',
+    546: 'N4',547: 'N5', 548: 'N6', 549: 'N7', 550: 'O1', 551: 'O2',
+    552: 'O3', 553: 'O4', 554: 'O5', 555: 'O6', 556: 'O7', 559: 'P1',
+    560: 'P2', 561: 'P3', 570: 'Q1'
+}
+
+def parse_cross_section(lines):
+    (ZA, AWR) = parse_head_record(lines[0])[:2]
+    tab1_out = parse_tab1_record(lines[1:])
+    binding_energy, fluorescene_yield = tab1_out[0][:2]
+    energy, xsection = tab1_out[3:5]
+    return ZA, AWR, binding_energy, fluorescene_yield, energy, xsection
+
+def parse_cross_sections(lines_dict):
+    """
+    Processes the cross section information of an isotope (ENDF format MF=23,
+    MT=5XX) and returns a dict of dicts, each with the with at least the
+    following fields:
+
+    =================  ====================================================
+      Field              Description
+    =================  ====================================================
+    energy             The energy at which the factor was evaluated (eV)
+    xsec               The cross section value (barns)
+    =================  ====================================================
+
+    MT values 534 and higher represent subshell cross sections.  These are put
+    into a separate dict, under the 'shells' key.  Inside 'subshells' each
+    there is a dict under the subshell's name (i.e. 'K') that additionally has
+    the following fields:
+
+    =================  ====================================================
+      Field              Description
+    =================  ====================================================
+    binding_energy     The binding energy of the subshell (eV)
+    fluorescene_yield  The fluorescene yield of the subshell if any (eV)
+    =================  ====================================================
+
+    The keys of the main dict recturned are set by the allowable MT numbers,
+    which are:
+    === ===========================================
+    MT  Description
+    === ===========================================
+    501 Total cross sections
+    502 Coherent scattering cross sections
+    504 Incoherent scattering cross sections
+    515 Pair production cross sections, Electron field
+    516 Pair production cross sections, Total
+    517 Pair production cross sections, Nuclear field
+    522 Total photoionization cross section
+    534 K subshell photoionization
+    535 L1 subshell photoionization
+    536 L2 subshell photoionization
+    537 L3 subshell photoionization
+    538 M1 subshell photoionization
+    539 M2 subshell photoionization
+    540 M3 subshell photoionization
+    541 M4 subshell photoionization
+    542 M5 subshell photoionization
+    543 N1 subshell photoionization
+    544 N2 subshell photoionization
+    545 N3 subshell photoionization
+    546 N4 subshell photoionization
+    547 N5 subshell photoionization
+    548 N6 subshell photoionization
+    549 N7 subshell photoionization
+    550 O1 subshell photoionization
+    551 O2 subshell photoionization
+    552 O3 subshell photoionization
+    553 O4 subshell photoionization
+    554 O5 subshell photoionization
+    555 O6 subshell photoionization
+    556 O7 subshell photoionization
+    559 P1 subshell photoionization
+    560 P2 subshell photoionization
+    561 P3 subshell photoionization
+    570 Q1 subshell photoionization
+    === ===========================================
+
+    These are listed in _photon_cross_section_types along with the key they are
+    given in the returned data format
+
+    Parameters
+    ----------
+    lines_dict : dict(int:list[str])
+        A dict with the keys being the MT values as ints, and the values being
+        a list of strings with all of the lines associated with that MF/MT
+        combination.
+
+    Returns
+    -------
+    data : dict of dicts
+        parameters described above
+
+    """
+    data = {'shells': {}}
+    for mt, mt_lines in lines_dict.iteritems():
+        if mt not in _photon_cross_section_types:
+            continue
+        xsection_out = parse_cross_section(mt_lines)
+        if mt < 534:
+            data[_photon_cross_section_types[mt]] = {'energy': xsection_out[4],
+                                                     'xsec': xsection_out[5]}
+        else:
+            data['shells'][_photon_cross_section_types[mt]] = {
+                'binding_energy': xsection_out[2],
+                'fluorescene_yield': xsection_out[3],
+                'energy': xsection_out[4],
+                'xsec': xsection_out[5]}
+    return data
+
+# Used for MF = 27, Atomic Form Factors or Scattering Functions
+_photon_form_factor_types = {
+    502: 'coherent_scattering',
+    504: 'incoherent_scattering',
+    505: 'imaginary_anomalous_scattering',
+    506: 'real_anomalous_scattering',
+}
+
+def parse_form_factor(lines):
+    (ZA, AWR) = parse_head_record(lines[0])[:2]
+    tab1_out = parse_tab1_record(lines[1:])
+    Z = tab1_out[0][1]
+    energy, factor = tab1_out[3:5]
+    return ZA, AWR, Z, energy, factor
+
+def parse_form_factors(lines_dict):
+    """
+    Processes the form factor information of an isotope (ENDF format MF=27,
+    MT=502, 504, 505, 506) and returns a dict of dicts, each with the with the
+    following fields:
+
+    =================  ====================================================
+      Field              Description
+    =================  ====================================================
+    Z                  The atomic number of the element
+    energy             The energy at which the factor was evaluated
+    factor             The atomic symbol of the element
+    =================  ====================================================
+
+    The keys of the main dict recturned are set by the allowable MT numbers,
+    which are:
+    === ===========================================
+    MT  Description
+    === ===========================================
+    502 Coherent Scattering Form Factors
+    504 Incoherent Scattering Functions
+    505 Imaginary Anomalous Scattering Form Factors
+    506 Real Anomalous Scattering Form Factors
+    === ===========================================
+
+    These are listed in _photon_form_factor_types along with the key they are
+    given in the returned data format
+
+    Parameters
+    ----------
+    lines_dict : dict(int:list[str])
+        A dict with the keys being the MT values as ints, and the values being
+        a list of strings with all of the lines associated with that MF/MT
+        combination.
+
+    Returns
+    -------
+    data : dict of dicts
+        parameters described above
+
+    """
+    data = {}
+    for mt, mt_lines in lines_dict.iteritems():
+        if mt not in _photon_form_factor_types:
+            continue
+        ff_out = parse_form_factor(mt_lines)
+        data[_photon_form_factor_types[mt]] = {
+            'Z': ff_out[2],
+            'energy': ff_out[3],
+            'factor': ff_out[4]}
+    return data
+
+def parse_header(lines):
+    """
+    Processes the information in the header of the element (ENDF format MF=1,
+    MT=451) and returns a dict with the following fields:
 
     =================  ====================================================
       Field              Description
@@ -156,69 +405,35 @@ def read_header(fid):
     More information is processed from the text fields than is returned.
     """
     # First HEAD record
-    items = get_head_record(fid.readline())
+    items = parse_head_record(lines[0])
     target = {}
-    info = {}
-    projectile = {}
     target['ZA'] = items[0]
     target['mass'] = items[1]
     target['fissionable'] = (items[3] == 1)
 
-    libraries = {0: 'ENDF/B', 1: 'ENDF/A', 2: 'JEFF', 3: 'EFF',
-                  4: 'ENDF/B High Energy', 5: 'CENDL', 6: 'JENDL',
-                  31: 'INDL/V', 32: 'INDL/A', 33: 'FENDL', 34: 'IRDF',
-                  35: 'BROND', 36: 'INGDB-90', 37: 'FENDL/A', 41: 'BROND'}
-    try:
-        library = libraries[items[4]]
-    except KeyError:
-        library = 'Unknown'
-    info['modification'] = items[5]
-
     # Control record 1
-    items = get_cont_record(fid.readline())
+    items = parse_cont_record(lines[1])
     target['excitation_energy'] = items[0]
     target['stable'] = (int(items[1]) == 0)
     target['state'] = items[2]
     target['isomeric_state'] = items[3]
-    info['format'] = items[5]
-    assert info['format'] == 6
+    file_format = items[5]
+    assert file_format == 6
 
-    # Control record 2
-    items = get_cont_record(fid.readline())
-    projectile['mass'] = items[0]
-    info['energy_max'] = items[1]
-    library_release = items[2]
-    info['sublibrary'] = items[4]
-    library_version = items[5]
-    info['library'] = (library, library_version, library_release)
-
+    # Ignore Control record 2
     # Control record 3
-    items = get_cont_record(fid.readline())
+    items = parse_cont_record(lines[3])
     target['temperature'] = items[0]
-    info['derived'] = (items[2] > 0)
     NWD = items[4]
     NXC = items[5]
 
-    # Text records
-    text = [get_text_record(fid.readline()) for i in range(NWD)]
-    if len(text) >= 5:
-        target['symbol'] = text[0][4:6].split()[0]
-        target['atomic_number'] = int(text[0][0:3])
-        info['laboratory'] = text[0][11:22]
-        info['date'] = text[0][22:32]
-        info['author'] = text[0][32:66]
-        info['reference'] = text[1][1:22]
-        info['date_distribution'] = text[1][22:32]
-        info['date_release'] = text[1][33:43]
-        info['date_entry'] = text[1][55:63]
-        info['identifier'] = text[2:5]
-        info['description'] = text[5:]
-    # Discard reaction information
-    get_cont_record(fid.readline(), skipC=True)
-    get_cont_record(fid.readline(), skipC=True)
+    # Parse some information out of the text description
+    target['symbol'] = lines[4][4:6].split()[0]
+    target['atomic_number'] = int(lines[4][0:3])
+    # ignore remaining description information
     return target
 
-def read_atomic_relaxation(fid):
+def parse_atomic_relaxation(lines):
     """
     Processes ENDF format MF=28, MT=533 into its constituent transitions.  This
     consists of a HEAD record, which gives the number of subshells, as well as
@@ -230,7 +445,7 @@ def read_atomic_relaxation(fid):
     the EADL class __getitem__ description for more information.
     """
     # Read HEAD record
-    params = get_head_record(fid.readline())
+    params = parse_head_record(lines[0])
     n_subshells = params[4]
 
     # Read list of data
@@ -243,8 +458,11 @@ def read_atomic_relaxation(fid):
                  26: 'P1', 27: 'P2', 28: 'P3', 29: 'P4', 30: 'P5',
                  31: 'P6', 32: 'P7', 33: 'P8', 34: 'P9', 35: 'P10',
                  36: 'P11', 37: 'Q1', 38: 'Q2', 39: 'Q3', 0: None}
+    start_line = 1
     for i in range(n_subshells):
-        params, list_items = get_list_record(fid)
+        params, list_items, no_lines = parse_list_record(lines[start_line:])
+        # add in the CONT lines and the LIST records lines
+        start_line += (1 + no_lines)
         subi = subshells[int(params[0])]
         n_transitions = int(params[5])
         ebi = list_items[0]
@@ -258,40 +476,72 @@ def read_atomic_relaxation(fid):
             data['transitions'].append((subj, subk, etr, ftr))
             atomic_relaxation[subi] = data
     # Skip SEND record
-    fid.readline()
-    return atomic_relaxation
+    return {'shells': atomic_relaxation}
 
-def retreive_eadl(filename, url=None):
-    """
-    Download EADL from the IAEA website, by blatantly spoofing the User-Agent.
-    Spoofing based on this reference:
-        http://stackoverflow.com/a/802246/2465202
-    Downloading based on this one:
-        http://stackoverflow.com/a/22721/2465202
-    """
-    if url is None:
-        url = 'https://www-nds.iaea.org/epdl97/data/endfb6/eadl/eadl.all'
+_line_process = {
+    'MAT' : (slice(66,70), int),
+    'MF'  : (slice(70,72), int),
+    'MT'  : (slice(72,75), int),
+    'line': (slice(75,80), int),
+    'content' : (slice(0,66), str),
+    }
 
-    opener = urllib2.build_opener()
-    opener.addheaders = [('User-Agent', 'Mozilla/5.0')]
-    remote_fid = opener.open(url)
-    with open(filename, 'w') as local_fid:
-        local_fid.write(remote_fid.read())
-    remote_fid.close()
+def parse_line(l):
+    return dict(zip(_line_process.iterkeys(),
+                    (s[1](l[s[0]]) for s in _line_process.itervalues())))
 
-def check_eadl(filename=None, url=None):
-    """
-    Check if the EADL library exists, and if it doesn't, then use
-    retreive_eadl() to grab it.
-    """
-    try:
-        with open(filename, 'r') as fid:
-            exists = True
-    except IOError:
-        exists = False
+def parse_endf_format(filename):
+    with open(filename, 'r') as fid:
+        lines = fid.read().splitlines()
+    data = {}
+    for line in lines:
+        parsed_line = parse_line(line)
+        mat = parsed_line['MAT']
+        mf = parsed_line['MF']
+        mt = parsed_line['MT']
+        if mat == 0 or mf == 0 or mt == 0:
+            continue
+        if mat not in data:
+            data[mat] = {}
+        if mf not in data[mat]:
+            data[mat][mf] = {}
+        if mt not in data[mat][mf]:
+            data[mat][mf][mt] = []
+        data[mat][mf][mt].append(parsed_line['content'])
+    return data
 
-    if not exists:
-        retreive_eadl(filename, url)
+def recursive_update(d, u):
+    from collections import Mapping
+    for k, v in u.items():
+        # this condition handles the problem
+        if not isinstance(d, Mapping):
+            d = u
+        elif isinstance(v, Mapping):
+            d[k] = recursive_update(d.get(k, {}), v)
+        else:
+            d[k] = u[k]
+    return d
+
+def parse_endf(filename, pull_header=True):
+    data = parse_endf_format(filename)
+    parsed_data = {}
+    for mat, mat_data in data.iteritems():
+        parsed_data[mat] = {}
+        if 1 in mat_data and pull_header:
+            if 451 in mat_data[1]:
+                header_data = parse_header(mat_data[1][451])
+                parsed_data[mat].update(header_data)
+        if 23 in mat_data:
+            xsections = parse_cross_sections(mat_data[23])
+            parsed_data[mat].update(xsections)
+        if 27 in mat_data:
+            form_fact = parse_form_factors(mat_data[27])
+            parsed_data[mat].update(form_fact)
+        if 28 in mat_data:
+            if 533 in mat_data[28]:
+                atomic_relax = parse_atomic_relaxation(mat_data[28][533])
+                parsed_data[mat].update(atomic_relax)
+    return parsed_data
 
 class EADL(object):
     """
@@ -347,36 +597,18 @@ class EADL(object):
         url : str, default in class description
             the url pointing to the full EADL library
         """
-        check_eadl(filename, url)
+        eadl_url = 'https://www-nds.iaea.org/epdl97/data/endfb6/eadl/eadl.all'
+        check_dataset(filename, eadl_url)
+        self._data = parse_endf(filename)
         self._elements = dict()
         self._num_to_symbol = dict()
-        with open(filename, 'r') as fid:
-            # Initialize by getting the first line and the position prior to
-            # the read.  Calls to read_header() and read_atomic_relaxation()
-            # will require the full first line, so we need to seek backwards.
-            # readline will return None when the file is done, so we loop with
-            # line as a condition.
-            position = fid.tell()
-            line = fid.readline()
-            while line:
-                # The ENDF format specifies that the MF and MT numbers shall be
-                # found in these parts of the line.
-                MF = int(line[70:72])
-                MT = int(line[72:75])
-                if MF == 1 and MT == 451:
-                    fid.seek(position)
-                    element_header = read_header(fid)
-                if MF == 28 and MT == 533:
-                    fid.seek(position)
-                    if element_header is None:
-                        element_header = dict()
-                    element_header['shells'] = read_atomic_relaxation(fid)
-                    self._elements[element_header['symbol']] = element_header
-                    self._num_to_symbol[element_header['atomic_number']] = \
-                        element_header['symbol']
-                    element_header = None
-                position = fid.tell()
-                line = fid.readline()
+        for mat, mat_data in self._data.iteritems():
+            self._elements[mat_data['symbol']] = mat
+            self._num_to_symbol[mat_data['atomic_number']] = mat_data['symbol']
+
+    def read(self, filename):
+        new_data = parse_endf(filename, pull_header=False)
+        self._data = recursive_update(self._data, new_data)
 
     def __getitem__(self, key):
         """
@@ -440,7 +672,7 @@ class EADL(object):
             else:
                 raise IndexError('Unknown atomic number: {}'.format(key))
         if key in self._elements:
-            return self._elements[key]
+            return self._data[self._elements[key]]
         else:
             raise KeyError('Unknown atomic name')
 
@@ -452,3 +684,129 @@ class EADL(object):
         sorted_keys.sort()
         for number in sorted_keys:
             yield self._elements[self._num_to_symbol[number]]
+
+    def iteritems(self):
+        """
+        Implement iteration through the elements in order of atomic number.
+        """
+        sorted_keys = self._num_to_symbol.keys()
+        sorted_keys.sort()
+        for number in sorted_keys:
+            yield (self._num_to_symbol[number],
+                   self._elements[self._num_to_symbol[number]])
+
+def no_holes(t):
+    n = 0
+    for el_dict in t.itervalues():
+        for shell_dict in el_dict.itervalues():
+            for trans_id in shell_dict.iterkeys():
+                n += len(trans_id[1])
+    return n
+
+def calculate_shell_cascades(elements, round_to = 1000.0, threshold = 15000.0):
+    """Calculates the unique emissions cascades that are possible from all of
+    the subshells of the different based on an EADL class elements
+    """
+    transitions = {}
+    for element_name, element_dict in elements.iteritems():
+        new_element_dict = {}
+        transitions[element_name] = new_element_dict
+        for shell_name, shell_info in elements[element_name]['shells'].iteritems():
+            # We have crosssection information on some shells that don't have
+            # transition information.
+            if 'transitions' not in shell_info:
+                continue
+            shell_dict = {}
+            new_element_dict[shell_name] = shell_dict
+            for transition in shell_info['transitions']:
+                transition_prob = transition[3]
+                if transition[1] is None:
+                    # We merge radiative transistions to their nearest keV
+                    emissions = (transition[2] // round_to * round_to,)
+                    # And drop any transistion under 10keV
+                    if emissions[0] < threshold:
+                        emissions = ()
+                    holes = (transition[0],)
+                else:
+                    emissions = ()
+                    holes = (transition[0], transition[1],)
+                transition_id = (emissions, holes)
+                if transition_id in shell_dict:
+                    shell_dict[transition_id] += transition_prob
+                else:
+                    shell_dict[transition_id] = transition_prob
+
+    # The simplest way to do things is start from the outer shells and work in so
+    # that we can trim the tree backwards rather than finding every combination
+    # and then sorting out if it's radiative or not.
+    rev_shell_names = ('Q3', 'Q2', 'Q1', 'P11', 'P10', 'P9', 'P8', 'P7', 'P6',
+                       'P5', 'P4', 'P3', 'P2', 'P1', 'O9', 'O8', 'O7', 'O6', 'O5',
+                       'O4', 'O3', 'O2', 'O1', 'N7', 'N6', 'N5', 'N4', 'N3', 'N2',
+                       'N1', 'M5', 'M4', 'M3', 'M2', 'M1', 'L3', 'L2', 'L1', 'K')
+
+    while no_holes(transitions) > 0:
+        new_transitions = {}
+        for element_name, element_dict in transitions.iteritems():
+            new_element_dict = {}
+            new_transitions[element_name] = new_element_dict
+            skip_remainder = False
+            for shell_name in rev_shell_names:
+                if shell_name not in element_dict:
+                    continue
+                shell_dict = element_dict[shell_name]
+                # Remove transitions that are not radiative
+                if len(shell_dict.keys()) == 1:
+                    if shell_dict.keys()[0] == ((), ()):
+                        continue
+                new_shell_dict = {}
+                new_element_dict[shell_name] = new_shell_dict
+                for transition_id, transition_prob in shell_dict.iteritems():
+                    # Only deal with one transition at a time.  Consider this a
+                    # hack for not fully fleshing out one transition at a time
+                    # before moving on to the next one.
+                    if skip_remainder:
+                        if transition_id in new_shell_dict:
+                            new_shell_dict[transition_id] += transition_prob
+                        else:
+                            new_shell_dict[transition_id] = transition_prob
+                        continue
+                    emissions = transition_id[0]
+                    holes = transition_id[1]
+                    if len(holes) == 0:
+                        if transition_id in new_shell_dict:
+                            new_shell_dict[transition_id] += transition_prob
+                        else:
+                            new_shell_dict[transition_id] = transition_prob
+                        continue
+                    # eliminate the first hole
+                    if holes[0] not in element_dict:
+                        new_trans_id = (emissions, holes[1:])
+                        if new_trans_id in new_shell_dict:
+                            new_shell_dict[new_trans_id] += transition_prob
+                        else:
+                            new_shell_dict[new_trans_id] = transition_prob
+                        continue
+                    for sec_trans_id, sec_trans_prob in element_dict[holes[0]].iteritems():
+                        new_emiss = emissions + sec_trans_id[0]
+                        new_holes = holes[1:] + sec_trans_id[1]
+                        new_trans_id = (new_emiss, new_holes)
+                        new_trans_prob = transition_prob * sec_trans_prob
+                        if new_trans_id in new_shell_dict:
+                            new_shell_dict[new_trans_id] += new_trans_prob
+                        else:
+                            new_shell_dict[new_trans_id] = new_trans_prob
+                    skip_remainder = True
+        transitions = new_transitions
+    # Remove the holes section from the dictionary, because they should all
+    # be blank now.
+    new_transitions = {}
+    for element_name, element_dict in transitions.iteritems():
+        new_element_dict = {}
+        new_transitions[element_name] = new_element_dict
+        for shell_name, shell_dict in element_dict.iteritems():
+            new_shell_dict = {}
+            new_element_dict[shell_name] = new_shell_dict
+            for transition_id, transition_prob in shell_dict.iteritems():
+                new_shell_dict[transition_id[0]] = transition_prob
+    transitions = new_transitions
+    return transitions
