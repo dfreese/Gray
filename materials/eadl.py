@@ -777,17 +777,27 @@ def calculate_shell_cascades(elements, round_to = 1000.0, threshold = 15000.0):
                                 new_shell_dict[t_id] += t_prob
                             else:
                                 new_shell_dict[t_id] = t_prob
-                            continue
-                        # eliminate the first hole
-                        if holes[0] not in element_dict:
+                        elif holes[0] not in element_dict:
+                            # The first hole doesn't have any information.
+                            # Eliminate it and add it back onto the stack
                             new_trans_id = (emissions, holes[1:])
                             trans_stack.append((new_trans_id, t_prob))
-                            continue
-                        for sec_trans_id, sec_trans_prob in element_dict[holes[0]].iteritems():
-                            new_trans_id = (emissions + sec_trans_id[0],
-                                            holes[1:] + sec_trans_id[1])
-                            new_trans_prob = t_prob * sec_trans_prob
-                            trans_stack.append((new_trans_id, new_trans_prob))
+                        else:
+                            # The first hole has transition information
+                            # associated with that subshell.  For each trans
+                            # in that shell, add a new transition onto the
+                            # stack with all of the current and new emissions
+                            # as well as all of the current and new holes,
+                            # minus the hole we are currently looking at.  The
+                            # probability of the new transition will be the
+                            # probability of the current transition times the
+                            # secondary transition, because it is a markov
+                            # process.
+                            for sec_trans_id, sec_trans_prob in element_dict[holes[0]].iteritems():
+                                new_trans_id = (emissions + sec_trans_id[0],
+                                                holes[1:] + sec_trans_id[1])
+                                new_trans_prob = t_prob * sec_trans_prob
+                                trans_stack.append((new_trans_id, new_trans_prob))
                 # Remove shells that are not radiative
                 if len(new_shell_dict.keys()) == 1 and new_shell_dict.keys()[0] == ((), ()):
                     del element_dict[shell_name]
