@@ -707,6 +707,9 @@ def calculate_shell_cascades(elements, round_to = 1000.0, threshold = 15000.0):
     """Calculates the unique emissions cascades that are possible from all of
     the subshells of the different based on an EADL class elements
     """
+    # For each subshell, in each element, we have a dict of transitions. The
+    # key at the subshell level is a tuple of tuples, the first being the
+    # emissions, the second tuple being the holes.
     transitions = {}
     for element_name, element_dict in elements.iteritems():
         new_element_dict = {}
@@ -721,9 +724,9 @@ def calculate_shell_cascades(elements, round_to = 1000.0, threshold = 15000.0):
             for transition in shell_info['transitions']:
                 transition_prob = transition[3]
                 if transition[1] is None:
-                    # We merge radiative transistions to their nearest keV
+                    # Round the emissions to whatever the user specifies
                     emissions = (transition[2] // round_to * round_to,)
-                    # And drop any transistion under 10keV
+                    # And drop any transistion under the threshold
                     if emissions[0] < threshold:
                         emissions = ()
                     holes = (transition[0],)
@@ -736,21 +739,30 @@ def calculate_shell_cascades(elements, round_to = 1000.0, threshold = 15000.0):
                 else:
                     shell_dict[transition_id] = transition_prob
 
-    # The simplest way to do things is start from the outer shells and work in so
-    # that we can trim the tree backwards rather than finding every combination
-    # and then sorting out if it's radiative or not.
+    # The simplest way to do things is start from the outer shells and work in
+    # so that we can trim the tree backwards rather than finding every
+    # combination and then sorting out if it's radiative or not.  These are all
+    # of the possible shell combinations from EADL, from lowest to highest
+    # energy.
     rev_shell_names = ('Q3', 'Q2', 'Q1', 'P11', 'P10', 'P9', 'P8', 'P7', 'P6',
-                       'P5', 'P4', 'P3', 'P2', 'P1', 'O9', 'O8', 'O7', 'O6', 'O5',
-                       'O4', 'O3', 'O2', 'O1', 'N7', 'N6', 'N5', 'N4', 'N3', 'N2',
-                       'N1', 'M5', 'M4', 'M3', 'M2', 'M1', 'L3', 'L2', 'L1', 'K')
+                       'P5', 'P4', 'P3', 'P2', 'P1', 'O9', 'O8', 'O7', 'O6',
+                       'O5', 'O4', 'O3', 'O2', 'O1', 'N7', 'N6', 'N5', 'N4',
+                       'N3', 'N2', 'N1', 'M5', 'M4', 'M3', 'M2', 'M1', 'L3',
+                       'L2', 'L1', 'K')
 
+    # Process the set of transitions to remove all of the holes and find all of
+    # the possible emissions.  For each shell in each element, basically do a
+    # depth first search on the transitions until we arrive at a transition
+    # without a hole.
     while no_holes(transitions) > 0:
-        new_transitions = {}
         for element_name, element_dict in transitions.iteritems():
             for shell_name in rev_shell_names:
                 if shell_name not in element_dict:
                     continue
                 shell_dict = element_dict[shell_name]
+                # Create a dictionary of transitions without holes, that at the
+                # end, we will use to replace shell_dict, assuming there are
+                # some radiative transitions.
                 new_shell_dict = {}
                 for transition_id, transition_prob in shell_dict.iteritems():
                     trans_stack = [(transition_id, transition_prob)]
@@ -783,14 +795,10 @@ def calculate_shell_cascades(elements, round_to = 1000.0, threshold = 15000.0):
                     element_dict[shell_name] = new_shell_dict
     # Remove the holes section from the dictionary, because they should all
     # be blank now.
-    new_transitions = {}
     for element_name, element_dict in transitions.iteritems():
-        new_element_dict = {}
-        new_transitions[element_name] = new_element_dict
         for shell_name, shell_dict in element_dict.iteritems():
             new_shell_dict = {}
-            new_element_dict[shell_name] = new_shell_dict
             for transition_id, transition_prob in shell_dict.iteritems():
                 new_shell_dict[transition_id[0]] = transition_prob
-    transitions = new_transitions
+            element_dict[shell_name] = new_shell_dict
     return transitions
