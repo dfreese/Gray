@@ -747,56 +747,40 @@ def calculate_shell_cascades(elements, round_to = 1000.0, threshold = 15000.0):
     while no_holes(transitions) > 0:
         new_transitions = {}
         for element_name, element_dict in transitions.iteritems():
-            new_element_dict = {}
-            new_transitions[element_name] = new_element_dict
-            skip_remainder = False
             for shell_name in rev_shell_names:
                 if shell_name not in element_dict:
                     continue
                 shell_dict = element_dict[shell_name]
-                # Remove transitions that are not radiative
-                if len(shell_dict.keys()) == 1:
-                    if shell_dict.keys()[0] == ((), ()):
-                        continue
                 new_shell_dict = {}
-                new_element_dict[shell_name] = new_shell_dict
                 for transition_id, transition_prob in shell_dict.iteritems():
-                    # Only deal with one transition at a time.  Consider this a
-                    # hack for not fully fleshing out one transition at a time
-                    # before moving on to the next one.
-                    if skip_remainder:
-                        if transition_id in new_shell_dict:
-                            new_shell_dict[transition_id] += transition_prob
-                        else:
-                            new_shell_dict[transition_id] = transition_prob
-                        continue
-                    emissions = transition_id[0]
-                    holes = transition_id[1]
-                    if len(holes) == 0:
-                        if transition_id in new_shell_dict:
-                            new_shell_dict[transition_id] += transition_prob
-                        else:
-                            new_shell_dict[transition_id] = transition_prob
-                        continue
-                    # eliminate the first hole
-                    if holes[0] not in element_dict:
-                        new_trans_id = (emissions, holes[1:])
-                        if new_trans_id in new_shell_dict:
-                            new_shell_dict[new_trans_id] += transition_prob
-                        else:
-                            new_shell_dict[new_trans_id] = transition_prob
-                        continue
-                    for sec_trans_id, sec_trans_prob in element_dict[holes[0]].iteritems():
-                        new_emiss = emissions + sec_trans_id[0]
-                        new_holes = holes[1:] + sec_trans_id[1]
-                        new_trans_id = (new_emiss, new_holes)
-                        new_trans_prob = transition_prob * sec_trans_prob
-                        if new_trans_id in new_shell_dict:
-                            new_shell_dict[new_trans_id] += new_trans_prob
-                        else:
-                            new_shell_dict[new_trans_id] = new_trans_prob
-                    skip_remainder = True
-        transitions = new_transitions
+                    trans_stack = [(transition_id, transition_prob)]
+                    while len(trans_stack) > 0:
+                        t = trans_stack.pop()
+                        t_id = t[0]
+                        t_prob = t[1]
+                        emissions = t_id[0]
+                        holes = t_id[1]
+                        if len(holes) == 0:
+                            if t_id in new_shell_dict:
+                                new_shell_dict[t_id] += t_prob
+                            else:
+                                new_shell_dict[t_id] = t_prob
+                            continue
+                        # eliminate the first hole
+                        if holes[0] not in element_dict:
+                            new_trans_id = (emissions, holes[1:])
+                            trans_stack.append((new_trans_id, t_prob))
+                            continue
+                        for sec_trans_id, sec_trans_prob in element_dict[holes[0]].iteritems():
+                            new_trans_id = (emissions + sec_trans_id[0],
+                                            holes[1:] + sec_trans_id[1])
+                            new_trans_prob = t_prob * sec_trans_prob
+                            trans_stack.append((new_trans_id, new_trans_prob))
+                # Remove shells that are not radiative
+                if len(new_shell_dict.keys()) == 1 and new_shell_dict.keys()[0] == ((), ()):
+                    del element_dict[shell_name]
+                else:
+                    element_dict[shell_name] = new_shell_dict
     # Remove the holes section from the dictionary, because they should all
     # be blank now.
     new_transitions = {}
