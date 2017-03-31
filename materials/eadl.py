@@ -1,34 +1,5 @@
 #!/usr/bin/env python
-import urllib2
-
-def retreive_dataset(filename, url):
-    """
-    Download datasets, like the EADL or EPDL on the IAEA website, by blatantly
-    spoofing the User-Agent. Spoofing based on this reference:
-        http://stackoverflow.com/a/802246/2465202
-    Downloading based on this one:
-        http://stackoverflow.com/a/22721/2465202
-    """
-    opener = urllib2.build_opener()
-    opener.addheaders = [('User-Agent', 'Mozilla/5.0')]
-    remote_fid = opener.open(url)
-    with open(filename, 'w') as local_fid:
-        local_fid.write(remote_fid.read())
-    remote_fid.close()
-
-def check_dataset(filename=None, url=None):
-    """
-    Check if a dataset, such as the EADL library, exists, and if it doesn't,
-    then use retreive_dataset() to grab it.
-    """
-    try:
-        with open(filename, 'r') as fid:
-            exists = True
-    except IOError:
-        exists = False
-
-    if not exists:
-        retreive_dataset(filename, url)
+import math
 
 def read_float(v):
     """
@@ -597,8 +568,6 @@ class EADL(object):
         url : str, default in class description
             the url pointing to the full EADL library
         """
-        eadl_url = 'https://www-nds.iaea.org/epdl97/data/endfb6/eadl/eadl.all'
-        check_dataset(filename, eadl_url)
         self._data = parse_endf(filename)
         self._elements = dict()
         self._num_to_symbol = dict()
@@ -812,3 +781,147 @@ def calculate_shell_cascades(elements, round_to = 1000.0, threshold = 15000.0):
                 new_shell_dict[transition_id[0]] = transition_prob
             element_dict[shell_name] = new_shell_dict
     return transitions
+
+def lower_bound(x, y):
+    return [x >= z for z in y].index(False) - 1
+
+def upper_bound(x, y):
+    return len(y) - [x < z for z in y[::-1]].index(False)
+
+def log_interp(x_new, x, y):
+    i0 = lower_bound(x_new, x)
+    i1 = upper_bound(x_new, x)
+    x0 = math.log10(x[i0])
+    x1 = math.log10(x[i1])
+    y0 = math.log10(y[i0])
+    y1 = math.log10(y[i1])
+    x_new = math.log10(x_new)
+    delta = (x_new - x0) / (x1 - x0)
+    y_new = y0 + delta * (y1 - y0)
+    return 10 ** y_new
+
+def shell_probabilities(elements, interp_e=511.0e3):
+    xsections = {}
+    for element_name, element_dict in elements.iteritems():
+        new_element_dict = {}
+        xsections[element_name] = new_element_dict
+        element_shells = elements[element_name]['shells']
+        for shell_name, shell_info in element_shells.iteritems():
+            energies = shell_info['energy']
+            xsec = shell_info['xsec']
+            interp_xsec = log_interp(interp_e, energies, xsec)
+            new_element_dict[shell_name] = {
+                'binding_energy': shell_info['binding_energy'],
+                'xsec': interp_xsec}
+
+    for element_name, element_dict in xsections.iteritems():
+        xsection_sum = 0.0
+        for shell_name, shell_dict in element_dict.iteritems():
+            xsection_sum += shell_dict['binding_energy']
+        for shell_name, shell_dict in element_dict.iteritems():
+            shell_dict['prob'] = shell_dict['binding_energy'] / xsection_sum
+    return xsections
+
+def element_probabilities(transitions, shell_probs):
+    full_trans = {}
+    for element_name, element_dict in transitions.iteritems():
+        full_trans[element_name] = {}
+        element_shell_probs = shell_probs[element_name]
+        for shell_name, shell_dict in element_dict.iteritems():
+            shell_prob = element_shell_probs[shell_name]['prob']
+            shell_bind_e = element_shell_probs[shell_name]['binding_energy']
+            new_shell_dict = {}
+            full_trans[element_name][shell_bind_e] = new_shell_dict
+            for transition_id, transition_prob in shell_dict.iteritems():
+                new_prob = transition_prob * shell_prob
+                new_shell_dict[transition_id] = new_prob
+    return full_trans
+
+def add_atomic_probabilities(gray_mats, elements):
+    for name, data in gray_mats.iteritems():
+        total_mass = 0.0
+        for element, frac in data['composition'].iteritems():
+            total_mass += frac * elements[element]['mass']
+        data['prob'] = data['composition'].copy()
+        for element, frac in data['composition'].iteritems():
+            mass_frac = frac * elements[element]['mass'] / total_mass
+            data['prob'][element] = mass_frac
+    return gray_mats
+
+def material_probabilities(gray_mats, element_probs):
+    mat_probs = {}
+    for mat_name, mat_dict in gray_mats.iteritems():
+        new_mat_dict = {}
+        mat_probs[mat_name]  = new_mat_dict
+        for ele_name, ele_prob in mat_dict['prob'].iteritems():
+            for bind_e, bind_e_dict in element_probs[ele_name].iteritems():
+                if bind_e not in new_mat_dict:
+                    new_mat_dict[bind_e] = {}
+                new_bind_e_dict = new_mat_dict[bind_e]
+                for emis, emis_prob in bind_e_dict.iteritems():
+                    new_prob = emis_prob * ele_prob
+                    if emis not in new_bind_e_dict:
+                        new_bind_e_dict[emis] = 0
+                    new_bind_e_dict[emis] += new_prob
+    return mat_probs
+
+def filter_material_probabilities(mat_probs, threshold):
+    new_mat_probs = {}
+    for mat_name, mat_dict in mat_probs.iteritems():
+        new_mat_dict = {}
+        new_mat_probs[mat_name]  = new_mat_dict
+        for bind_e, bind_e_dict in mat_dict.iteritems():
+            new_bind_e_dict = {}
+            for emis, emis_prob in bind_e_dict.iteritems():
+                if emis_prob > threshold:
+                    if emis not in new_bind_e_dict:
+                        new_bind_e_dict[emis] = 0
+                    new_bind_e_dict[emis] += emis_prob
+                else:
+                    if () not in new_bind_e_dict:
+                        new_bind_e_dict[()] = 0
+                    new_bind_e_dict[()] += emis_prob
+            # If it's just the zero emission case, drop that binding energy
+            if len(new_bind_e_dict.keys()) > 1:
+                new_mat_dict[bind_e]  = new_bind_e_dict
+    return new_mat_probs
+
+def add_no_emission_prob(mat_probs):
+    for mat_name, mat_dict in mat_probs.iteritems():
+        total_prob = 0.0
+        for bind_e, bind_e_dict in mat_dict.iteritems():
+            for emis, emis_prob in bind_e_dict.iteritems():
+                total_prob += emis_prob
+        mat_dict[0.0] = {(): 1.0 - total_prob}
+    return mat_probs
+
+def take_largest_emission(mat_probs):
+    new_mat_probs = {}
+    for mat_name, mat_dict in mat_probs.iteritems():
+        new_mat_dict = {}
+        new_mat_probs[mat_name]  = new_mat_dict
+        for bind_e, bind_e_dict in mat_dict.iteritems():
+            new_bind_e_dict = {}
+            new_mat_dict[bind_e] = new_bind_e_dict
+            for emis, emis_prob in bind_e_dict.iteritems():
+                if len(emis) == 0:
+                    new_emis = None
+                elif len(emis) == 1:
+                    new_emis = emis[0]
+                else:
+                    new_emis = list(emis)
+                    new_emis.sort()
+                    new_emis = new_emis[-1]
+                new_bind_e_dict[new_emis] = emis_prob
+    return new_mat_probs
+
+def full_material_emission_probs(gray_mats, elements):
+    transitions = calculate_shell_cascades(elements)
+    shell_probs = shell_probabilities(elements)
+    element_probs = element_probabilities(transitions, shell_probs)
+    gray_mats = add_atomic_probabilities(gray_mats, elements)
+    mat_probs = material_probabilities(gray_mats, element_probs)
+    mat_probs = filter_material_probabilities(mat_probs, 0.5e-2)
+    mat_probs = add_no_emission_prob(mat_probs)
+    mat_probs = take_largest_emission(mat_probs)
+    return mat_probs
