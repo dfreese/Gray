@@ -69,7 +69,8 @@ int main( int argc, char** argv)
                     sources, intersect_kd_tree,
                     num_decays_total - num_decays_cur, interactions,
                     interactions.capacity(),
-                    dynamic_cast<GammaMaterial*>(&scene.GetMaterial(0)));
+                    dynamic_cast<GammaMaterial*>(&scene.GetMaterial(0)),
+                    output.GetLogPositron());
             for (const auto & interact: interactions) {
                 output.LogInteraction(interact);
             }

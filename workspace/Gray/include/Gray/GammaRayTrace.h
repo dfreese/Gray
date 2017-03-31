@@ -17,7 +17,8 @@ public:
                             int num_decays,
                             std::vector<Interaction> & interactions,
                             size_t soft_max_interactions,
-                            GammaMaterial const * const default_material);
+                            GammaMaterial const * const default_material,
+                            bool log_nuclear_decays);
 private:
     static void TracePhoton(Photon &photon,
                             std::vector<Interaction> & interactions,

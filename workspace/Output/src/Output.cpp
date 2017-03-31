@@ -150,3 +150,7 @@ void Output::SetBinary(bool val)
 {
     binary_output = val;
 }
+
+bool Output::GetLogPositron() const {
+    return(log_positron);
+}

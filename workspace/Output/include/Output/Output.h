@@ -25,6 +25,7 @@ public:
     void SetBinaryFormat(BinaryOutputFormat format);
 
     void LogInteraction(const Interaction & interact);
+    bool GetLogPositron() const;
 
 private:
     int MakeLogWord(Interaction::INTER_TYPE interaction, int color,

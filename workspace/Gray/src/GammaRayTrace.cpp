@@ -114,7 +114,8 @@ int GammaRayTrace::TraceSources(SourceList & sources,
                                 int num_decays,
                                 std::vector<Interaction> & interactions,
                                 size_t soft_max_interactions,
-                                GammaMaterial const * const default_material)
+                                GammaMaterial const * const default_material,
+                                bool log_nuclear_decays)
 {
     for (int i = 0; i < num_decays; i++) {
         Source * source = sources.Decay();
