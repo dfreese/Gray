@@ -905,7 +905,7 @@ def take_largest_emission(mat_probs):
             new_mat_dict[bind_e] = new_bind_e_dict
             for emis, emis_prob in bind_e_dict.iteritems():
                 if len(emis) == 0:
-                    new_emis = None
+                    new_emis = 0
                 elif len(emis) == 1:
                     new_emis = emis[0]
                 else:
@@ -913,6 +913,15 @@ def take_largest_emission(mat_probs):
                     new_emis.sort()
                     new_emis = new_emis[-1]
                 new_bind_e_dict[new_emis] = emis_prob
+    return new_mat_probs
+
+def convert_ev_to_mev(mat_probs):
+    new_mat_probs = {}
+    for mat_name, mat_dict in mat_probs.iteritems():
+        new_mat_probs[mat_name] = {}
+        for bind_e, b_dict in mat_dict.iteritems():
+            new_mat_probs[mat_name][bind_e / 1e6] = \
+                dict((e / 1e6, p) for e, p in b_dict.iteritems())
     return new_mat_probs
 
 def full_material_emission_probs(gray_mats, elements):
@@ -924,4 +933,5 @@ def full_material_emission_probs(gray_mats, elements):
     mat_probs = filter_material_probabilities(mat_probs, 0.5e-2)
     mat_probs = add_no_emission_prob(mat_probs)
     mat_probs = take_largest_emission(mat_probs)
+    mat_probs = convert_ev_to_mev(mat_probs)
     return mat_probs
