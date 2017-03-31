@@ -62,18 +62,25 @@ int main( int argc, char** argv)
         }
         int current_tick = 0;
         cout << "[";
+        const size_t interactions_soft_max = 100000;
+        vector<Interaction> interactions;
+        interactions.reserve(interactions_soft_max);
         while (num_decays_cur < num_decays_total) {
-            vector<Interaction> interactions;
-            interactions.reserve(100000);
+            interactions.clear();
             num_decays_cur += GammaRayTrace::TraceSources(
                     sources, intersect_kd_tree,
                     num_decays_total - num_decays_cur, interactions,
-                    interactions.capacity(),
+                    interactions_soft_max,
                     dynamic_cast<GammaMaterial*>(&scene.GetMaterial(0)),
                     output.GetLogPositron());
             for (const auto & interact: interactions) {
                 output.LogInteraction(interact);
             }
+            // Sort Events
+            // Put into singles processor
+            // Blur events
+            // Sort events (again)
+            //
             for (; current_tick < (num_decays_cur / tick_mark); current_tick++) {
                 cout << "=";
             }
