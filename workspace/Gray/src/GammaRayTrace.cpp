@@ -34,8 +34,8 @@ void GammaRayTrace::TracePhoton(
     for (int trace_depth = 0; trace_depth < MaxTraceDepth; trace_depth++) {
         double hitDist;
         VisiblePoint visPoint;
-        int intersectNum = tree.SeekIntersection(photon.pos, photon.dir,
-                                                 &hitDist, visPoint, -1);
+        long intersectNum = tree.SeekIntersection(photon.pos, photon.dir,
+                                                  &hitDist, visPoint, -1);
         // There was nothing further in the environment to hit, so return.
         if (intersectNum < 0) {
             return;
@@ -138,7 +138,7 @@ int GammaRayTrace::TraceSources(SourceList & sources,
 
         // Perhaps keep a histogram of the number of interactions and keep our
         // probability of overrunning the softmax at a certain threshold.
-        int next_decay_projected_interactions = interactions.size() +
+        size_t next_decay_projected_interactions = interactions.size() +
                 static_cast<int>(static_cast<float>(interactions.size()) /
                                  (i + 1));
         if ((interactions.size() >= soft_max_interactions) ||

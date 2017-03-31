@@ -45,9 +45,9 @@ RgbImage::RgbImage( int numRows, int numCols )
     }
     // Zero out the image
     unsigned char* c = ImagePtr;
-    int rowLen = GetNumBytesPerRow();
-    for ( int i=0; i<NumRows; i++ ) {
-        for ( int j=0; j<rowLen; j++ ) {
+    long rowLen = GetNumBytesPerRow();
+    for (long i = 0; i < NumRows; i++ ) {
+        for (long j = 0; j < rowLen; j++ ) {
             *(c++) = 0;
         }
     }
@@ -217,7 +217,7 @@ bool RgbImage::WriteBmpFile( const char* filename )
 
     fputc('B',outfile);
     fputc('M',outfile);
-    int rowLen = GetNumBytesPerRow();
+    long rowLen = GetNumBytesPerRow();
     writeLong( 40+14+NumRows*rowLen, outfile );	// Length of file
     writeShort( 0, outfile );					// Reserved for future use
     writeShort( 0, outfile );

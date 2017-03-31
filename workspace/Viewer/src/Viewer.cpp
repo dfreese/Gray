@@ -55,8 +55,8 @@ namespace {
         }
         bool clearpath;
 
-        int numLights = ActiveScene->NumLights();
-        for ( int k=0; k<numLights; k++ ) {
+        size_t numLights = ActiveScene->NumLights();
+        for (size_t k = 0; k < numLights; k++) {
             const Light& thisLight = ActiveScene->GetLight(k);
             clearpath = true;
             // Cast a shadow feeler if (a) transmissive or (b) light and view on the same side
@@ -90,8 +90,10 @@ namespace {
         double hitDist;
         VisiblePoint visPoint;
 
-        int intersectNum = intersect_kd_tree.SeekIntersection(pos, dir, &hitDist,
-                                                              visPoint, avoidK);
+        long intersectNum = intersect_kd_tree.SeekIntersection(pos, dir,
+                                                               &hitDist,
+                                                               visPoint,
+                                                               avoidK);
         if ( intersectNum<0 ) {
             returnedColor = ActiveScene->BackgroundColor();
         } else {

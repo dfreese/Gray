@@ -16,7 +16,7 @@ public:
 private:
     int dimension[3];
     VectorR3 scale;
-    int search(double e, int b_idx, int s_idx);
+    size_t search(double e, size_t b_idx, size_t s_idx);
     int AddSource(double val);
 
     vector <double> prob;

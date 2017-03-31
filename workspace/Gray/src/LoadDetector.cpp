@@ -1104,7 +1104,7 @@ bool LoadDetector::Load(const std::string & filename,
 
 int LoadDetector::GetCommandNumber( const char * cmd )
 {
-    long i;
+    int i;
     for ( i=0; i<numCommands; i++ ) {
         if ( strcmp( cmd, dffCommandList[i] ) == 0 ) {
             return i;

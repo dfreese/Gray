@@ -75,9 +75,9 @@ void SourceList::AddSource(Source * s)
     if (s->isNegative()) {
         cout << "Adding negative source\n";
         neg_list.push_back(s);
-        s->SetSourceNum(-1*neg_list.size());
+        s->SetSourceNum(-1 * static_cast<int>(neg_list.size()));
     } else {
-        s->SetSourceNum(list.size());
+        s->SetSourceNum(static_cast<int>(list.size()));
         list.push_back(s);
         total_activity += s->GetActivity();
         mean_time_between_events = (1.0) / (total_activity * microCurie);
@@ -104,12 +104,12 @@ double SourceList::GetTime()
     return curTime;
 }
 
-int SourceList::search(double e, int b_idx, int s_idx)
+size_t SourceList::search(double e, size_t b_idx, size_t s_idx)
 {
     if (b_idx == s_idx) {
         return b_idx;
     }
-    int idx = (int)(((b_idx) + (s_idx))/2);
+    size_t idx = (int)(((b_idx) + (s_idx))/2);
     if (prob[idx] < e) {
         return search(e,idx+1,s_idx);
     } else {
@@ -123,14 +123,14 @@ Source * SourceList::Decay()
         cerr << "ERROR: Sources do not exit\n";
         exit(0);
     }
-    int s_idx = prob.size()-1;
+    size_t s_idx = prob.size() - 1;
     int counter = 0;
 
     // FIXME Event ID is hosed
-    int idx = 0;
+    size_t idx = 0;
     VectorR3 decay_pos;
     do {
-        idx = search(Random::Uniform()*total_activity,0,s_idx);
+        idx = search(Random::Uniform()*total_activity, 0, s_idx);
         list[idx]->Reset();
         decay_pos = list[idx]->Decay(decay_number, curTime);
     } while (Inside(decay_pos) && ( (counter++) < MAX_REJECT_COUNTER));

@@ -141,8 +141,9 @@ long RemoveIntervalFromListCircular( T list[], long listLen, long firstRemove, l
     assert (addAtFirstFlag==0 || addAtFirstFlag==1);
     assert (addAtLastFlag==0 || addAtLastFlag==1);
 
-    int numNew = addAtFirstFlag+addAtLastFlag;		// Number of new verts to add
-    int numLost = firstKeep-firstRemove;
+    // Number of new verts to add
+    int numNew = addAtFirstFlag+addAtLastFlag;
+    long numLost = firstKeep - firstRemove;
 
     if ( numLost<0 ) {			// If the last entry in the list is among the removed
         listLen = firstRemove;	// Automatically discard ends
@@ -159,7 +160,7 @@ long RemoveIntervalFromListCircular( T list[], long listLen, long firstRemove, l
     } else {
         newItemIndex = firstRemove;
         newItemPtr = list+newItemIndex;
-        int slideAmt = numNew-(firstKeep-firstRemove);
+        long slideAmt = numNew - (firstKeep - firstRemove);
         if ( slideAmt>0 ) {
             // Need to slide up
             T* fromPtr = list + (listLen-1);

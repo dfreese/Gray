@@ -29,7 +29,7 @@ public:
 private:
     static const int MAX_REJECT_COUNTER = 100000;
     double curTime;
-    int search(double e, int b_idx, int s_idx);
+    size_t search(double e, size_t b_idx, size_t s_idx);
     double total_activity;
     std::vector <Source*> list;
     std::vector <Source*> neg_list;

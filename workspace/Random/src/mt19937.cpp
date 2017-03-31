@@ -2,7 +2,6 @@
    A C-program for MT19937, with initialization improved 2002/1/26.
    Coded by Takuji Nishimura and Makoto Matsumoto.
    Before using, initialize the state by using init_genrand(seed)
-   or init_by_array(init_key, key_length).
    Copyright (C) 1997 - 2002, Makoto Matsumoto and Takuji Nishimura,
    All rights reserved.
    Redistribution and use in source and binary forms, with or without
@@ -56,34 +55,6 @@ void init_genrand(unsigned long s)
         mt[mti] &= 0xffffffffUL;
         /* for >32 bit machines */
     }
-}
-
-/* initialize by an array with array-length */
-/* init_key is the array for initializing keys */
-/* key_length is its length */
-void init_by_array(unsigned long init_key[], unsigned long key_length)
-{
-    int i, j, k;
-    init_genrand(19650218UL);
-    i=1; j=0;
-    k = (N>key_length ? N : key_length);
-    for (; k; k--) {
-        mt[i] = (mt[i] ^ ((mt[i-1] ^ (mt[i-1] >> 30)) * 1664525UL))
-          + init_key[j] + j; /* non linear */
-        mt[i] &= 0xffffffffUL; /* for WORDSIZE > 32 machines */
-        i++; j++;
-        if (i>=N) { mt[0] = mt[N-1]; i=1; }
-        if (j>=key_length) j=0;
-    }
-    for (k=N-1; k; k--) {
-        mt[i] = (mt[i] ^ ((mt[i-1] ^ (mt[i-1] >> 30)) * 1566083941UL))
-          - i; /* non linear */
-        mt[i] &= 0xffffffffUL; /* for WORDSIZE > 32 machines */
-        i++;
-        if (i>=N) { mt[0] = mt[N-1]; i=1; }
-    }
-
-    mt[0] = 0x80000000UL; /* MSB is 1; assuring non-zero initial array */
 }
 
 /* generates a random number on [0,0xffffffff]-interval */

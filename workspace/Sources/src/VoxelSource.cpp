@@ -36,13 +36,13 @@ VoxelSource::VoxelSource(const VectorR3 &p, int dims[3], const VectorR3 & vox_sc
 }
 
 
-int VoxelSource::search(double e, int b_idx, int s_idx)
+size_t VoxelSource::search(double e, size_t b_idx, size_t s_idx)
 {
 
     if (b_idx == s_idx) {
         return b_idx;
     }
-    int idx = (int)(((b_idx) + (s_idx))/2);
+    size_t idx = ((b_idx) + (s_idx)) / 2;
     if (prob[idx] < e) {
         return search(e,idx+1,s_idx);
     } else {
@@ -59,7 +59,7 @@ VectorR3 VoxelSource::Decay(int photon_number, double time)
     VectorR3 pos;
     // Random is uniformly distributed between 0 and 1
     // prob.size is number of voxels.
-    int idx = search(Random::Uniform(), 0, prob.size() - 1);
+    size_t idx = search(Random::Uniform(), 0, prob.size() - 1);
     pos.x = scale.x * (index[idx][0] + Random::Uniform());
     pos.y = scale.y * (index[idx][1] + Random::Uniform());
     pos.z = scale.z * (index[idx][2] + Random::Uniform());

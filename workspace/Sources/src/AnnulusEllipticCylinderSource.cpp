@@ -1,17 +1,8 @@
 #include <Sources/AnnulusEllipticCylinderSource.h>
-#include <math.h>
+#include <cmath>
 #include <Random/Random.h>
 
 using namespace std;
-
-AnnulusEllipticCylinderSource::AnnulusEllipticCylinderSource() :
-    Source(),
-    radius1(1.0),
-    radius2(1.0),
-    length(1.0),
-    axis(0.0, 0.0, 1.0)
-{
-}
 
 AnnulusEllipticCylinderSource::AnnulusEllipticCylinderSource(const VectorR3 &p,
                                                              double r1,
@@ -25,24 +16,23 @@ AnnulusEllipticCylinderSource::AnnulusEllipticCylinderSource(const VectorR3 &p,
     axis(L.MakeUnit())
 {
     // calculate Rotation Matrix
-    //cout << "L.x = " << L.x << "  L.y = " << L.y << "  L.z = " << L.z <<endl;
-    //cout << "axis.x = " << axis.x << "  axis.y = " << axis.y << "  axis.z = " << axis.z <<endl;
     /* Rotation Matrix based on Logbook 4 p72, AVDB) */
     double c= axis.z;
     double s=(axis.x*axis.x+axis.y*axis.y);
-    RotMtrx.Set( axis.y*axis.y + (1-axis.y*axis.y)*c, -axis.x*axis.y*(1-c), -axis.x*s,
-                 -axis.x*axis.y*(1-c), axis.x*axis.x + ( 1-axis.x*axis.x)*c, axis.y*s,
-                 axis.x*s, axis.y*s,c);
+    RotMtrx.Set(axis.y*axis.y + (1-axis.y*axis.y)*c,
+                -axis.x*axis.y*(1-c), -axis.x*s,
+                -axis.x*axis.y*(1-c),
+                axis.x*axis.x + ( 1-axis.x*axis.x)*c, axis.y*s,
+                axis.x*s, axis.y*s,c);
     RotMtrxInv = RotMtrx;
     RotMtrxInv.MakeTranspose();
 
-    double step = (2.0 * M_PI)/((double)NUM_TABLE);
+    const size_t table_size = 100000;
+    double step = (2.0 * M_PI) / ((double) table_size);
     double m = 1-(radius2/radius1)*(radius2/radius1);
     cout << "Test elliptic integrals:m[" << m << "]\n";
-    for (int i = 0; i < NUM_TABLE; i++) {
-        //cout << "i:[" << i << "][";
+    for (size_t i = 0; i < table_size; i++) {
         circ.push_back(radius1 * IncompleteEllipticE(((double)i)*step, m));
-        //cout << circ[i] << "\n";
     }
 }
 
@@ -123,53 +113,29 @@ double AnnulusEllipticCylinderSource::EllipticE(double m)
     return result;
 }
 
-#define EQUAL_PRECISION 1e-2
-bool double_compare(double i, double j)
-{
-    if (fabs(i - j) < EQUAL_PRECISION) {
+namespace  {
+const double equal_precision = 1.0e-2;
+bool double_compare(double i, double j) {
+    if (std::abs(i - j) < equal_precision) {
         return false;
     } else {
         return (i<j);
     }
 }
-
-int binarySearch(const vector<double> & array, int first, int last, double key)
-{
-    // function:
-    //   Searches sortedArray[first]..sortedArray[last] for key.
-    // returns: index of the matching element if it finds key,
-    //         otherwise  -(index where it could be inserted)-1.
-    // parameters:
-    //   sortedArray in  array of sorted (ascending) values.
-    //   first, last in  lower and upper subscript bounds
-    //   key         in  value to search for.
-    // returns:
-    //   index of key, or -insertion_position -1 if key is not
-    //                 in the array. This value can easily be
-    //                 transformed into the position to insert it.
-
-    while (first <= last) {
-        int mid = (first + last) / 2;  // compute mid point.
-        if (double_compare(array[mid],key)) {
-            first = mid + 1;    // repeat search in top half.
-        } else if (double_compare(key,array[mid])) {
-            last = mid - 1;    // repeat search in bottom half.
-        } else {
-            return mid;    // found it. return position /////
-        }
-    }
-    return -(first + 1);    // failed to find key
 }
 
 double AnnulusEllipticCylinderSource::InverseEllipticE(double arc_length)
 {
-    int index;
-    index = binarySearch(circ, 0, circ.size()-1, arc_length);
-    if (index < 0) {
+    vector<double>::const_iterator val_iter = std::lower_bound(circ.cbegin(),
+                                                               circ.cend(),
+                                                               arc_length,
+                                                               double_compare);
+    if (val_iter == circ.cend() || double_compare(arc_length, *val_iter)) {
         cout << "Failed to find arc_length\n";
         return -1.0;
     } else {
-        return 2.0 * M_PI * ((double)index)/((double)NUM_TABLE);
+        size_t idx = std::distance(circ.cbegin(), val_iter);
+        return 2.0 * M_PI * ((double) idx) / ((double) circ.size());
     }
 }
 
@@ -279,36 +245,20 @@ double AnnulusEllipticCylinderSource::IncompleteEllipticE(double phi, double m)
 
 VectorR3 AnnulusEllipticCylinderSource::Decay(int photon_number, double time)
 {
-
     //FIXME: Sources are not rotating -- FIXED 01-13-2020 AVDB
     //FIXME: Inside is not rotating -- BUG PDO
-
-    double C = circ[circ.size()-1];
-    double C_uniform;
-    double phi;
-    double radius;
 
     if (isotope == NULL) {
         return(VectorR3(0,0,0));
     }
-    VectorR3 positron;
-
-    // Generate a uniform from 0 to C
-    do {
-        C_uniform = C*Random::Uniform();
-    } while (C_uniform < 0.0);
-
-    // Calculate the phi angle
-    phi = InverseEllipticE(C_uniform);
-    //cout << "Circ:[" << C << "]Arclength:[" << C_uniform << "]Phi:[";
-    //
-
+    double C = circ[circ.size()-1];
+    double C_uniform = C * Random::Uniform();
+    double phi = InverseEllipticE(C_uniform);
     double bcp = radius2*cos(phi);
     double asp = radius1*sin(phi);
+    double radius = radius1*radius2/(sqrt(bcp*bcp + asp*asp));
 
-    radius = radius1*radius2/(sqrt(bcp*bcp + asp*asp));
-    //cout << phi << "]radius:[" << radius << "]\n";
-
+    VectorR3 positron;
     positron.x = radius*cos(phi);
     positron.y = radius*sin(phi);
     positron.z = length * (0.5 - Random::Uniform());
@@ -334,12 +284,9 @@ void AnnulusEllipticCylinderSource::SetAxis(VectorR3 &L)
 
 bool AnnulusEllipticCylinderSource::Inside(const VectorR3 & pos) const
 {
-
     if (isotope == NULL) {
         return false;
     }
-
-    // Annulus has not width
+    // Annulus has no width
     return false;
-
 }

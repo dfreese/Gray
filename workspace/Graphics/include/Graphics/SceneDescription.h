@@ -90,7 +90,7 @@ public:
     void RegisterCameraView();
     void CalcNewScreenDims( float aspectRatio );
 
-    int NumLights() const
+    size_t NumLights() const
     {
         return LightArray.size();
     }
@@ -101,16 +101,16 @@ public:
         return(light);
     }
     int AddLight( Light* newLight );
-    Light& GetLight( int i )
+    Light& GetLight(size_t i)
     {
         return *LightArray[i];
     }
-    const Light& GetLight( int i ) const
+    const Light& GetLight(size_t i) const
     {
         return *LightArray[i];
     }
 
-    int NumMaterials() const
+    size_t NumMaterials() const
     {
         return MaterialArray.size();
     }
@@ -124,7 +124,7 @@ public:
         return *MaterialArray[i];
     }
 
-    int NumTextures() const
+    size_t NumTextures() const
     {
         return TextureArray.size();
     }
@@ -158,25 +158,25 @@ public:
                                          TextureMapBase* textureMap2, TextureMapBase* textureMap3 );
 
     BumpMapFunction* NewBumpMapFunction();
-    TextureMapBase& GetTexture( int i )
+    TextureMapBase& GetTexture(size_t i )
     {
         return *TextureArray[i];
     }
-    const TextureMapBase& GetTexture( int i ) const
+    const TextureMapBase& GetTexture(size_t i ) const
     {
         return *TextureArray[i];
     }
 
-    int NumViewables() const
+    size_t NumViewables() const
     {
         return ViewableArray.size();
     }
     int AddViewable( ViewableBase* newViewable );
-    ViewableBase& GetViewable( int i )
+    ViewableBase& GetViewable(size_t i )
     {
         return *ViewableArray[i];
     }
-    const ViewableBase& GetViewable( int i ) const
+    const ViewableBase& GetViewable(size_t i ) const
     {
         return *ViewableArray[i];
     }

@@ -72,7 +72,7 @@ bool LoadMaterials::LoadPhysicsFiles(SceneDescription& theScene)
                                         material_names[i] + ".dat";
         dynamic_cast<Material*>(mat)->SetName(material_names[i]);
         mat->SetFileName(material_filename);
-        mat->SetMaterialType(i);
+        mat->SetMaterialType(static_cast<int>(i));
         if (!mat->Load()) {
             return(false);
         }

@@ -160,8 +160,8 @@ bool KdTree::Traverse( const VectorR3& startPos, const VectorR3& dir, double see
 				}
 				else {
 					// Exactly hit the splitting plane (not so good!)
-					int leftIdx = currentNode->LeftChildIndex();
-					int rightIdx = currentNode->RightChildIndex();
+					long leftIdx = currentNode->LeftChildIndex();
+					long rightIdx = currentNode->RightChildIndex();
 					if ( leftIdx == -1 ) {
 						currentNodeIndex = rightIdx;
 					}
@@ -223,7 +223,7 @@ bool KdTree::Traverse( const VectorR3& startPos, const VectorR3& dir, double see
 			Stats_LeafTraversed();
             // Pass the objects back to the user one at a time
             double newStopDist;
-            int i = currentNode->Data.Leaf.NumObjects;
+            long i = currentNode->Data.Leaf.NumObjects;
             Stats_ObjectsInLeaves( i );
             long* objectIdPtr = currentNode->Data.Leaf.ObjectList;
             for ( ; i>0; i-- ) {
