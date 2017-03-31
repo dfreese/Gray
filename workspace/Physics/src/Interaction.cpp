@@ -316,17 +316,17 @@ Interaction::INTER_TYPE Interaction::InteractionType(
 {
     double pe, compton, rayleigh;
     mat_gamma_prop.GetInteractionProbs(p.energy, pe, compton, rayleigh);
-
-    double rand = (pe + compton + rayleigh) * Random::Uniform();
-    if (rand < pe) {
+    // TODO: add back in rayleigh scattering once the distribution is fixed
+    // double rand = (pe + compton + rayleigh) * Random::Uniform();
+    double rand = (pe + compton) * Random::Uniform();
+    if (rand <= pe) {
         if (XrayEscape(p, mat_gamma_prop)) {
             // TODO: Get x-ray escape physics working again
-            // 		 Xray needs to deposit majority of energy, and send small x-ray off
             return XRAY_ESCAPE;
         } else {
             return PHOTOELECTRIC;
         }
-    } else if (rand < (pe + compton)) {
+    } else if (rand <= (pe + compton)) {
         return COMPTON;
     } else {
         return RAYLEIGH;
