@@ -51,11 +51,11 @@ int main( int argc, char** argv)
         // calculate the number of positrons to throw
         // TODO: need to fix the number of rays because of negative sources
         // FIXME: time should not increase when Inside() of a negative source
-        int num_decays_total = sources.GetTotalEvents();
-        int num_decays_cur = 0;
+        long num_decays_total = sources.GetTotalEvents();
+        long num_decays_cur = 0;
 
-        const int num_chars = 70;
-        int tick_mark = num_decays_total / num_chars;
+        const long num_chars = 70;
+        long tick_mark = num_decays_total / num_chars;
         if (tick_mark == 0) {
             // Make sure we don't have an error later on because of num % 0
             tick_mark = 1;

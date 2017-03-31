@@ -158,7 +158,7 @@ double SourceList::GetMeanTotalEvents(double time)
     return time * total_activity * microCurie;
 }
 
-double SourceList::GetTotalEvents(double time)
+long SourceList::GetTotalEvents(double time)
 {
     return(Random::Poisson(GetMeanTotalEvents(time)));
 }
@@ -169,7 +169,7 @@ double SourceList::GetMeanTotalEvents()
     return(GetMeanTotalEvents(simulation_time));
 }
 
-double SourceList::GetTotalEvents()
+long SourceList::GetTotalEvents()
 {
     return(GetTotalEvents(simulation_time));
 }

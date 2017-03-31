@@ -20,9 +20,9 @@ public:
     bool SetCurIsotope(const std::string & iso);
     void SetAcolinearity(double acolinearity_deg_fwhm);
     double GetMeanTotalEvents(double time);
-    double GetTotalEvents(double time);
+    long GetTotalEvents(double time);
     double GetMeanTotalEvents();
-    double GetTotalEvents();
+    long GetTotalEvents();
     void SetKdTree(IntersectKdTree & tree);
     void SetSimulationTime(double time);
 

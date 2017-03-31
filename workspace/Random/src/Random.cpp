@@ -108,12 +108,12 @@ void Random::Acolinearity(const VectorR3 & b, VectorR3 &r, double radians)
 }
 
 
-int Random::Poisson(double lambda)
+long Random::Poisson(double lambda)
 {
     return (lambda < 30.0) ? PoissonSmall(lambda) : PoissonLarge(lambda);
 }
 
-int Random::PoissonSmall(double lambda)
+long Random::PoissonSmall(double lambda)
 {
     // Algorithm due to Donald Knuth, 1969.
     double p = 1.0, L = exp(-lambda);
@@ -128,24 +128,18 @@ int Random::PoissonSmall(double lambda)
 }
 
 namespace {
-double LogFactorial(int n)
+double LogFactorial(long n)
 {
-
-    if (n < 0)
-    {
+    if (n < 0) {
         std::stringstream os;
         os << "Invalid input argument (" << n
         << "); may not be negative";
         throw std::invalid_argument( os.str() );
 
-    }
-    else if (n > 254)
-    {
+    } else if (n > 254) {
         double x = n + 1;
-        return (x - 0.5)*log(x) - x + 0.5*log(2*PI) + 1.0/(12.0*x);
-    }
-    else
-    {
+        return (x - 0.5) * log(x) - x + 0.5 * log(2 * M_PI) + 1.0 / (12.0 * x);
+    } else {
         double lf[] =
         {
             0.000000000000000,
@@ -409,7 +403,7 @@ double LogFactorial(int n)
 }
 }
 
-int Random::PoissonLarge(double lambda)
+long Random::PoissonLarge(double lambda)
 {
     // "Rejection method PA" from "The Computer Generation of Poisson Random Variables" by A. C. Atkinson
     // Journal of the Royal Statistical Society Series C (Applied Statistics) Vol. 28, No. 1. (1979)
@@ -424,7 +418,7 @@ int Random::PoissonLarge(double lambda)
     {
         double u = Uniform();
         double x = (alpha - log((1.0 - u)/u))/beta;
-        int n = (int) floor(x + 0.5);
+        long n = static_cast<long>(floor(x + 0.5));
         if (n < 0)
             continue;
         double v = Uniform();
