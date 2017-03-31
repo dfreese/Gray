@@ -36,6 +36,8 @@ void GammaPositronDecay::Decay(int photon_number, double time, int src_id,
     // If the gamma position was already set by the positron range functions,
     // do not override it.  Once we've set the position, clear the flag for the
     // next decay call.
+    // TODO: log the positron annihilation and nuclear decay positions
+    // separately
     if (!gamma_position_set) {
         yellow.pos = position;
         this->position = position;

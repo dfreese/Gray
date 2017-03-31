@@ -25,6 +25,8 @@ void PositronDecay::Decay(int photon_number, double time, int src_id,
     // children.  Pass it during the call to PoistronDecay::Decay, and generate
     // an energy for the PositronDecay instance randomly from a beta decay
     // spectrum.
+    // TODO: log the positron annihilation and nuclear decay positions
+    // separately
     this->energy = 0.120;
     this->decay_number = photon_number;
     this->src_id = src_id;
@@ -58,12 +60,9 @@ void PositronDecay::PositronRange(VectorR3 & p, double positronC,
     Random::UniformSphere(positronDir);
     double range = 0.0;
     double cp;
-    // generate cprime which is the scales the dual exponential into a form that allows it
-    // to be monte-carlo generated
-    //
+    // generate cprime which is the scales the dual exponential into a form
+    // that allows it to be monte-carlo generated
     cp = (positronC)/(positronC+positronK1/positronK2*(1-positronC));
-    //		cout << "PositronRange: " << cp << " " << positronK1 << " " << positronK2;
-
     do {
 
         if (Random::Uniform() < cp) {
@@ -88,7 +87,8 @@ void PositronDecay::PositronRange(VectorR3 & p, double positronFWHM,
     double range = 0.0;
     // must return cm, sigma expressed in mm
     do {
-        range = Random::Gaussian() * positronFWHM * CONST_FWHM_TO_SIGMA * CONST_MM_TO_CM;
+        range = Random::Gaussian() * positronFWHM *
+                CONST_FWHM_TO_SIGMA * CONST_MM_TO_CM;
     } while (range > positronMaxRange); // rejection test positron range
 
     positronDir *= range;
