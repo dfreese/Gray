@@ -63,7 +63,7 @@ public:
                                     double & phi);
     static double KleinNishinaEnergy(double energy, double theta);
     static bool XrayEscape(Photon &p, const GammaStats & mat_gamma_prop);
-    static const double speed_of_light_mmpers;
+    static const double speed_of_light_cmpers;
     static const double inverse_speed_of_light;
     static void RayleighScatter(Photon &p);
     static bool PhotonInteracts(double energy, double & dist,

@@ -245,9 +245,9 @@ double Interaction::KleinNishina::find_max(double energy_mev)
 
 Interaction::KleinNishina Interaction::klein_nishina;
 
-const double Interaction::speed_of_light_mmpers = 29979245800.0;
+const double Interaction::speed_of_light_cmpers = 29979245800.0;
 const double Interaction::inverse_speed_of_light = (1.0 /
-                                                    speed_of_light_mmpers);
+                                                    speed_of_light_cmpers);
 
 double Interaction::RandomExponentialDistance(double mu) {
     double r = Random::Uniform();
