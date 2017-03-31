@@ -191,6 +191,9 @@ public:
         }
     }
 
+    AABB GetExtents();
+    double GetMaxDistance();
+
     void DeleteAllLights();
     void DeleteAllTextures();
     void DeleteAllMaterials();

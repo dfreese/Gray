@@ -99,3 +99,18 @@ void SceneDescription::DeleteAllViewables()
         ViewableArray.pop_back();
     }
 }
+
+AABB SceneDescription::GetExtents() {
+    AABB scene_aabb;
+    for (size_t idx = 0; idx < NumViewables(); idx++) {
+        AABB aabb;
+        GetViewable(idx).CalcAABB(aabb);
+        scene_aabb.EnlargeToEnclose(aabb);
+    }
+    return(scene_aabb);
+}
+
+double SceneDescription::GetMaxDistance() {
+    AABB extents = GetExtents();
+    return((extents.GetBoxMax() - extents.GetBoxMin()).Norm());
+}
