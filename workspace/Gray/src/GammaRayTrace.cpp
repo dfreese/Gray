@@ -139,7 +139,7 @@ long GammaRayTrace::TraceSources(SourceList & sources,
         // Perhaps keep a histogram of the number of interactions and keep our
         // probability of overrunning the softmax at a certain threshold.
         size_t next_decay_projected_interactions = interactions.size() +
-                static_cast<int>(static_cast<float>(interactions.size()) /
+                static_cast<size_t>(static_cast<float>(interactions.size()) /
                                  (i + 1));
         if ((interactions.size() >= soft_max_interactions) ||
             (next_decay_projected_interactions >= soft_max_interactions))
