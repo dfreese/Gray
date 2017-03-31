@@ -8,11 +8,6 @@
 class GammaStats;
 class NuclearDecay;
 
-//#define XRAY_ESCAPE_ENERGY_LSO 63.314
-//#define XRAY_ESCAPE_ENERGY_CD 26.711
-//#define XRAY_ESCALE_ENERGY_TE 31.814
-// TODO DO CZT XRAY_ESCAPE PHYSICS
-
 class Interaction {
 public:
     enum INTER_TYPE {
@@ -68,7 +63,8 @@ public:
                                     double & phi);
     static double KleinNishinaEnergy(double energy, double theta);
     static bool XrayEscape(Photon &p, const GammaStats & mat_gamma_prop);
-    static const double si1_SOL;
+    static const double speed_of_light_mmpers;
+    static const double inverse_speed_of_light;
     static void RayleighScatter(Photon &p);
     static bool PhotonInteracts(double energy, double & dist,
                                 const GammaStats & mat_gamma_prop);

@@ -90,7 +90,7 @@ void GammaRayTrace::TracePhoton(
                     exit(1);
                 }
                 // calculate the time taken to travel distance of the non-interaction
-                photon.time += (hitDist * Interaction::si1_SOL);
+                photon.time += (hitDist * Interaction::inverse_speed_of_light);
 
                 // Make sure not to hit same place in kdtree
                 photon.pos = visPoint.GetPosition() + photon.dir * Epsilon;
