@@ -117,6 +117,17 @@ void SourceList::AddNextDecay(size_t source_idx, double base_time) {
     Source * source = list[source_idx];
     double decay_time = Random::Exponential(source->GetActivity() * microCurie);
     decay_list[base_time + decay_time] = source_idx;
+
+    // Set the current time to be the next decay that will happen.  This won't
+    // be accessed until the next iteration of the main loop, this way we don't
+    // simulate events outside of the simulation time.
+    curTime = (*decay_list.begin()).first;
+}
+
+void SourceList::GetNextDecay(size_t & source_idx, double & time) {
+    time = (*decay_list.begin()).first;
+    source_idx = (*decay_list.begin()).second;
+    decay_list.erase(decay_list.begin());
 }
 
 Source * SourceList::Decay()
@@ -126,10 +137,9 @@ Source * SourceList::Decay()
         throw(runtime_error(error));
     }
 
-    double decay_time = (*decay_list.begin()).first;
-    size_t s_idx = (*decay_list.begin()).second;
-    decay_list.erase(decay_list.begin());
-    curTime = decay_time;
+    double decay_time;
+    size_t s_idx;
+    GetNextDecay(s_idx, decay_time);
     AddNextDecay(s_idx, decay_time);
     Source * source = list[s_idx];
     source->Reset();
