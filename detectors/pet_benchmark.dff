@@ -13,7 +13,9 @@ m water
 # color: a d s t r ior
 color 0.1 0.1 0.1  0.0 0.0 0.0 0.5 0.5 0.5 0.5 0.5 1.0 0.0 0.0 0.0 1.03
 cyl 0.0 0.0 0.0 0.0 0.0 1.0 10 70
+isotope F18
 cyl_src 0.0 -2.0 0.0 0.0 0.0 1.0 0.01 68 2.702702
+isotope O15
 cyl_src 0.0 2.0 0.0 0.0 0.0 1.0 0.01 68 2.7072702
 # set time of simulation 240 seconds
 time 240.0
