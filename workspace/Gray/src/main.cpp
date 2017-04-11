@@ -82,12 +82,9 @@ int main( int argc, char** argv)
 
         const long num_chars = 70;
         double tick_mark = sources.GetSimulationTime() / num_chars;
-        if (tick_mark == 0) {
-            // Make sure we don't have an error later on because of num % 0
-            tick_mark = 1;
-        }
         int current_tick = 0;
-        cout << "[";
+        cout << "[" << flush;
+
         const size_t interactions_soft_max = 100000;
         vector<Interaction> interactions;
         interactions.reserve(interactions_soft_max + 50);
@@ -122,9 +119,8 @@ int main( int argc, char** argv)
                 singles_stream.clear();
             }
             for (; current_tick < (sources.GetTime() / tick_mark); current_tick++) {
-                cout << "=";
+                cout << "=" << flush;
             }
-            cout.flush();
         }
         if (config.log_singles) {
             singles_stream.stop();

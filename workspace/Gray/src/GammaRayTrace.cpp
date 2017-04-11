@@ -119,6 +119,7 @@ long GammaRayTrace::TraceSources(SourceList & sources,
     long no_decays = 0;
     while (sources.GetTime() < sources.GetSimulationTime()) {
         Source * source = sources.Decay();
+        no_decays++;
         if (!source) {
             continue;
         }
@@ -127,7 +128,6 @@ long GammaRayTrace::TraceSources(SourceList & sources,
             cerr << "Empty Decay: ERROR\n";
             continue;
         }
-        no_decays++;
 
         while(!isotope->IsEmpty()) {
             NuclearDecay * decay = isotope->NextNuclearDecay();
