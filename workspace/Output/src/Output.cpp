@@ -3,13 +3,17 @@
 
 using namespace std;
 
-Output::Output()
+bool Output::log_data = false;
+bool Output::log_positron = false;
+bool Output::log_all = false;
+bool Output::binary_output = false;
+Output::BinaryOutputFormat Output::binary_format = Output::FULL_OUTPUT;
+
+Output::Output(const std::string & logfile)
 {
-    log_data = false;
-    log_positron = false;
-    log_all = false;
-    binary_output = false;
-    binary_format = FULL_OUTPUT;
+    if (logfile != "") {
+        SetLogfile(logfile);
+    }
     counter_nuclear_decay = 0;
     counter_photoelectric = 0;
     counter_compton = 0;

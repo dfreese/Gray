@@ -17,11 +17,15 @@ public:
     bool ProcessCommandLine(int argc, char **argv);
     static void usage();
 
-    std::string filename_detector;
+    std::string filename_scene;
+    std::string filename_pipeline;
+    std::string filename_hits;
     std::string filename_output;
     unsigned long seed;
     bool run_viewer_flag;
     bool run_physics_flag;
+    bool log_hits;
+    bool log_singles;
 };
 
 #endif /* Config_h */

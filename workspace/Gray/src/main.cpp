@@ -1,4 +1,5 @@
 #include <iostream>
+#include <unordered_set>
 #include <Graphics/SceneDescription.h>
 #include <GraphicsTrees/IntersectionKdTree.h>
 #include <Gray/GammaMaterial.h>
@@ -9,6 +10,7 @@
 #include <Output/Output.h>
 #include <Sources/SourceList.h>
 #include <Random/Random.h>
+#include <Pipeline/singlesstream.h>
 #ifdef USE_OPENGL
 #include <Viewer/Viewer.h>
 #endif
@@ -24,23 +26,28 @@ int main( int argc, char** argv)
     }
 
     SceneDescription scene;
-    Output output;
     SourceList sources;
     if (!LoadMaterials::LoadPhysicsFiles(scene)) {
         return(1);
     }
-    if (!LoadDetector::Load(config.filename_detector, scene, output, sources)) {
-        cerr << "Loading file \"" << config.filename_detector << "\" failed" << endl;
+    if (!LoadDetector::Load(config.filename_scene, scene, sources)) {
+        cerr << "Loading file \"" << config.filename_scene << "\" failed"
+             << endl;
         return(1);
     }
-    output.SetLogfile(config.filename_output);
+    Output output_hits(config.filename_hits);
+    Output output_singles(config.filename_output);
     if (config.seed != 0) {
         Random::Seed(config.seed);
         cout << "Seeding Gray: " << config.seed << endl;
     }
 
+    SinglesStream<Interaction> singles_stream(
+            5 * scene.GetMaxDistance() * Interaction::inverse_speed_of_light);
+
     IntersectKdTree intersect_kd_tree(scene);
     sources.SetKdTree(intersect_kd_tree);
+
 
     if (config.run_viewer_flag) {
 #ifdef USE_OPENGL
@@ -48,6 +55,15 @@ int main( int argc, char** argv)
 #endif
     }
     if (config.run_physics_flag) {
+
+        // We only want to send certain interaction types into the singles
+        // processor.
+        unordered_set<int> singles_valid_interactions({
+            Interaction::COMPTON,
+            Interaction::PHOTOELECTRIC,
+            Interaction::XRAY_ESCAPE,
+            Interaction::RAYLEIGH});
+
         // calculate the number of positrons to throw
         // TODO: need to fix the number of rays because of negative sources
         // FIXME: time should not increase when Inside() of a negative source
@@ -72,19 +88,40 @@ int main( int argc, char** argv)
                     num_decays_total - num_decays_cur, interactions,
                     interactions_soft_max,
                     dynamic_cast<GammaMaterial*>(&scene.GetMaterial(0)),
-                    output.GetLogPositron());
-            for (const auto & interact: interactions) {
-                output.LogInteraction(interact);
+                    output_hits.GetLogPositron());
+            if (config.log_hits) {
+                for (const auto & interact: interactions) {
+                    output_hits.LogInteraction(interact);
+                }
             }
-            // Sort Events
-            // Put into singles processor
-            // Blur events
-            // Sort events (again)
-            //
+            if (config.log_singles) {
+                // Partition the interactions into two sets, while preserving
+                // the rough time order.  Anything "true", or having a type
+                // in the singles_valid_interactions set is put in the front
+                // and the remainder is removed.
+                auto del_pos = stable_partition(
+                        interactions.begin(), interactions.end(),
+                        [&singles_valid_interactions](const Interaction & i){
+                             return(singles_valid_interactions.count(i.type));
+                         });
+                interactions.resize(del_pos - interactions.begin());
+                singles_stream.add_events(interactions);
+                for (const auto & interact: singles_stream.get_ready()) {
+                    output_singles.LogInteraction(interact);
+                }
+                singles_stream.clear();
+            }
             for (; current_tick < (num_decays_cur / tick_mark); current_tick++) {
                 cout << "=";
             }
             cout.flush();
+        }
+        if (config.log_singles) {
+            singles_stream.stop();
+            for (const auto & interact: singles_stream.get_ready()) {
+                output_singles.LogInteraction(interact);
+            }
+            singles_stream.clear();
         }
         cout << "=] Done." << endl;
     }

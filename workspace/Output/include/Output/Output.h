@@ -12,17 +12,17 @@ class Interaction;
 class Output
 {
 public:
-    Output();
+    Output(const std::string & logfile = "");
     ~Output();
     bool SetLogfile(const std::string & name);
-    void SetLogAll(bool val);
-    void SetLogPositron(bool val);
-    void SetBinary(bool val);
+    static void SetLogAll(bool val);
+    static void SetLogPositron(bool val);
+    static void SetBinary(bool val);
     enum BinaryOutputFormat {
         FULL_OUTPUT,
         NO_POS
     };
-    void SetBinaryFormat(BinaryOutputFormat format);
+    static void SetBinaryFormat(BinaryOutputFormat format);
 
     void LogInteraction(const Interaction & interact);
     bool GetLogPositron() const;
@@ -32,12 +32,12 @@ private:
                     bool scatter, int det_mat, int src_id);
 
     std::ofstream log_file;
-    bool log_data;
-    bool log_positron;
-    bool log_all;
-    bool binary_output;
+    static bool log_data;
+    static bool log_positron;
+    static bool log_all;
+    static bool binary_output;
 
-    BinaryOutputFormat binary_format;
+    static BinaryOutputFormat binary_format;
     
     long counter_nuclear_decay;
     long counter_photoelectric;

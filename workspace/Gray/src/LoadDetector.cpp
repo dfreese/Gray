@@ -161,7 +161,6 @@ void LoadDetector::ApplyRotation(const VectorR3& axis, double theta,
 
 bool LoadDetector::Load(const std::string & filename,
                         SceneDescription & theScene,
-                        Output & output,
                         SourceList & sources)
 {
     DetectorArray detector_array;
@@ -652,7 +651,7 @@ bool LoadDetector::Load(const std::string & filename,
                 break;
             }
             case 26: {
-                output.SetLogPositron(true);
+                Output::SetLogPositron(true);
                 break;
             }
             case 27: {
@@ -707,11 +706,11 @@ bool LoadDetector::Load(const std::string & filename,
                 break;
             }
             case 30: { // log_all true/false logs all interactions
-                output.SetLogAll(true);
+                Output::SetLogAll(true);
                 break;
             }
             case 31: { // Set binary file io
-                output.SetBinary(true);
+                Output::SetBinary(true);
                 break;
             }
             case 32: { // Set spectial detector binning TODO: implement binning
@@ -1079,7 +1078,7 @@ bool LoadDetector::Load(const std::string & filename,
                 Output::BinaryOutputFormat format;
                 int scanCode = sscanf(args.c_str(), "%d", &format);
                 if (scanCode == 1) {
-                    output.SetBinaryFormat(format);
+                    Output::SetBinaryFormat(format);
                 } else {
                     parseErrorOccurred = true;
                     break;

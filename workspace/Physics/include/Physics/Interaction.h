@@ -10,18 +10,17 @@ class NuclearDecay;
 
 class Interaction {
 public:
+    // FIXME: interaction type is used in the binary output, but only given 3
+    // bits, so anything more than 7 will cause an error.
     enum INTER_TYPE {
-        COMPTON,
-        PHOTOELECTRIC,
-        AUGER,
-        XRAY_ESCAPE,
-        RAYLEIGH,
-        INTERACTION,
-        NO_INTERACTION,
-        ESCAPE_INTERACTION,
-        NUCLEAR_DECAY,
-        ERROR_EMPTY,
-        ERROR_TRACE_DEPTH
+        COMPTON = 0,
+        PHOTOELECTRIC = 1,
+        XRAY_ESCAPE = 2,
+        RAYLEIGH = 3,
+        NO_INTERACTION = 4,
+        NUCLEAR_DECAY = 5,
+        ERROR_EMPTY = 6,
+        ERROR_TRACE_DEPTH = 7,
     };
 
     Interaction();

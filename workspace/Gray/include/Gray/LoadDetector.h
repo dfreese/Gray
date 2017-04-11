@@ -5,7 +5,6 @@
 
 class CameraView;
 class Material;
-class Output;
 class RigidMapR3;
 class SourceList;
 class SceneDescription;
@@ -16,7 +15,6 @@ class LoadDetector {
 public:
     static bool Load(const std::string & filename,
                      SceneDescription & theScene,
-                     Output & output,
                      SourceList & sources);
 private:
     static int GetCommandNumber(const char * cmd);
