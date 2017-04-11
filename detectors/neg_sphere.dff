@@ -24,7 +24,7 @@ sphere 0.0 0.0 0.0 6.0
 # sphere source 10 uCi
 sp_src 0.0 0.0 0.0 0.5 5.0
 t -0.25 0.0 0.0
-sp_src 0.0 0.0 0.0 0.5 -5.0
+sp_src 0.0 0.0 0.0 0.5 -1.0
 pop
 # set the simulation time to be 5 seconds
 time 0.01

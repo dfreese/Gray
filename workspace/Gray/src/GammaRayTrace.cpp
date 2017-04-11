@@ -111,24 +111,31 @@ void GammaRayTrace::TracePhoton(
 
 long GammaRayTrace::TraceSources(SourceList & sources,
                                  IntersectKdTree & tree,
-                                 long num_decays,
                                  std::vector<Interaction> & interactions,
                                  size_t soft_max_interactions,
                                  GammaMaterial const * const default_material,
                                  bool log_nuclear_decays)
 {
-    for (long i = 0; i < num_decays; i++) {
+    long no_decays = 0;
+    while (sources.GetTime() < sources.GetSimulationTime()) {
         Source * source = sources.Decay();
+        if (!source) {
+            continue;
+        }
         Isotope * isotope = source->GetIsotope();
         if (isotope == NULL) {
             cerr << "Empty Decay: ERROR\n";
             continue;
         }
+        no_decays++;
 
         while(!isotope->IsEmpty()) {
             NuclearDecay * decay = isotope->NextNuclearDecay();
-            interactions.push_back(Interaction::NuclearDecay(*decay,
-                                                             *source->GetMaterial()));
+            if (log_nuclear_decays) {
+                interactions.push_back(
+                        Interaction::NuclearDecay(*decay,
+                                                  *source->GetMaterial()));
+            }
             while (!decay->IsEmpty()) {
                 Photon & photon = *decay->NextPhoton();
                 TracePhoton(photon, interactions, tree, default_material,
@@ -136,16 +143,9 @@ long GammaRayTrace::TraceSources(SourceList & sources,
             }
         }
 
-        // Perhaps keep a histogram of the number of interactions and keep our
-        // probability of overrunning the softmax at a certain threshold.
-        size_t next_decay_projected_interactions = interactions.size() +
-                static_cast<size_t>(static_cast<float>(interactions.size()) /
-                                 (i + 1));
-        if ((interactions.size() >= soft_max_interactions) ||
-            (next_decay_projected_interactions >= soft_max_interactions))
-        {
-            return(i + 1);
+        if (interactions.size() >= soft_max_interactions) {
+            return(no_decays);
         }
     }
-    return(num_decays);
+    return(no_decays);
 }

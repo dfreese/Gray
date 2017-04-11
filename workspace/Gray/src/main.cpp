@@ -77,14 +77,11 @@ int main( int argc, char** argv)
             Interaction::XRAY_ESCAPE,
             Interaction::RAYLEIGH});
 
-        // calculate the number of positrons to throw
-        // TODO: need to fix the number of rays because of negative sources
         // FIXME: time should not increase when Inside() of a negative source
-        long num_decays_total = sources.GetTotalEvents();
         long num_decays_cur = 0;
 
         const long num_chars = 70;
-        long tick_mark = num_decays_total / num_chars;
+        double tick_mark = sources.GetSimulationTime() / num_chars;
         if (tick_mark == 0) {
             // Make sure we don't have an error later on because of num % 0
             tick_mark = 1;
@@ -93,12 +90,11 @@ int main( int argc, char** argv)
         cout << "[";
         const size_t interactions_soft_max = 100000;
         vector<Interaction> interactions;
-        interactions.reserve(interactions_soft_max);
-        while (num_decays_cur < num_decays_total) {
+        interactions.reserve(interactions_soft_max + 50);
+        while (sources.GetTime() < sources.GetSimulationTime()) {
             interactions.clear();
             num_decays_cur += GammaRayTrace::TraceSources(
-                    sources, intersect_kd_tree,
-                    num_decays_total - num_decays_cur, interactions,
+                    sources, intersect_kd_tree, interactions,
                     interactions_soft_max,
                     dynamic_cast<GammaMaterial*>(&scene.GetMaterial(0)),
                     output_hits.GetLogPositron());
@@ -125,7 +121,7 @@ int main( int argc, char** argv)
                 }
                 singles_stream.clear();
             }
-            for (; current_tick < (num_decays_cur / tick_mark); current_tick++) {
+            for (; current_tick < (sources.GetTime() / tick_mark); current_tick++) {
                 cout << "=";
             }
             cout.flush();

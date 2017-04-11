@@ -9,6 +9,7 @@
 #include <Sources/BeamPointSource.h>
 #include <Sources/VectorSource.h>
 #include <VrMath/LinearR3.h>
+#include <exception>
 
 using namespace std;
 
@@ -73,15 +74,17 @@ void SourceList::AddSource(Source * s)
     
     s->SetIsotope(isotope);
     if (s->isNegative()) {
+        if (s->GetActivity() < -1.0) {
+            string error = "Negative Source activities should be [-1,0)";
+            throw(runtime_error(error));
+        }
         cout << "Adding negative source\n";
         neg_list.push_back(s);
         s->SetSourceNum(-1 * static_cast<int>(neg_list.size()));
     } else {
         s->SetSourceNum(static_cast<int>(list.size()));
         list.push_back(s);
-        total_activity += s->GetActivity();
-        mean_time_between_events = (1.0) / (total_activity * microCurie);
-        prob.push_back(total_activity);
+        AddNextDecay(list.size() - 1, 0);
     }
 }
 
@@ -99,79 +102,44 @@ void SourceList::SetKdTree(IntersectKdTree & tree) {
     // A vector source cannot be negative, so we do not check the neg_list
 }
 
-double SourceList::GetTime()
+double SourceList::GetTime() const
 {
     return curTime;
 }
 
-size_t SourceList::search(double e, size_t b_idx, size_t s_idx)
+double SourceList::GetSimulationTime() const
 {
-    if (b_idx == s_idx) {
-        return b_idx;
-    }
-    size_t idx = (int)(((b_idx) + (s_idx))/2);
-    if (prob[idx] < e) {
-        return search(e,idx+1,s_idx);
-    } else {
-        return search(e,b_idx,idx);
-    }
+    return(simulation_time);
+}
+
+void SourceList::AddNextDecay(size_t source_idx, double base_time) {
+    // Calculating the next source decay time
+    Source * source = list[source_idx];
+    double decay_time = Random::Exponential(source->GetActivity() * microCurie);
+    decay_list[base_time + decay_time] = source_idx;
 }
 
 Source * SourceList::Decay()
 {
-    if (prob.empty()) {
-        cerr << "ERROR: Sources do not exit\n";
-        exit(0);
+    if (list.empty()) {
+        string error = "Decay called with no sources to decay";
+        throw(runtime_error(error));
     }
-    size_t s_idx = prob.size() - 1;
-    int counter = 0;
 
-    // FIXME Event ID is hosed
-    size_t idx = 0;
-    VectorR3 decay_pos;
-    do {
-        idx = search(Random::Uniform()*total_activity, 0, s_idx);
-        list[idx]->Reset();
-        decay_pos = list[idx]->Decay(decay_number, curTime);
-    } while (Inside(decay_pos) && ( (counter++) < MAX_REJECT_COUNTER));
-    if (counter == MAX_REJECT_COUNTER) {
-        return NULL;
+    double decay_time = (*decay_list.begin()).first;
+    size_t s_idx = (*decay_list.begin()).second;
+    decay_list.erase(decay_list.begin());
+    curTime = decay_time;
+    AddNextDecay(s_idx, decay_time);
+    Source * source = list[s_idx];
+    source->Reset();
+    VectorR3 decay_pos = source->Decay(decay_number, decay_time);
+    if (Inside(decay_pos)) {
+        return(NULL);
     } else {
-        CalculateTime();
         decay_number++;
-        return list[idx];
+        return(source);
     }
-}
-
-double SourceList::CalculateTime()
-{
-    // performance speedup double mean_time_between_events = (1.0) / (total_activity * microCurie);
-    double deltaT = -1.0 * log(1.0 - Random::Uniform()) * mean_time_between_events;
-    curTime += deltaT;
-    return curTime;
-}
-
-double SourceList::GetMeanTotalEvents(double time)
-{
-    // the number of events is the total time times the activity times the number of microcuries
-    mean_time_between_events = (1.0) / (total_activity * microCurie);
-    return time * total_activity * microCurie;
-}
-
-long SourceList::GetTotalEvents(double time)
-{
-    return(Random::Poisson(GetMeanTotalEvents(time)));
-}
-
-
-double SourceList::GetMeanTotalEvents()
-{
-    return(GetMeanTotalEvents(simulation_time));
-}
-
-long SourceList::GetTotalEvents()
-{
-    return(GetTotalEvents(simulation_time));
 }
 
 bool SourceList::Inside(const VectorR3 & pos)

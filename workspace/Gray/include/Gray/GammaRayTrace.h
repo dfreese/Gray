@@ -14,7 +14,6 @@ class GammaRayTrace {
 public:
     static long TraceSources(SourceList & sources,
                              IntersectKdTree & tree,
-                             long num_decays,
                              std::vector<Interaction> & interactions,
                              size_t soft_max_interactions,
                              GammaMaterial const * const default_material,
