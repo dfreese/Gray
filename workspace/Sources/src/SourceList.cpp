@@ -1,6 +1,7 @@
 #include <Sources/SourceList.h>
 #include <Random/Random.h>
 #include <Physics/F18.h>
+#include <Physics/O15.h>
 #include <Physics/IN110.h>
 #include <Physics/ZR89.h>
 #include <Physics/BackBack.h>
@@ -15,7 +16,7 @@ using namespace std;
 
 SourceList::SourceList() :
     decay_number(0),
-    valid_isotopes({"F18", "IN110", "ZR89", "BackBack", "Beam"}),
+    valid_isotopes({"F18", "O15", "IN110", "ZR89", "BackBack", "Beam"}),
     current_isotope("BackBack"),
     acolinearity(PositronDecay::default_acolinearity),
     simulate_isotope_half_life(true)
@@ -50,6 +51,8 @@ void SourceList::AddSource(Source * s)
     } else {
         if (current_isotope == "F18") {
             isotope = static_cast<Isotope *>(new F18(acolinearity));
+        } else if (current_isotope == "O15") {
+            isotope = static_cast<Isotope *>(new O15(acolinearity));
         } else if (current_isotope == "IN110") {
             isotope = static_cast<Isotope *>(new IN110(acolinearity));
         } else if (current_isotope == "ZR89") {

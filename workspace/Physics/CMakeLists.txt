@@ -21,6 +21,8 @@ add_library(Physics
     include/Physics/Isotope.h
     src/NuclearDecay.cpp
     include/Physics/NuclearDecay.h
+    src/O15.cpp
+    include/Physics/O15.h
     src/BeamDecay.cpp
     include/Physics/BeamDecay.h
     src/Photon.cpp
