@@ -47,6 +47,16 @@ int main( int argc, char** argv)
 
     SinglesStream<Interaction> singles_stream(
             5 * scene.GetMaxDistance() * Interaction::inverse_speed_of_light);
+    if (config.log_singles) {
+        if (singles_stream.load_mappings(config.filename_mapping) < 0) {
+            cerr << "Loading mapping file \"" << config.filename_mapping
+                 << "\" failed" << endl;
+        }
+        if (singles_stream.load_processes(config.filename_pipeline) < 0) {
+            cerr << "Loading pipeline file \"" << config.filename_pipeline
+                 << "\" failed" << endl;
+        }
+    }
 
     IntersectKdTree intersect_kd_tree(scene);
     sources.SetKdTree(intersect_kd_tree);

@@ -56,6 +56,8 @@ bool Config::ProcessCommandLine(int argc, char **argv)
             filename_scene = following_argument;
         } else if (argument == "-p") {
             filename_pipeline = following_argument;
+        } else if (argument == "-m") {
+            filename_mapping = following_argument;
         } else if (argument == "-i") {
             filename_hits = following_argument;
         } else if (argument == "-o") {
@@ -64,6 +66,10 @@ bool Config::ProcessCommandLine(int argc, char **argv)
     }
     if (filename_scene == "") {
         cerr << "Error: input filename not set" << endl;
+        return(false);
+    }
+    if ((filename_mapping == "") != (filename_pipeline == "")) {
+        cerr << "Error: mapping and pipeline filenames both not set" << endl;
         return(false);
     }
 

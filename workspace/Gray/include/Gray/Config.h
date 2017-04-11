@@ -19,6 +19,7 @@ public:
 
     std::string filename_scene;
     std::string filename_pipeline;
+    std::string filename_mapping;
     std::string filename_hits;
     std::string filename_output;
     unsigned long seed;

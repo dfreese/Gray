@@ -1,0 +1,20 @@
+# Comments are indicated by a leading pound sign
+# blank lines are ignored
+
+# First merge all of the crystals/detectors together.  Put detector to specify
+# the component to match the component name listed in the
+# sample_mapping_file.map
+merge detector 5.0e-9 basic
+
+# We don't have blocks mapped currently in the sample_mapping_file.map file
+# so we do not enable these.
+# merge block 300e-9 array_max
+# merge block 300e-9 array_eweight bx by bz 8 8 1
+# deadtime block 10e-6
+
+# Energy gate everything below 0.4MeV
+filter egate_low 0.400
+
+# And then apply a rough coincidence windowing to remove the obvious singles
+# events that might be filtered out later by coincidence sorting.
+coinc window 5e-9
