@@ -26,9 +26,6 @@ public:
     double GetSimulationTime() const;
 
 private:
-    static const int MAX_REJECT_COUNTER = 100000;
-    double curTime;
-    double total_activity;
     std::vector <Source*> list;
     std::vector <Source*> neg_list;
     std::vector <Isotope*> isotopes;

@@ -15,8 +15,6 @@ using namespace std;
 
 SourceList::SourceList()
 {
-    curTime = 0.0;
-    total_activity = 0.0;
     decay_number = 0;
     acolinearity = PositronDecay::default_acolinearity;
     current_isotope = "BackBack";
@@ -104,7 +102,16 @@ void SourceList::SetKdTree(IntersectKdTree & tree) {
 
 double SourceList::GetTime() const
 {
-    return curTime;
+    if (decay_list.empty()) {
+        // If there are no new decays, just assume we're at the end of the
+        // simulation.  This should only happen if no sources were added to
+        // start off with.
+        return(GetSimulationTime());
+    }
+    // Set the current time to be the next decay that will happen.  This won't
+    // be accessed until the next iteration of the main loop, this way we don't
+    // simulate events outside of the simulation time.
+    return((*decay_list.begin()).first);
 }
 
 double SourceList::GetSimulationTime() const
@@ -117,11 +124,6 @@ void SourceList::AddNextDecay(size_t source_idx, double base_time) {
     Source * source = list[source_idx];
     double decay_time = Random::Exponential(source->GetActivity() * microCurie);
     decay_list[base_time + decay_time] = source_idx;
-
-    // Set the current time to be the next decay that will happen.  This won't
-    // be accessed until the next iteration of the main loop, this way we don't
-    // simulate events outside of the simulation time.
-    curTime = (*decay_list.begin()).first;
 }
 
 void SourceList::GetNextDecay(size_t & source_idx, double & time) {
