@@ -13,17 +13,13 @@
 
 using namespace std;
 
-SourceList::SourceList()
+SourceList::SourceList() :
+    decay_number(0),
+    valid_isotopes({"F18", "IN110", "ZR89", "BackBack", "Beam"}),
+    current_isotope("BackBack"),
+    acolinearity(PositronDecay::default_acolinearity),
+    simulate_isotope_half_life(true)
 {
-    decay_number = 0;
-    acolinearity = PositronDecay::default_acolinearity;
-    current_isotope = "BackBack";
-    valid_isotopes.insert("F18");
-    valid_isotopes.insert("IN110");
-    valid_isotopes.insert("ZR89");
-    valid_isotopes.insert("BackBack");
-    valid_isotopes.insert("Beam");
-
 }
 
 SourceList::~SourceList()
@@ -122,7 +118,12 @@ double SourceList::GetSimulationTime() const
 void SourceList::AddNextDecay(size_t source_idx, double base_time) {
     // Calculating the next source decay time
     Source * source = list[source_idx];
-    double decay_time = Random::Exponential(source->GetActivity() * microCurie);
+    double source_activity_bq = source->GetActivity() * microCurie;
+    if (simulate_isotope_half_life) {
+        Isotope * isotope = source->GetIsotope();
+        source_activity_bq *= isotope->FractionRemaining(base_time);
+    }
+    double decay_time = Random::Exponential(source_activity_bq);
     decay_list[base_time + decay_time] = source_idx;
 }
 
@@ -192,4 +193,8 @@ void SourceList::SetAcolinearity(double acolinearity_deg_fwhm)
 void SourceList::SetSimulationTime(double time)
 {
     simulation_time = time;
+}
+
+void SourceList::SetSimulateIsotopeHalfLife(bool val) {
+    simulate_isotope_half_life = val;
 }

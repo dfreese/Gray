@@ -1,13 +1,14 @@
 #ifndef POSITRON_H
 #define POSITRON_H
 
+#include <limits>
 #include <Physics/Isotope.h>
 #include <Physics/PositronDecay.h>
 
 class Positron: public Isotope
 {
 public:
-    Positron(double acolinearity_deg_fwhm);
+    Positron(double acolinearity_deg_fwhm, double half_life);
     virtual void Reset();
 
 protected:

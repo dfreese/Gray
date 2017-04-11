@@ -1,8 +1,10 @@
 #include <Physics/Beam.h>
+#include <limits>
 
 using namespace std;
 
-Beam::Beam()
+Beam::Beam() :
+    Isotope(std::numeric_limits<double>::infinity())
 {
     Reset();
 }

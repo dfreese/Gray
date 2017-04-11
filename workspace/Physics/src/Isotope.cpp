@@ -1,6 +1,8 @@
 #include <Physics/Isotope.h>
+#include <cmath>
 
-Isotope::Isotope()
+Isotope::Isotope(double half_life_s) :
+    half_life(half_life_s)
 {
 }
 
@@ -25,4 +27,8 @@ void Isotope::Reset() {
     while (!daughter.empty()) {
         daughter.pop();
     }
+}
+
+double Isotope::FractionRemaining(double time) const {
+    return(std::pow(0.5, time / half_life));
 }

@@ -8,6 +8,7 @@ class GammaPositron: public Isotope
 {
 public:
     GammaPositron(double acolinearity_deg_fwhm,
+                  double half_life,
                   double gamma_decay_energy_mev,
                   double positron_emis_prob);
     virtual void Reset();

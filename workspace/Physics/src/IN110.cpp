@@ -4,6 +4,7 @@ using namespace std;
 
 IN110::IN110(double acolinearity_deg_fwhm) :
     GammaPositron(acolinearity_deg_fwhm,
+                  17676.0, // Half-life in seconds
                   0.657750, // Gamma Decays are 0.657750 MeV
                   0.61) // 61% of decays lead to a positron
 {

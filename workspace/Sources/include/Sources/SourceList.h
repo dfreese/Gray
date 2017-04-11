@@ -24,6 +24,7 @@ public:
     void SetSimulationTime(double time);
     double GetTime() const;
     double GetSimulationTime() const;
+    void SetSimulateIsotopeHalfLife(bool val);
 
 private:
     std::vector <Source*> list;
@@ -41,6 +42,7 @@ private:
     std::map<double, size_t> decay_list;
     void AddNextDecay(size_t source_idx, double base_time);
     void GetNextDecay(size_t & source_idx, double & time);
+    bool simulate_isotope_half_life;
 };
 
 #endif
