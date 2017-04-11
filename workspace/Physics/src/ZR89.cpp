@@ -18,7 +18,7 @@ ZR89::ZR89(double acolinearity_deg_fwhm) :
 void ZR89::Decay(int photon_number, double time, int src_id,
                  const VectorR3 & position)
 {
-    AddNuclearDecay(&p);
-    p.Decay(photon_number, time, src_id, position, positronC, positronK1,
-            positronK2, positronMaxRange);
+    AddNuclearDecay(&gp);
+    gp.Decay(photon_number, time, src_id, position, positronC, positronK1,
+             positronK2, positronMaxRange);
 }

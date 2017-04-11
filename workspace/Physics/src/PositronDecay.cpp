@@ -12,8 +12,10 @@ const double CONST_MM_TO_CM = (0.1); // 10 mm per cm
 
 const double PositronDecay::default_acolinearity = 0.47;
 
-PositronDecay::PositronDecay(double acolinearity_deg_fwhm) :
-    acolinearity(acolinearity_deg_fwhm / 180.0 * M_PI * CONST_FWHM_TO_SIGMA)
+PositronDecay::PositronDecay(double acolinearity_deg_fwhm,
+                             double positron_emis_prob) :
+    acolinearity(acolinearity_deg_fwhm / 180.0 * M_PI * CONST_FWHM_TO_SIGMA),
+    positron_emission_prob(positron_emis_prob)
 {
 }
 
@@ -33,22 +35,25 @@ void PositronDecay::Decay(int photon_number, double time, int src_id,
     this->position = position;
     this->time = time;
 
-    blue.time = time;
-    blue.pos = position;
-    blue.energy = ENERGY_511;
-    blue.id = photon_number;
-    blue.det_id = -1;
-    blue.src_id = src_id;
-    blue.phantom_scatter = false;
-    red = blue;
+    // Check to see if a Positron was emitted or not.
+    if (Random::Uniform() < positron_emission_prob) {
+        blue.time = time;
+        blue.pos = position;
+        blue.energy = ENERGY_511;
+        blue.id = photon_number;
+        blue.det_id = -1;
+        blue.src_id = src_id;
+        blue.phantom_scatter = false;
+        red = blue;
 
-    blue.SetBlue();
-    red.SetRed();
+        blue.SetBlue();
+        red.SetRed();
 
-    Random::UniformSphere(blue.dir);
-    Random::Acolinearity(blue.dir, red.dir, acolinearity);
-    AddPhoton(&blue);
-    AddPhoton(&red);
+        Random::UniformSphere(blue.dir);
+        Random::Acolinearity(blue.dir, red.dir, acolinearity);
+        AddPhoton(&blue);
+        AddPhoton(&red);
+    }
 }
 
 void PositronDecay::PositronRange(VectorR3 & p, double positronC,

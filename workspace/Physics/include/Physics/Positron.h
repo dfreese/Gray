@@ -8,7 +8,9 @@
 class Positron: public Isotope
 {
 public:
-    Positron(double acolinearity_deg_fwhm, double half_life);
+    Positron(double acolinearity_deg_fwhm,
+             double half_life,
+             double positron_emis_prob);
     virtual void Reset();
 
 protected:

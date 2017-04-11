@@ -19,7 +19,7 @@ protected:
     double positronK1;
     double positronK2;
     double positronMaxRange;
-    GammaPositronDecay p;
+    GammaPositronDecay gp;
 };
 
 #endif /* POSITRON_H */

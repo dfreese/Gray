@@ -2,9 +2,11 @@
 
 using namespace std;
 
-Positron::Positron(double acolinearity_deg_fwhm, double half_life) :
+Positron::Positron(double acolinearity_deg_fwhm,
+                   double half_life,
+                   double positron_emis_prob) :
     Isotope(half_life),
-    p(acolinearity_deg_fwhm)
+    p(acolinearity_deg_fwhm, positron_emis_prob)
 {
 }
 

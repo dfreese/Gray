@@ -8,7 +8,8 @@ using namespace std;
 
 F18::F18(double acolinearity_deg_fwhm) :
     Positron(acolinearity_deg_fwhm,
-             6584.04) // Half-life in seconds
+             6584.04, // Half-life in seconds
+             0.9686) // Positron Emission Probability
 {
     /*******************************************************************************
      *            18F             11C            13N               15O             *

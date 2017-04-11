@@ -7,7 +7,8 @@
 class PositronDecay : public NuclearDecay
 {
 public:
-    PositronDecay(double acolinearity_deg_fwhm);
+    PositronDecay(double acolinearity_deg_fwhm,
+                  double positron_emis_prob);
     virtual void Decay(int photon_number, double time, int src_id,
                        const VectorR3 & position);
     virtual void Decay(int photon_number, double time, int src_id,
@@ -27,6 +28,7 @@ public:
 
 protected:
     const double acolinearity;
+    const double positron_emission_prob;
     Photon blue;
     Photon red;
 };

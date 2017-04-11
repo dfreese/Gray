@@ -4,7 +4,9 @@
 using namespace std;
 
 BackBack::BackBack(double acolinearity_deg_fwhm) :
-    Positron(acolinearity_deg_fwhm, std::numeric_limits<double>::infinity())
+    Positron(acolinearity_deg_fwhm,
+             std::numeric_limits<double>::infinity(), // Infinite half-life
+             1.0) // Always emit a positron
 {
     Reset();
 }
