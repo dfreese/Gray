@@ -14,6 +14,7 @@ using namespace std;
 
 Config::Config() :
     seed(0),
+    seed_set(false),
     run_viewer_flag(true),
     run_physics_flag(true),
     log_hits(false),
@@ -50,6 +51,7 @@ bool Config::ProcessCommandLine(int argc, char **argv)
                 cerr << "Invalid seed: " << following_argument << endl;
                 return(-1);
             }
+            seed_set = true;
         } else if (argument == "-f") {
             filename_scene = following_argument;
         } else if (argument == "-p") {
@@ -72,10 +74,12 @@ bool Config::ProcessCommandLine(int argc, char **argv)
 
 
 void Config::usage() {
-    cout << "Gray (-hb) [Scene Description] [Output Filename]\n"
+    cout << "Gray (-hb) -f [Scene Description] -o [Output Filename]\n"
     << "  -b : batch mode (don't view the geometry)\n"
     << "  -d : don't run the physics simulation\n"
     << "  -h : print help message\n"
+    << "  -i [filename] : set the output for the hits file\n"
+    << "  -o [filename] : set the output for the singles file\n"
     << "  -s : set the seed for the rand number generator\n"
     << endl;
 }

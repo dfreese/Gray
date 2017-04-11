@@ -22,6 +22,7 @@ public:
     std::string filename_hits;
     std::string filename_output;
     unsigned long seed;
+    bool seed_set;
     bool run_viewer_flag;
     bool run_physics_flag;
     bool log_hits;

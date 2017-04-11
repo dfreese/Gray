@@ -1,6 +1,4 @@
 add_library(Random
-    src/mt19937.cpp
-    include/Random/mt19937.h
     src/Random.cpp
     include/Random/Random.h
 )

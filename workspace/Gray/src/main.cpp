@@ -37,10 +37,13 @@ int main( int argc, char** argv)
     }
     Output output_hits(config.filename_hits);
     Output output_singles(config.filename_output);
-    if (config.seed != 0) {
+    if (config.seed_set) {
         Random::Seed(config.seed);
-        cout << "Seeding Gray: " << config.seed << endl;
     }
+    if (!Random::SeedSet()) {
+        Random::Seed();
+    }
+    cout << "Using Seed: " << Random::GetSeed() << endl;
 
     SinglesStream<Interaction> singles_stream(
             5 * scene.GetMaxDistance() * Interaction::inverse_speed_of_light);
@@ -102,7 +105,8 @@ int main( int argc, char** argv)
                 auto del_pos = stable_partition(
                         interactions.begin(), interactions.end(),
                         [&singles_valid_interactions](const Interaction & i){
-                             return(singles_valid_interactions.count(i.type));
+                             return(singles_valid_interactions.count(i.type) &&
+                                    (i.det_id >= 0));
                          });
                 interactions.resize(del_pos - interactions.begin());
                 singles_stream.add_events(interactions);
