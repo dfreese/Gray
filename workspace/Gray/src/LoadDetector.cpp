@@ -30,7 +30,7 @@
 #include <sstream>
 
 namespace {
-const int numCommands = 60;
+const int numCommands = 39;
 const char * dffCommandList[numCommands] = {
     "p",                // 0 Polygon patches
     "m",                // 1 Material index
@@ -71,27 +71,6 @@ const char * dffCommandList[numCommands] = {
     "log_det_coord",    // 36 log detector coord x
     "save_detector",	// 37 save detector to a file
     "scale_act",		// 38 scale activity
-    "save_coinc",		// 39 set coincidence file x
-    "save_singles",		// 40 set singles file x
-    "save_cp",          // 41 set coincidence process file x
-    "time_resolution",	// 42 set time_resolution of detectors x
-    "eres",             // 43 set energy_resolution of detectors x
-    "time_gate",		// 44 set coincidence time gate x
-    "energy_gate",		// 45 set coincidence energy gate x
-    "del_window",		// 46 set coincidence delayed window x
-    "pos_range",		// 47 set positron range x
-    "setFBP2D",         // 48 set 2D mode coincidence x
-    "isotope",          // 49 set isotope
-    "voxel_src",		// 50 load voxel array source
-    "include",          // 51 include a dff file into current file
-    "increment",		// 52 increment detector id
-    "ellipse",          // 53 load ellipse geometry
-    "sp_ellipse",		// 54 ellipse source
-    "elliptic_cyl",		// 55 elliptic cylinder
-    "sp_elliptic_cyl",	// 56 elliptic cylinder source
-    "sp_annulus_ell", 	// 57 annulus ellipse source
-    "sp_annulus_cyl",	// 58 annulus cylinder source
-    "binary_format"     // 59 set the binary output format
 };
 }
 
@@ -310,7 +289,243 @@ bool LoadDetector::Load(const std::string & filename,
             }
         } else if (command == "echo") {
             cout << "echo: " << args << endl;
+        } else if (command == "isotope") {
+            char string[256];
+            int scanCode = sscanf(args.c_str(), "%s", string);
+            if (scanCode != 1) {
+                print_parse_error(line);
+                return(false);
+            }
+            if (!sources.SetCurIsotope(string)) {
+                print_parse_error(line);
+                cerr << "invalid isotope: " << string << endl;
+                return(false);
+            }
+            cout << "Debug: set isotope: " << string << endl;
+        } else if (command == "voxel_src") {
+            char string[256];
+            VectorR3 position;
+            position.SetZero();
+            int dims[3];
+            VectorR3 voxelsize;
+            double activity;
+            int scanCode = sscanf(args.c_str(), "%s %d %d %d %lf %lf %lf %lf",
+                                  string,
+                                  &dims[0],
+                                  &dims[1],
+                                  &dims[2],
+                                  &voxelsize.x,
+                                  &voxelsize.y,
+                                  &voxelsize.z,
+                                  &activity);
+            if (scanCode != 8) {
+                print_parse_error(line);
+                return(false);
+            }
+            VoxelSource * s = new
+            VoxelSource(position,dims,voxelsize,activity);
+            if (s->Load(string)) {
+                s->SetMaterial(curMaterial);
+                sources.AddSource(s);
+            }
+        } else if (command == "include") {
+            char string[256];
+            int scanCode = sscanf(args.c_str(), "%s", string);
+            // Reference all of the include files to the directory of the
+            // top level file.
+            std::string include_filename = file_dir + std::string(string);
+            if (scanCode != 1) {
+                print_parse_error(line);
+                return(false);
+            }
+            file_stack.emplace(include_filename.c_str());
+            if (file_stack.top()) {
+                cout << "Including File:" << include_filename << endl;
+            } else {
+                cerr << "Include File doesn't exist: "
+                << include_filename << endl;
+                file_stack.pop();
+            }
+            file_lines_read_stack.push(0);
+            filename_stack.push(include_filename);
+        } else if (command == "increment") {
+            VectorR3 StartPos;
+            VectorR3 UnitSize;
+            StartPos.x = 0.0;
+            StartPos.y = 0.0;
+            StartPos.z = 0.0;
+            UnitSize.x = 1.0;
+            UnitSize.y = 1.0;
+            UnitSize.z = 1.0;
+
+            global_id = detector_array.AddDetector(StartPos, UnitSize,
+                                                   MatrixStack.top(),
+                                                   0, 0, 0, 0);
+        } else if (command == "ellipse") {
+            VectorR3 center;
+            VectorR3 axis1;
+            VectorR3 axis2;
+            double radius1;
+            double radius2;
+            double radius3;
+
+            int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+                                  &(center.x), &(center.y), &(center.z),
+                                  &(axis1.x), &(axis1.y), &(axis1.z),
+                                  &(axis2.x), &(axis2.y), &(axis2.z),
+                                  &radius1, &radius2, &radius3);
+            if (scanCode != 12) {
+                print_parse_error(line);
+                return(false);
+            }
+            ViewableEllipsoid *ve = new ViewableEllipsoid();
+            ve->SetCenter(center);
+            ve->SetAxes(axis1, axis2);
+            ve->SetRadii(radius3, radius2, radius1);
+            ve->SetMaterial(curMaterial);
+            TransformWithRigid(ve,MatrixStack.top());
+            theScene.AddViewable(ve);
+        } else if (command == "sp_ellipse") {
+            VectorR3 center;
+            VectorR3 axis1;
+            VectorR3 axis2;
+            double radius1;
+            double radius2;
+            double radius3;
+            double activity;
+
+            int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+                                  &(center.x), &(center.y), &(center.z),
+                                  &(axis1.x), &(axis1.y), &(axis1.z),
+                                  &(axis2.x), &(axis2.y), &(axis2.z),
+                                  &radius1, &radius2, &radius3, &activity);
+            if (scanCode != 13) {
+                print_parse_error(line);
+                return(false);
+            }
+            cout << " New Ellipsoid Source " << endl;
+            cout << " New Center :: "  << (double)center.x  << "  " ;
+            cout << (double) center.y << "  " << (double) center.z <<  endl;
+            cout << " New Axis   :: "  << (double)axis1.x  << "  " ;
+            cout << (double) axis1.y << "  " << (double) axis1.z <<  endl;
+            cout << " New Radius   :: "  << (double)radius1  << "  " ;
+            cout << (double) radius2 << "  " << (double)radius3 <<  endl;
+            EllipsoidSource *ve = new EllipsoidSource(center, axis1, axis2, radius1, radius2, radius3, actScale*activity);
+            ve->SetMaterial(curMaterial);
+            sources.AddSource(ve);
+        } else if (command == "elliptic_cyl") {
+            VectorR3 center;
+            VectorR3 axis;
+            double radius1;
+            double radius2;
+            double height;
+            int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf",
+                                  &(center.x), &(center.y), &(center.z),
+                                  &(axis.x), &(axis.y), &(axis.z),
+                                  &radius1, &radius2, &height);
+            cout << "Reading Cylinder Source " <<endl;
+            if (scanCode != 9) {
+                print_parse_error(line);
+                return(false);
+            }
+            ViewableCylinder *vc = new ViewableCylinder();
+            vc->SetCenterAxis(axis);
+            vc->SetCenter(center);
+            vc->SetRadii(radius2,radius1);
+            vc->SetHeight(height);
+            vc->SetMaterial(curMaterial);
+            TransformWithRigid(vc,MatrixStack.top());
+            theScene.AddViewable(vc);
+        } else if (command == "sp_elliptic_cyl") {
+            VectorR3 center;
+            VectorR3 axis;
+            double radius1;
+            double radius2;
+            double height;
+            double activity;
+            int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+                                  &(center.x), &(center.y), &(center.z),
+                                  &(axis.x), &(axis.y), &(axis.z),
+                                  &radius1, &radius2, &height, &activity);
+            cout << "Reading Elliptic Cylinder Source " <<endl;
+            if (scanCode != 10) {
+                print_parse_error(line);
+                return(false);
+            }
+            MatrixStack.top().Transform(&center);
+            MatrixStack.top().Transform3x3(&axis);
+            axis *= height;
+            cout << " New Center :: "  << (double)center.x  << "  " ;
+            cout << (double) center.y << "  " << (double) center.z <<  endl;
+            cout << " New Axis   :: "  << (double)axis.x  << "  " ;
+            cout << (double) axis.y << "  " << (double) axis.z <<  endl;
+            EllipticCylinderSource * cyl = new EllipticCylinderSource(center, radius1, radius2, axis, actScale*activity);
+            cyl->SetMaterial(curMaterial);
+            sources.AddSource(cyl);
+        } else if (command == "sp_annulus_ell") {
+            VectorR3 center;
+            VectorR3 axis;
+            double radius1;
+            double radius2;
+            double height;
+            double activity;
+            int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+                                  &(center.x), &(center.y), &(center.z),
+                                  &(axis.x), &(axis.y), &(axis.z),
+                                  &radius1, &radius2, &height, &activity);
+            cout << "Reading Annulus Elliptic Cylinder Source " <<endl;
+            if (scanCode != 10) {
+                print_parse_error(line);
+                return(false);
+            }
+            MatrixStack.top().Transform(&center);
+            MatrixStack.top().Transform3x3(&axis);
+            axis *= height;
+            cout << " New Center :: "  << (double)center.x  << "  " ;
+            cout << (double) center.y << "  " << (double) center.z <<  endl;
+            cout << " New Axis   :: "  << (double)axis.x  << "  " ;
+            cout << (double) axis.y << "  " << (double) axis.z <<  endl;
+            AnnulusEllipticCylinderSource * cyl = new AnnulusEllipticCylinderSource(center, radius1, radius2, axis, actScale*activity);
+            cyl->SetMaterial(curMaterial);
+            sources.AddSource(cyl);
+        } else if (command == "sp_annulus_cyl") {
+            VectorR3 center;
+            VectorR3 axis;
+            double radius;
+            double height;
+            double activity;
+            int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf",
+                                  &(center.x), &(center.y), &(center.z),
+                                  &(axis.x), &(axis.y), &(axis.z),
+                                  &radius, &height, &activity);
+            cout << "Reading Annulus Cylinder Source " <<endl;
+            if (scanCode != 9) {
+                print_parse_error(line);
+                return(false);
+            }
+
+            MatrixStack.top().Transform(&center);
+            MatrixStack.top().Transform3x3(&axis);
+            axis *= height;
+            cout << " New Center :: "  << (double)center.x  << "  " ;
+            cout << (double) center.y << "  " << (double) center.z <<  endl;
+            cout << " New Axis   :: "  << (double)axis.x  << "  " ;
+            cout << (double) axis.y << "  " << (double) axis.z <<  endl;
+            AnnulusCylinderSource * cyl = new AnnulusCylinderSource(center, radius, axis, actScale*activity);
+            cyl->SetMaterial(curMaterial);
+            sources.AddSource(cyl);
+        } else if (command == "binary_format") {
+            Output::BinaryOutputFormat format;
+            int scanCode = sscanf(args.c_str(), "%d", &format);
+            if (scanCode == 1) {
+                Output::SetBinaryFormat(format);
+            } else {
+                parseErrorOccurred = true;
+                break;
+            }
         } else {
+            // TODO: move all of these commands out of this structure into the
+            // else if above.
             int cmdNum = GetCommandNumber(command);
             if (cmdNum < 0) {
                 print_parse_error(line);
@@ -839,310 +1054,6 @@ bool LoadDetector::Load(const std::string & filename,
                         cout << "scale act:";
                         cout << actScale;
                         cout << "\n";
-                    } else {
-                        parseErrorOccurred = true;
-                        break;
-                    }
-                    break;
-                }
-                case 39: { // set coincidence filename
-                    cout << "Warning: Coincidence Processor has been removed: " << endl;
-                    break;
-                }
-                case 40: { // set singles filename
-                    cout << "Warning: Singles Processor has been removed: " << endl;
-                    break;
-                }
-                case 41: { // set coincidence processor file
-                    cout << "Warning: Coincidence Processor has been removed: " << endl;
-                    break;
-                }
-                case 42: { // set time resolution of detectors
-                    cout << "Warning: Singles Processor has been removed: " << endl;
-                    break;
-                }
-                case 43: { // set energy resolution of detectors
-                    cout << "Warning: Singles Processor has been removed: " << endl;
-                    break;
-                }
-                case 44: { // set time gate of coincidence processor
-                    cout << "Warning: Coincidence Processor has been removed: " << endl;
-                    break;
-                }
-                case 45: { // set energy window for coincidence processor
-                    cout << "Warning: Coincidence Processor has been removed: " << endl;
-                    break;
-                }
-                case 46: { // set time gate of coincidence processor
-                    cout << "Warning: Coincidence Processor has been removed: " << endl;
-                    break;
-                }
-                case 47: { // set time gate of coincidence processor
-                    cout << "Warning: Coincidence Processor has been removed: " << endl;
-                    break;
-                }
-                case 48: { // gateCoincidences by ring difference
-                    cout << "Warning: Coincidence Processor has been removed: " << endl;
-                    break;
-                }
-                case 49: { // set singles isotope
-                    char string[256];
-                    int scanCode = sscanf(args.c_str(), "%s", string);
-                    if (scanCode != 1) {
-                        parseErrorOccurred = true;
-                        break;
-                    }
-                    if (!sources.SetCurIsotope(string)) {
-                        parseErrorOccurred = true;
-                        break;
-                    }
-                    cout << "Debug: set isotope: " << string << endl;
-                    break;
-                }
-                case 50: { // load voxel array source
-                    char string[256];
-                    VectorR3 position;
-                    position.SetZero();
-                    int dims[3];
-                    VectorR3 voxelsize;
-                    double activity;
-                    int scanCode = sscanf(args.c_str(), "%s %d %d %d %lf %lf %lf %lf",
-                                          string,
-                                          &dims[0],
-                                          &dims[1],
-                                          &dims[2],
-                                          &voxelsize.x,
-                                          &voxelsize.y,
-                                          &voxelsize.z,
-                                          &activity);
-                    if (scanCode ==8) {
-                        VoxelSource * s = new
-                        VoxelSource(position,dims,voxelsize,activity);
-                        if (s->Load(string)) {
-                            s->SetMaterial(curMaterial);
-                            sources.AddSource(s);
-                        }
-                    } else {
-                        parseErrorOccurred = true;
-                        break;
-                    }
-                    break;
-                }
-                case 51: { // include a dff file into current one
-                    char string[256];
-                    int scanCode = sscanf(args.c_str(), "%s", string);
-                    // Reference all of the include files to the directory of the
-                    // top level file.
-                    std::string include_filename = file_dir + std::string(string);
-                    if (scanCode ==1) {
-                        file_stack.emplace(include_filename.c_str());
-                        if (file_stack.top()) {
-                            cout << "Including File:" << include_filename << endl;
-                        } else {
-                            cerr << "Include File doesn't exist: "
-                                 << include_filename << endl;
-                            file_stack.pop();
-                        }
-                        file_lines_read_stack.push(0);
-                        filename_stack.push(include_filename);
-                    } else {
-                        parseErrorOccurred = true;
-                        break;
-                    }
-                    break;
-                }
-                case 52: { // increment detector id, increment before a polygon is called
-                    VectorR3 StartPos;
-                    VectorR3 UnitSize;
-                    StartPos.x = 0.0;
-                    StartPos.y = 0.0;
-                    StartPos.z = 0.0;
-                    UnitSize.x = 1.0;
-                    UnitSize.y = 1.0;
-                    UnitSize.z = 1.0;
-
-                    global_id = detector_array.AddDetector(StartPos, UnitSize,
-                                                               MatrixStack.top(),
-                                                               0, 0, 0, 0);
-                    break;
-                }
-                case 53: { // ellipse geometry
-                    VectorR3 center;
-                    VectorR3 axis1;
-                    VectorR3 axis2;
-                    double radius1;
-                    double radius2;
-                    double radius3;
-
-                    int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
-                                           &(center.x), &(center.y), &(center.z),
-                                           &(axis1.x), &(axis1.y), &(axis1.z),
-                                           &(axis2.x), &(axis2.y), &(axis2.z),
-                                           &radius1, &radius2, &radius3);
-                    if (scanCode != 12) {
-                        parseErrorOccurred = true;
-                        break;
-                    } else {
-                        ViewableEllipsoid *ve = new ViewableEllipsoid();
-                        ve->SetCenter(center);
-                        ve->SetAxes(axis1, axis2);
-                        ve->SetRadii(radius3, radius2, radius1);
-                        ve->SetMaterial(curMaterial);
-                        TransformWithRigid(ve,MatrixStack.top());
-                        theScene.AddViewable(ve);
-                    }
-                    break;
-                }
-                case 54: { // ellipse source
-                    VectorR3 center;
-                    VectorR3 axis1;
-                    VectorR3 axis2;
-                    double radius1;
-                    double radius2;
-                    double radius3;
-                    double activity;
-
-                    int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
-                                           &(center.x), &(center.y), &(center.z),
-                                           &(axis1.x), &(axis1.y), &(axis1.z),
-                                           &(axis2.x), &(axis2.y), &(axis2.z),
-                                           &radius1, &radius2, &radius3, &activity);
-                    if (scanCode != 13) {
-                        parseErrorOccurred = true;
-                        break;
-                    } else {
-                        cout << " New Ellipsoid Source " << endl;
-                        cout << " New Center :: "  << (double)center.x  << "  " ;
-                        cout << (double) center.y << "  " << (double) center.z <<  endl;
-                        cout << " New Axis   :: "  << (double)axis1.x  << "  " ;
-                        cout << (double) axis1.y << "  " << (double) axis1.z <<  endl;
-                        cout << " New Radius   :: "  << (double)radius1  << "  " ;
-                        cout << (double) radius2 << "  " << (double)radius3 <<  endl;
-                        //CylinderSource * cyl = new CylinderSource(center, radius, axis, actScale*activity);
-                        EllipsoidSource *ve = new EllipsoidSource(center, axis1, axis2, radius1, radius2, radius3, actScale*activity);
-                        ve->SetMaterial(curMaterial);
-                        sources.AddSource(ve);
-                    }
-                    break;
-                }
-                case 55: { // Elliptic Cylinder
-                    VectorR3 center;
-                    VectorR3 axis;
-                    double radius1;
-                    double radius2;
-                    double height;
-                    int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf",
-                                           &(center.x), &(center.y), &(center.z),
-                                           &(axis.x), &(axis.y), &(axis.z),
-                                           &radius1, &radius2, &height);
-                    cout << "Reading Cylinder Source " <<endl;
-                    if (scanCode == 9) {
-                        ViewableCylinder *vc = new ViewableCylinder();
-                        vc->SetCenterAxis(axis);
-                        vc->SetCenter(center);
-                        vc->SetRadii(radius2,radius1);
-                        vc->SetHeight(height);
-                        vc->SetMaterial(curMaterial);
-                        TransformWithRigid(vc,MatrixStack.top());
-                        theScene.AddViewable(vc);
-                    } else {
-                        parseErrorOccurred = true;
-                        break;
-                    }
-                    break;
-                }
-                case 56: {	// Elliptic Cylinder Source
-                    VectorR3 center;
-                    VectorR3 axis;
-                    double radius1;
-                    double radius2;
-                    double height;
-                    double activity;
-                    int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
-                                           &(center.x), &(center.y), &(center.z),
-                                           &(axis.x), &(axis.y), &(axis.z),
-                                           &radius1, &radius2, &height, &activity);
-                    cout << "Reading Elliptic Cylinder Source " <<endl;
-                    if (scanCode == 10) {
-                        MatrixStack.top().Transform(&center);
-                        MatrixStack.top().Transform3x3(&axis);
-                        axis *= height;
-                        cout << " New Center :: "  << (double)center.x  << "  " ;
-                        cout << (double) center.y << "  " << (double) center.z <<  endl;
-                        cout << " New Axis   :: "  << (double)axis.x  << "  " ;
-                        cout << (double) axis.y << "  " << (double) axis.z <<  endl;
-                        EllipticCylinderSource * cyl = new EllipticCylinderSource(center, radius1, radius2, axis, actScale*activity);
-                        cyl->SetMaterial(curMaterial);
-                        sources.AddSource(cyl);
-                    } else {
-                        parseErrorOccurred = true;
-                        break;
-                    }
-                    break;
-                }
-                case 57: {	// AnnulusElliptic Cylinder Source
-                    VectorR3 center;
-                    VectorR3 axis;
-                    double radius1;
-                    double radius2;
-                    double height;
-                    double activity;
-                    int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
-                                           &(center.x), &(center.y), &(center.z),
-                                           &(axis.x), &(axis.y), &(axis.z),
-                                           &radius1, &radius2, &height, &activity);
-                    cout << "Reading Annulus Elliptic Cylinder Source " <<endl;
-                    if (scanCode == 10) {
-                        MatrixStack.top().Transform(&center);
-                        MatrixStack.top().Transform3x3(&axis);
-                        axis *= height;
-                        cout << " New Center :: "  << (double)center.x  << "  " ;
-                        cout << (double) center.y << "  " << (double) center.z <<  endl;
-                        cout << " New Axis   :: "  << (double)axis.x  << "  " ;
-                        cout << (double) axis.y << "  " << (double) axis.z <<  endl;
-                        AnnulusEllipticCylinderSource * cyl = new AnnulusEllipticCylinderSource(center, radius1, radius2, axis, actScale*activity);
-                        cyl->SetMaterial(curMaterial);
-                        sources.AddSource(cyl);
-                    } else {
-                        parseErrorOccurred = true;
-                        break;
-                    }
-                    break;
-                }
-                case 58: { // Annulus Cylinder Source
-                    VectorR3 center;
-                    VectorR3 axis;
-                    double radius;
-                    double height;
-                    double activity;
-                    int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf",
-                                           &(center.x), &(center.y), &(center.z),
-                                           &(axis.x), &(axis.y), &(axis.z),
-                                           &radius, &height, &activity);
-                    cout << "Reading Annulus Cylinder Source " <<endl;
-                    if (scanCode == 9) {
-
-                        MatrixStack.top().Transform(&center);
-                        MatrixStack.top().Transform3x3(&axis);
-                        axis *= height;
-                        cout << " New Center :: "  << (double)center.x  << "  " ;
-                        cout << (double) center.y << "  " << (double) center.z <<  endl;
-                        cout << " New Axis   :: "  << (double)axis.x  << "  " ;
-                        cout << (double) axis.y << "  " << (double) axis.z <<  endl;
-                        AnnulusCylinderSource * cyl = new AnnulusCylinderSource(center, radius, axis, actScale*activity);
-                        cyl->SetMaterial(curMaterial);
-                        sources.AddSource(cyl);
-                    } else {
-                        parseErrorOccurred = true;
-                        break;
-                    }
-                    break;
-                }
-                case 59: { // Set the output format
-                    Output::BinaryOutputFormat format;
-                    int scanCode = sscanf(args.c_str(), "%d", &format);
-                    if (scanCode == 1) {
-                        Output::SetBinaryFormat(format);
                     } else {
                         parseErrorOccurred = true;
                         break;
