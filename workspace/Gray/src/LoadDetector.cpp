@@ -50,7 +50,7 @@ const char * dffCommandList[numCommands] = {
     "raxis",            // 15 rotate around axis, axis x,y,z theta
     "sp_src",           // 16 sphere source
     "rect_src",         // 17 rectangular source
-    "repeat",           // 18 repeat detector
+    "array",            // 18 array of detectors
     "cyl",              // 19 add a cylinder
     "cyl_src",          // 20 cylinder source
     "#",                // 21 comments
@@ -307,6 +307,11 @@ bool LoadDetector::Load(const std::string & filename,
             // The first line will be the next line put into the buffer
             repeat_info_stack.top().start_idx = current_idx;
         } else if (command == "end_repeat") {
+            if (repeat_info_stack.empty()) {
+                print_parse_error(line);
+                cerr << "Found unpaired end_repeat" << endl;
+                return(false);
+            }
             repeat_info_stack.top().no_complete++;
             if (repeat_info_stack.top().no_complete <
                 repeat_info_stack.top().no_repeats)
