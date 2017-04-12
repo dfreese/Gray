@@ -30,7 +30,7 @@
 #include <sstream>
 
 namespace {
-const int numCommands = 39;
+const int numCommands = 35;
 const char * dffCommandList[numCommands] = {
     "p",                // 0 Polygon patches
     "m",                // 1 Material index
@@ -67,10 +67,6 @@ const char * dffCommandList[numCommands] = {
     "binning",          // 32 enable binning x
     "start_vecsrc",     // 33 start vector source
     "end_vecsrc",       // 34 end vector source
-    "log_det_id",       // 35 log detector id x
-    "log_det_coord",    // 36 log detector coord x
-    "save_detector",	// 37 save detector to a file
-    "scale_act",		// 38 scale activity
 };
 }
 
@@ -521,12 +517,28 @@ bool LoadDetector::Load(const std::string & filename,
         } else if (command == "binary_format") {
             Output::BinaryOutputFormat format;
             int scanCode = sscanf(args.c_str(), "%d", &format);
-            if (scanCode == 1) {
-                Output::SetBinaryFormat(format);
-            } else {
-                parseErrorOccurred = true;
-                break;
+            if (scanCode != 1) {
+                print_parse_error(line);
+                return(false);
             }
+            Output::SetBinaryFormat(format);
+        } else if (command == "save_detector") {
+            char filename[256];
+            int scanCode = sscanf(args.c_str(), "%s", filename);
+            if (scanCode != 1) {
+                print_parse_error(line);
+                return(false);
+            }
+            filename_detector = std::string(filename);
+        } else if (command == "scale_act") {
+            double t_actScale = -1.0;
+            int scanCode = sscanf(args.c_str(), "%lf", &t_actScale);
+            if (scanCode != 1) {
+                print_parse_error(line);
+                return(false);
+            }
+            actScale = t_actScale;
+            cout << "scale act:" << actScale << "\n";
         } else {
             // TODO: move all of these commands out of this structure into the
             // else if above.
@@ -1025,39 +1037,6 @@ bool LoadDetector::Load(const std::string & filename,
                         parse_VectorSource = false;
                         curVectorSource = NULL;
 
-                    } else {
-                        parseErrorOccurred = true;
-                        break;
-                    }
-                    break;
-                }
-                case 35: { // Log Detector Id
-                    cout << "Warning: Log Detector Id is always on" << endl;
-                    break;
-                }
-                case 36: { // Log Detector Coordinates
-                    cout << "Warning: Log Detector Coordinates is always off" << endl;
-                    break;
-                }
-                case 37: { // Save detector
-                    char filename[256];
-                    int scanCode = sscanf(args.c_str(), "%s", filename);
-                    if (scanCode ==1) {
-                        filename_detector = std::string(filename);
-                    } else {
-                        parseErrorOccurred = true;
-                        break;
-                    }
-                    break;
-                }
-                case 38: { // activity scale
-                    double t_actScale = -1.0;
-                    int scanCode = sscanf(args.c_str(), "%lf", &t_actScale);
-                    if (scanCode ==1) {
-                        actScale = t_actScale;
-                        cout << "scale act:";
-                        cout << actScale;
-                        cout << "\n";
                     } else {
                         parseErrorOccurred = true;
                         break;
