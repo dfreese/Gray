@@ -30,18 +30,12 @@
 #include <sstream>
 
 namespace {
-const int numCommands = 10;
+const int numCommands = 4;
 const char * dffCommandList[numCommands] = {
     "p",                // 0 Polygon patches
     "m",                // 1 Material index
     "color",            // 2 Color and reflection and transmission
     "k",                // 3 detector position and size
-    "from",             // 4 Parameter to "v" command: eye position
-    "at",               // 5 Parameter to "v" command: "look at" position
-    "up",               // 6 Parameter to "v" command: "up" direction
-    "angle",            // 7 Parameter to "v" command: fov angle
-    "hither",           // 8 Parameter to "v" command: near clipping distance
-    "resolution",       // 9 Parameter to "v" command: resolution
 };
 }
 
@@ -802,8 +796,8 @@ bool LoadDetector::Load(const std::string & filename,
         } else if (command == "b") {
             // background color
             VectorR3 bgColor;
-            scanCode = sscanf(args.c_str(), "%lf %lf %lf",
-                              &(bgColor.x), &(bgColor.y), &(bgColor.z));
+            int scanCode = sscanf(args.c_str(), "%lf %lf %lf",
+                                  &(bgColor.x), &(bgColor.y), &(bgColor.z));
             if (scanCode != 3) {
                 print_parse_error(line);
                 return(false);
@@ -813,13 +807,55 @@ bool LoadDetector::Load(const std::string & filename,
             // raxis
             VectorR3 axis;
             double degree;
-            scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf",
-                              &(axis.x), &(axis.y), &(axis.z), &degree);
+            int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf",
+                                  &(axis.x), &(axis.y), &(axis.z), &degree);
             if (scanCode != 4) {
                 print_parse_error(line);
                 return(false);
             }
             ApplyRotation(axis, degree * (M_PI/180.0), MatrixStack.top());
+        } else if (command == "from") {
+            int scanCode = sscanf(args.c_str(), "%lf %lf %lf",
+                                  &(viewPos.x), &(viewPos.y), &(viewPos.z));
+            if (scanCode != 3) {
+                print_parse_error(line);
+                return(false);
+            }
+        } else if (command == "at") {
+            int scanCode = sscanf(args.c_str(), "%lf %lf %lf", &(lookAtPos.x),
+                                  &(lookAtPos.y), &(lookAtPos.z));
+            if (scanCode != 3) {
+                print_parse_error(line);
+                return(false);
+            }
+        } else if (command == "up") {
+            int scanCode = sscanf(args.c_str(), "%lf %lf %lf",
+                                  &(upVector.x), &(upVector.y), &(upVector.z));
+            if (scanCode != 3) {
+                print_parse_error(line);
+                return(false);
+            }
+        } else if (command == "angle") {
+            // Angle in degrees
+            int scanCode = sscanf(args.c_str(), "%lf", &fovy);
+            if (scanCode != 1) {
+                print_parse_error(line);
+                return(false);
+            }
+            fovy *= M_PI / 180.0;
+        } else if (command == "hither") {
+            int scanCode = sscanf(args.c_str(), "%lf", &hither);
+            if (scanCode != 1) {
+                print_parse_error(line);
+                return(false);
+            }
+        } else if (command == "resolution") {
+            int scanCode = sscanf(args.c_str(), "%d %d",
+                                  &screenWidth, &screenHeight);
+            if (scanCode != 2) {
+                print_parse_error(line);
+                return(false);
+            }
         } else {
             // TODO: move all of these commands out of this structure into the
             // else if above.
@@ -919,49 +955,6 @@ bool LoadDetector::Load(const std::string & filename,
                                             theScene, MatrixStack.top());
                         }
                     } else {
-                        parseErrorOccurred = true;
-                    }
-                    break;
-                }
-                case 4: { // from
-                    scanCode = sscanf(args.c_str(), "%lf %lf %lf", &(viewPos.x), &(viewPos.y), &(viewPos.z) );
-                    if (scanCode != 3) {
-                        parseErrorOccurred = true;
-                    }
-                    break;
-                }
-                case 5: { // lookat
-                    scanCode = sscanf(args.c_str(), "%lf %lf %lf", &(lookAtPos.x), &(lookAtPos.y), &(lookAtPos.z) );
-                    if (scanCode != 3) {
-                        parseErrorOccurred = true;
-                    }
-                    break;
-                }
-                case 6: { // up
-                    scanCode = sscanf(args.c_str(), "%lf %lf %lf", &(upVector.x), &(upVector.y), &(upVector.z) );
-                    if (scanCode != 3) {
-                        parseErrorOccurred = true;
-                    }
-                    break;
-                }
-                case 7: { // angle
-                    scanCode = sscanf(args.c_str(), "%lf", &fovy );
-                    if (scanCode != 1) {
-                        parseErrorOccurred = true;
-                    }
-                    fovy *= M_PI / 180.0;
-                    break;
-                }
-                case 8: { // hither
-                    scanCode = sscanf(args.c_str(), "%lf", &hither );
-                    if (scanCode != 1) {
-                        parseErrorOccurred = true;
-                    }
-                    break;
-                }
-                case 9: { // resolution
-                    scanCode = sscanf(args.c_str(), "%d %d", &screenWidth, &screenHeight );
-                    if (scanCode != 2) {
                         parseErrorOccurred = true;
                     }
                     break;
