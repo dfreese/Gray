@@ -48,11 +48,6 @@ const char * dffCommandList[numCommands] = {
     "pop",              // 13 pop matrix
     "b",                // 14 Background color
     "raxis",            // 15 rotate around axis, axis x,y,z theta
-    "sp_src",           // 16 sphere source
-    "rect_src",         // 17 rectangular source
-    "array",            // 18 array of detectors
-    "cyl",              // 19 add a cylinder
-    "cyl_src",          // 20 cylinder source
 };
 }
 
@@ -627,6 +622,154 @@ bool LoadDetector::Load(const std::string & filename,
             Random::Seed((unsigned long)seed);
         } else if (command == "log_positron") {
             Output::SetLogPositron(true);
+        } else if (command == "sp_src") {
+            // Sphere source
+            VectorR3 position;
+            double radius = -1.0;
+            double activity = -1.0;
+            scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf",
+                              &(position.x), &(position.y), &(position.z),
+                              &radius, &activity);
+            if (scanCode != 5) {
+                print_parse_error(line);
+                return(false);
+            }
+            if (activity < 0.0) {
+                cout << "Negative Source " << activity << " uCi" << endl;
+            }
+
+            ViewableSphere * sp = new ViewableSphere(position, radius);
+            TransformWithRigid(sp,MatrixStack.top());
+
+            MatrixStack.top().Transform(&position);
+            SphereSource * s = new SphereSource(position, radius, actScale*activity);
+            s->SetMaterial(curMaterial);
+            sources.AddSource(s);
+        } else if (command == "rect_src") {
+            // rectangular source
+            VectorR3 baseCenter;
+            VectorR3 baseSize;
+            double activity = -1.0;
+            scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf",
+                              &baseCenter.x, &baseCenter.y, &baseCenter.z,
+                              &baseSize.x, &baseSize.y, &baseSize.z, &activity);
+            if (scanCode != 7) {
+                print_parse_error(line);
+                return(false);
+            }
+            //TODO: FIX RECTANGULAR SOURCE ROTATION!
+            MatrixStack.top().Transform(&baseCenter);
+            RectSource * s = new RectSource(baseCenter, baseSize,actScale*activity);
+            s->SetMaterial(curMaterial);
+            sources.AddSource(s);
+        } else if (command == "array") {
+            // repeat detector in 3d
+            VectorR3 UnitStep; // center to center between repeated cell
+            VectorR3 UnitSize; // detector size
+            int num_x = -1;
+            int num_y = -1;
+            int num_z = -1;
+            scanCode = sscanf(args.c_str(), "%d %d %d %lf %lf %lf %lf %lf %lf",
+                              &num_x, &num_y, &num_z,
+                              &(UnitStep.x), &(UnitStep.y), &(UnitStep.z),
+                              &(UnitSize.x), &(UnitSize.y), &(UnitSize.z));
+            if (scanCode != 9) {
+                print_parse_error(line);
+                return(false);
+            }
+            VectorR3 StartPos;
+            StartPos.x = 0.0;
+            StartPos.y = 0.0;
+            StartPos.z = 0.0;
+            VectorR3 CurrentPos;
+
+            UnitStep *= polygonScale;
+            UnitSize *= polygonScale;
+
+            StartPos.x = -1.0 * (double)(num_x-1) * UnitStep.x / 2.0;
+            StartPos.y = -1.0 * (double)(num_y-1) * UnitStep.y / 2.0;
+            StartPos.z = -1.0 * (double)(num_z-1) * UnitStep.z / 2.0;
+            for (int i = 0; i < num_x; i++) {
+                for (int j = 0; j < num_y; j++) {
+                    for (int k = 0; k < num_z; k++) {
+                        CurrentPos= StartPos;
+                        CurrentPos.x += (double)i * UnitStep.x;
+                        CurrentPos.y += (double)j * UnitStep.y;
+                        CurrentPos.z += (double)k * UnitStep.z;
+                        if (curMaterial->log_material == true) {
+                            global_id = detector_array.AddDetector(
+                                                                   CurrentPos, UnitSize, MatrixStack.top(),
+                                                                   i, j, k, block_id);
+                            ProcessDetector(CurrentPos, UnitSize,
+                                            curMaterial, global_id,
+                                            theScene, MatrixStack.top());
+                        }  else {
+                            ProcessDetector(CurrentPos, UnitSize,
+                                            curMaterial, -1,
+                                            theScene, MatrixStack.top());
+                        }
+                    }
+                }
+            }
+            // Increment block detector id after a repeat statement
+            if (curMaterial->log_material == true) {
+                block_id++;
+            }
+        } else if (command == "cyl") {
+            VectorR3 center;
+            VectorR3 axis;
+            double radius;
+            double height;
+            int scanCode = sscanf(args.c_str(),
+                                  "%lf %lf %lf %lf %lf %lf %lf %lf",
+                                  &(center.x), &(center.y), &(center.z),
+                                  &(axis.x), &(axis.y), &(axis.z),
+                                  &radius, &height);
+            if (scanCode != 8) {
+                print_parse_error(line);
+                return(false);
+            }
+            ViewableCylinder *vc = new ViewableCylinder();
+            vc->SetRadius(radius);
+            vc->SetCenterAxis(axis);
+            vc->SetCenter(center);
+            vc->SetHeight(height);
+            vc->SetMaterial(curMaterial);
+            TransformWithRigid(vc,MatrixStack.top());
+            theScene.AddViewable(vc);
+        } else if (command == "cyl_src") {
+            VectorR3 center;
+            VectorR3 axis;
+            double radius;
+            double height;
+            double activity;
+            int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf",
+                                  &(center.x), &(center.y), &(center.z),
+                                  &(axis.x), &(axis.y), &(axis.z),
+                                  &radius, &height, &activity);
+            cout << "Reading Cylinder Source " <<endl;
+            if (scanCode != 9) {
+                print_parse_error(line);
+                return(false);
+            }
+            ViewableCylinder *vc = new ViewableCylinder();
+            vc->SetRadius(radius);
+            vc->SetCenterAxis(axis);
+            vc->SetCenter(center);
+            vc->SetHeight(height);
+            vc->SetMaterial(curMaterial);
+            TransformWithRigid(vc,MatrixStack.top());
+
+            MatrixStack.top().Transform(&center);
+            MatrixStack.top().Transform3x3(&axis);
+            axis *= height;
+            cout << " New Center :: "  << (double)center.x  << "  " ;
+            cout << (double) center.y << "  " << (double) center.z <<  endl;
+            cout << " New Axis   :: "  << (double)axis.x  << "  " ;
+            cout << (double) axis.y << "  " << (double) axis.z <<  endl;
+            CylinderSource * cyl = new CylinderSource(center, radius, axis, actScale*activity);
+            cyl->SetMaterial(curMaterial);
+            sources.AddSource(cyl);
         } else {
             // TODO: move all of these commands out of this structure into the
             // else if above.
@@ -831,164 +974,6 @@ bool LoadDetector::Load(const std::string & filename,
                         break;
                     }
                     ApplyRotation(axis, degree * (M_PI/180.0), MatrixStack.top());
-                    break;
-                }
-                case 16: {
-                    // Sphere source
-                    VectorR3 position;
-                    double radius = -1.0;
-                    double activity = -1.0;
-                    scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf", &(position.x), &(position.y), &(position.z), &radius, &activity );
-                    if (scanCode == 5) {
-                        if (activity < 0.0) {
-                            cout << "Negative Source " << activity << " uCi" << endl;
-                        }
-
-                        ViewableSphere * sp = new ViewableSphere(position, radius);
-                        TransformWithRigid(sp,MatrixStack.top());
-
-                        MatrixStack.top().Transform(&position);
-                        SphereSource * s = new SphereSource(position, radius, actScale*activity);
-                        s->SetMaterial(curMaterial);
-                        sources.AddSource(s);
-                    } else {
-                        parseErrorOccurred = true;
-                        break;
-                    }
-                    break;
-                }
-                case 17: { // rectangular source
-                    VectorR3 baseCenter;
-                    VectorR3 baseSize;
-                    double activity = -1.0;
-                    scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf",
-                                       &baseCenter.x, &baseCenter.y, &baseCenter.z,
-                                       &baseSize.x, &baseSize.y, &baseSize.z, &activity );
-                    if (scanCode == 7) {
-                        //TODO: FIX RECTANGULAR SOURCE ROTATION!
-                        MatrixStack.top().Transform(&baseCenter);
-                        RectSource * s = new RectSource(baseCenter, baseSize,actScale*activity);
-                        s->SetMaterial(curMaterial);
-                        sources.AddSource(s);
-                    } else {
-                        parseErrorOccurred = true;
-                    }
-                    break;
-                }
-                case 18: { // repeat detector in 3d
-                    VectorR3 UnitStep; // center to center between repeated cell
-                    VectorR3 UnitSize; // detector size
-                    int num_x = -1;
-                    int num_y = -1;
-                    int num_z = -1;
-                    scanCode = sscanf(args.c_str(), "%d %d %d %lf %lf %lf %lf %lf %lf", &num_x, &num_y, &num_z, &(UnitStep.x), &(UnitStep.y), &(UnitStep.z),
-                                       &(UnitSize.x), &(UnitSize.y), &(UnitSize.z));
-                    if (scanCode != 9) {
-                        parseErrorOccurred = true;
-                        break;
-                    } else {
-                        VectorR3 StartPos;
-                        StartPos.x = 0.0;
-                        StartPos.y = 0.0;
-                        StartPos.z = 0.0;
-                        VectorR3 CurrentPos;
-
-                        UnitStep *= polygonScale;
-                        UnitSize *= polygonScale;
-
-                        StartPos.x = -1.0 * (double)(num_x-1) * UnitStep.x / 2.0;
-                        StartPos.y = -1.0 * (double)(num_y-1) * UnitStep.y / 2.0;
-                        StartPos.z = -1.0 * (double)(num_z-1) * UnitStep.z / 2.0;
-                        for (int i = 0; i < num_x; i++) {
-                            for (int j = 0; j < num_y; j++) {
-                                for (int k = 0; k < num_z; k++) {
-                                    CurrentPos= StartPos;
-                                    CurrentPos.x += (double)i * UnitStep.x;
-                                    CurrentPos.y += (double)j * UnitStep.y;
-                                    CurrentPos.z += (double)k * UnitStep.z;
-                                    if (curMaterial->log_material == true) {
-                                        global_id = detector_array.AddDetector(
-                                                CurrentPos, UnitSize, MatrixStack.top(),
-                                                i, j, k, block_id);
-                                        ProcessDetector(CurrentPos, UnitSize,
-                                                        curMaterial, global_id,
-                                                        theScene, MatrixStack.top());
-                                    }  else {
-                                        ProcessDetector(CurrentPos, UnitSize,
-                                                        curMaterial, -1,
-                                                        theScene, MatrixStack.top());
-                                    }
-                                }
-                            }
-                        }
-                        // Increment block detector id after a repeat statement
-                        if (curMaterial->log_material == true) {
-                            block_id++;
-                        }
-                    }
-                    break;
-                }
-                case 19: {
-                    VectorR3 center;
-                    VectorR3 axis;
-                    double radius;
-                    double height;
-
-                    int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf",
-                                           &(center.x), &(center.y), &(center.z),
-                                           &(axis.x), &(axis.y), &(axis.z),
-                                           &radius, &height);
-                    if (scanCode != 8) {
-                        parseErrorOccurred = true;
-                        break;
-                    } else {
-                        ViewableCylinder *vc = new ViewableCylinder();
-                        vc->SetRadius(radius);
-                        vc->SetCenterAxis(axis);
-                        vc->SetCenter(center);
-                        vc->SetHeight(height);
-                        vc->SetMaterial(curMaterial);
-                        TransformWithRigid(vc,MatrixStack.top());
-                        theScene.AddViewable(vc);
-                    }
-                    break;
-                }
-                case 20: {
-                    VectorR3 center;
-                    VectorR3 axis;
-                    double radius;
-                    double height;
-                    double activity;
-                    int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf",
-                                           &(center.x), &(center.y), &(center.z),
-                                           &(axis.x), &(axis.y), &(axis.z),
-                                           &radius, &height, &activity);
-                    cout << "Reading Cylinder Source " <<endl;
-                    if (scanCode == 9) {
-
-                        ViewableCylinder *vc = new ViewableCylinder();
-                        vc->SetRadius(radius);
-                        vc->SetCenterAxis(axis);
-                        vc->SetCenter(center);
-                        vc->SetHeight(height);
-                        vc->SetMaterial(curMaterial);
-                        TransformWithRigid(vc,MatrixStack.top());
-
-                        MatrixStack.top().Transform(&center);
-                        MatrixStack.top().Transform3x3(&axis);
-                        axis *= height;
-                        cout << " New Center :: "  << (double)center.x  << "  " ;
-                        cout << (double) center.y << "  " << (double) center.z <<  endl;
-                        cout << " New Axis   :: "  << (double)axis.x  << "  " ;
-                        cout << (double) axis.y << "  " << (double) axis.z <<  endl;
-                        CylinderSource * cyl = new CylinderSource(center, radius, axis, actScale*activity);
-                        cyl->SetMaterial(curMaterial);
-                        sources.AddSource(cyl);
-
-                    } else {
-                        parseErrorOccurred = true;
-                        break;
-                    }
                     break;
                 }
                 default: {
