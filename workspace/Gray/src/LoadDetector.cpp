@@ -29,16 +29,6 @@
 #include <stack>
 #include <sstream>
 
-namespace {
-const int numCommands = 4;
-const char * dffCommandList[numCommands] = {
-    "p",                // 0 Polygon patches
-    "m",                // 1 Material index
-    "color",            // 2 Color and reflection and transmission
-    "k",                // 3 detector position and size
-};
-}
-
 void LoadDetector::ApplyTranslation(const VectorR3&t,
                                     RigidMapR3 & current_matrix)
 {
@@ -199,7 +189,8 @@ bool LoadDetector::Load(const std::string & filename,
             continue;
         }
         // Remove leading spaces, and anything after a comment
-        line = line.substr(line.find_first_not_of(" "), line.find_first_of("#"));
+        line = line.substr(line.find_first_not_of(" "),
+                           line.find_first_of("#"));
         // Ignore blank lines again after removing comments
         if (line.empty()) {
             continue;
@@ -337,7 +328,8 @@ bool LoadDetector::Load(const std::string & filename,
             double radius2;
             double radius3;
 
-            int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+            int scanCode = sscanf(args.c_str(),
+                                  "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
                                   &(center.x), &(center.y), &(center.z),
                                   &(axis1.x), &(axis1.y), &(axis1.z),
                                   &(axis2.x), &(axis2.y), &(axis2.z),
@@ -362,7 +354,8 @@ bool LoadDetector::Load(const std::string & filename,
             double radius3;
             double activity;
 
-            int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+            int scanCode = sscanf(args.c_str(),
+                                  "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
                                   &(center.x), &(center.y), &(center.z),
                                   &(axis1.x), &(axis1.y), &(axis1.z),
                                   &(axis2.x), &(axis2.y), &(axis2.z),
@@ -378,7 +371,9 @@ bool LoadDetector::Load(const std::string & filename,
             cout << (double) axis1.y << "  " << (double) axis1.z <<  endl;
             cout << " New Radius   :: "  << (double)radius1  << "  " ;
             cout << (double) radius2 << "  " << (double)radius3 <<  endl;
-            EllipsoidSource *ve = new EllipsoidSource(center, axis1, axis2, radius1, radius2, radius3, actScale*activity);
+            EllipsoidSource *ve = new EllipsoidSource(
+                    center, axis1, axis2, radius1, radius2, radius3,
+                    actScale*activity);
             ve->SetMaterial(curMaterial);
             sources.AddSource(ve);
         } else if (command == "elliptic_cyl") {
@@ -387,7 +382,8 @@ bool LoadDetector::Load(const std::string & filename,
             double radius1;
             double radius2;
             double height;
-            int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf",
+            int scanCode = sscanf(args.c_str(),
+                                  "%lf %lf %lf %lf %lf %lf %lf %lf %lf",
                                   &(center.x), &(center.y), &(center.z),
                                   &(axis.x), &(axis.y), &(axis.z),
                                   &radius1, &radius2, &height);
@@ -411,7 +407,8 @@ bool LoadDetector::Load(const std::string & filename,
             double radius2;
             double height;
             double activity;
-            int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+            int scanCode = sscanf(args.c_str(),
+                                  "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
                                   &(center.x), &(center.y), &(center.z),
                                   &(axis.x), &(axis.y), &(axis.z),
                                   &radius1, &radius2, &height, &activity);
@@ -427,7 +424,8 @@ bool LoadDetector::Load(const std::string & filename,
             cout << (double) center.y << "  " << (double) center.z <<  endl;
             cout << " New Axis   :: "  << (double)axis.x  << "  " ;
             cout << (double) axis.y << "  " << (double) axis.z <<  endl;
-            EllipticCylinderSource * cyl = new EllipticCylinderSource(center, radius1, radius2, axis, actScale*activity);
+            EllipticCylinderSource * cyl = new EllipticCylinderSource(
+                    center, radius1, radius2, axis, actScale*activity);
             cyl->SetMaterial(curMaterial);
             sources.AddSource(cyl);
         } else if (command == "sp_annulus_ell") {
@@ -437,7 +435,8 @@ bool LoadDetector::Load(const std::string & filename,
             double radius2;
             double height;
             double activity;
-            int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+            int scanCode = sscanf(args.c_str(),
+                                  "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
                                   &(center.x), &(center.y), &(center.z),
                                   &(axis.x), &(axis.y), &(axis.z),
                                   &radius1, &radius2, &height, &activity);
@@ -453,7 +452,9 @@ bool LoadDetector::Load(const std::string & filename,
             cout << (double) center.y << "  " << (double) center.z <<  endl;
             cout << " New Axis   :: "  << (double)axis.x  << "  " ;
             cout << (double) axis.y << "  " << (double) axis.z <<  endl;
-            AnnulusEllipticCylinderSource * cyl = new AnnulusEllipticCylinderSource(center, radius1, radius2, axis, actScale*activity);
+            AnnulusEllipticCylinderSource * cyl =
+                    new AnnulusEllipticCylinderSource(center, radius1, radius2,
+                                                      axis, actScale*activity);
             cyl->SetMaterial(curMaterial);
             sources.AddSource(cyl);
         } else if (command == "sp_annulus_cyl") {
@@ -462,7 +463,8 @@ bool LoadDetector::Load(const std::string & filename,
             double radius;
             double height;
             double activity;
-            int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf",
+            int scanCode = sscanf(args.c_str(),
+                                  "%lf %lf %lf %lf %lf %lf %lf %lf %lf",
                                   &(center.x), &(center.y), &(center.z),
                                   &(axis.x), &(axis.y), &(axis.z),
                                   &radius, &height, &activity);
@@ -479,7 +481,8 @@ bool LoadDetector::Load(const std::string & filename,
             cout << (double) center.y << "  " << (double) center.z <<  endl;
             cout << " New Axis   :: "  << (double)axis.x  << "  " ;
             cout << (double) axis.y << "  " << (double) axis.z <<  endl;
-            AnnulusCylinderSource * cyl = new AnnulusCylinderSource(center, radius, axis, actScale*activity);
+            AnnulusCylinderSource * cyl = new AnnulusCylinderSource(
+                    center, radius, axis, actScale*activity);
             cyl->SetMaterial(curMaterial);
             sources.AddSource(cyl);
         } else if (command == "binary_format") {
@@ -541,7 +544,8 @@ bool LoadDetector::Load(const std::string & filename,
             axis.Normalize();
             MatrixStack.top().Transform(&position);
             MatrixStack.top().Transform3x3(&axis);
-            BeamPointSource * s = new BeamPointSource(position, axis, angle, actScale*activity);
+            BeamPointSource * s = new BeamPointSource(position, axis, angle,
+                                                      actScale*activity);
             s->SetMaterial(curMaterial);
         } else if (command == "acolinearity") {
             double acon = -1.0;
@@ -630,7 +634,8 @@ bool LoadDetector::Load(const std::string & filename,
             TransformWithRigid(sp,MatrixStack.top());
 
             MatrixStack.top().Transform(&position);
-            SphereSource * s = new SphereSource(position, radius, actScale*activity);
+            SphereSource * s = new SphereSource(position, radius,
+                                                actScale*activity);
             s->SetMaterial(curMaterial);
             sources.AddSource(s);
         } else if (command == "rect_src") {
@@ -647,7 +652,8 @@ bool LoadDetector::Load(const std::string & filename,
             }
             //TODO: FIX RECTANGULAR SOURCE ROTATION!
             MatrixStack.top().Transform(&baseCenter);
-            RectSource * s = new RectSource(baseCenter, baseSize,actScale*activity);
+            RectSource * s = new RectSource(baseCenter, baseSize,
+                                            actScale*activity);
             s->SetMaterial(curMaterial);
             sources.AddSource(s);
         } else if (command == "array") {
@@ -686,8 +692,8 @@ bool LoadDetector::Load(const std::string & filename,
                         CurrentPos.z += (double)k * UnitStep.z;
                         if (curMaterial->log_material == true) {
                             global_id = detector_array.AddDetector(
-                                                                   CurrentPos, UnitSize, MatrixStack.top(),
-                                                                   i, j, k, block_id);
+                                    CurrentPos, UnitSize, MatrixStack.top(),
+                                    i, j, k, block_id);
                             ProcessDetector(CurrentPos, UnitSize,
                                             curMaterial, global_id,
                                             theScene, MatrixStack.top());
@@ -731,7 +737,8 @@ bool LoadDetector::Load(const std::string & filename,
             double radius;
             double height;
             double activity;
-            int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf",
+            int scanCode = sscanf(args.c_str(),
+                                  "%lf %lf %lf %lf %lf %lf %lf %lf %lf",
                                   &(center.x), &(center.y), &(center.z),
                                   &(axis.x), &(axis.y), &(axis.z),
                                   &radius, &height, &activity);
@@ -755,7 +762,8 @@ bool LoadDetector::Load(const std::string & filename,
             cout << (double) center.y << "  " << (double) center.z <<  endl;
             cout << " New Axis   :: "  << (double)axis.x  << "  " ;
             cout << (double) axis.y << "  " << (double) axis.z <<  endl;
-            CylinderSource * cyl = new CylinderSource(center, radius, axis, actScale*activity);
+            CylinderSource * cyl = new CylinderSource(center, radius, axis,
+                                                      actScale*activity);
             cyl->SetMaterial(curMaterial);
             sources.AddSource(cyl);
         } else if (command == "l") {
@@ -856,117 +864,102 @@ bool LoadDetector::Load(const std::string & filename,
                 print_parse_error(line);
                 return(false);
             }
+        } else if (command == "p") {
+            int numVerts;
+            const int maxNumVerts = 256;
+            int scanCode = sscanf(args.c_str(), "%d", &numVerts);
+            if (scanCode != 1) {
+                print_parse_error(line);
+                return(false);
+            }
+            if (numVerts < 3) {
+                print_parse_error(line);
+                cerr << "Number of vertices is less than 3" << endl;
+                return(false);
+            }
+            if (numVerts > maxNumVerts) {
+                print_parse_error(line);
+                cerr << "Number of vertices is greater than " << maxNumVerts
+                     << endl;
+                return(false);
+            }
+            // FIXED: arbitrary triangles must use increment to advance detector ids
+            // FIXED: detector only is used when material is sensitive
+            if (curMaterial->log_material) {
+                ProcessFaceDFF(numVerts, curMaterial, file_stack.top(),
+                               curVectorSource, parse_VectorSource,
+                               global_id, theScene, polygonScale,
+                               MatrixStack.top());
+            } else {
+                ProcessFaceDFF(numVerts, curMaterial, file_stack.top(),
+                               curVectorSource, parse_VectorSource, -1,
+                               theScene, polygonScale,
+                               MatrixStack.top());
+            }
+        } else if (command == "m") {
+            // material index
+            int matIndex = theScene.GetMaterialIndex(args);
+            if (matIndex < 0) {
+                print_parse_error(line);
+                cerr << "Invalid material: " << args << endl;
+                return(false);
+            }
+            curMaterial = dynamic_cast<GammaMaterial*>(&theScene.GetMaterial(matIndex));
+        } else if (command == "color") {
+            VectorR3 ambient;
+            VectorR3 diffuse;
+            VectorR3 spec;
+            VectorR3 trans;
+            VectorR3 reflec;
+            double ior;
+            int scanCode = sscanf(args.c_str(),
+                                  "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
+                                  &(ambient.x), &(ambient.y), &(ambient.z),
+                                  &(diffuse.x), &(diffuse.y), &(diffuse.z),
+                                  &(spec.x), &(spec.y), &(spec.z),
+                                  &(trans.x), &(trans.y), &(trans.z),
+                                  &(reflec.x), &(reflec.y), &(reflec.z),
+                                  &ior);
+            if (scanCode != 16) {
+                print_parse_error(line);
+                return(false);
+            }
+            curMaterial->SetColorAmbient(ambient);
+            curMaterial->SetColorDiffuse(diffuse);
+            curMaterial->SetColorSpecular(spec);
+            curMaterial->SetColorTransmissive(trans);
+            curMaterial->SetColorReflective(reflec);
+            curMaterial->SetIndexOfRefraction(ior);
+        } else if (command == "k") {
+            VectorR3 baseCenter;
+            VectorR3 baseSize;
+            int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf",
+                                  &baseCenter.x, &baseCenter.y, &baseCenter.z,
+                                  &baseSize.x, &baseSize.y, &baseSize.z);
+            if (scanCode != 6) {
+                print_parse_error(line);
+                return(false);
+            }
+            baseCenter *= polygonScale;
+            baseSize *= polygonScale;
+            // FIXED: detector only is used when material is sensitive
+            if (curMaterial->log_material) {
+                global_id = detector_array.AddDetector(baseCenter,
+                                                       baseSize,
+                                                       MatrixStack.top(),
+                                                       0, 0, 0,
+                                                       block_id);
+                block_id++;
+                ProcessDetector(baseCenter, baseSize, curMaterial,
+                                global_id, theScene, MatrixStack.top());
+            } else {
+                ProcessDetector(baseCenter, baseSize, curMaterial, -1,
+                                theScene, MatrixStack.top());
+            }
         } else {
-            // TODO: move all of these commands out of this structure into the
-            // else if above.
-            int cmdNum = GetCommandNumber(command);
-            if (cmdNum < 0) {
-                print_parse_error(line);
-                cerr << "command not found: " << command << endl;
-                return(false);
-            }
-            bool parseErrorOccurred = false;
-            switch (cmdNum) {
-                case 0: {
-                    int numVerts;
-                    const int maxNumVerts = 256;
-                    scanCode = sscanf(args.c_str(), "%d", &numVerts );
-                    if (scanCode!=1 || numVerts<3 ) {
-                        parseErrorOccurred = true;
-                    } else if ( numVerts>maxNumVerts ) {
-                        //UnsupportedTooManyVerts( maxNumVerts );
-                    } else {
-                        // FIXED: arbitrary triangles must use increment to advance detector ids
-                        // FIXED: detector only is used when material is sensitive
-                        if (curMaterial->log_material) {
-                            ProcessFaceDFF(numVerts, curMaterial, file_stack.top(),
-                                           curVectorSource, parse_VectorSource,
-                                           global_id, theScene, polygonScale,
-                                           MatrixStack.top());
-                        } else {
-                            ProcessFaceDFF(numVerts, curMaterial, file_stack.top(),
-                                           curVectorSource, parse_VectorSource, -1,
-                                           theScene, polygonScale,
-                                           MatrixStack.top());
-                        }
-                    }
-                    break;
-                }
-                case 1: { // material index
-                    int matIndex = theScene.GetMaterialIndex(args);
-                    if (matIndex >= 0) {
-                        curMaterial = dynamic_cast<GammaMaterial*>(&theScene.GetMaterial(matIndex));
-                    } else {
-                        parseErrorOccurred = true;
-                    }
-                    break;
-                }
-                case 2: { // color of material
-                    VectorR3 ambient;
-                    VectorR3 diffuse;
-                    VectorR3 spec;
-                    VectorR3 trans;
-                    VectorR3 reflec;
-                    double ior;
-                    int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
-                                           &(ambient.x), &(ambient.y), &(ambient.z),
-                                           &(diffuse.x), &(diffuse.y), &(diffuse.z),
-                                           &(spec.x), &(spec.y), &(spec.z),
-                                           &(trans.x), &(trans.y), &(trans.z),
-                                           &(reflec.x), &(reflec.y), &(reflec.z),
-                                           &ior);
-                    if (scanCode != 16) {
-                        parseErrorOccurred = true;
-                        break;
-                    } else {
-                        curMaterial->SetColorAmbient(ambient);
-                        curMaterial->SetColorDiffuse(diffuse);
-                        curMaterial->SetColorSpecular(spec);
-                        curMaterial->SetColorTransmissive(trans);
-                        curMaterial->SetColorReflective(reflec);
-                        curMaterial->SetIndexOfRefraction(ior);
-                    }
-                    break;
-                }
-                case 3: // detector size and position
-                    // TODO: add detector orientation -- may not be needed because raxis works
-                    // each single detector is considered a block, use repeat to make a block detector
-                {
-                    VectorR3 baseCenter;
-                    VectorR3 baseSize;
-                    scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf",
-                                       &baseCenter.x, &baseCenter.y, &baseCenter.z,
-                                       &baseSize.x, &baseSize.y, &baseSize.z );
-                    if (scanCode == 6) {
-                        baseCenter *= polygonScale;
-                        baseSize *= polygonScale;
-                        // FIXED: detector only is used when material is sensitive
-                        if (curMaterial->log_material) {
-                            global_id = detector_array.AddDetector(baseCenter,
-                                                                   baseSize,
-                                                                   MatrixStack.top(),
-                                                                   0, 0, 0,
-                                                                   block_id);
-                            block_id++;
-                            ProcessDetector(baseCenter, baseSize, curMaterial,
-                                            global_id, theScene, MatrixStack.top());
-                        } else {
-                            ProcessDetector(baseCenter, baseSize, curMaterial, -1,
-                                            theScene, MatrixStack.top());
-                        }
-                    } else {
-                        parseErrorOccurred = true;
-                    }
-                    break;
-                }
-                default: {
-                    break;
-                }
-            }
-            if (parseErrorOccurred) {
-                print_parse_error(line);
-                return(false);
-            }
+            print_parse_error(line);
+            cerr << "command not found: " << command << endl;
+            return(false);
         }
     }
 
@@ -988,16 +981,6 @@ bool LoadDetector::Load(const std::string & filename,
         det_file.close();
     }
     return(true);
-}
-
-int LoadDetector::GetCommandNumber(const std::string & cmd)
-{
-    for (int i = 0; i < numCommands; i++) {
-        if (cmd == dffCommandList[i]) {
-            return(i);
-        }
-    }
-    return(-1); // Command not found
 }
 
 void LoadDetector::ProcessDetector(const VectorR3 & detCenter,
@@ -1078,10 +1061,12 @@ void LoadDetector::ProcessDetector(const VectorR3 & detCenter,
     }
 }
 
-void LoadDetector::SetCameraViewInfo( CameraView& theView,
-                                      const VectorR3& viewPos, const VectorR3& lookAtPos,
-                                      const VectorR3& upVector, double fovy,
-                                      int screenWidth, int screenHeight, double nearClipping )
+void LoadDetector::SetCameraViewInfo(CameraView& theView,
+                                     const VectorR3& viewPos,
+                                     const VectorR3& lookAtPos,
+                                     const VectorR3& upVector, double fovy,
+                                     int screenWidth, int screenHeight,
+                                     double nearClipping)
 {
     theView.SetLookAt( viewPos, lookAtPos, upVector );
 
