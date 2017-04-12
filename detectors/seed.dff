@@ -23,6 +23,7 @@ cyl 0.0 0.0 0.0 0.0 0.0 1.0 10 70
 rect_src 0.0 0.0 0.0 8.0 8.0 8.0 10
 # set the simulation time to be 5 seconds
 time 240.0
+
 # lso detector
 m lso
 # set color of lso detector to blue
@@ -32,23 +33,13 @@ push
 # translate down detector ring radius
 t 0.0 -45.75 0.0
 # create 8 panels of LSO at 45 degree rotations
-repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
-raxis 0.0 0.0 1.0 45.0
-repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
-raxis 0.0 0.0 1.0 45.0
-repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
-raxis 0.0 0.0 1.0 45.0
-repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
-raxis 0.0 0.0 1.0 45.0
-repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
-raxis 0.0 0.0 1.0 45.0
-repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
-raxis 0.0 0.0 1.0 45.0
-repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
-raxis 0.0 0.0 1.0 45.0
-repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
+begin_repeat 8
+    array 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
+    raxis 0.0 0.0 1.0 45.0
+end_repeat
 # return to previous transformation matrix
 pop
+
 # bgo detector
 m bgo
 # set color of bgo detector to yellow
@@ -58,21 +49,10 @@ push
 t 0.0 -45.75 0.0
 t 0.0 -1.5 0.0
 # create 8 panels of BGO at 45 degree rotations
-repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
-raxis 0.0 0.0 1.0 45.0
-repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
-raxis 0.0 0.0 1.0 45.0
-repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
-raxis 0.0 0.0 1.0 45.0
-repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
-raxis 0.0 0.0 1.0 45.0
-repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
-raxis 0.0 0.0 1.0 45.0
-repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
-raxis 0.0 0.0 1.0 45.0
-repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
-raxis 0.0 0.0 1.0 45.0
-repeat 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
+begin_repeat 8
+    array 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
+    raxis 0.0 0.0 1.0 45.0
+end_repeat
 pop
 # tungsten septa
 m tungsten
@@ -80,42 +60,20 @@ color 0.05 0.05 0.05  0.05 0.05 0.05  0.0 0.0 0.0  0.0 0.0 0.0  0.1 0.1 0.1 1.05
 push
 t 0.0 -45.75 0.0
 t 0.0 3.35 0.0
-repeat 1 1 5 0.0 0.0 10.0 32.0 5.0 0.05
-raxis 0.0 0.0 1.0 45.0
-repeat 1 1 5 0.0 0.0 10.0 32.0 5.0 0.05
-raxis 0.0 0.0 1.0 45.0
-repeat 1 1 5 0.0 0.0 10.0 32.0 5.0 0.05
-raxis 0.0 0.0 1.0 45.0
-repeat 1 1 5 0.0 0.0 10.0 32.0 5.0 0.05
-raxis 0.0 0.0 1.0 45.0
-repeat 1 1 5 0.0 0.0 10.0 32.0 5.0 0.05
-raxis 0.0 0.0 1.0 45.0
-repeat 1 1 5 0.0 0.0 10.0 32.0 5.0 0.05
-raxis 0.0 0.0 1.0 45.0
-repeat 1 1 5 0.0 0.0 10.0 32.0 5.0 0.05
-raxis 0.0 0.0 1.0 45.0
-repeat 1 1 5 0.0 0.0 10.0 32.0 5.0 0.05
+begin_repeat 8
+    array 1 1 5 0.0 0.0 10.0 32.0 5.0 0.05
+    raxis 0.0 0.0 1.0 45.0
+end_repeat
 pop
-# endshielding
+
 m lead
 color 0.05 0.05 0.05  0.05 0.05 0.05  0.0 0.0 0.0  0.0 0.0 0.0  0.1 0.1 0.1 1.05
 push
 t 0.0 -44.75 0.0
-repeat 1 1 2 0.0 0.0 40.11 32.0 8.0 0.1
-raxis 0.0 0.0 1.0 45.0
-repeat 1 1 2 0.0 0.0 40.11 32.0 8.0 0.1
-raxis 0.0 0.0 1.0 45.0
-repeat 1 1 2 0.0 0.0 40.11 32.0 8.0 0.1
-raxis 0.0 0.0 1.0 45.0
-repeat 1 1 2 0.0 0.0 40.11 32.0 8.0 0.1
-raxis 0.0 0.0 1.0 45.0
-repeat 1 1 2 0.0 0.0 40.11 32.0 8.0 0.1
-raxis 0.0 0.0 1.0 45.0
-repeat 1 1 2 0.0 0.0 40.11 32.0 8.0 0.1
-raxis 0.0 0.0 1.0 45.0
-repeat 1 1 2 0.0 0.0 40.11 32.0 8.0 0.1
-raxis 0.0 0.0 1.0 45.0
-repeat 1 1 2 0.0 0.0 40.11 32.0 8.0 0.1
+begin_repeat 8
+    array 1 1 2 0.0 0.0 40.11 32.0 8.0 0.1
+    raxis 0.0 0.0 1.0 45.0
+end_repeat
 pop
 seed 10001111
 log_positron
