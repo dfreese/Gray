@@ -17,7 +17,7 @@ public:
                      SceneDescription & theScene,
                      SourceList & sources);
 private:
-    static int GetCommandNumber(const char * cmd);
+    static int GetCommandNumber(const std::string & cmd);
     static bool ReadVertexR3(VectorR3 & vert, std::ifstream & curFile);
     static void ProcessDetector(const VectorR3 & detCenter,
                                 const VectorR3 & detSize,

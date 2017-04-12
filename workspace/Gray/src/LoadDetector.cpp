@@ -27,6 +27,7 @@
 #include <Sources/SourceList.h>
 #include <VrMath/LinearR3.h>
 #include <stack>
+#include <sstream>
 
 namespace {
 const int numCommands = 60;
@@ -229,31 +230,29 @@ bool LoadDetector::Load(const std::string & filename,
             return true;
         }
         FileLineNumber++;
-        
-        // Ignore blank lines
-        if (line.size() == 0) {
-            continue;
-        } else if (line[0] == '\n') {
-            continue;
-        } else if (line[0] == '#') {
-            // Ignore lines starting with a #.  This would also be handled in the
-            // case statement of this function, but just deal with it premptively.
+
+        // Ignore blank lines, including just all whitespace
+        if (line.find_first_not_of(" ") == string::npos) {
             continue;
         }
-        
+        // Remove leading spaces, and anything after a comment
+        line = line.substr(line.find_first_not_of(" "), line.find_first_of("#"));
+        // Ignore blank lines again after removing comments
+        if (line.empty()) {
+            continue;
+        }
 
-        // TODO: Scan and remove whitespace and comments at begging of file
-
-        char theCommand[17];
-        int scanCode = sscanf(line.c_str(), "%16s", theCommand );
-        if ( scanCode!=1 ) {
+        stringstream line_ss(line);
+        string command;
+        if ((line_ss >> command).fail()) {
             parseErrorOccurred = true;
         }
 
-        int cmdNum = GetCommandNumber( theCommand );
+        int cmdNum = GetCommandNumber(command);
 
         string args = ScanForSecondField(line);
         int global_id = -1;
+        int scanCode;
 
         switch ( cmdNum ) {
             case 0: {
@@ -1101,15 +1100,14 @@ bool LoadDetector::Load(const std::string & filename,
     return false;
 }
 
-int LoadDetector::GetCommandNumber( const char * cmd )
+int LoadDetector::GetCommandNumber(const std::string & cmd)
 {
-    int i;
-    for ( i=0; i<numCommands; i++ ) {
-        if ( strcmp( cmd, dffCommandList[i] ) == 0 ) {
-            return i;
+    for (int i = 0; i < numCommands; i++) {
+        if (cmd == dffCommandList[i]) {
+            return(i);
         }
     }
-    return -1;		// Command not found
+    return(-1); // Command not found
 }
 
 void LoadDetector::ProcessDetector(const VectorR3 & detCenter,
