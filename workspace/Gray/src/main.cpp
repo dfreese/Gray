@@ -130,6 +130,7 @@ int main( int argc, char** argv)
             singles_stream.clear();
         }
         cout << "=] Done." << endl;
+        cout << "decays: " << num_decays_cur << endl;
     }
     return(0);
 }

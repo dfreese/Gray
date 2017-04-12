@@ -177,9 +177,11 @@ bool LoadDetector::Load(const std::string & filename,
 
 
     stack<ifstream> file_stack;
+    stack<size_t> file_lines_read_stack;
+    stack<std::string> filename_stack;
     file_stack.emplace(filename.c_str());
-
-    long FileLineNumber = 0;
+    file_lines_read_stack.push(0);
+    filename_stack.push(filename);
 
     if (!file_stack.top()) {
         cerr << "LoadDffFile: Unable to open file: " << filename << endl;
@@ -229,7 +231,7 @@ bool LoadDetector::Load(const std::string & filename,
             }
             return true;
         }
-        FileLineNumber++;
+        file_lines_read_stack.top()++;
 
         // Ignore blank lines, including just all whitespace
         if (line.find_first_not_of(" ") == string::npos) {
@@ -872,7 +874,7 @@ bool LoadDetector::Load(const std::string & filename,
                 // top level file.
                 std::string include_filename = file_dir + std::string(string);
                 if (scanCode ==1) {
-                    file_stack.push(ifstream(filename.c_str()));
+                    file_stack.emplace(include_filename.c_str());
                     if (file_stack.top()) {
                         cout << "Including File:" << include_filename << endl;
                     } else {
@@ -880,6 +882,8 @@ bool LoadDetector::Load(const std::string & filename,
                              << include_filename << endl;
                         file_stack.pop();
                     }
+                    file_lines_read_stack.push(0);
+                    filename_stack.push(include_filename);
                 } else {
                     parseErrorOccurred = true;
                     break;
@@ -1089,10 +1093,10 @@ bool LoadDetector::Load(const std::string & filename,
                 break;
             }
         }
-        if ( parseErrorOccurred ) {
-            cerr << "Parse error in NFF file, line: " << FileLineNumber
-                 << " " << line << endl;
-            parseErrorOccurred = false;
+        if (parseErrorOccurred) {
+            cerr << "Parse error in NFF file \"" << filename_stack.top()
+                 << "\", line: " << file_lines_read_stack.top() << endl;
+            return(false);
         }
     }
 
