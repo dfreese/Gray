@@ -47,12 +47,11 @@ public:
                              std::vector<std::string>());
         }
         // Func to merge events in an array, and place the event at the first.
-        merge_types["merge_basic"] = [](EventT & e0, const EventT & e1) {
+        merge_types["merge_first"] = [](EventT & e0, const EventT & e1) {
             e0.energy += e1.energy;
         };
-        // Func to merge events in an array, and place the event at the max
-        // energy.
-        merge_types["merge_array_max"] = [](EventT & e0, const EventT & e1) {
+        // Func to merge events, and place the event at the max energy.
+        merge_types["merge_max"] = [](EventT & e0, const EventT & e1) {
             e0.det_id = e0.energy > e1.energy ? e0.det_id:e1.det_id;
             e0.energy += e1.energy;
         };
@@ -84,19 +83,19 @@ public:
         for (const auto & proc_desc: process_descriptions) {
             if (proc_desc.type == "merge") {
                 if (proc_desc.options.empty()) {
-                    if (add_merge_process("merge_basic", proc_desc.component,
+                    if (add_merge_process("merge_max", proc_desc.component,
                                           proc_desc.time) < 0)
                     {
                         return(-3);
                     }
-                } else if (proc_desc.options[0] == "basic") {
-                    if (add_merge_process("merge_basic", proc_desc.component,
+                } else if (proc_desc.options[0] == "first") {
+                    if (add_merge_process("merge_first", proc_desc.component,
                                       proc_desc.time) < 0)
                     {
                         return(-3);
                     }
-                } else if (proc_desc.options[0] == "array_max") {
-                    if (add_merge_process("merge_array_max", proc_desc.component,
+                } else if (proc_desc.options[0] == "max") {
+                    if (add_merge_process("merge_max", proc_desc.component,
                                       proc_desc.time) < 0)
                     {
                         return(-3);
