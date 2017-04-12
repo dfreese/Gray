@@ -30,7 +30,7 @@
 #include <sstream>
 
 namespace {
-const int numCommands = 35;
+const int numCommands = 27;
 const char * dffCommandList[numCommands] = {
     "p",                // 0 Polygon patches
     "m",                // 1 Material index
@@ -59,14 +59,6 @@ const char * dffCommandList[numCommands] = {
     "scale",            // 24 set polygon scale
     "seed",             // 25 set integer seed
     "log_positron",     // 26 turn on positron logging
-    "sphere",           // 27 load sphere geometry
-    "beam",             // 28 beam source
-    "acolinearity",     // 29 acolinearity
-    "log_all",          // 30 log all interactions
-    "binary_output",    // 31 enable binary data output
-    "binning",          // 32 enable binning x
-    "start_vecsrc",     // 33 start vector source
-    "end_vecsrc",       // 34 end vector source
 };
 }
 
@@ -539,6 +531,80 @@ bool LoadDetector::Load(const std::string & filename,
             }
             actScale = t_actScale;
             cout << "scale act:" << actScale << "\n";
+        } else if (command == "sphere") {
+            // Sphere object
+            VectorR3 position;
+            double radius = -1.0;
+            scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf",
+                              &(position.x), &(position.y), &(position.z),
+                              &radius);
+            if (scanCode != 4) {
+                print_parse_error(line);
+                return(false);
+            }
+            ViewableSphere * s = new ViewableSphere(position, radius);
+            s->SetMaterial(curMaterial);
+            TransformWithRigid(s,MatrixStack.top());
+            theScene.AddViewable(s);
+        } else if (command == "beam") {
+            // beam pos_x pos_y pos_z axis_x axis_y axis_z angle activity
+            // Beam source
+            VectorR3 position;
+            VectorR3 axis;
+            double angle = -1.0;
+            double activity = -1.0;
+            scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf",
+                              &(position.x), &(position.y), &(position.z),
+                              &(axis.x), &(axis.y), &(axis.z),
+                              &angle,
+                              &activity );
+            if (scanCode != 8) {
+                print_parse_error(line);
+                return(false);
+            }
+            axis.Normalize();
+            MatrixStack.top().Transform(&position);
+            MatrixStack.top().Transform3x3(&axis);
+            BeamPointSource * s = new BeamPointSource(position, axis, angle, actScale*activity);
+            s->SetMaterial(curMaterial);
+        } else if (command == "acolinearity") {
+            double acon = -1.0;
+            scanCode = sscanf(args.c_str(), "%lf", &acon);
+            if (scanCode != 1) {
+                print_parse_error(line);
+                return(false);
+            }
+            sources.SetAcolinearity(acon);
+        } else if (command == "log_all") {
+            Output::SetLogAll(true);
+        } else if (command == "binary_output") {
+            Output::SetBinary(true);
+        } else if (command == "start_vecsrc") {
+            double activity = -1.0;
+            int scanCode = sscanf(args.c_str(), "%lf", &activity);
+            if (scanCode != 1) {
+                print_parse_error(line);
+                return(false);
+            }
+            cout << "Starting Vector Source\n";
+            curVectorSource = new VectorSource(actScale*activity);
+            curVectorSource->SetMaterial(curMaterial);
+            parse_VectorSource = true;
+        } else if (command == "end_vecsrc") {
+            char string[256];
+            int scanCode = sscanf(args.c_str(), "%s", string);
+            if ((scanCode != 1) || (curVectorSource == NULL)) {
+                print_parse_error(line);
+                return(false);
+            }
+            sources.AddSource(curVectorSource);
+            cout << "Ending Vector Source:\n";
+            cout << curVectorSource->GetMin();
+            cout << "\n";
+            cout << curVectorSource->GetMax();
+            cout << "\n";
+            parse_VectorSource = false;
+            curVectorSource = NULL;
         } else {
             // TODO: move all of these commands out of this structure into the
             // else if above.
@@ -945,102 +1011,6 @@ bool LoadDetector::Load(const std::string & filename,
                 }
                 case 26: {
                     Output::SetLogPositron(true);
-                    break;
-                }
-                case 27: {
-                    // Sphere object
-                    VectorR3 position;
-                    double radius = -1.0;
-                    scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf", &(position.x), &(position.y), &(position.z), &radius );
-                    if (scanCode == 4) {
-                        ViewableSphere * s = new ViewableSphere(position, radius);
-                        s->SetMaterial(curMaterial);
-                        TransformWithRigid(s,MatrixStack.top());
-                        theScene.AddViewable(s);
-                    } else {
-                        parseErrorOccurred = true;
-                        break;
-                    }
-                    break;
-                }
-                case 28: { // beam pos_x pos_y pos_z axis_x axis_y axis_z angle activity
-                    // Beam source
-                    VectorR3 position;
-                    VectorR3 axis;
-                    double angle = -1.0;
-                    double activity = -1.0;
-                    scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf",
-                                       &(position.x), &(position.y), &(position.z),
-                                       &(axis.x), &(axis.y), &(axis.z),
-                                       &angle,
-                                       &activity );
-                    if (scanCode == 8) {
-                        axis.Normalize();
-                        MatrixStack.top().Transform(&position);
-                        MatrixStack.top().Transform3x3(&axis);
-                        BeamPointSource * s = new BeamPointSource(position, axis, angle, actScale*activity);
-                        s->SetMaterial(curMaterial);
-                        sources.AddSource(s);
-                    } else {
-                        parseErrorOccurred = true;
-                        break;
-                    }
-                    break;
-                }
-                case 29: { // acolinearity degrees fwhm
-                    double acon = -1.0;
-                    scanCode = sscanf(args.c_str(), "%lf", &acon);
-                    if (scanCode == 1) {
-                        sources.SetAcolinearity(acon);
-                    } else {
-                        parseErrorOccurred = true;
-                        break;
-                    }
-                    break;
-                }
-                case 30: { // log_all true/false logs all interactions
-                    Output::SetLogAll(true);
-                    break;
-                }
-                case 31: { // Set binary file io
-                    Output::SetBinary(true);
-                    break;
-                }
-                case 32: { // Set spectial detector binning TODO: implement binning
-                    cout << "Warning: Binning not implemented\n";
-                    break;
-                }
-                case 33: { // Start Vector Source
-                    double activity = -1.0;
-                    int scanCode = sscanf(args.c_str(), "%lf", &activity);
-                    if (scanCode ==1) {
-                        cout << "Starting Vector Source\n";
-                        curVectorSource = new VectorSource(actScale*activity);
-                        curVectorSource->SetMaterial(curMaterial);
-                        parse_VectorSource = true;
-                    } else {
-                        parseErrorOccurred = true;
-                        break;
-                    }
-                    break;
-                }
-                case 34: { // End Vector Source
-                    char string[256];
-                    int scanCode = sscanf(args.c_str(), "%s", string);
-                    if ((scanCode ==1) && (curVectorSource != NULL)) {
-                        sources.AddSource(curVectorSource);
-                        cout << "Ending Vector Source:\n";
-                        cout << curVectorSource->GetMin();
-                        cout << "\n";
-                        cout << curVectorSource->GetMax();
-                        cout << "\n";
-                        parse_VectorSource = false;
-                        curVectorSource = NULL;
-
-                    } else {
-                        parseErrorOccurred = true;
-                        break;
-                    }
                     break;
                 }
                 default: {
