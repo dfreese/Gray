@@ -30,7 +30,7 @@
 #include <sstream>
 
 namespace {
-const int numCommands = 21;
+const int numCommands = 10;
 const char * dffCommandList[numCommands] = {
     "p",                // 0 Polygon patches
     "m",                // 1 Material index
@@ -42,12 +42,6 @@ const char * dffCommandList[numCommands] = {
     "angle",            // 7 Parameter to "v" command: fov angle
     "hither",           // 8 Parameter to "v" command: near clipping distance
     "resolution",       // 9 Parameter to "v" command: resolution
-    "l",                // 10 add lightsource
-    "t",                // 11 translate current matrix stack by coordinates
-    "push",             // 12 push matrix
-    "pop",              // 13 pop matrix
-    "b",                // 14 Background color
-    "raxis",            // 15 rotate around axis, axis x,y,z theta
 };
 }
 
@@ -770,6 +764,62 @@ bool LoadDetector::Load(const std::string & filename,
             CylinderSource * cyl = new CylinderSource(center, radius, axis, actScale*activity);
             cyl->SetMaterial(curMaterial);
             sources.AddSource(cyl);
+        } else if (command == "l") {
+            // light
+            VectorR3 lightPos, lightColor;
+            scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf",
+                              &(lightPos.x), &(lightPos.y), &(lightPos.z),
+                              &(lightColor.x), &(lightColor.y),
+                              &(lightColor.z));
+            if ((scanCode != 3) && (scanCode != 6)) {
+                print_parse_error(line);
+                return(false);
+            }
+            Light * aLight = new Light();
+            aLight->SetPosition(lightPos);
+            if (scanCode == 6) {
+                aLight->SetColor(lightColor);
+            }
+            theScene.AddLight(aLight);
+        } else if (command == "t") {
+            // translate
+            VectorR3 trans;
+            scanCode = sscanf(args.c_str(), "%lf %lf %lf",
+                              &(trans.x), &(trans.y), &(trans.z));
+            if (scanCode != 3) {
+                print_parse_error(line);
+                return(false);
+            }
+
+            trans *= polygonScale;
+            MatrixStack.top().ApplyTranslationLeft(trans);
+        } else if (command == "push") {
+            // push matrix
+            // Add a copy of the current matrix to the top of the stack
+            MatrixStack.push(MatrixStack.top());
+        } else if (command == "pop") {
+            MatrixStack.pop();
+        } else if (command == "b") {
+            // background color
+            VectorR3 bgColor;
+            scanCode = sscanf(args.c_str(), "%lf %lf %lf",
+                              &(bgColor.x), &(bgColor.y), &(bgColor.z));
+            if (scanCode != 3) {
+                print_parse_error(line);
+                return(false);
+            }
+            theScene.SetBackGroundColor(bgColor);
+        } else if (command == "raxis") {
+            // raxis
+            VectorR3 axis;
+            double degree;
+            scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf",
+                              &(axis.x), &(axis.y), &(axis.z), &degree);
+            if (scanCode != 4) {
+                print_parse_error(line);
+                return(false);
+            }
+            ApplyRotation(axis, degree * (M_PI/180.0), MatrixStack.top());
         } else {
             // TODO: move all of these commands out of this structure into the
             // else if above.
@@ -914,66 +964,6 @@ bool LoadDetector::Load(const std::string & filename,
                     if (scanCode != 2) {
                         parseErrorOccurred = true;
                     }
-                    break;
-                }
-                case 10: { // light
-                    VectorR3 lightPos, lightColor;
-                    scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf",
-                                       &(lightPos.x), &(lightPos.y), &(lightPos.z),
-                                       &(lightColor.x), &(lightColor.y), &(lightColor.z) );
-                    if ( scanCode==3 || scanCode==6 ) {
-                        Light* aLight = new Light();
-                        aLight->SetPosition( lightPos );
-                        if ( scanCode==6 ) {
-                            aLight->SetColor( lightColor );
-                        }
-                        theScene.AddLight( aLight );
-                    } else {
-                        parseErrorOccurred = true;
-                    }
-                    break;
-                }
-                case 11: { // translate
-                    VectorR3 trans;
-                    scanCode = sscanf(args.c_str(), "%lf %lf %lf",&(trans.x), &(trans.y), &(trans.z));
-
-                    trans *= polygonScale;
-
-                    if (scanCode == 3) {
-                        //MatrixStack.top().Transform3x3(&trans);
-                        MatrixStack.top().ApplyTranslationLeft(trans);
-                    } else {
-                        parseErrorOccurred = true;
-                    }
-                    break;
-                }
-                case 12: { // push matrix
-                    // Add a copy of the current matrix to the top of the stack
-                    MatrixStack.push(MatrixStack.top());
-                    break;
-                }
-                case 13: { // pop matrix
-                    MatrixStack.pop();
-                    break;
-                }
-                case 14: { // background color
-                    VectorR3 bgColor;
-                    scanCode = sscanf(args.c_str(), "%lf %lf %lf", &(bgColor.x), &(bgColor.y), &(bgColor.z) );
-                    if ( scanCode!=3 ) {
-                        parseErrorOccurred = true;
-                        break;
-                    }
-                    theScene.SetBackGroundColor( bgColor );
-                    break;
-                }
-                case 15: { // raxis
-                    VectorR3 axis;
-                    double degree;
-                    scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf", &(axis.x), &(axis.y), &(axis.z), &degree );
-                    if (scanCode != 4) {
-                        break;
-                    }
-                    ApplyRotation(axis, degree * (M_PI/180.0), MatrixStack.top());
                     break;
                 }
                 default: {
