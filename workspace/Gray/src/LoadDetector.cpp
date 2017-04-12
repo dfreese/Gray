@@ -30,7 +30,7 @@
 #include <sstream>
 
 namespace {
-const int numCommands = 27;
+const int numCommands = 21;
 const char * dffCommandList[numCommands] = {
     "p",                // 0 Polygon patches
     "m",                // 1 Material index
@@ -53,12 +53,6 @@ const char * dffCommandList[numCommands] = {
     "array",            // 18 array of detectors
     "cyl",              // 19 add a cylinder
     "cyl_src",          // 20 cylinder source
-    "#",                // 21 comments
-    "time",             // 22 Set Simulation Time
-    "v",                // 23 view matrix
-    "scale",            // 24 set polygon scale
-    "seed",             // 25 set integer seed
-    "log_positron",     // 26 turn on positron logging
 };
 }
 
@@ -177,7 +171,6 @@ bool LoadDetector::Load(const std::string & filename,
     double fovy;		// Field of view angle (in radians)
     int screenWidth, screenHeight;
     double hither;
-    bool parseErrorOccurred = false;
 
     // Vectorial Source parsing
     bool parse_VectorSource = false;
@@ -605,6 +598,35 @@ bool LoadDetector::Load(const std::string & filename,
             cout << "\n";
             parse_VectorSource = false;
             curVectorSource = NULL;
+        } else if (command == "time") {
+            // simulation time in seconds
+            double simulationTime = 1.0;
+            int scanCode = sscanf(args.c_str(), "%lf", &simulationTime);
+            if (scanCode != 1) {
+                print_parse_error(line);
+                return(false);
+            }
+            sources.SetSimulationTime(simulationTime);
+        } else if (command == "v") {
+            viewCmdStatus = true;
+        } else if (command == "scale") {
+            double t_polygonScale = -1.0;
+            int scanCode = sscanf(args.c_str(), "%lf", &t_polygonScale);
+            if (scanCode != 1) {
+                print_parse_error(line);
+                return(false);
+            }
+            polygonScale = t_polygonScale;
+        } else if (command == "seed") {
+            unsigned long seed = 0;
+            int scanCode = sscanf(args.c_str(), "%ld", &seed);
+            if (scanCode != 1) {
+                print_parse_error(line);
+                return(false);
+            }
+            Random::Seed((unsigned long)seed);
+        } else if (command == "log_positron") {
+            Output::SetLogPositron(true);
         } else {
             // TODO: move all of these commands out of this structure into the
             // else if above.
@@ -614,6 +636,7 @@ bool LoadDetector::Load(const std::string & filename,
                 cerr << "command not found: " << command << endl;
                 return(false);
             }
+            bool parseErrorOccurred = false;
             switch (cmdNum) {
                 case 0: {
                     int numVerts;
@@ -966,51 +989,6 @@ bool LoadDetector::Load(const std::string & filename,
                         parseErrorOccurred = true;
                         break;
                     }
-                    break;
-                }
-                case 21: { // # comment
-                    continue;
-                    break;
-                }
-                case 22: { // simulation time in seconds
-                    double simulationTime = 1.0;
-                    int scanCode = sscanf(args.c_str(), "%lf", &simulationTime);
-                    if (scanCode != 1) {
-                        parseErrorOccurred = true;
-                        break;
-                    } else {
-                        sources.SetSimulationTime(simulationTime);
-                    }
-                    break;
-                }
-                case 23: { // read view command
-                    viewCmdStatus = true;
-                    break;
-                }
-                case 24: { // polygon scale
-                    double t_polygonScale = -1.0;
-                    int scanCode = sscanf(args.c_str(), "%lf", &t_polygonScale);
-                    if (scanCode ==1) {
-                        polygonScale = t_polygonScale;
-                    } else {
-                        parseErrorOccurred = true;
-                        break;
-                    }
-                    break;
-                }
-                case 25: { // input long integer random seed
-                    unsigned long seed = 0;
-                    int scanCode = sscanf(args.c_str(), "%ld", &seed);
-                    if (scanCode ==1) {
-                        Random::Seed((unsigned long)seed);
-                    } else {
-                        parseErrorOccurred = true;
-                        break;
-                    }
-                    break;
-                }
-                case 26: {
-                    Output::SetLogPositron(true);
                     break;
                 }
                 default: {
