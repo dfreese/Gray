@@ -202,6 +202,8 @@ bool LoadDetector::Load(const std::string & filename,
         int no_repeats;
         int no_complete;
         size_t start_idx;
+        string starting_file;
+        size_t starting_line;
     };
     stack<RepeatInfo> repeat_info_stack;
     vector<string> repeat_buffer;
@@ -218,12 +220,6 @@ bool LoadDetector::Load(const std::string & filename,
         }
         if (read_from_file) {
             if (!getline(file_stack.top(), line)) { // read a line of the file
-                if (!repeat_info_stack.empty()) {
-                    print_parse_error(line);
-                    cerr << "unpaired begin_repeat found in: \""
-                         << filename_stack.top() << "\"" << endl;
-                    return(false);
-                }
                 file_stack.pop();
             }
             file_lines_read_stack.top()++;
@@ -267,6 +263,8 @@ bool LoadDetector::Load(const std::string & filename,
             repeat_info_stack.push(RepeatInfo());
             repeat_info_stack.top().no_repeats = no_repeats;
             repeat_info_stack.top().no_complete = 0;
+            repeat_info_stack.top().starting_file = filename_stack.top();
+            repeat_info_stack.top().starting_line = file_lines_read_stack.top();
             // The first line will be the next line put into the buffer
             repeat_info_stack.top().start_idx = current_idx;
         } else if (command == "end_repeat") {
@@ -339,15 +337,21 @@ bool LoadDetector::Load(const std::string & filename,
                 return(false);
             }
             file_stack.emplace(include_filename.c_str());
-            if (file_stack.top()) {
-                cout << "Including File:" << include_filename << endl;
-            } else {
+            if (!file_stack.top()) {
+                print_parse_error(line);
                 cerr << "Include File doesn't exist: "
-                << include_filename << endl;
-                file_stack.pop();
+                     << include_filename << endl;
+                return(false);
             }
             file_lines_read_stack.push(0);
             filename_stack.push(include_filename);
+            // Drop the include line from the repeat buffer if it's there, as
+            // we just assume including a file is like dropping all of the text
+            // onto that line.
+            if (!repeat_buffer.empty()) {
+                repeat_buffer.pop_back();
+                current_idx--;
+            }
         } else if (command == "increment") {
             VectorR3 StartPos;
             VectorR3 UnitSize;
@@ -1069,6 +1073,13 @@ bool LoadDetector::Load(const std::string & filename,
                 return(false);
             }
         }
+    }
+
+    if (!repeat_info_stack.empty()) {
+        cerr << "unpaired begin_repeat found in: \""
+             << repeat_info_stack.top().starting_file << "\", line: "
+             << repeat_info_stack.top().starting_line << endl;
+        return(false);
     }
 
     if (viewCmdStatus) {
