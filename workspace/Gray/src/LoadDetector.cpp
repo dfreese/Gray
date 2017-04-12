@@ -64,23 +64,23 @@ const char * dffCommandList[numCommands] = {
     "acolinearity",     // 29 acolinearity
     "log_all",          // 30 log all interactions
     "binary_output",    // 31 enable binary data output
-    "binning",          // 32 enable binning
+    "binning",          // 32 enable binning x
     "start_vecsrc",     // 33 start vector source
     "end_vecsrc",       // 34 end vector source
-    "log_det_id",       // 35 log detector id
-    "log_det_coord",    // 36 log detector coord
+    "log_det_id",       // 35 log detector id x
+    "log_det_coord",    // 36 log detector coord x
     "save_detector",	// 37 save detector to a file
     "scale_act",		// 38 scale activity
-    "save_coinc",		// 39 set coincidence file
-    "save_singles",		// 40 set singles file
-    "save_cp",          // 41 set coincidence process file
-    "time_resolution",	// 42 set time_resolution of detectors
-    "eres",             // 43 set energy_resolution of detectors
-    "time_gate",		// 44 set coincidence time gate
-    "energy_gate",		// 45 set coincidence energy gate
-    "del_window",		// 46 set coincidence delayed window
-    "pos_range",		// 47 set positron range
-    "setFBP2D",         // 48 set 2D mode coincidence
+    "save_coinc",		// 39 set coincidence file x
+    "save_singles",		// 40 set singles file x
+    "save_cp",          // 41 set coincidence process file x
+    "time_resolution",	// 42 set time_resolution of detectors x
+    "eres",             // 43 set energy_resolution of detectors x
+    "time_gate",		// 44 set coincidence time gate x
+    "energy_gate",		// 45 set coincidence energy gate x
+    "del_window",		// 46 set coincidence delayed window x
+    "pos_range",		// 47 set positron range x
+    "setFBP2D",         // 48 set 2D mode coincidence x
     "isotope",          // 49 set isotope
     "voxel_src",		// 50 load voxel array source
     "include",          // 51 include a dff file into current file
@@ -187,7 +187,15 @@ bool LoadDetector::Load(const std::string & filename,
         cerr << "LoadDffFile: Unable to open file: " << filename << endl;
         return false;
     }
-    
+
+    auto print_parse_error = [&filename_stack, &file_lines_read_stack](
+            const std::string & line)
+    {
+        cerr << "Parse error in NFF file \"" << filename_stack.top()
+             << "\", line_no: " << file_lines_read_stack.top()
+             << " line: " << line << endl;
+    };
+
     std::string file_dir = "";
     size_t dir_pos = filename.find_last_of('/');
     if (dir_pos != std::string::npos) {
@@ -211,27 +219,55 @@ bool LoadDetector::Load(const std::string & filename,
     
     GammaMaterial* curMaterial = dynamic_cast<GammaMaterial*>(&theScene.GetMaterial(0));
 
-    while ( true ) {
+    struct RepeatInfo {
+        int no_repeats;
+        int no_complete;
+        size_t start_idx;
+    };
+    stack<RepeatInfo> repeat_info_stack;
+    vector<string> repeat_buffer;
+    size_t current_idx = 0;
+
+    while (true) {
         string line;
-        if (!getline(file_stack.top(), line)) { // read a line of the file
-            file_stack.pop();
-            if (!file_stack.empty()) {
-                continue;
+        bool read_from_file = true;
+        if (!repeat_info_stack.empty()) {
+            if (current_idx < repeat_buffer.size()) {
+                line = repeat_buffer[current_idx++];
+                read_from_file = false;
             }
-            if ( viewCmdStatus ) {
-                SetCameraViewInfo( theScene.GetCameraView(),
-                                   viewPos, lookAtPos, upVector, fovy,
-                                   screenWidth, screenHeight, hither );
-            }
-            // TODO: Output geometry to file
-            if (filename_detector != "") {
-                ofstream det_file(filename_detector.c_str());
-                det_file << detector_array;
-                det_file.close();
-            }
-            return true;
         }
-        file_lines_read_stack.top()++;
+        if (read_from_file) {
+            if (!getline(file_stack.top(), line)) { // read a line of the file
+                if (!repeat_info_stack.empty()) {
+                    cerr << "unpaired begin_repeat found in: \""
+                         << filename_stack.top() << "\"" << endl;
+                    return(false);
+                }
+                file_stack.pop();
+                if (!file_stack.empty()) {
+                    continue;
+                }
+                if ( viewCmdStatus ) {
+                    SetCameraViewInfo( theScene.GetCameraView(),
+                                       viewPos, lookAtPos, upVector, fovy,
+                                       screenWidth, screenHeight, hither );
+                }
+                // TODO: Output geometry to file
+                if (filename_detector != "") {
+                    ofstream det_file(filename_detector.c_str());
+                    det_file << detector_array;
+                    det_file.close();
+                }
+                return true;
+            }
+            file_lines_read_stack.top()++;
+
+            if (!repeat_info_stack.empty()) {
+                repeat_buffer.push_back(line);
+                current_idx = repeat_buffer.size();
+            }
+        }
 
         // Ignore blank lines, including just all whitespace
         if (line.find_first_not_of(" ") == string::npos) {
@@ -247,7 +283,9 @@ bool LoadDetector::Load(const std::string & filename,
         stringstream line_ss(line);
         string command;
         if ((line_ss >> command).fail()) {
-            parseErrorOccurred = true;
+            print_parse_error(line);
+            cerr << "Unable to parse command" << endl;
+            return(false);
         }
 
         int cmdNum = GetCommandNumber(command);
@@ -255,6 +293,35 @@ bool LoadDetector::Load(const std::string & filename,
         string args = ScanForSecondField(line);
         int global_id = -1;
         int scanCode;
+
+        if (command == "begin_repeat") {
+            int no_repeats;
+            if ((line_ss >> no_repeats).fail()) {
+                print_parse_error(line);
+                cerr << "Unable to parse number of repeats" << endl;
+                return(false);
+            }
+            repeat_info_stack.push(RepeatInfo());
+            repeat_info_stack.top().no_repeats = no_repeats;
+            repeat_info_stack.top().no_complete = 0;
+            // The first line will be the next line put into the buffer
+            repeat_info_stack.top().start_idx = current_idx;
+        } else if (command == "end_repeat") {
+            repeat_info_stack.top().no_complete++;
+            if (repeat_info_stack.top().no_complete <
+                repeat_info_stack.top().no_repeats)
+            {
+                current_idx = repeat_info_stack.top().start_idx;
+            } else {
+                repeat_info_stack.pop();
+                if (repeat_info_stack.empty()) {
+                    repeat_buffer.clear();
+                    current_idx = 0;
+                }
+            }
+        } else if (command == "echo") {
+            cout << "echo: " << args << endl;
+        }
 
         switch ( cmdNum ) {
             case 0: {
@@ -1089,7 +1156,7 @@ bool LoadDetector::Load(const std::string & filename,
                 break;
             }
             default: {
-                parseErrorOccurred  = true;
+//                parseErrorOccurred  = true;
                 break;
             }
         }
