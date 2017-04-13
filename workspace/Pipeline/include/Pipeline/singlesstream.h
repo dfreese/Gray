@@ -111,6 +111,8 @@ public:
                     {
                         return(-3);
                     }
+                } else {
+                    return(-4);
                 }
             } else if (proc_desc.type == "deadtime") {
                 if (add_merge_process("deadtime_nonpara", proc_desc.component,
