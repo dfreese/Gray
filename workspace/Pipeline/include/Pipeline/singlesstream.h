@@ -485,7 +485,10 @@ private:
                           const std::vector<std::string> & options)
     {
         if (name == "window") {
-            coinc_processes.emplace_back(value, deltat_func, time_less_than);
+            // TODO: process multiples rejection, paralyzability, and delay
+            // window options from the options.
+            coinc_processes.emplace_back(value, deltat_func, false, true, false,
+                                         TimeT(), time_less_than);
             process_stream.add_process(&coinc_processes.back());
             return(0);
         } else {
