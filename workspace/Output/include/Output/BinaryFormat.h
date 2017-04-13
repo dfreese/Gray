@@ -5,7 +5,7 @@
 
 #pragma pack(push, 1)
 
-struct GRAY_BINARY {
+struct GrayBinaryStandard {
     double time;
     float energy;
     float x,y,z;
@@ -15,7 +15,7 @@ struct GRAY_BINARY {
 };
 #pragma pack(pop)
 
-struct BinaryDetectorOutput {
+struct GrayBinaryNoPosition {
     double time;
     float energy;
     int log;

@@ -76,7 +76,7 @@ void Output::LogInteraction(const Interaction & interact) {
     }
     if (binary_output) {
         if (binary_format == FULL_OUTPUT) {
-            GRAY_BINARY b;
+            GrayBinaryStandard b;
             b.i = interact.id;
             b.time = interact.time;
             b.energy = interact.energy;
@@ -89,7 +89,7 @@ void Output::LogInteraction(const Interaction & interact) {
                                 interact.src_id);
             log_file.write(reinterpret_cast<char*>(&b), sizeof(b));
         } else if (binary_format == NO_POS) {
-            BinaryDetectorOutput b;
+            GrayBinaryNoPosition b;
             b.i = interact.id;
             b.time = interact.time;
             b.energy = interact.energy;
