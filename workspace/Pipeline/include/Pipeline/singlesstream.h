@@ -484,17 +484,46 @@ private:
     int add_coinc_process(const std::string & name, double value,
                           const std::vector<std::string> & options)
     {
-        if (name == "window") {
-            // TODO: process multiples rejection, paralyzability, and delay
-            // window options from the options.
-            coinc_processes.emplace_back(value, deltat_func, false, true, false,
-                                         TimeT(), time_less_than);
-            process_stream.add_process(&coinc_processes.back());
-            return(0);
+        bool paralyzable = false;
+        bool reject_multiples = true;
+        bool enable_delayed_window = false;
+        TimeT delayed_window_offset;
+        for (size_t ii = 0; ii < options.size(); ii++) {
+            const std::string & option = options[ii];
+            if (option == "keep_multiples") {
+                reject_multiples = false;
+            } else if (option == "delay") {
+                enable_delayed_window = true;
+                ii++;
+                if (ii == options.size()) {
+                    std::cerr << "coinc delay has no time offset" << std::endl;
+                    return(-1);
+                }
+                std::stringstream ss(options[ii + 1]);
+                if ((ss >> delayed_window_offset).fail()) {
+                    std::cerr << "invalid coinc delay offset: " << ss.str()
+                              << std::endl;
+                    return(-1);
+                }
+            } else {
+                std::cerr << "unrecognized coinc option: " << option
+                          << std::endl;
+                return(-1);
+            }
+        }
+        if ((name == "window") || (name == "nonparalyzable")) {
+            paralyzable = false;
+        } else if (name == "paralyzable") {
+            paralyzable = true;
         } else {
             std::cerr << "Unknown coinc type: " << name << std::endl;
-            return(-1);
+            return(-2);
         }
+        coinc_processes.emplace_back(value, deltat_func, reject_multiples,
+                                     paralyzable, enable_delayed_window,
+                                     delayed_window_offset, time_less_than);
+        process_stream.add_process(&coinc_processes.back());
+        return(0);
     }
 };
 

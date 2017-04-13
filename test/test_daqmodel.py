@@ -218,14 +218,28 @@ def test_coinc():
                      dtype=data.dtype['time'])
     data['time'] = times
 
-    expected = data[np.array((0, 1, 2, 5, 6))]
-
+    expected = data[np.array((0, 1, 5, 6))]
     output = _create_and_run_merge(data, ('coinc', 'window', coinc_win))
-
     assert(output.size == expected.size), \
-            'Size not expected for coinc sort'
+            'Size not expected for nonparalyzable coinc sort'
     assert((output == expected).all()), \
-            'Event data not as expected for coinc sort'
+            'Event data not as expected for nonparalyzable coinc sort'
+
+    expected = data[np.array((5, 6))]
+    output = _create_and_run_merge(data, ('coinc', 'paralyzable', coinc_win))
+    assert(output.size == expected.size), \
+            'Size not expected for paralyzable coinc sort'
+    assert((output == expected).all()), \
+            'Event data not as expected for paralyzable coinc sort'
+
+    expected = data[np.array((0, 1, 2, 5, 6))]
+    output = _create_and_run_merge(data, ('coinc', 'paralyzable', coinc_win,
+                                          'keep_multiples'))
+    assert(output.size == expected.size), \
+            'Size not expected for paralyzable coinc sort keeping mutiples'
+    assert((output == expected).all()), \
+            '''Event data not as expected for paralyzable coinc sort keeping
+            mutiples'''
 
 def test_multiple_merge_egate_coinc():
     data = np.zeros(8, dtype=gray.no_position_dtype)

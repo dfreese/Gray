@@ -73,18 +73,23 @@ private:
             if (paralyzable) {
                 coinc_window_end += delta_t;
             }
-            if (reject_multiples && (ref_event_pair.second.no_coinc > 1)) {
-                ref_event_pair.second.write_coinc = false;
-                new_event_pair.second.write_coinc = false;
-            } else {
-                ref_event_pair.second.write_coinc = true;
-                new_event_pair.second.write_coinc = true;
-            }
+            ref_event_pair.second.write_coinc = true;
+            new_event_pair.second.write_coinc = true;
             // If we're not going to do any processing on a delayed window,
             // then we can return right now, because we haven't seen the end of
             // the coincidence window.
             if (!use_delayed_window) {
                 return;
+            }
+        }
+        if (reject_multiples && (ref_event_pair.second.no_coinc > 1)) {
+            for (auto & ep : buffer) {
+                TimeT delta_t = deltat_func(ep.first, ref_event_pair.first);
+                bool within_coinc_window = time_less_than(delta_t,
+                                                          coinc_window_end);
+                if (within_coinc_window) {
+                    ep.second.write_coinc = false;
+                }
             }
         }
 
@@ -98,16 +103,27 @@ private:
                 if (paralyzable) {
                     delay_window_end += delta_t;
                 }
+                ref_event_pair.second.write_delay = true;
+                new_event_pair.second.write_delay = true;
                 if (reject_multiples && (ref_event_pair.second.no_delay > 1)) {
                     ref_event_pair.second.write_delay = false;
                     new_event_pair.second.write_delay = false;
-                } else {
-                    ref_event_pair.second.write_delay = true;
-                    new_event_pair.second.write_delay = true;
                 }
             }
             // Nothing else to do, since the window hasn't timed out yet.
             return;
+        }
+
+        if (reject_multiples && (ref_event_pair.second.no_delay > 1)) {
+            for (auto & ep : buffer) {
+                TimeT delta_t = deltat_func(ep.first, ref_event_pair.first);
+                bool inside_delay_end = time_less_than(delta_t, delay_window_end);
+                bool inside_delay_start = time_less_than(delta_t, delay_window_start);
+                bool within_delay_window = inside_delay_end && !inside_delay_start;
+                if (within_delay_window) {
+                    ep.second.write_delay = false;
+                }
+            }
         }
 
         // Find all of the events that have been acted on by the coincidence
