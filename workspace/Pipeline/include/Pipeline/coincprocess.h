@@ -47,110 +47,8 @@ public:
 private:
 
     void _add_event(const EventT & event) {
-        if (buffer.empty()) {
-            coinc_window_end = coinc_window;
-            delay_window_start = delay_offset;
-            delay_window_end = delay_offset + coinc_window;
-            // set acted_on for this event as it created the window.  The same
-            // will need to be done when a window is reopened without an empty
-            // buffer.
-            buffer.push_back({event, {false, false, 0, 0}});
-            return;
-        }
-        // Add the event to the buffer
-        buffer.push_back({event, {false, false, 0, 0}});
-
-        EventPair & ref_event_pair = buffer.front();
-        EventPair & new_event_pair = buffer.back();
-
-        TimeT delta_t = deltat_func(new_event_pair.first,
-                                    ref_event_pair.first);
-
-        bool within_coinc_window = time_less_than(delta_t, coinc_window_end);
-        if (within_coinc_window) {
-            ref_event_pair.second.no_coinc++;
-            new_event_pair.second.no_coinc++;
-            if (paralyzable) {
-                coinc_window_end += delta_t;
-            }
-            ref_event_pair.second.write_coinc = true;
-            new_event_pair.second.write_coinc = true;
-            // If we're not going to do any processing on a delayed window,
-            // then we can return right now, because we haven't seen the end of
-            // the coincidence window.
-            if (!use_delayed_window) {
-                return;
-            }
-        }
-        if (reject_multiples && (ref_event_pair.second.no_coinc > 1)) {
-            for (auto & ep : buffer) {
-                TimeT delta_t = deltat_func(ep.first, ref_event_pair.first);
-                bool within_coinc_window = time_less_than(delta_t,
-                                                          coinc_window_end);
-                if (within_coinc_window) {
-                    ep.second.write_coinc = false;
-                }
-            }
-        }
-
-        bool inside_delay_end = time_less_than(delta_t, delay_window_end);
-        bool inside_delay_start = time_less_than(delta_t, delay_window_start);
-        bool within_delay_window = inside_delay_end && !inside_delay_start;
-        if (use_delayed_window && inside_delay_end) {
-            if (within_delay_window) {
-                ref_event_pair.second.no_delay++;
-                new_event_pair.second.no_delay++;
-                if (paralyzable) {
-                    delay_window_end += delta_t;
-                }
-                ref_event_pair.second.write_delay = true;
-                new_event_pair.second.write_delay = true;
-                if (reject_multiples && (ref_event_pair.second.no_delay > 1)) {
-                    ref_event_pair.second.write_delay = false;
-                    new_event_pair.second.write_delay = false;
-                }
-            }
-            // Nothing else to do, since the window hasn't timed out yet.
-            return;
-        }
-
-        if (reject_multiples && (ref_event_pair.second.no_delay > 1)) {
-            for (auto & ep : buffer) {
-                TimeT delta_t = deltat_func(ep.first, ref_event_pair.first);
-                bool inside_delay_end = time_less_than(delta_t, delay_window_end);
-                bool inside_delay_start = time_less_than(delta_t, delay_window_start);
-                bool within_delay_window = inside_delay_end && !inside_delay_start;
-                if (within_delay_window) {
-                    ep.second.write_delay = false;
-                }
-            }
-        }
-
-        // Find all of the events that have been acted on by the coincidence
-        // window and thus will be removed one way or another.  Assume the first
-        // event has been acted on.
-        EventPairVecCIter save_iter = std::find_if(buffer.begin() + 1,
-                buffer.end(), [](const EventPair & p){
-                    return(p.second.no_coinc == 0);
-                });
-
-        std::for_each(buffer.cbegin(), save_iter,
-                      [this](const EventPair & p){
-                          if (p.second.write_coinc || p.second.write_delay) {
-                              this->add_ready(p.first);
-                          } else {
-                              this->inc_no_dropped();
-                          }
-                      });
-        buffer.erase(buffer.cbegin(), save_iter);
-
-        // Reset window to first event if necessary (we assume the first event
-        // is at time = zero).
-        if (!buffer.empty()) {
-            coinc_window_end = coinc_window;
-            delay_window_start = delay_offset;
-            delay_window_end = delay_offset + coinc_window;
-        }
+        buffer.push_back({event, {false, false, false, false}});
+        update_buffer_status(false);
     }
 
     /*!
@@ -164,14 +62,7 @@ private:
      *
      */
     void _stop() {
-        std::for_each(buffer.cbegin(), buffer.cend(),
-                      [this](const EventPair & p){
-                          if (p.second.write_coinc || p.second.write_delay) {
-                              this->add_ready(p.first);
-                          } else {
-                              this->inc_no_dropped();
-                          }
-                      });
+        update_buffer_status(true);
         buffer.clear();
     }
 
@@ -181,21 +72,108 @@ private:
     void _clear() {
     }
 
+    void update_buffer_status(bool stopping) {
+        for (size_t ii = 0; ii < buffer.size(); ii++) {
+            EventPair & ref_event = buffer[ii];
+            if (ref_event.second.in_coinc) {
+                continue;
+            }
+            TimeT coinc_window_end = coinc_window;
+            std::vector<size_t> in_window;
+            bool window_timed_out = false;
+            for (size_t jj = ii; jj < buffer.size(); jj++) {
+                EventPair & new_event = buffer[jj];
+                TimeT delta_t = deltat_func(new_event.first, ref_event.first);
+                bool within_coinc_window = time_less_than(delta_t,
+                                                          coinc_window_end);
+                if (within_coinc_window) {
+                    in_window.push_back(jj);
+                    if (paralyzable) {
+                        coinc_window_end = delta_t + coinc_window;
+                    }
+                } else {
+                    window_timed_out = true;
+                }
+            }
+            bool keep_coinc = ((in_window.size() == 2) ||
+                               ((in_window.size() > 2) && !reject_multiples));
+            if (window_timed_out || stopping) {
+                for (auto idx: in_window) {
+                    buffer[idx].second.write_coinc = keep_coinc;
+                    buffer[idx].second.in_coinc = true;
+                }
+            }
+        }
+        for (size_t ii = 0; ii < buffer.size(); ii++) {
+            EventPair & ref_event = buffer[ii];
+            if (ref_event.second.in_delay) {
+                continue;
+            }
+            TimeT delay_window_start = delay_offset;
+            TimeT delay_window_end = delay_offset + coinc_window;
+            std::vector<size_t> in_window;
+            in_window.push_back(ii);
+            bool window_timed_out = false;
+            for (size_t jj = ii + 1; jj < buffer.size(); jj++) {
+                EventPair & new_event = buffer[jj];
+                TimeT delta_t = deltat_func(new_event.first, ref_event.first);
+                bool inside_delay_end = time_less_than(delta_t,
+                                                       delay_window_end);
+                bool inside_delay_start = time_less_than(delta_t,
+                                                         delay_window_start);
+                bool within_delay_window = (inside_delay_end &&
+                                            !inside_delay_start);
+                if (within_delay_window) {
+                    in_window.push_back(jj);
+                    if (paralyzable) {
+                        delay_window_end = delta_t + coinc_window;
+                    }
+                }
+                if (!inside_delay_end) {
+                    window_timed_out = true;
+                }
+            }
+            bool keep_delay = ((in_window.size() == 2) ||
+                               ((in_window.size() > 2) && !reject_multiples));
+            if (window_timed_out || stopping) {
+                for (auto idx: in_window) {
+                    buffer[idx].second.write_delay = keep_delay;
+                    buffer[idx].second.in_delay = true;
+                }
+            }
+        }
+
+        auto find_ready = std::find_if(buffer.cbegin(), buffer.cend(),
+                                       [](const EventPair & p){
+                                           return(!p.second.in_coinc ||
+                                                  !p.second.in_delay);
+                                       });
+
+        std::for_each(buffer.cbegin(), find_ready,
+                      [this](const EventPair & p){
+                          if (p.second.write_coinc || p.second.write_delay) {
+                              this->add_ready(p.first);
+                          } else {
+                              this->inc_no_dropped();
+                          }
+                      });
+        buffer.erase(buffer.cbegin(), find_ready);
+    }
+
     TimeT coinc_window;
     TimeT delay_offset;
     bool reject_multiples;
     bool paralyzable;
     bool use_delayed_window;
 
-    TimeT coinc_window_end;
-    TimeT delay_window_start;
-    TimeT delay_window_end;
+
+    int no_delay_events;
 
     struct EventInfo {
         bool write_coinc;
         bool write_delay;
-        int no_coinc;
-        int no_delay;
+        bool in_coinc;
+        bool in_delay;
     };
     typedef std::pair<EventT, EventInfo> EventPair;
     typedef std::vector<EventPair> EventPairVec;

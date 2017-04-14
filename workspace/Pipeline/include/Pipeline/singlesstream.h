@@ -499,7 +499,7 @@ private:
                     std::cerr << "coinc delay has no time offset" << std::endl;
                     return(-1);
                 }
-                std::stringstream ss(options[ii + 1]);
+                std::stringstream ss(options[ii]);
                 if ((ss >> delayed_window_offset).fail()) {
                     std::cerr << "invalid coinc delay offset: " << ss.str()
                               << std::endl;
