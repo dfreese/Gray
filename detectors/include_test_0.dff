@@ -1,0 +1,4 @@
+echo In include_test_0.dff
+begin_repeat 3
+    include include_test_1.dff
+end_repeat

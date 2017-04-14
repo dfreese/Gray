@@ -24,6 +24,7 @@ cyl_src 0.0 2.0 0.0 0.0 0.0 1.0 0.01 68 2.7027
 # set the simulation time to be 5 seconds
 time 1.0
 binary_output
+
 # lso detector
 m lso
 # set color of lso detector to blue
@@ -39,6 +40,7 @@ begin_repeat 8
 end_repeat
 # return to previous transformation matrix
 pop
+
 # bgo detector
 m bgo
 # set color of bgo detector to yellow
@@ -53,6 +55,7 @@ begin_repeat 8
     raxis 0.0 0.0 1.0 45.0
 end_repeat
 pop
+
 # tungsten septa
 m tungsten
 color 0.05 0.05 0.05  0.05 0.05 0.05  0.0 0.0 0.0  0.0 0.0 0.0  0.1 0.1 0.1 1.05
@@ -64,6 +67,7 @@ begin_repeat 8
     raxis 0.0 0.0 1.0 45.0
 end_repeat
 pop
+
 # endshielding
 m lead
 color 0.05 0.05 0.05  0.05 0.05 0.05  0.0 0.0 0.0  0.0 0.0 0.0  0.1 0.1 0.1 1.05
@@ -74,3 +78,6 @@ begin_repeat 8
     raxis 0.0 0.0 1.0 45.0
 end_repeat
 pop
+
+save_detector fast_benchmark_detectors.dat
+save_basic_map fast_benchmark.map

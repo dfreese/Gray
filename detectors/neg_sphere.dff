@@ -28,6 +28,12 @@ sp_src 0.0 0.0 0.0 0.5 -1.0
 pop
 # set the simulation time to be 5 seconds
 time 0.01
+
+# Do a quick test of the include and repeat functionality
+begin_repeat 2
+    include include_test_0.dff
+end_repeat
+
 # lso detector
 m lso
 # set color of lso detector to blue
