@@ -93,6 +93,13 @@ def test_merge_inside_window():
     assert(output[0]['energy'] == (data[0]['energy'] + data[1]['energy'])), \
            ''' Energy should be the sum of the input'''
 
+    comments = _create_and_run_merge(data, ('merge', 'detector', merge_window,
+                                            ' # first'))
+    assert(output.size == comments.size), \
+        'comment in the options should have been ignored'
+    assert((output == comments).all()), \
+         'comment in the options should have been ignored'
+
 def test_merge_inside_window_basic_flag():
     data = np.zeros(2, dtype=gray.no_position_dtype)
     merge_window = 300.0

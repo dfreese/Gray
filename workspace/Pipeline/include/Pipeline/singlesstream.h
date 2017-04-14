@@ -285,12 +285,19 @@ private:
         }
         std::string line;
         while (getline(input, line)) {
+
+            // Ignore blank lines, including just all whitespace
+            if (line.find_first_not_of(" ") == std::string::npos) {
+                continue;
+            }
+            // Remove leading spaces, and anything after a comment
+            line = line.substr(line.find_first_not_of(" "),
+                               line.find_first_of("#"));
+            // Ignore blank lines again after removing comments
             if (line.empty()) {
                 continue;
             }
-            if (line[0] == '#') {
-                continue;
-            }
+
             std::stringstream line_ss(line);
             ProcessDescription proc_desc;
             if ((line_ss >> proc_desc.type).fail()) {

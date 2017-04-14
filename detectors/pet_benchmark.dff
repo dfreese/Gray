@@ -64,3 +64,5 @@ begin_repeat 8
     raxis 0.0 0.0 1.0 45.0
 end_repeat
 pop
+
+save_basic_map pet_benchmark.map
