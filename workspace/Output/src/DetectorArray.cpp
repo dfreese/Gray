@@ -31,3 +31,18 @@ ostream& operator<< ( ostream& os, const DetectorArray& d )
     }
     return os;
 }
+
+void DetectorArray::WriteBasicMap(std::ostream & os,
+                                  const std::string & detector_name,
+                                  const std::string & block_name,
+                                  const std::string & bx_name,
+                                  const std::string & by_name,
+                                  const std::string & bz_name)
+{
+    os << detector_name << " " << block_name << " " << bx_name  << " "
+       << by_name << " " << bz_name << "\n";
+    for (const auto & d: detectors){
+        os << d.detector_id << " " << d.block << " " << d.idx[0]  << " "
+           << d.idx[1] << " " << d.idx[2] << "\n";
+    }
+}

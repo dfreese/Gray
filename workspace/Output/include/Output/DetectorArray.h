@@ -18,6 +18,12 @@ public:
     void OutputDetectorArray();
     friend std::ostream& operator<< (std::ostream& os, const DetectorArray& d );
     std::vector<Detector> detectors;
+    void WriteBasicMap(std::ostream & os,
+                       const std::string & detector_name,
+                       const std::string & block_name,
+                       const std::string & bx_name,
+                       const std::string & by_name,
+                       const std::string & bz_name);
 };
 
 #endif /*DETECTORARRAY_H_*/

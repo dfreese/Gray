@@ -100,6 +100,7 @@ bool LoadDetector::Load(const std::string & filename,
 {
     DetectorArray detector_array;
     std::string filename_detector = "";
+    string filename_basic_map;
     double polygonScale = 1.0;
     double actScale = 1.0;
     unsigned int block_id = 0;
@@ -501,6 +502,11 @@ bool LoadDetector::Load(const std::string & filename,
                 return(false);
             }
             filename_detector = std::string(filename);
+        } else if (command == "save_basic_map") {
+            if ((line_ss >> filename_basic_map).fail()) {
+                print_parse_error(line);
+                return(false);
+            }
         } else if (command == "scale_act") {
             double t_actScale = -1.0;
             int scanCode = sscanf(args.c_str(), "%lf", &t_actScale);
@@ -979,6 +985,17 @@ bool LoadDetector::Load(const std::string & filename,
         ofstream det_file(filename_detector.c_str());
         det_file << detector_array;
         det_file.close();
+    }
+    if (filename_basic_map != "") {
+        ofstream map_file(filename_basic_map);
+        if (!map_file) {
+            cerr << "Unable to open basic map file: " << filename_basic_map
+                 << endl;
+            return(false);
+        }
+        detector_array.WriteBasicMap(map_file, "detector", "block", "bx", "by",
+                                     "bz");
+
     }
     return(true);
 }
