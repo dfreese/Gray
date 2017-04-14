@@ -441,12 +441,31 @@ private:
                          const std::vector<std::string> & options)
     {
         if (name == "energy") {
-            auto eblur = [value](EventT & e) {
-                Blur::blur_energy(e, value);
-            };
-            blur_processes.emplace_back(eblur);
-            process_stream.add_process(&blur_processes.back());
-            return(0);
+            if (options.empty()) {
+                auto eblur = [value](EventT & e) {
+                    Blur::blur_energy(e, value);
+                };
+                blur_processes.emplace_back(eblur);
+                process_stream.add_process(&blur_processes.back());
+                return(0);
+            } else if (options[0] == "at") {
+                double ref_energy;
+                std::stringstream ss(options[1]);
+                if ((ss >> ref_energy).fail()) {
+                    std::cerr << "invalid reference energy: " << options[1]
+                              << std::endl;
+                }
+                auto eblur = [value, ref_energy](EventT & e) {
+                    Blur::blur_energy_invsqrt(e, value, ref_energy);
+                };
+                blur_processes.emplace_back(eblur);
+                process_stream.add_process(&blur_processes.back());
+                return(0);
+            } else {
+                std::cerr << "unrecognized blur option: " << options[0]
+                          << std::endl;
+                return(-1);
+            }
         } else if (name == "time") {
             // Allow the value to be 3 FWHM on either side of the current event
             // TODO: allow this to be set by options.
