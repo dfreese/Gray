@@ -58,6 +58,11 @@ int main( int argc, char** argv)
         }
     }
 
+    if (!config.run_viewer_flag && !config.run_physics_flag) {
+        cout << "Neither viewer nor physics selected.  Exiting." << endl;
+        return(0);
+    }
+
     IntersectKdTree intersect_kd_tree(scene);
     sources.SetKdTree(intersect_kd_tree);
 
