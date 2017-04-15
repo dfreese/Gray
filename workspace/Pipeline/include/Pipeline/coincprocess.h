@@ -39,15 +39,45 @@ public:
         paralyzable(is_paralyzable),
         use_delayed_window(use_delay),
         deltat_func(dt_func),
-        time_less_than(time_lt_func)
+        time_less_than(time_lt_func),
+        no_coinc_pair_events(0),
+        no_coinc_multiples_events(0),
+        no_coinc_single_events(0),
+        no_delay_pair_events(0),
+        no_delay_multiples_events(0),
+        no_delay_single_events(0)
     {
 
+    }
+
+    long get_no_coinc_pair_events() const {
+        return(no_coinc_pair_events);
+    }
+
+    long get_no_coinc_multiples_events() const {
+        return(no_coinc_multiples_events);
+    }
+
+    long get_no_coinc_singles() const {
+        return(no_coinc_single_events);
+    }
+
+    long get_no_delay_pairs() const {
+        return(no_delay_pair_events);
+    }
+
+    long get_no_delay_multiples() const {
+        return(no_delay_multiples_events);
+    }
+
+    long get_no_delay_singles() const {
+        return(no_delay_single_events);
     }
 
 private:
 
     void _add_event(const EventT & event) {
-        buffer.push_back({event, {false, false, false, false}});
+        buffer.push_back({event, {0, 0}});
         update_buffer_status(false);
     }
 
@@ -56,6 +86,12 @@ private:
      */
     void _reset() {
         buffer.clear();
+        no_coinc_pair_events = 0;
+        no_coinc_multiples_events = 0;
+        no_coinc_single_events = 0;
+        no_delay_pair_events = 0;
+        no_delay_multiples_events = 0;
+        no_delay_single_events = 0;
     }
 
     /*!
@@ -69,7 +105,7 @@ private:
     void update_buffer_status(bool stopping) {
         for (size_t ii = 0; ii < buffer.size(); ii++) {
             EventPair & ref_event = buffer[ii];
-            if (ref_event.second.in_coinc) {
+            if (ref_event.second.no_coinc) {
                 continue;
             }
             TimeT coinc_window_end = coinc_window;
@@ -89,18 +125,15 @@ private:
                     window_timed_out = true;
                 }
             }
-            bool keep_coinc = ((in_window.size() == 2) ||
-                               ((in_window.size() > 2) && !reject_multiples));
             if (window_timed_out || stopping) {
                 for (auto idx: in_window) {
-                    buffer[idx].second.write_coinc = keep_coinc;
-                    buffer[idx].second.in_coinc = true;
+                    buffer[idx].second.no_coinc = in_window.size();
                 }
             }
         }
         for (size_t ii = 0; ii < buffer.size(); ii++) {
             EventPair & ref_event = buffer[ii];
-            if (ref_event.second.in_delay) {
+            if (ref_event.second.no_delay) {
                 continue;
             }
             TimeT delay_window_start = delay_offset;
@@ -127,25 +160,42 @@ private:
                     window_timed_out = true;
                 }
             }
-            bool keep_delay = ((in_window.size() == 2) ||
-                               ((in_window.size() > 2) && !reject_multiples));
             if (window_timed_out || stopping) {
                 for (auto idx: in_window) {
-                    buffer[idx].second.write_delay = keep_delay;
-                    buffer[idx].second.in_delay = true;
+                    buffer[idx].second.no_delay = in_window.size();
                 }
             }
         }
 
         auto find_ready = std::find_if(buffer.cbegin(), buffer.cend(),
                                        [](const EventPair & p){
-                                           return(!p.second.in_coinc ||
-                                                  !p.second.in_delay);
+                                           return(!p.second.no_coinc ||
+                                                  !p.second.no_delay);
                                        });
 
         std::for_each(buffer.cbegin(), find_ready,
                       [this](const EventPair & p){
-                          if (p.second.write_coinc || p.second.write_delay) {
+                          if (p.second.no_coinc == 2) {
+                              no_coinc_pair_events++;
+                          } else if (p.second.no_coinc > 2) {
+                              no_coinc_multiples_events++;
+                          } else {
+                              no_coinc_single_events++;
+                          }
+                          if (p.second.no_delay == 2) {
+                              no_delay_pair_events++;
+                          } else if (p.second.no_delay > 2) {
+                              no_delay_multiples_events++;
+                          } else {
+                              no_delay_single_events++;
+                          }
+
+                          bool keep_event = ((p.second.no_coinc == 2) ||
+                                             (p.second.no_delay == 2) ||
+                                             (((p.second.no_coinc > 2) ||
+                                               (p.second.no_delay > 2)) &&
+                                              !this->reject_multiples));
+                          if (keep_event) {
                               this->add_ready(p.first);
                           } else {
                               this->inc_no_dropped();
@@ -160,14 +210,9 @@ private:
     bool paralyzable;
     bool use_delayed_window;
 
-
-    int no_delay_events;
-
     struct EventInfo {
-        bool write_coinc;
-        bool write_delay;
-        bool in_coinc;
-        bool in_delay;
+        int no_coinc;
+        int no_delay;
     };
     typedef std::pair<EventT, EventInfo> EventPair;
     typedef std::vector<EventPair> EventPairVec;
@@ -182,5 +227,13 @@ private:
      */
     TimeDiffType deltat_func;
     TimeCompT time_less_than;
+
+    long no_coinc_pair_events;
+    long no_coinc_multiples_events;
+    long no_coinc_single_events;
+    long no_delay_pair_events;
+    long no_delay_multiples_events;
+    long no_delay_single_events;
+
 };
 #endif // coincprocess_h
