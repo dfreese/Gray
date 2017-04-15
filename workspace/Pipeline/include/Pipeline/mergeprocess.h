@@ -100,12 +100,6 @@ private:
     }
 
     /*!
-     * Do nothing currently for clear.
-     */
-    void _clear() {
-    }
-
-    /*!
      * A lookup table for the component id that is associated with each
      * detector id.
      */

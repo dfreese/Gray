@@ -72,8 +72,7 @@ private:
      */
     void _stop() {
         while(!event_min_heap.empty()) {
-            const EventT & stored_event = event_min_heap.top();
-            this->add_ready(stored_event);
+            this->add_ready(event_min_heap.top());
             event_min_heap.pop();
         }
         // TODO: check that initialization of time will be okay

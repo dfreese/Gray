@@ -106,10 +106,7 @@ private:
         for (size_t pidx = 0; pidx < processes.size() - 1; ++pidx) {
             Processor<EventT> * cur_process = processes[pidx];
             Processor<EventT> * next_process = processes[pidx + 1];
-            const std::vector<EventT> & events = cur_process->get_ready();
-            for (size_t eidx = 0; eidx < cur_process->no_ready(); ++eidx) {
-                next_process->add_event(events[eidx]);
-            }
+            next_process->add_events(cur_process->get_ready());
             cur_process->clear();
         }
 

@@ -66,12 +66,6 @@ private:
         buffer.clear();
     }
 
-    /*!
-     *
-     */
-    void _clear() {
-    }
-
     void update_buffer_status(bool stopping) {
         for (size_t ii = 0; ii < buffer.size(); ii++) {
             EventPair & ref_event = buffer[ii];

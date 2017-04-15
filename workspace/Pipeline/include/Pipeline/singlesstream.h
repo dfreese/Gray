@@ -40,7 +40,7 @@ public:
         deltat_func([](const EventT & e0,
                        const EventT & e1)
                     {return (e0.time - e1.time);}),
-        time_less_than(TimeCompT())
+        time_less_than(TimeCompF())
     {
         if (initial_sort_window > 0) {
             add_sort_process("time", initial_sort_window,
@@ -59,6 +59,24 @@ public:
         // Func for basic nonparalyzable deadtime.  Basically does nothing,
         // causing event 1 to be dropped.
         merge_types["deadtime_nonpara"] = [](EventT & e0, const EventT & e1){};
+    }
+
+    ~SinglesStream() {
+        for (auto p: merge_processes) {
+            delete p;
+        }
+        for (auto p: filter_processes) {
+            delete p;
+        }
+        for (auto p: blur_processes) {
+            delete p;
+        }
+        for (auto p: sort_processes) {
+            delete p;
+        }
+        for (auto p: coinc_processes) {
+            delete p;
+        }
     }
 
     int load_mappings(const std::string & filename) {
@@ -191,7 +209,7 @@ public:
     long no_merged() const {
         long merged = 0;
         for (auto & proc: merge_processes) {
-            merged += proc.no_dropped();
+            merged += proc->no_dropped();
         }
         return(merged);
     }
@@ -199,7 +217,7 @@ public:
     long no_filtered() const {
         long filtered = 0;
         for (auto & proc: filter_processes) {
-            filtered += proc.no_dropped();
+            filtered += proc->no_dropped();
         }
         return(filtered);
     }
@@ -207,33 +225,32 @@ public:
     long no_coinc_singles() const {
         long coinc_singles = 0;
         for (auto & proc: coinc_processes) {
-            coinc_singles += proc.no_dropped();
+            coinc_singles += proc->no_dropped();
         }
         return(coinc_singles);
     }
 
 private:
-    typedef std::function<TimeT(const EventT&, const EventT&)> TimeDiffType;
-    typedef std::function<int(const EventT&)> InfoType;
-    typedef std::less<TimeT> TimeCompT;
+    typedef std::function<TimeT(const EventT&, const EventT&)> TimeDiffF;
+    typedef std::function<int(const EventT&)> InfoF;
+    typedef std::less<TimeT> TimeCompF;
     typedef std::function<void(EventT&, const EventT&)> MergeF;
     typedef std::function<bool(const EventT&)> FilterF;
     typedef std::function<void(EventT&)> BlurF;
 
     ProcessStream<EventT> process_stream;
-    typedef MergeProcess<EventT, TimeT, TimeDiffType, InfoType, TimeCompT, MergeF> MergeProcT;
+    typedef MergeProcess<EventT, TimeT, TimeDiffF, InfoF, TimeCompF, MergeF> MergeProcT;
     typedef FilterProcess<EventT, FilterF> FilterProcT;
     typedef BlurProcess<EventT, BlurF> BlurProcT;
-    typedef SortProcess<EventT, TimeT, TimeDiffType, TimeCompT> SortProcT;
-    typedef CoincProcess<EventT, TimeT, TimeDiffType, TimeCompT> CoincProcT;
+    typedef SortProcess<EventT, TimeT, TimeDiffF, TimeCompF> SortProcT;
+    typedef CoincProcess<EventT, TimeT, TimeDiffF, TimeCompF> CoincProcT;
     std::map<std::string, std::vector<int>> id_maps;
-    std::vector<MergeProcT> merge_processes;
-    std::vector<FilterProcT> filter_processes;
-    std::vector<BlurProcT> blur_processes;
-    std::vector<SortProcT> sort_processes;
-    std::vector<CoincProcT> coinc_processes;
+    std::vector<MergeProcT*> merge_processes;
+    std::vector<FilterProcT*> filter_processes;
+    std::vector<BlurProcT*> blur_processes;
+    std::vector<SortProcT*> sort_processes;
+    std::vector<CoincProcT*> coinc_processes;
     std::map<std::string, MergeF> merge_types;
-    std::map<std::string, FilterF> filter_types;
 
     static int load_id_maps(const std::string & filename,
                             std::map<std::string, std::vector<int>> & id_maps)
@@ -392,15 +409,15 @@ private:
     /*!
      * Returns the detector id for the event.  This is then mapped to a.
      */
-    InfoType id_func;
+    InfoF id_func;
 
     /*!
      * A function type that calculates the time difference between two events.
      * First - Second.
      */
-    TimeDiffType deltat_func;
+    TimeDiffF deltat_func;
 
-    TimeCompT time_less_than;
+    TimeCompF time_less_than;
 
     int add_merge_process(const std::string & merge_name,
                            const std::string & map_name,
@@ -416,32 +433,31 @@ private:
         }
         MergeF merge_func = merge_types[merge_name];
         const std::vector<int> id_map = id_maps[map_name];
-        merge_processes.emplace_back(id_map, merge_time, deltat_func, id_func,
-                                     merge_func, time_less_than);
-        process_stream.add_process(&merge_processes.back());
+        merge_processes.push_back(new MergeProcT(id_map, merge_time,
+                                                 deltat_func, id_func,
+                                                 merge_func, time_less_than));
+        process_stream.add_process(merge_processes.back());
         return(0);
     }
 
     int add_filter_process(const std::string & filter_name, double value)
     {
+        FilterF filt_func;
         if (filter_name == "egate_low") {
-            auto egate_low = [value](const EventT & e) {
+            filt_func = [value](const EventT & e) {
                 return(e.energy >= value);
             };
-            filter_processes.emplace_back(egate_low);
-            process_stream.add_process(&filter_processes.back());
-            return(0);
         } else if (filter_name == "egate_high") {
-            auto egate_high = [value](const EventT & e) {
+            filt_func = [value](const EventT & e) {
                 return(e.energy <= value);
             };
-            filter_processes.emplace_back(egate_high);
-            process_stream.add_process(&filter_processes.back());
-            return(0);
         } else {
             std::cerr << "Unknown filter type: " << filter_name << std::endl;
             return(-1);
         }
+        filter_processes.push_back(new FilterProcT(filt_func));
+        process_stream.add_process(filter_processes.back());
+        return(0);
     }
 
     int add_blur_process(const std::string & name, double value,
@@ -452,8 +468,8 @@ private:
                 auto eblur = [value](EventT & e) {
                     Blur::blur_energy(e, value);
                 };
-                blur_processes.emplace_back(eblur);
-                process_stream.add_process(&blur_processes.back());
+                blur_processes.push_back(new BlurProcT(eblur));
+                process_stream.add_process(blur_processes.back());
                 return(0);
             } else if (options[0] == "at") {
                 double ref_energy;
@@ -465,8 +481,8 @@ private:
                 auto eblur = [value, ref_energy](EventT & e) {
                     Blur::blur_energy_invsqrt(e, value, ref_energy);
                 };
-                blur_processes.emplace_back(eblur);
-                process_stream.add_process(&blur_processes.back());
+                blur_processes.push_back(new BlurProcT(eblur));
+                process_stream.add_process(blur_processes.back());
                 return(0);
             } else {
                 std::cerr << "unrecognized blur option: " << options[0]
@@ -477,16 +493,16 @@ private:
             // Allow the value to be 3 FWHM on either side of the current event
             // TODO: allow this to be set by options.
             TimeT max_blur = 3 * value;
-            auto tblur = [value, max_blur](EventT & e) {
+            BlurF tblur = [value, max_blur](EventT & e) {
                 Blur::blur_time_capped(e, value, max_blur);
             };
-            blur_processes.emplace_back(tblur);
-            process_stream.add_process(&blur_processes.back());
+            blur_processes.push_back(new BlurProcT(tblur));
+            process_stream.add_process(blur_processes.back());
 
             // Sort the stream afterwards, based on the capped blur
-            sort_processes.emplace_back(max_blur * 2, deltat_func,
-                                        time_less_than);
-            process_stream.add_process(&sort_processes.back());
+            sort_processes.push_back(new SortProcT(max_blur * 2, deltat_func,
+                                                   time_less_than));
+            process_stream.add_process(sort_processes.back());
             return(0);
         } else {
             std::cerr << "Unknown blur type: " << name << std::endl;
@@ -498,8 +514,9 @@ private:
                          const std::vector<std::string> & options)
     {
         if (name == "time") {
-            sort_processes.emplace_back(value, deltat_func, time_less_than);
-            process_stream.add_process(&sort_processes.back());
+            sort_processes.push_back(new SortProcT(value, deltat_func,
+                                                   time_less_than));
+            process_stream.add_process(sort_processes.back());
             return(0);
         } else {
             std::cerr << "Unknown sort type: " << name << std::endl;
@@ -545,10 +562,10 @@ private:
             std::cerr << "Unknown coinc type: " << name << std::endl;
             return(-2);
         }
-        coinc_processes.emplace_back(value, deltat_func, reject_multiples,
-                                     paralyzable, enable_delayed_window,
-                                     delayed_window_offset, time_less_than);
-        process_stream.add_process(&coinc_processes.back());
+        coinc_processes.push_back(new CoincProcT(value, deltat_func,
+                reject_multiples, paralyzable, enable_delayed_window,
+                delayed_window_offset, time_less_than));
+        process_stream.add_process(coinc_processes.back());
         return(0);
     }
 };

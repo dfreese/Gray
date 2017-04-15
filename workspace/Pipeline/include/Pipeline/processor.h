@@ -23,9 +23,10 @@ public:
     Processor() :
         count_events(0),
         count_dropped(0),
-        count_kept(0),
-        count_ready(0)
+        count_kept(0)
     {}
+
+    virtual ~Processor() {};
 
     /*!
      * Adds a new event into the merge map.  It then updates which events are
@@ -61,7 +62,6 @@ public:
         count_kept = 0;
         count_dropped = 0;
         count_events = 0;
-        count_ready = 0;
         ready_events.clear();
     }
 
@@ -106,7 +106,6 @@ public:
      * Removes all of the ready events.
      */
     void clear() {
-        _clear();
         ready_events.clear();
     }
 
@@ -130,7 +129,6 @@ protected:
 
 private:
     virtual void _add_event(const EventT & event) = 0;
-    virtual void _clear() = 0;
     virtual void _reset() = 0;
     virtual void _stop() = 0;
 
@@ -152,10 +150,5 @@ private:
      * Number of events kept.
      */
     long count_kept;
-
-    /*!
-     * Number of events kept.
-     */
-    long count_ready;
 };
 #endif /* processor_h */

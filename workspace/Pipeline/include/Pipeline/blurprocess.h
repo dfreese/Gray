@@ -44,12 +44,6 @@ private:
     }
 
     /*!
-     * Do nothing currently for clear.
-     */
-    void _clear() {
-    }
-
-    /*!
      * A function that somehow blurs the event
      */
     BlurF blur_func;

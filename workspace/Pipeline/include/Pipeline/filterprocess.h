@@ -52,12 +52,6 @@ private:
     }
 
     /*!
-     * Do nothing currently for clear.
-     */
-    void _clear() {
-    }
-
-    /*!
      * A function that returns true if the event should be kept.
      */
     FilterF filt_func;

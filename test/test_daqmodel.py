@@ -210,7 +210,7 @@ def test_tblur():
                         dtype=data.dtype['time'])
     data['time'] = times
 
-    output = _create_and_run_merge(data, ('blur', 'time', tres, 'first'))
+    output = _create_and_run_merge(data, ('blur', 'time', tres))
     assert(output.size == data.size), \
             'Size should remain unchanged for time blur'
     assert((output['time'] != times).any()), \
