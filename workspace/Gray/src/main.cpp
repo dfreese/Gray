@@ -30,35 +30,37 @@ int main( int argc, char** argv)
     if (!LoadMaterials::LoadPhysicsFiles(scene)) {
         return(1);
     }
-    if (!LoadDetector::Load(config.filename_scene, scene, sources)) {
-        cerr << "Loading file \"" << config.filename_scene << "\" failed"
-             << endl;
+    if (!LoadDetector::Load(config.get_filename_scene(), scene, sources, config)) {
+        cerr << "Loading file \"" << config.get_filename_scene()
+             << "\" failed" << endl;
         return(1);
     }
-    Output output_hits(config.filename_hits);
-    Output output_singles(config.filename_output);
-    if (config.seed_set) {
-        Random::Seed(config.seed);
-    }
-    if (!Random::SeedSet()) {
+    Output output_hits(config.get_filename_hits(), config.get_format_hits());
+    Output output_singles(config.get_filename_singles(),
+                          config.get_format_singles());
+    if (config.get_seed_set()) {
+        Random::Seed(config.get_seed());
+    } else {
         Random::Seed();
     }
     cout << "Using Seed: " << Random::GetSeed() << endl;
 
     SinglesStream<Interaction> singles_stream(
             5 * scene.GetMaxDistance() * Interaction::inverse_speed_of_light);
-    if (config.log_singles) {
-        if (singles_stream.load_mappings(config.filename_mapping) < 0) {
-            cerr << "Loading mapping file \"" << config.filename_mapping
+    if (config.get_log_singles()) {
+        if (singles_stream.load_mappings(config.get_filename_mapping()) < 0) {
+            cerr << "Loading mapping file \"" << config.get_filename_mapping()
                  << "\" failed" << endl;
+            return(2);
         }
-        if (singles_stream.load_processes(config.filename_pipeline) < 0) {
-            cerr << "Loading pipeline file \"" << config.filename_pipeline
+        if (singles_stream.load_processes(config.get_filename_pipeline()) < 0) {
+            cerr << "Loading pipeline file \"" << config.get_filename_pipeline()
                  << "\" failed" << endl;
+            return(3);
         }
     }
 
-    if (!config.run_viewer_flag && !config.run_physics_flag) {
+    if (!config.get_run_viewer() && !config.get_run_physics()) {
         cout << "Neither viewer nor physics selected.  Exiting." << endl;
         return(0);
     }
@@ -67,12 +69,12 @@ int main( int argc, char** argv)
     sources.SetKdTree(intersect_kd_tree);
 
 
-    if (config.run_viewer_flag) {
+    if (config.get_run_viewer()) {
 #ifdef USE_OPENGL
         run_viewer(argc, argv, scene, intersect_kd_tree);
 #endif
     }
-    if (config.run_physics_flag) {
+    if (config.get_run_physics()) {
 
         // We only want to send certain interaction types into the singles
         // processor.
@@ -101,14 +103,14 @@ int main( int argc, char** argv)
                     sources, intersect_kd_tree, interactions,
                     interactions_soft_max,
                     dynamic_cast<GammaMaterial*>(&scene.GetMaterial(0)),
-                    output_hits.GetLogPositron(), config.log_hits,
-                    config.log_hits, stats);
-            if (config.log_hits) {
+                    output_hits.GetLogPositron(), config.get_log_hits(),
+                    config.get_log_hits(), stats);
+            if (config.get_log_hits()) {
                 for (const auto & interact: interactions) {
                     output_hits.LogInteraction(interact);
                 }
             }
-            if (config.log_singles) {
+            if (config.get_log_singles()) {
                 // Partition the interactions into two sets, while preserving
                 // the rough time order.  Anything "true", or having a type
                 // in the singles_valid_interactions set is put in the front
@@ -130,7 +132,7 @@ int main( int argc, char** argv)
                 cout << "=" << flush;
             }
         }
-        if (config.log_singles) {
+        if (config.get_log_singles()) {
             singles_stream.stop();
             for (const auto & interact: singles_stream.get_ready()) {
                 output_singles.LogInteraction(interact);

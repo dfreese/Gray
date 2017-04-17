@@ -3,6 +3,7 @@
 
 #include <string>
 
+class Config;
 class CameraView;
 class Material;
 class RigidMapR3;
@@ -15,7 +16,8 @@ class LoadDetector {
 public:
     static bool Load(const std::string & filename,
                      SceneDescription & theScene,
-                     SourceList & sources);
+                     SourceList & sources,
+                     Config & config);
 private:
     static bool ReadVertexR3(VectorR3 & vert, std::ifstream & curFile);
     static void ProcessDetector(const VectorR3 & detCenter,

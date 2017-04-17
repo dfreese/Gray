@@ -1,4 +1,5 @@
 #include <Output/Output.h>
+#include <sstream>
 #include <Physics/Interaction.h>
 
 using namespace std;
@@ -6,10 +7,9 @@ using namespace std;
 bool Output::log_data = false;
 bool Output::log_positron = false;
 bool Output::log_all = false;
-bool Output::binary_output = false;
-Output::BinaryOutputFormat Output::binary_format = Output::FULL_OUTPUT;
 
-Output::Output(const std::string & logfile)
+Output::Output(const std::string & logfile, Format fmt) :
+    format(fmt)
 {
     if (logfile != "") {
         SetLogfile(logfile);
@@ -33,9 +33,8 @@ int Output::MakeLogWord(Interaction::INTER_TYPE interaction, int color,
             (src_id              & (0x00000FFF)));
 }
 
-
-void Output::SetBinaryFormat(BinaryOutputFormat format) {
-    binary_format = format;
+void Output::SetFormat(Format format) {
+    this->format = format;
 }
 
 void Output::LogInteraction(const Interaction & interact) {
@@ -45,32 +44,30 @@ void Output::LogInteraction(const Interaction & interact) {
     if (!log_event) {
         return;
     }
-    if (binary_output) {
-        if (binary_format == FULL_OUTPUT) {
-            GrayBinaryStandard b;
-            b.i = interact.id;
-            b.time = interact.time;
-            b.energy = interact.energy;
-            b.x = (float) interact.pos.x;
-            b.y = (float) interact.pos.y;
-            b.z = (float) interact.pos.z;
-            b.det_id = interact.det_id;
-            b.log = MakeLogWord(interact.type, interact.color,
-                                interact.scatter, interact.mat_id,
-                                interact.src_id);
-            log_file.write(reinterpret_cast<char*>(&b), sizeof(b));
-        } else if (binary_format == NO_POS) {
-            GrayBinaryNoPosition b;
-            b.i = interact.id;
-            b.time = interact.time;
-            b.energy = interact.energy;
-            b.det_id = interact.det_id;
-            b.log = MakeLogWord(interact.type, interact.color,
-                                interact.scatter, interact.mat_id,
-                                interact.src_id);
-            log_file.write(reinterpret_cast<char*>(&b), sizeof(b));
-        }
-    } else {
+    if (format == FULL_BINARY) {
+        GrayBinaryStandard b;
+        b.i = interact.id;
+        b.time = interact.time;
+        b.energy = interact.energy;
+        b.x = (float) interact.pos.x;
+        b.y = (float) interact.pos.y;
+        b.z = (float) interact.pos.z;
+        b.det_id = interact.det_id;
+        b.log = MakeLogWord(interact.type, interact.color,
+                            interact.scatter, interact.mat_id,
+                            interact.src_id);
+        log_file.write(reinterpret_cast<char*>(&b), sizeof(b));
+    } else if (format == NO_POS_BINARY) {
+        GrayBinaryNoPosition b;
+        b.i = interact.id;
+        b.time = interact.time;
+        b.energy = interact.energy;
+        b.det_id = interact.det_id;
+        b.log = MakeLogWord(interact.type, interact.color,
+                            interact.scatter, interact.mat_id,
+                            interact.src_id);
+        log_file.write(reinterpret_cast<char*>(&b), sizeof(b));
+    } else if (format == FULL_ASCII) {
         char str[256];
         log_file << " " << interact.type << " ";
         log_file << interact.id;
@@ -121,11 +118,32 @@ void Output::SetLogPositron(bool val)
     log_positron = val;
 }
 
-void Output::SetBinary(bool val)
-{
-    binary_output = val;
-}
-
 bool Output::GetLogPositron() const {
     return(log_positron);
+}
+
+int Output::GetFormat(const std::string & identifier, Output::Format & fmt) {
+    if (identifier == "full_ascii") {
+        fmt = FULL_ASCII;
+    } else if (identifier == "full_binary") {
+        fmt = FULL_BINARY;
+    } else if (identifier == "no_pos_binary") {
+        fmt = NO_POS_BINARY;
+    } else {
+        stringstream ss(identifier);
+        int type;
+        if ((ss >> type).fail()) {
+            return(-1);
+        }
+        if (type == FULL_ASCII) {
+            fmt = FULL_ASCII;
+        } else if (type == FULL_BINARY) {
+            fmt = FULL_BINARY;
+        } else if (type == NO_POS_BINARY) {
+            fmt = NO_POS_BINARY;
+        } else {
+            return(-2);
+        }
+    }
+    return(0);
 }

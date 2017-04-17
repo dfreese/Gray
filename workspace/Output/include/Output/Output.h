@@ -12,20 +12,22 @@ class Interaction;
 class Output
 {
 public:
-    Output(const std::string & logfile = "");
+    enum Format {
+        FULL_ASCII,
+        FULL_BINARY,
+        NO_POS_BINARY
+    };
+
+    Output(const std::string & logfile = "", Format fmt = FULL_ASCII);
     ~Output();
     bool SetLogfile(const std::string & name);
     static void SetLogAll(bool val);
     static void SetLogPositron(bool val);
     static void SetBinary(bool val);
-    enum BinaryOutputFormat {
-        FULL_OUTPUT,
-        NO_POS
-    };
-    static void SetBinaryFormat(BinaryOutputFormat format);
-
+    void SetFormat(Format format);
     void LogInteraction(const Interaction & interact);
     bool GetLogPositron() const;
+    static int GetFormat(const std::string & identifier, Format & fmt);
 
 private:
     int MakeLogWord(Interaction::INTER_TYPE interaction, int color,
@@ -35,9 +37,8 @@ private:
     static bool log_data;
     static bool log_positron;
     static bool log_all;
-    static bool binary_output;
 
-    static BinaryOutputFormat binary_format;
+    Format format;
 };
 
 #endif /*OUTPUT_H_*/

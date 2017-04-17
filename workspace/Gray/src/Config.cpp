@@ -17,8 +17,10 @@ Config::Config() :
     seed_set(false),
     run_viewer_flag(true),
     run_physics_flag(true),
-    log_hits(false),
-    log_singles(false)
+    format_hits_set(false),
+    format_singles_set(false),
+    format_hits(Output::FULL_ASCII),
+    format_singles(Output::FULL_ASCII)
 {
 
 }
@@ -61,7 +63,7 @@ bool Config::ProcessCommandLine(int argc, char **argv)
         } else if (argument == "-i") {
             filename_hits = following_argument;
         } else if (argument == "-o") {
-            filename_output = following_argument;
+            filename_singles = following_argument;
         }
     }
     if (filename_scene == "") {
@@ -73,11 +75,16 @@ bool Config::ProcessCommandLine(int argc, char **argv)
         return(false);
     }
 
-    log_hits = !(filename_hits == "");
-    log_singles = !(filename_output == "");
     return(true);
 }
 
+bool Config::get_log_hits() {
+    return(!(filename_hits == ""));
+}
+
+bool Config::get_log_singles() {
+    return(!(filename_singles == ""));
+}
 
 void Config::usage() {
     cout << "Gray (-hb) -f [Scene Description] -o [Output Filename]\n"
@@ -88,4 +95,100 @@ void Config::usage() {
     << "  -o [filename] : set the output for the singles file\n"
     << "  -s : set the seed for the rand number generator\n"
     << endl;
+}
+
+
+void Config::set_filename_scene(const std::string & name) {
+    if (filename_scene == "") {
+        filename_scene = name;
+    }
+}
+
+std::string Config::get_filename_scene() {
+    return(filename_scene);
+}
+
+void Config::set_filename_pipeline(const std::string & name) {
+    if (filename_pipeline == "") {
+        filename_pipeline = name;
+    }
+}
+
+std::string Config::get_filename_pipeline() {
+    return(filename_pipeline);
+}
+
+void Config::set_filename_mapping(const std::string & name) {
+    if (filename_mapping == "") {
+        filename_mapping = name;
+    }
+}
+
+std::string Config::get_filename_mapping() {
+    return(filename_mapping);
+}
+
+void Config::set_filename_hits(const std::string & name) {
+    if (filename_hits == "") {
+        filename_hits = name;
+    }
+}
+
+std::string Config::get_filename_hits() {
+    return(filename_hits);
+}
+
+void Config::set_filename_singles(const std::string & name) {
+    if (filename_singles == "") {
+        filename_singles = name;
+    }
+}
+
+std::string Config::get_filename_singles() {
+    return(filename_singles);
+}
+
+void Config::set_seed(unsigned long val) {
+    if (!seed_set) {
+        seed = val;
+        seed_set = true;
+    }
+}
+
+unsigned long Config::get_seed() {
+    return(seed);
+}
+
+bool Config::get_seed_set() {
+    return(seed_set);
+}
+
+void Config::set_format_hits(Output::Format fmt) {
+    if (!format_hits_set) {
+        format_hits = fmt;
+        format_hits_set = true;
+    }
+}
+
+Output::Format Config::get_format_hits() {
+    return(format_hits);
+}
+
+void Config::set_format_singles(Output::Format fmt) {
+    if (!format_singles_set) {
+        format_singles = fmt;
+        format_singles_set = true;
+    }
+}
+
+Output::Format Config::get_format_singles() {
+    return(format_singles);
+}
+
+bool Config::get_run_viewer() {
+    return(run_viewer_flag);
+}
+
+bool Config::get_run_physics() {
+    return(run_physics_flag);
 }

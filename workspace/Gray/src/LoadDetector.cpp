@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <Random/Random.h>
+#include <Gray/Config.h>
 #include <Gray/LoadDetector.h>
 #include <Gray/GammaMaterial.h>
 #include <Graphics/SceneDescription.h>
@@ -96,7 +97,7 @@ void LoadDetector::ApplyRotation(const VectorR3& axis, double theta,
 
 bool LoadDetector::Load(const std::string & filename,
                         SceneDescription & theScene,
-                        SourceList & sources)
+                        SourceList & sources, Config & config)
 {
     DetectorArray detector_array;
     std::string filename_detector = "";
@@ -486,14 +487,70 @@ bool LoadDetector::Load(const std::string & filename,
                     center, radius, axis, actScale*activity);
             cyl->SetMaterial(curMaterial);
             sources.AddSource(cyl);
-        } else if (command == "binary_format") {
-            Output::BinaryOutputFormat format;
-            int scanCode = sscanf(args.c_str(), "%d", &format);
-            if (scanCode != 1) {
+        } else if (command == "hits_format") {
+            std::string format_identifier;
+            if ((line_ss >> format_identifier).fail()) {
                 print_parse_error(line);
+                cerr << "Invalid format identifier: " << format_identifier
+                     << endl;
                 return(false);
             }
-            Output::SetBinaryFormat(format);
+            Output::Format hits_format;
+            if (Output::GetFormat(format_identifier, hits_format) < 0) {
+                print_parse_error(line);
+                cerr << "Invalid format identifier: " << format_identifier
+                     << endl;
+                return(false);
+            }
+            config.set_format_hits(hits_format);
+        } else if (command == "singles_format") {
+            std::string format_identifier;
+            if ((line_ss >> format_identifier).fail()) {
+                print_parse_error(line);
+                cerr << "Invalid format identifier: " << format_identifier
+                << endl;
+                return(false);
+            }
+            Output::Format singles_format;
+            if (Output::GetFormat(format_identifier, singles_format) < 0) {
+                print_parse_error(line);
+                cerr << "Invalid format identifier: " << format_identifier
+                << endl;
+                return(false);
+            }
+            config.set_format_singles(singles_format);
+        } else if (command == "hits_output") {
+            std::string filename;
+            if ((line_ss >> filename).fail()) {
+                print_parse_error(line);
+                cerr << "Invalid filename: " << filename << endl;
+                return(false);
+            }
+            config.set_filename_hits(filename);
+        } else if (command == "hits_singles") {
+            std::string filename;
+            if ((line_ss >> filename).fail()) {
+                print_parse_error(line);
+                cerr << "Invalid filename: " << filename << endl;
+                return(false);
+            }
+            config.set_filename_singles(filename);
+        } else if (command == "pipeline_config") {
+            std::string filename;
+            if ((line_ss >> filename).fail()) {
+                print_parse_error(line);
+                cerr << "Invalid filename: " << filename << endl;
+                return(false);
+            }
+            config.set_filename_pipeline(filename);
+        } else if (command == "mapping_config") {
+            std::string filename;
+            if ((line_ss >> filename).fail()) {
+                print_parse_error(line);
+                cerr << "Invalid filename: " << filename << endl;
+                return(false);
+            }
+            config.set_filename_mapping(filename);
         } else if (command == "save_detector") {
             char filename[256];
             int scanCode = sscanf(args.c_str(), "%s", filename);
@@ -563,8 +620,6 @@ bool LoadDetector::Load(const std::string & filename,
             sources.SetAcolinearity(acon);
         } else if (command == "log_all") {
             Output::SetLogAll(true);
-        } else if (command == "binary_output") {
-            Output::SetBinary(true);
         } else if (command == "start_vecsrc") {
             double activity = -1.0;
             int scanCode = sscanf(args.c_str(), "%lf", &activity);
