@@ -80,10 +80,12 @@ public:
     {
         os << "events in coinc pair    : " << cp.no_coinc_pair_events << "\n"
            << "events in coinc multiple: " << cp.no_coinc_multiples_events << "\n"
-           << "events in coinc single  : " << cp.no_coinc_single_events << "\n"
-           << "events in delay pair    : " << cp.no_delay_pair_events << "\n"
-           << "events in delay multiple: " << cp.no_delay_multiples_events << "\n"
-           << "events in delay single  : " << cp.no_delay_single_events << "\n";
+           << "events in coinc single  : " << cp.no_coinc_single_events << "\n";
+        if (cp.use_delayed_window) {
+           os << "events in delay pair    : " << cp.no_delay_pair_events << "\n"
+              << "events in delay multiple: " << cp.no_delay_multiples_events << "\n"
+              << "events in delay single  : " << cp.no_delay_single_events << "\n";
+        }
         return(os);
     }
     
@@ -145,38 +147,41 @@ private:
                 }
             }
         }
-        for (size_t ii = 0; ii < buffer.size(); ii++) {
-            EventPair & ref_event = buffer[ii];
-            if (ref_event.second.no_delay) {
-                continue;
-            }
-            TimeT delay_window_start = delay_offset;
-            TimeT delay_window_end = delay_offset + coinc_window;
-            std::vector<size_t> in_window;
-            in_window.push_back(ii);
-            bool window_timed_out = false;
-            for (size_t jj = ii + 1; jj < buffer.size(); jj++) {
-                EventPair & new_event = buffer[jj];
-                TimeT delta_t = deltat_func(new_event.first, ref_event.first);
-                bool inside_delay_end = time_less_than(delta_t,
-                                                       delay_window_end);
-                bool inside_delay_start = time_less_than(delta_t,
-                                                         delay_window_start);
-                bool within_delay_window = (inside_delay_end &&
-                                            !inside_delay_start);
-                if (within_delay_window) {
-                    in_window.push_back(jj);
-                    if (paralyzable) {
-                        delay_window_end = delta_t + coinc_window;
+        if (use_delayed_window) {
+            for (size_t ii = 0; ii < buffer.size(); ii++) {
+                EventPair & ref_event = buffer[ii];
+                if (ref_event.second.no_delay) {
+                    continue;
+                }
+                TimeT delay_window_start = delay_offset;
+                TimeT delay_window_end = delay_offset + coinc_window;
+                std::vector<size_t> in_window;
+                in_window.push_back(ii);
+                bool window_timed_out = false;
+                for (size_t jj = ii + 1; jj < buffer.size(); jj++) {
+                    EventPair & new_event = buffer[jj];
+                    TimeT delta_t = deltat_func(new_event.first,
+                                                ref_event.first);
+                    bool inside_delay_end = time_less_than(delta_t,
+                                                           delay_window_end);
+                    bool inside_delay_start = time_less_than(delta_t,
+                                                             delay_window_start);
+                    bool within_delay_window = (inside_delay_end &&
+                                                !inside_delay_start);
+                    if (within_delay_window) {
+                        in_window.push_back(jj);
+                        if (paralyzable) {
+                            delay_window_end = delta_t + coinc_window;
+                        }
+                    }
+                    if (!inside_delay_end) {
+                        window_timed_out = true;
                     }
                 }
-                if (!inside_delay_end) {
-                    window_timed_out = true;
-                }
-            }
-            if (window_timed_out || stopping) {
-                for (auto idx: in_window) {
-                    buffer[idx].second.no_delay = in_window.size();
+                if (window_timed_out || stopping) {
+                    for (auto idx: in_window) {
+                        buffer[idx].second.no_delay = in_window.size();
+                    }
                 }
             }
         }
