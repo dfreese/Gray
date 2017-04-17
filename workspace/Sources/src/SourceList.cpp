@@ -202,3 +202,9 @@ void SourceList::SetSimulationTime(double time)
 void SourceList::SetSimulateIsotopeHalfLife(bool val) {
     simulate_isotope_half_life = val;
 }
+
+void SourceList::SetStartTime(double val)
+{
+    start_time = val;
+}
+

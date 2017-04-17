@@ -600,6 +600,15 @@ bool LoadDetector::Load(const std::string & filename,
                 return(false);
             }
             sources.SetSimulationTime(simulationTime);
+        } else if (command == "start_time") {
+            // simulation time in seconds
+            double start_time;
+            if ((line_ss >> start_time).fail()) {
+                print_parse_error(line);
+                cerr << "Invalid start time" << endl;
+                return(false);
+            }
+            sources.SetStartTime(start_time);
         } else if (command == "v") {
             viewCmdStatus = true;
         } else if (command == "scale") {
