@@ -12,6 +12,16 @@ class SourceList;
 
 class GammaRayTrace {
 public:
+    struct TraceStats {
+        long count_decays = 0;
+        long count_photons = 0;
+        long count_photoelectric = 0;
+        long count_xray_escape = 0;
+        long count_compton = 0;
+        long count_rayleigh = 0;
+        long count_error = 0;
+    };
+
     static long TraceSources(SourceList & sources,
                              IntersectKdTree & tree,
                              std::vector<Interaction> & interactions,
