@@ -186,13 +186,22 @@ private:
             }
         }
 
-        auto find_ready = std::find_if(buffer.cbegin(), buffer.cend(),
-                                       [](const EventPair & p){
-                                           return(!p.second.no_coinc ||
-                                                  !p.second.no_delay);
-                                       });
+        auto ready_iter = buffer.cbegin();
+        if (use_delayed_window) {
+            auto ready_func = [](const EventPair & p){
+                return(!p.second.no_coinc || !p.second.no_delay);
+            };
+            ready_iter = std::find_if(buffer.cbegin(), buffer.cend(),
+                                      ready_func);
+        } else {
+            auto ready_func = [](const EventPair & p){
+                return(!p.second.no_coinc);
+            };
+            ready_iter = std::find_if(buffer.cbegin(), buffer.cend(),
+                                      ready_func);
+        }
 
-        std::for_each(buffer.cbegin(), find_ready,
+        std::for_each(buffer.cbegin(), ready_iter,
                       [this](const EventPair & p){
                           if (p.second.no_coinc == 2) {
                               no_coinc_pair_events++;
@@ -220,7 +229,7 @@ private:
                               this->inc_no_dropped();
                           }
                       });
-        buffer.erase(buffer.cbegin(), find_ready);
+        buffer.erase(buffer.cbegin(), ready_iter);
     }
 
     TimeT coinc_window;
