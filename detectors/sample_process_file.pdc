@@ -4,7 +4,7 @@
 # First merge all of the crystals/detectors together.  Put detector to specify
 # the component to match the component name listed in the
 # sample_mapping_file.map
-merge detector 5.0e-9 basic
+merge detector 5.0e-9 max
 
 # We don't have blocks mapped currently in the sample_mapping_file.map file
 # so we do not enable these.
