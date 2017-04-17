@@ -22,9 +22,10 @@ public:
     void SetAcolinearity(double acolinearity_deg_fwhm);
     void SetKdTree(IntersectKdTree & tree);
     void SetSimulationTime(double time);
-    double GetTime() const;
+    double GetTime();
     double GetSimulationTime() const;
     void SetSimulateIsotopeHalfLife(bool val);
+    void SetStartTime(double val);
 
 private:
     std::vector <Source*> list;
@@ -43,6 +44,7 @@ private:
     void AddNextDecay(size_t source_idx, double base_time);
     void GetNextDecay(size_t & source_idx, double & time);
     bool simulate_isotope_half_life;
+    double start_time;
 };
 
 #endif

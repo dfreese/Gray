@@ -19,7 +19,8 @@ SourceList::SourceList() :
     valid_isotopes({"F18", "O15", "IN110", "ZR89", "BackBack", "Beam"}),
     current_isotope("BackBack"),
     acolinearity(PositronDecay::default_acolinearity),
-    simulate_isotope_half_life(true)
+    simulate_isotope_half_life(true),
+    start_time(0)
 {
 }
 
@@ -81,7 +82,6 @@ void SourceList::AddSource(Source * s)
     } else {
         s->SetSourceNum(static_cast<int>(list.size()));
         list.push_back(s);
-        AddNextDecay(list.size() - 1, 0);
     }
 }
 
@@ -99,13 +99,14 @@ void SourceList::SetKdTree(IntersectKdTree & tree) {
     // A vector source cannot be negative, so we do not check the neg_list
 }
 
-double SourceList::GetTime() const
+double SourceList::GetTime()
 {
     if (decay_list.empty()) {
-        // If there are no new decays, just assume we're at the end of the
-        // simulation.  This should only happen if no sources were added to
-        // start off with.
-        return(GetSimulationTime());
+        // If there are no new decays, just assume we're at the beginning of
+        // the simulation, as that is the only time this should happen.
+        for (size_t sidx = 0; sidx < list.size(); sidx++) {
+            AddNextDecay(sidx, start_time);
+        }
     }
     // Set the current time to be the next decay that will happen.  This won't
     // be accessed until the next iteration of the main loop, this way we don't

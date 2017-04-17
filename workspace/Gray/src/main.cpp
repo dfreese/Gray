@@ -139,7 +139,7 @@ int main( int argc, char** argv)
         }
         cout << "=] Done." << endl;
         cout << "\n______________\n Stats\n______________\n" << stats << endl;
-        cout << "______________\n Stream Stats\n______________\n"
+        cout << "______________\n DAQ Stats\n______________\n"
              << singles_stream << endl;
     }
     return(0);
