@@ -138,7 +138,9 @@ int main( int argc, char** argv)
             singles_stream.clear();
         }
         cout << "=] Done." << endl;
-        cout << "______________\n Stats\n______________\n" << stats << endl;
+        cout << "\n______________\n Stats\n______________\n" << stats << endl;
+        cout << "______________\n Stream Stats\n______________\n"
+             << singles_stream << endl;
     }
     return(0);
 }

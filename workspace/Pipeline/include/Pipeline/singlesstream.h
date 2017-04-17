@@ -222,12 +222,31 @@ public:
         return(filtered);
     }
 
-    long no_coinc_singles() const {
-        long coinc_singles = 0;
+    long no_coinc_dropped() const {
+        long coinc_dropped = 0;
         for (auto & proc: coinc_processes) {
-            coinc_singles += proc->no_dropped();
+            coinc_dropped += proc->no_dropped();
         }
-        return(coinc_singles);
+        return(coinc_dropped);
+    }
+
+    friend std::ostream & operator << (std::ostream & os,
+                                       const SinglesStream<EventT> & s)
+    {
+        os << s.process_stream;
+        if (s.merge_processes.size()) {
+            os << "merged: " << s.no_merged() << "\n";
+        }
+        if (s.filter_processes.size()) {
+            os << "filtered: " << s.no_filtered() << "\n";
+        }
+        if (s.coinc_processes.size()) {
+            os << "coinc windowed: " << s.no_coinc_dropped() << "\n";
+            for (auto & proc: s.coinc_processes) {
+                os << *proc;
+            }
+        }
+        return(os);
     }
 
 private:

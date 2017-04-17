@@ -9,6 +9,7 @@
 #ifndef processstream_h
 #define processstream_h
 
+#include <ostream>
 #include <vector>
 #include <Pipeline/processor.h>
 
@@ -95,6 +96,20 @@ public:
             dropped += p->no_dropped();
         }
         return(dropped);
+    }
+
+    friend std::ostream & operator << (std::ostream & os,
+                                       const ProcessStream<EventT> & ps)
+    {
+        os << "events: " << ps.no_events() << "\n"
+        << "kept: " << ps.no_kept() << "\n"
+        << "dropped: " << ps.no_dropped() << "\n"
+        << "drop per level: ";
+        for (auto & p: ps.processes) {
+            os << " " << p->no_dropped() << ",";
+        }
+        os << "\n";
+        return(os);
     }
 
 private:

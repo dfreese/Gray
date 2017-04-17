@@ -74,6 +74,20 @@ public:
         return(no_delay_single_events);
     }
 
+
+    friend std::ostream & operator << (std::ostream & os,
+                                       const CoincProcess & cp)
+    {
+        os << "events in coinc pair    : " << cp.no_coinc_pair_events << "\n"
+           << "events in coinc multiple: " << cp.no_coinc_multiples_events << "\n"
+           << "events in coinc single  : " << cp.no_coinc_single_events << "\n"
+           << "events in delay pair    : " << cp.no_delay_pair_events << "\n"
+           << "events in delay multiple: " << cp.no_delay_multiples_events << "\n"
+           << "events in delay single  : " << cp.no_delay_single_events << "\n";
+        return(os);
+    }
+    
+
 private:
 
     void _add_event(const EventT & event) {
