@@ -38,13 +38,6 @@ private:
     static bool binary_output;
 
     static BinaryOutputFormat binary_format;
-    
-    long counter_nuclear_decay;
-    long counter_photoelectric;
-    long counter_compton;
-    long counter_rayleigh;
-    long counter_error;
-
 };
 
 #endif /*OUTPUT_H_*/

@@ -13,23 +13,32 @@ class SourceList;
 class GammaRayTrace {
 public:
     struct TraceStats {
-        long count_decays = 0;
-        long count_photons = 0;
-        long count_photoelectric = 0;
-        long count_xray_escape = 0;
-        long count_compton = 0;
-        long count_rayleigh = 0;
-        long count_error = 0;
+        long events = 0;
+        long decays = 0;
+        long photons = 0;
+        long no_interaction = 0;
+        long photoelectric = 0;
+        long xray_escape = 0;
+        long compton = 0;
+        long rayleigh = 0;
+        long photoelectric_sensitive = 0;
+        long xray_escape_sensitive = 0;
+        long compton_sensitive = 0;
+        long rayleigh_sensitive = 0;
+        long error = 0;
+        friend std::ostream & operator<< (std::ostream & os,
+                                          const TraceStats& s);
     };
 
-    static long TraceSources(SourceList & sources,
+    static void TraceSources(SourceList & sources,
                              IntersectKdTree & tree,
                              std::vector<Interaction> & interactions,
                              size_t soft_max_interactions,
                              GammaMaterial const * const default_material,
                              bool log_nuclear_decays,
                              bool log_nonsensitive,
-                             bool log_errors);
+                             bool log_errors,
+                             TraceStats & stats);
 private:
     static void TracePhoton(Photon &photon,
                             std::vector<Interaction> & interactions,
@@ -38,7 +47,8 @@ private:
                             GammaMaterial const * const start_material,
                             int MaxTraceDepth,
                             bool log_nonsensitive,
-                            bool log_errors);
+                            bool log_errors,
+                            TraceStats & stats);
     static const double Epsilon;
 };
 

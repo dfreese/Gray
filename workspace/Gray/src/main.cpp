@@ -82,25 +82,27 @@ int main( int argc, char** argv)
             Interaction::XRAY_ESCAPE,
             Interaction::RAYLEIGH});
 
+        // TODO: check if time actually increases inside of negative sources
+        // more than it should according to this comment below:
         // FIXME: time should not increase when Inside() of a negative source
-        long num_decays_cur = 0;
 
         const long num_chars = 70;
         double tick_mark = sources.GetSimulationTime() / num_chars;
         int current_tick = 0;
         cout << "[" << flush;
 
+        GammaRayTrace::TraceStats stats;
         const size_t interactions_soft_max = 100000;
         vector<Interaction> interactions;
         interactions.reserve(interactions_soft_max + 50);
         while (sources.GetTime() < sources.GetSimulationTime()) {
             interactions.clear();
-            num_decays_cur += GammaRayTrace::TraceSources(
+            GammaRayTrace::TraceSources(
                     sources, intersect_kd_tree, interactions,
                     interactions_soft_max,
                     dynamic_cast<GammaMaterial*>(&scene.GetMaterial(0)),
                     output_hits.GetLogPositron(), config.log_hits,
-                    config.log_hits);
+                    config.log_hits, stats);
             if (config.log_hits) {
                 for (const auto & interact: interactions) {
                     output_hits.LogInteraction(interact);
@@ -136,7 +138,7 @@ int main( int argc, char** argv)
             singles_stream.clear();
         }
         cout << "=] Done." << endl;
-        cout << "decays: " << num_decays_cur << endl;
+        cout << "______________\n Stats\n______________\n" << stats << endl;
     }
     return(0);
 }

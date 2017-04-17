@@ -14,25 +14,12 @@ Output::Output(const std::string & logfile)
     if (logfile != "") {
         SetLogfile(logfile);
     }
-    counter_nuclear_decay = 0;
-    counter_photoelectric = 0;
-    counter_compton = 0;
-    counter_error = 0;
 }
 
 Output::~Output()
 {
     if (log_data) {
         log_file.close();
-    }
-    if (counter_nuclear_decay || counter_photoelectric ||
-        counter_compton || counter_error || counter_rayleigh)
-    {
-        cout << "Nuclear Decays: " << counter_nuclear_decay << endl;
-        cout << "Photoelectrics: " << counter_photoelectric << endl;
-        cout << "Comptons      : " << counter_compton << endl;
-        cout << "Rayleighs     : " << counter_rayleigh << endl;
-        cout << "Errors        : " << counter_error << endl;
     }
 }
 
@@ -57,22 +44,6 @@ void Output::LogInteraction(const Interaction & interact) {
             (interact.type != Interaction::NO_INTERACTION);
     if (!log_event) {
         return;
-    }
-    switch (interact.type) {
-        case Interaction::PHOTOELECTRIC:
-            counter_photoelectric++;
-            break;
-        case Interaction::COMPTON:
-            counter_compton++;
-            break;
-        case Interaction::RAYLEIGH:
-            counter_rayleigh++;
-            break;
-        case Interaction::NUCLEAR_DECAY:
-            counter_nuclear_decay++;
-            break;
-        default:
-            break;
     }
     if (binary_output) {
         if (binary_format == FULL_OUTPUT) {
