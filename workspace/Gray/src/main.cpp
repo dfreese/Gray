@@ -99,7 +99,8 @@ int main( int argc, char** argv)
                     sources, intersect_kd_tree, interactions,
                     interactions_soft_max,
                     dynamic_cast<GammaMaterial*>(&scene.GetMaterial(0)),
-                    output_hits.GetLogPositron());
+                    output_hits.GetLogPositron(), config.log_hits,
+                    config.log_hits);
             if (config.log_hits) {
                 for (const auto & interact: interactions) {
                     output_hits.LogInteraction(interact);

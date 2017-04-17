@@ -21,7 +21,9 @@ void GammaRayTrace::TracePhoton(
         IntersectKdTree & tree,
         GammaMaterial const * const default_material,
         GammaMaterial const * const start_material,
-        int MaxTraceDepth)
+        int MaxTraceDepth,
+        bool log_nonsensitive,
+        bool log_errors)
 {
     std::stack<GammaMaterial const * const> MatStack;
     // We don't get the material information from the visible point as we are
@@ -47,8 +49,10 @@ void GammaRayTrace::TracePhoton(
             // an intersection with a back face that wasn't out of the inital
             // material or preceded by a front face.  This will happen if there
             // some sort of setup error in the KdTree.
-            interactions.push_back(Interaction::ErrorEmtpy(photon));
-            cout << "ERROR" << endl;
+            if (log_errors){
+                interactions.push_back(Interaction::ErrorEmtpy(photon));
+            }
+            cout << "ERROR: empty materials stack" << endl;
             return;
         }
         GammaMaterial const * const curMaterial = MatStack.top();
@@ -57,7 +61,12 @@ void GammaRayTrace::TracePhoton(
         // set detector id in photon
         Interaction interact = Interaction::GammaInteraction(photon, hitDist,
                                                              *curMaterial);
-        interactions.push_back(interact);
+        bool log_interact = ((((photon.det_id < 0) && log_nonsensitive) ||
+                              (photon.det_id >= 0)) &&
+                             (interact.type != Interaction::NO_INTERACTION));
+        if (log_interact) {
+            interactions.push_back(interact);
+        }
         switch (interact.type) {
             case Interaction::PHOTOELECTRIC: {
                 return;
@@ -72,13 +81,11 @@ void GammaRayTrace::TracePhoton(
                 break;
             }
             case Interaction::NO_INTERACTION: {
-                // No need to hold onto non-interactions.
-                interactions.pop_back();
-                // If not interaction, recursively traverse the in the direction the
-                // photon was travelling
+                // If not interaction, recursively traverse the in the direction
+                // the photon was travelling
                 if (visPoint.IsFrontFacing()) {
-                    // This detector id will be used to determine if we scatter in
-                    // a detector or inside a phantom
+                    // This detector id will be used to determine if we scatter
+                    // in a detector or inside a phantom
                     photon.det_id = visPoint.GetObject().GetDetectorId();
                     MatStack.push(dynamic_cast<GammaMaterial const * const>(
                             &visPoint.GetMaterial()));
@@ -86,8 +93,7 @@ void GammaRayTrace::TracePhoton(
                     photon.det_id = -1;
                     MatStack.pop();
                 } else {
-                    cout << "ERROR: material has no face\n";
-                    exit(1);
+                    throw(runtime_error("Material has no face"));
                 }
                 // calculate the time taken to travel distance of the non-interaction
                 photon.time += (hitDist * Interaction::inverse_speed_of_light);
@@ -97,14 +103,15 @@ void GammaRayTrace::TracePhoton(
                 break;
             }
             default: {
-                cout << "ERROR: Interaction not specified\n";
-                return;
+                throw(runtime_error("Interaction not specified"));
             }
         }
     }
 
-    interactions.push_back(Interaction::ErrorTraceDepth(
-            photon, *MatStack.top()));
+    if (log_errors){
+        interactions.push_back(Interaction::ErrorTraceDepth(
+                photon, *MatStack.top()));
+    }
     cout << "ERROR_TRACE_DEPTH" << endl;
     return;
 }
@@ -114,7 +121,9 @@ long GammaRayTrace::TraceSources(SourceList & sources,
                                  std::vector<Interaction> & interactions,
                                  size_t soft_max_interactions,
                                  GammaMaterial const * const default_material,
-                                 bool log_nuclear_decays)
+                                 bool log_nuclear_decays,
+                                 bool log_nonsensitive,
+                                 bool log_errors)
 {
     long no_decays = 0;
     while (sources.GetTime() < sources.GetSimulationTime()) {
@@ -139,7 +148,8 @@ long GammaRayTrace::TraceSources(SourceList & sources,
             while (!decay->IsEmpty()) {
                 Photon & photon = *decay->NextPhoton();
                 TracePhoton(photon, interactions, tree, default_material,
-                            source->GetMaterial(), 100);
+                            source->GetMaterial(), 100, log_nonsensitive,
+                            log_errors);
             }
         }
 
