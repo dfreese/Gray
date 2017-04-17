@@ -192,3 +192,11 @@ bool Config::get_run_viewer() {
 bool Config::get_run_physics() {
     return(run_physics_flag);
 }
+
+void Config::add_pipeline_line(const std::string & line) {
+    pipeline_config_lines.push_back(line);
+}
+
+std::vector<std::string> Config::get_pipeline_lines() {
+    return(pipeline_config_lines);
+}

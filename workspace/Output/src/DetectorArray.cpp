@@ -17,6 +17,23 @@ int DetectorArray::AddDetector(const VectorR3 & pos, const VectorR3 &size,
     return detector_id;
 }
 
+std::map<std::string, std::vector<int>> DetectorArray::default_mapping() {
+    std::map<std::string, std::vector<int>> map;
+    map["detector"] = std::vector<int>();
+    map["block"] = std::vector<int>();
+    map["bx"] = std::vector<int>();
+    map["by"] = std::vector<int>();
+    map["bz"] = std::vector<int>();
+    for (const auto & d: detectors){
+        map["detector"].push_back(d.detector_id);
+        map["block"].push_back(d.block);
+        map["bx"].push_back(d.idx[0]);
+        map["by"].push_back(d.idx[1]);
+        map["bz"].push_back(d.idx[2]);
+    }
+    return(map);
+}
+
 void DetectorArray::OutputDetectorArray()
 {
     for (int i = 0; i < detectors.size(); i++) {

@@ -79,6 +79,10 @@ public:
         }
     }
 
+    void set_mappings(const std::map<std::string, std::vector<int>> & mapping) {
+        this->id_maps = mapping;
+    }
+
     int load_mappings(const std::string & filename) {
         std::map<std::string, std::vector<int>> id_maps;
         int no_detectors = load_id_maps(filename, id_maps);
@@ -90,6 +94,16 @@ public:
 
     }
 
+    int set_processes(const std::vector<std::string> & lines) {
+        std::vector<ProcessDescription> process_descriptions;
+        int convert_status = convert_process_lines(lines, process_descriptions);
+        if (convert_status < 0) {
+            return(-1);
+        }
+
+        return(set_processes(process_descriptions));
+    }
+
     int load_processes(const std::string & filename) {
         std::vector<ProcessDescription> process_descriptions;
         int proc_load_status = load_process_list(filename,
@@ -98,75 +112,7 @@ public:
             return(-1);
         }
 
-        for (const auto & proc_desc: process_descriptions) {
-            if (proc_desc.type == "merge") {
-                if (proc_desc.options.empty()) {
-                    if (add_merge_process("merge_max", proc_desc.component,
-                                          proc_desc.time) < 0)
-                    {
-                        return(-3);
-                    }
-                } else if (proc_desc.options[0] == "first") {
-                    if (add_merge_process("merge_first", proc_desc.component,
-                                      proc_desc.time) < 0)
-                    {
-                        return(-3);
-                    }
-                } else if (proc_desc.options[0] == "max") {
-                    if (add_merge_process("merge_max", proc_desc.component,
-                                      proc_desc.time) < 0)
-                    {
-                        return(-3);
-                    }
-                } else if (proc_desc.options[0] == "array_eweight") {
-                    // Give each eweight process a unique name, so that is can
-                    // have unique settings.
-                    std::stringstream ss("merge_array_eweight_");
-                    ss << no_array_eweight++;
-                    add_array_eweight_func(proc_desc.options, ss.str());
-                    if (add_merge_process(ss.str(), proc_desc.component,
-                                          proc_desc.time) < 0)
-                    {
-                        return(-3);
-                    }
-                } else {
-                    return(-4);
-                }
-            } else if (proc_desc.type == "deadtime") {
-                if (add_merge_process("deadtime_nonpara", proc_desc.component,
-                                      proc_desc.time) < 0) {
-                    return(-3);
-                }
-            } else if (proc_desc.type == "filter") {
-                if (add_filter_process(proc_desc.component, proc_desc.time) < 0)
-                {
-                    return(-3);
-                }
-            } else if (proc_desc.type == "blur") {
-                if (add_blur_process(proc_desc.component, proc_desc.time,
-                                     proc_desc.options) < 0)
-                {
-                    return(-3);
-                }
-            } else if (proc_desc.type == "sort") {
-                if (add_sort_process(proc_desc.component, proc_desc.time,
-                                     proc_desc.options) < 0)
-                {
-                    return(-3);
-                }
-            } else if (proc_desc.type == "coinc") {
-                if (add_coinc_process(proc_desc.component, proc_desc.time,
-                                      proc_desc.options) < 0)
-                {
-                    return(-3);
-                }
-            } else {
-                std::cerr << "Process Type not supported: " << proc_desc.type
-                          << std::endl;
-                return(-2);
-            }
-        }
-        return(0);
+        return(set_processes(process_descriptions));
     }
 
     void add_event(const EventT & event) {
@@ -311,6 +257,42 @@ private:
         std::vector<std::string> options;
     };
 
+    static int line_to_process_description(const std::string & line,
+                                           ProcessDescription & proc_desc)
+    {
+
+        // Ignore blank lines, including just all whitespace
+        if (line.find_first_not_of(" ") == std::string::npos) {
+            return(0);
+        }
+        // Remove leading spaces, and anything after a comment
+        std::string new_line = line.substr(line.find_first_not_of(" "),
+                                           line.find_first_of("#"));
+        // Ignore blank lines again after removing comments
+        if (new_line.empty()) {
+            return(0);
+        }
+
+        std::stringstream line_ss(new_line);
+        if ((line_ss >> proc_desc.type).fail()) {
+            return(-1);
+        }
+
+        if ((line_ss >> proc_desc.component).fail()) {
+            return(-1);
+        }
+
+        if ((line_ss >> proc_desc.time).fail()) {
+            return(-1);
+        }
+
+        std::string txt_val;
+        while (line_ss >> txt_val) {
+            proc_desc.options.push_back(txt_val);
+        }
+        return(1);
+    }
+
     static int load_process_list(
             const std::string & filename,
             std::vector<ProcessDescription> & process_descriptions)
@@ -321,41 +303,111 @@ private:
         }
         std::string line;
         while (getline(input, line)) {
-
-            // Ignore blank lines, including just all whitespace
-            if (line.find_first_not_of(" ") == std::string::npos) {
-                continue;
-            }
-            // Remove leading spaces, and anything after a comment
-            line = line.substr(line.find_first_not_of(" "),
-                               line.find_first_of("#"));
-            // Ignore blank lines again after removing comments
-            if (line.empty()) {
-                continue;
-            }
-
-            std::stringstream line_ss(line);
             ProcessDescription proc_desc;
-            if ((line_ss >> proc_desc.type).fail()) {
-                return(-2);
+            int status = line_to_process_description(line, proc_desc);
+            if (status < 0) {
+                return(status);
+            } else if (status == 0) {
+                // A blank line that we can safely ignore.
+                continue;
+            } else {
+                process_descriptions.push_back(proc_desc);
             }
-
-            if ((line_ss >> proc_desc.component).fail()) {
-                return(-2);
-            }
-
-            if ((line_ss >> proc_desc.time).fail()) {
-                return(-2);
-            }
-
-            std::string txt_val;
-            while (line_ss >> txt_val) {
-                proc_desc.options.push_back(txt_val);
-            }
-            process_descriptions.push_back(proc_desc);
         }
         return(0);
     }
+
+    static int convert_process_lines(
+            const std::vector<std::string> & lines,
+            std::vector<ProcessDescription> & process_descriptions)
+    {
+        for (const auto & line: lines) {
+            ProcessDescription proc_desc;
+            int status = line_to_process_description(line, proc_desc);
+            if (status < 0) {
+                return(status);
+            } else if (status == 0) {
+                // A blank line that we can safely ignore.
+                continue;
+            } else {
+                process_descriptions.push_back(proc_desc);
+            }
+        }
+    }
+
+
+    int set_processes(const std::vector<ProcessDescription> & process_descriptions) {
+        for (const auto & proc_desc: process_descriptions) {
+            if (proc_desc.type == "merge") {
+                if (proc_desc.options.empty()) {
+                    if (add_merge_process("merge_max", proc_desc.component,
+                                          proc_desc.time) < 0)
+                    {
+                        return(-3);
+                    }
+                } else if (proc_desc.options[0] == "first") {
+                    if (add_merge_process("merge_first", proc_desc.component,
+                                          proc_desc.time) < 0)
+                    {
+                        return(-3);
+                    }
+                } else if (proc_desc.options[0] == "max") {
+                    if (add_merge_process("merge_max", proc_desc.component,
+                                          proc_desc.time) < 0)
+                    {
+                        return(-3);
+                    }
+                } else if (proc_desc.options[0] == "array_eweight") {
+                    // Give each eweight process a unique name, so that is can
+                    // have unique settings.
+                    std::stringstream ss("merge_array_eweight_");
+                    ss << no_array_eweight++;
+                    add_array_eweight_func(proc_desc.options, ss.str());
+                    if (add_merge_process(ss.str(), proc_desc.component,
+                                          proc_desc.time) < 0)
+                    {
+                        return(-3);
+                    }
+                } else {
+                    return(-4);
+                }
+            } else if (proc_desc.type == "deadtime") {
+                if (add_merge_process("deadtime_nonpara", proc_desc.component,
+                                      proc_desc.time) < 0) {
+                    return(-3);
+                }
+            } else if (proc_desc.type == "filter") {
+                if (add_filter_process(proc_desc.component, proc_desc.time) < 0)
+                {
+                    return(-3);
+                }
+            } else if (proc_desc.type == "blur") {
+                if (add_blur_process(proc_desc.component, proc_desc.time,
+                                     proc_desc.options) < 0)
+                {
+                    return(-3);
+                }
+            } else if (proc_desc.type == "sort") {
+                if (add_sort_process(proc_desc.component, proc_desc.time,
+                                     proc_desc.options) < 0)
+                {
+                    return(-3);
+                }
+            } else if (proc_desc.type == "coinc") {
+                if (add_coinc_process(proc_desc.component, proc_desc.time,
+                                      proc_desc.options) < 0)
+                {
+                    return(-3);
+                }
+            } else {
+                std::cerr << "Process Type not supported: " << proc_desc.type
+                << std::endl;
+                return(-2);
+            }
+        }
+        return(0);
+    }
+
 
     void add_array_eweight_func(const std::vector<std::string> & block_maps,
                                 const std::vector<int> & block_size,

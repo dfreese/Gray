@@ -97,9 +97,9 @@ void LoadDetector::ApplyRotation(const VectorR3& axis, double theta,
 
 bool LoadDetector::Load(const std::string & filename,
                         SceneDescription & theScene,
-                        SourceList & sources, Config & config)
+                        SourceList & sources, Config & config,
+                        DetectorArray & detector_array)
 {
-    DetectorArray detector_array;
     std::string filename_detector = "";
     string filename_basic_map;
     double polygonScale = 1.0;
@@ -535,7 +535,7 @@ bool LoadDetector::Load(const std::string & filename,
                 return(false);
             }
             config.set_filename_singles(filename);
-        } else if (command == "pipeline_config") {
+        } else if (command == "pipeline_file") {
             std::string filename;
             if ((line_ss >> filename).fail()) {
                 print_parse_error(line);
@@ -543,7 +543,11 @@ bool LoadDetector::Load(const std::string & filename,
                 return(false);
             }
             config.set_filename_pipeline(filename);
-        } else if (command == "mapping_config") {
+        }  else if (command == "pipeline_config") {
+            // Any line prefaced with pipeilne_config will be processed as a
+            // pipeline file.
+            config.set_filename_pipeline(args);
+        } else if (command == "mapping_file") {
             std::string filename;
             if ((line_ss >> filename).fail()) {
                 print_parse_error(line);

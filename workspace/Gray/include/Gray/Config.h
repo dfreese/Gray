@@ -39,6 +39,8 @@ public:
     bool get_run_physics();
     bool get_log_hits();
     bool get_log_singles();
+    void add_pipeline_line(const std::string & line);
+    std::vector<std::string> get_pipeline_lines();
 
 private:
     std::string filename_scene;
@@ -54,6 +56,7 @@ private:
     bool format_singles_set;
     Output::Format format_hits;
     Output::Format format_singles;
+    std::vector<std::string> pipeline_config_lines;
 };
 
 #endif /* Config_h */

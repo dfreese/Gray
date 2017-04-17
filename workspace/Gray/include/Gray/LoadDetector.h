@@ -5,6 +5,7 @@
 
 class Config;
 class CameraView;
+class DetectorArray;
 class Material;
 class RigidMapR3;
 class SourceList;
@@ -17,7 +18,8 @@ public:
     static bool Load(const std::string & filename,
                      SceneDescription & theScene,
                      SourceList & sources,
-                     Config & config);
+                     Config & config,
+                     DetectorArray & detector_array);
 private:
     static bool ReadVertexR3(VectorR3 & vert, std::ifstream & curFile);
     static void ProcessDetector(const VectorR3 & detCenter,
