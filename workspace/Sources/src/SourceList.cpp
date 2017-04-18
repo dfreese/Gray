@@ -1,17 +1,14 @@
 #include <Sources/SourceList.h>
 #include <Random/Random.h>
-#include <Physics/F18.h>
-#include <Physics/O15.h>
-#include <Physics/IN110.h>
-#include <Physics/ZR89.h>
-#include <Physics/BackBack.h>
 #include <Physics/Beam.h>
+#include <Physics/Positron.h>
 #include <Physics/PositronDecay.h>
 #include <Sources/Source.h>
 #include <Sources/BeamPointSource.h>
 #include <Sources/VectorSource.h>
 #include <VrMath/LinearR3.h>
 #include <exception>
+#include <limits>
 
 using namespace std;
 
@@ -52,15 +49,34 @@ void SourceList::AddSource(Source * s)
         isotope = static_cast<Isotope *>(new Beam());
     } else {
         if (current_isotope == "F18") {
-            isotope = static_cast<Isotope *>(new F18(acolinearity));
+            // Half-life in seconds, and probability of emiting a positron
+            Positron * f18 = new Positron(acolinearity, 6584.04, 0.9686);
+            f18->SetPositronRange(0.519, 27.9, 2.91, 3.0);
+            isotope = static_cast<Isotope *>(f18);
         } else if (current_isotope == "O15") {
-            isotope = static_cast<Isotope *>(new O15(acolinearity));
+            Positron * o15 = new Positron(acolinearity, 122.46, 0.99885);
+            o15->SetPositronRange(0.263, 33.2, 1.0, 3.0);
+            isotope = static_cast<Isotope *>(o15);
         } else if (current_isotope == "IN110") {
-            isotope = static_cast<Isotope *>(new IN110(acolinearity));
+            // Half-life in seconds, probability of emiting a positron, and
+            // energy (MeV) of the gamma emitted.
+            // TODO: stop using F18 positron range currently being used.
+            Positron * in110 = new Positron(acolinearity, 17676.0, 0.61,
+                                            0.657750);
+            in110->SetPositronRange(0.519, 27.9, 2.91, 3.0);
+            isotope = static_cast<Isotope *>(in110);
         } else if (current_isotope == "ZR89") {
-            isotope = static_cast<Isotope *>(new ZR89(acolinearity));
+            // Half-life in seconds, probability of emiting a positron, and
+            // energy (MeV) of the gamma emitted.
+            // TODO: stop using F18 positron range currently being used.
+            Positron * zr89 = new Positron(acolinearity, 282280.32, 0.227,
+                                           0.90915);
+            zr89->SetPositronRange(0.519, 27.9, 2.91, 3.0);
+            isotope = static_cast<Isotope *>(zr89);
         } else if (current_isotope == "BackBack") {
-            isotope = static_cast<Isotope *>(new BackBack(acolinearity));
+            // Infinite half-life
+            isotope = static_cast<Isotope *>(new Positron(
+                    acolinearity, std::numeric_limits<double>::infinity()));
         } else if (current_isotope == "Beam") {
             isotope = static_cast<Isotope *>(new Beam());
         } else {
