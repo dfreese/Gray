@@ -22,8 +22,7 @@ cyl_src 0.0 -2.0 0.0 0.0 0.0 1.0 0.01 68 2.7027
 isotope O15
 cyl_src 0.0 2.0 0.0 0.0 0.0 1.0 0.01 68 2.7027
 # set the simulation time to be 5 seconds
-time 10.0
-binary_output
+time 240.0
 
 # lso detector
 m lso
@@ -80,3 +79,5 @@ end_repeat
 pop
 
 pipeline_file gate_benchmark_process.pdc
+hits_format no_pos_binary
+singles_format no_pos_binary

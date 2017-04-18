@@ -6,6 +6,7 @@ then the simulation viewer is not built." ON)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
 
 # Adapted from http://stackoverflow.com/a/7750816/2465202
 set(BIN_DIR "../../bin")
