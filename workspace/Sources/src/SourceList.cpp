@@ -49,6 +49,7 @@ void SourceList::AddSource(Source * s)
     if (beam_pt_src) {
         isotope = static_cast<Isotope *>(new Beam());
     } else {
+        // TODO: read these isotopes and their properties in from a file
         if (current_isotope == "F18") {
             // Half-life in seconds, and probability of emiting a positron
             Positron * f18 = new Positron(acolinearity, 6584.04, 0.9686);
