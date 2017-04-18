@@ -542,6 +542,7 @@ bool LoadDetector::Load(const std::string & filename,
                 cerr << "Invalid filename: " << filename << endl;
                 return(false);
             }
+            filename = file_dir + filename;
             config.set_filename_pipeline(filename);
         }  else if (command == "pipeline_config") {
             // Any line prefaced with pipeilne_config will be processed as a

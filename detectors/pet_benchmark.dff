@@ -65,4 +65,4 @@ begin_repeat 8
 end_repeat
 pop
 
-save_basic_map pet_benchmark.map
+pipeline_file gate_benchmark_process.pdc
