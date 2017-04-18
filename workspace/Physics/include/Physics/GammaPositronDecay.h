@@ -7,9 +7,12 @@
 class GammaPositronDecay : public NuclearDecay
 {
 public:
+    GammaPositronDecay(double acolinearity_deg_fwhm);
     GammaPositronDecay(double acolinearity_deg_fwhm,
-                       double gamma_decay_energy_mev,
                        double positron_emis_prob);
+    GammaPositronDecay(double acolinearity_deg_fwhm,
+                       double positron_emis_prob,
+                       double gamma_decay_energy_mev);
     virtual void Decay(int photon_number, double time, int src_id,
                        const VectorR3 & position);
     virtual void Decay(int photon_number, double time, int src_id,
@@ -28,6 +31,7 @@ protected:
     Photon red;
     Photon yellow;
     bool gamma_position_set;
+    bool emit_gamma;
 };
 
 #endif

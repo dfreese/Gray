@@ -10,13 +10,33 @@ namespace {
 const double CONST_FWHM_TO_SIGMA = (1.0)/(2.35482005);
 }
 
+GammaPositronDecay::GammaPositronDecay(double acolinearity_deg_fwhm) :
+    acolinearity(acolinearity_deg_fwhm / 180.0 * M_PI * CONST_FWHM_TO_SIGMA),
+    gamma_decay_energy(-1.0),
+    positron_emission_prob(1.0),
+    gamma_position_set(false),
+    emit_gamma(false)
+{
+}
+
 GammaPositronDecay::GammaPositronDecay(double acolinearity_deg_fwhm,
-                                       double gamma_decay_energy_mev,
                                        double positron_emis_prob) :
+    acolinearity(acolinearity_deg_fwhm / 180.0 * M_PI * CONST_FWHM_TO_SIGMA),
+    gamma_decay_energy(-1.0),
+    positron_emission_prob(positron_emis_prob),
+    gamma_position_set(false),
+    emit_gamma(false)
+{
+}
+
+GammaPositronDecay::GammaPositronDecay(double acolinearity_deg_fwhm,
+                                       double positron_emis_prob,
+                                       double gamma_decay_energy_mev) :
     acolinearity(acolinearity_deg_fwhm / 180.0 * M_PI * CONST_FWHM_TO_SIGMA),
     gamma_decay_energy(gamma_decay_energy_mev),
     positron_emission_prob(positron_emis_prob),
-    gamma_position_set(false)
+    gamma_position_set(false),
+    emit_gamma(true)
 {
 }
 
@@ -33,27 +53,29 @@ void GammaPositronDecay::Decay(int photon_number, double time, int src_id,
     this->src_id = src_id;
     this->time = time;
 
-    // If the gamma position was already set by the positron range functions,
-    // do not override it.  Once we've set the position, clear the flag for the
-    // next decay call.
-    // TODO: log the positron annihilation and nuclear decay positions
-    // separately
-    if (!gamma_position_set) {
-        yellow.pos = position;
-        this->position = position;
-    } else {
-        gamma_position_set = false;
+    if (emit_gamma) {
+        // If the gamma position was already set by the positron range
+        // functions, do not override it.  Once we've set the position, clear
+        // the flag for the next decay call.
+        // TODO: log the positron annihilation and nuclear decay positions
+        // separately
+        if (!gamma_position_set) {
+            yellow.pos = position;
+            this->position = position;
+        } else {
+            gamma_position_set = false;
+        }
+        // TODO: correctly set the time on the gamma decay, based on the
+        // lifetime of the intermediate decay state.
+        yellow.time = time;
+        yellow.energy = gamma_decay_energy;
+        yellow.id = photon_number;
+        yellow.det_id = -1;
+        yellow.src_id = src_id;
+        yellow.phantom_scatter = false;
+        yellow.color = Photon::P_YELLOW;
+        AddPhoton(&yellow);
     }
-    // TODO: correctly set the time on the gamma decay, based on the lifetime of
-    // the intermediate decay state.
-    yellow.time = time;
-    yellow.energy = gamma_decay_energy;
-    yellow.id = photon_number;
-    yellow.det_id = -1;
-    yellow.src_id = src_id;
-    yellow.phantom_scatter = false;
-    yellow.color = Photon::P_YELLOW;
-    AddPhoton(&yellow);
 
     // Check to see if a Positron was emitted with the gamma or not.
     if (Random::Uniform() < positron_emission_prob) {
