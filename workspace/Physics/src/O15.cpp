@@ -11,11 +11,6 @@ O15::O15(double acolinearity_deg_fwhm) :
              122.46, // Half-life in seconds
              0.99885) // Positron Emission Probability
 {
-    positronC = 0.263;
-    positronK1 = 33.2;
-    positronK2 = 1.0;
-    positronMaxRange = 3.0;
-    use_positron_dbexp = true;
-    use_positron_gauss = false;
+    SetPositronRange(0.263, 33.2, 1.0, 3.0);
     Reset();
 }

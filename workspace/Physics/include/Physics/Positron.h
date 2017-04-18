@@ -22,8 +22,11 @@ public:
                               double positronMaxRange);
 
     static const double default_acolinearity;
+    void SetPositronRange(double c, double k1, double k2, double max);
+    void SetPositronRange(double fwhm, double max);
 
-protected:
+private:
+    PositronDecay p;
     bool use_positron_dbexp;
     bool use_positron_gauss;
     double positronFWHM; // expressed in meters
@@ -32,8 +35,6 @@ protected:
     double positronK2;
     double positronMaxRange;
 
-private:
-    PositronDecay p;
 };
 
 #endif /* POSITRON_H */

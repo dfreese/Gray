@@ -4,14 +4,18 @@ using namespace std;
 
 Positron::Positron(double acolinearity_deg_fwhm, double half_life) :
     Isotope(half_life),
-    p(acolinearity_deg_fwhm)
+    p(acolinearity_deg_fwhm),
+    use_positron_dbexp(false),
+    use_positron_gauss(false)
 {
 }
 
 Positron::Positron(double acolinearity_deg_fwhm, double half_life,
                    double positron_emis_prob) :
     Isotope(half_life),
-    p(acolinearity_deg_fwhm, positron_emis_prob)
+    p(acolinearity_deg_fwhm, positron_emis_prob),
+    use_positron_dbexp(false),
+    use_positron_gauss(false)
 {
 }
 
@@ -40,4 +44,20 @@ void Positron::Decay(int photon_number, double time, int src_id,
     } else {
         p.Decay(photon_number, time, src_id, position);
     }
+}
+
+void Positron::SetPositronRange(double c, double k1, double k2, double max) {
+    use_positron_dbexp = true;
+    use_positron_gauss  = false;
+    positronC = c;
+    positronK1 = k1;
+    positronK2 = k2;
+    positronMaxRange = max;
+}
+
+void Positron::SetPositronRange(double fwhm, double max) {
+    use_positron_dbexp = true;
+    use_positron_gauss  = false;
+    positronFWHM = fwhm;
+    positronMaxRange = max;
 }
