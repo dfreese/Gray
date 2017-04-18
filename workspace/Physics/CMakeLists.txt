@@ -7,10 +7,6 @@ add_library(Physics
     include/Physics/F18.h
     src/GammaDecay.cpp
     include/Physics/GammaDecay.h
-    src/GammaPositron.cpp
-    include/Physics/GammaPositron.h
-    src/GammaPositronDecay.cpp
-    include/Physics/GammaPositronDecay.h
     src/GammaStats.cpp
     include/Physics/GammaStats.h
     src/IN110.cpp

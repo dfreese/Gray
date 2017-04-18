@@ -7,9 +7,9 @@ using namespace std;
 // const double F18_MAX_BETA_ENERGY=0.315;
 
 F18::F18(double acolinearity_deg_fwhm) :
-    GammaPositron(acolinearity_deg_fwhm,
-                  6584.04, // Half-life in seconds
-                  0.9686) // Positron Emission Probability
+    Positron(acolinearity_deg_fwhm,
+             6584.04, // Half-life in seconds
+             0.9686) // Positron Emission Probability
 {
     /*******************************************************************************
      *            18F             11C            13N               15O             *

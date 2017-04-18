@@ -1,9 +1,9 @@
 #ifndef BackBack_H
 #define BackBack_H
 
-#include <Physics/GammaPositron.h>
+#include <Physics/Positron.h>
 
-class BackBack : public GammaPositron
+class BackBack : public Positron
 {
 public:
     BackBack(double acolinearity_deg_fwhm);

@@ -1,5 +1,5 @@
-#ifndef CSE167_POSITRONDECAY_H
-#define CSE167_POSITRONDECAY_H
+#ifndef GAMMAPOSITRONDECAY_H
+#define GAMMAPOSITRONDECAY_H
 
 #include <Physics/NuclearDecay.h>
 #include <Physics/Photon.h>
@@ -7,8 +7,12 @@
 class PositronDecay : public NuclearDecay
 {
 public:
+    PositronDecay(double acolinearity_deg_fwhm);
     PositronDecay(double acolinearity_deg_fwhm,
-                  double positron_emis_prob);
+                       double positron_emis_prob);
+    PositronDecay(double acolinearity_deg_fwhm,
+                       double positron_emis_prob,
+                       double gamma_decay_energy_mev);
     virtual void Decay(int photon_number, double time, int src_id,
                        const VectorR3 & position);
     virtual void Decay(int photon_number, double time, int src_id,
@@ -28,9 +32,13 @@ public:
 
 protected:
     const double acolinearity;
+    const double gamma_decay_energy;
     const double positron_emission_prob;
     Photon blue;
     Photon red;
+    Photon yellow;
+    bool gamma_position_set;
+    bool emit_gamma;
 };
 
 #endif

@@ -17,9 +17,9 @@
 #ifndef ZR89_H
 #define ZR89_H
 
-#include <Physics/GammaPositron.h>
+#include <Physics/Positron.h>
 
-class ZR89 : public GammaPositron
+class ZR89 : public Positron
 {
 public:
     ZR89(double acolinearity_deg_fwhm);
