@@ -72,11 +72,6 @@ int main( int argc, char** argv)
         return(0);
     }
 
-    if (!config.get_log_hits() && !config.get_log_singles()) {
-        cout << "No output specified.  Exiting." << endl;
-        return(0);
-    }
-
     Output output_hits;
     Output output_singles;
     if (config.get_log_hits()) {
@@ -97,6 +92,11 @@ int main( int argc, char** argv)
         run_viewer(argc, argv, scene, intersect_kd_tree);
 #endif
     }
+
+    if (!config.get_log_hits() && !config.get_log_singles()) {
+        cout << "No output specified.  Exiting." << endl;
+    }
+    
     if (config.get_run_physics()) {
 
         // We only want to send certain interaction types into the singles
