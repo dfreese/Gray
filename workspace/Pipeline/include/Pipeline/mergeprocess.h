@@ -19,9 +19,9 @@
 template <
 class EventT,
 class TimeT,
-class TimeDiffType = std::function<TimeT(const EventT&, const EventT&)>,
-class InfoType = std::function<int(const EventT&)>,
-class ModType = std::function<void(EventT&, const EventT&)>
+class TimeF = std::function<TimeT(const EventT&)>,
+class InfoF = std::function<int(const EventT&)>,
+class ModF = std::function<void(EventT&, const EventT&)>
 >
 
 class MergeProcess : public Processor<EventT> {
@@ -31,12 +31,12 @@ public:
      *
      */
     MergeProcess(const std::vector<int> & lookup, TimeT t_window,
-                 TimeDiffType dt_func, InfoType det_id_fun, ModType merge_fc) :
+                 TimeF time_func, InfoF id_func, ModF merge_fc) :
         id_lookup(lookup),
         no_detectors(lookup.size()),
         time_window(t_window),
-        id_func(det_id_fun),
-        deltat_func(dt_func),
+        get_id_func(id_func),
+        get_time_func(time_func),
         merge_func(merge_fc)
     {
     }
@@ -49,10 +49,11 @@ private:
     void _add_event(const EventT & event) {
         // First update the map and time out.
         size_t ii = 0;
+        TimeT event_time = get_time_func(event);
         for (; ii < event_buf.size(); ii++) {
             EventT & stored_event = event_buf[ii];
-            TimeT delta_t = deltat_func(event, stored_event);
-            if (delta_t < time_window) {
+            TimeT stored_event_time = get_time_func(stored_event);
+            if ((event_time - stored_event_time) < time_window) {
                 // We've found an event that is too new, stop looking, and
                 // remember to start here next time.
                 break;
@@ -108,27 +109,27 @@ private:
     const int no_detectors;
 
     int find_id(const EventT& event) {
-        return(id_lookup[id_func(event)]);
+        return(id_lookup[get_id_func(event)]);
     }
 
     TimeT time_window;
     /*!
      * Returns the detector id for the event.  This is then mapped to a.
      */
-    InfoType id_func;
+    InfoF get_id_func;
 
     /*!
      * A function type that calculates the time difference between two events.
      * First - Second.
      */
-    TimeDiffType deltat_func;
+    TimeF get_time_func;
 
     /*!
      * A function that takes in two events and declares if there could be a
      * valid coincidence between the two events. It is expected to return true
      * if the pair could form a valid coincidence.
      */
-    ModType merge_func;
+    ModF merge_func;
 
     std::vector<EventT> event_buf;
 };

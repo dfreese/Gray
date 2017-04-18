@@ -203,7 +203,7 @@ private:
     typedef std::function<TimeT(const EventT&)> TimeF;
 
     ProcessStream<EventT> process_stream;
-    typedef MergeProcess<EventT, TimeT, TimeDiffF, InfoF, MergeF> MergeProcT;
+    typedef MergeProcess<EventT, TimeT, TimeF, InfoF, MergeF> MergeProcT;
     typedef FilterProcess<EventT, FilterF> FilterProcT;
     typedef BlurProcess<EventT, BlurF> BlurProcT;
     typedef SortProcess<EventT, TimeT, TimeF> SortProcT;
@@ -507,7 +507,7 @@ private:
         MergeF merge_func = merge_types[merge_name];
         const std::vector<int> id_map = id_maps[map_name];
         merge_processes.push_back(new MergeProcT(id_map, merge_time,
-                                                 deltat_func, id_func,
+                                                 get_time_func, id_func,
                                                  merge_func));
         process_stream.add_process(merge_processes.back());
         return(0);
