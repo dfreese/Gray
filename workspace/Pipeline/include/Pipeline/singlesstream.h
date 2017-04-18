@@ -331,6 +331,7 @@ private:
                 process_descriptions.push_back(proc_desc);
             }
         }
+        return(0);
     }
 
 
