@@ -14,7 +14,8 @@ using namespace std;
 
 SourceList::SourceList() :
     decay_number(0),
-    valid_isotopes({"F18", "O15", "IN110", "ZR89", "BackBack", "Beam"}),
+    valid_isotopes({"F18", "O15", "N13", "C11", "IN110", "ZR89", "BackBack",
+                    "Beam"}),
     current_isotope("BackBack"),
     acolinearity(PositronDecay::default_acolinearity),
     simulate_isotope_half_life(true),
@@ -57,6 +58,14 @@ void SourceList::AddSource(Source * s)
             Positron * o15 = new Positron(acolinearity, 122.46, 0.99885);
             o15->SetPositronRange(0.263, 33.2, 1.0, 3.0);
             isotope = static_cast<Isotope *>(o15);
+        } else if (current_isotope == "N13") {
+            Positron * n13 = new Positron(acolinearity, 598.02, 0.99818);
+            n13->SetPositronRange(0.433, 25.4, 1.44, 3.0);
+            isotope = static_cast<Isotope *>(n13);
+        } else if (current_isotope == "C11") {
+            Positron * c11 = new Positron(acolinearity, 1221.66, 0.9975);
+            c11->SetPositronRange(0.501, 24.5, 1.76, 3.0);
+            isotope = static_cast<Isotope *>(c11);
         } else if (current_isotope == "IN110") {
             // Half-life in seconds, probability of emiting a positron, and
             // energy (MeV) of the gamma emitted.
