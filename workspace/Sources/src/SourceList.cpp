@@ -6,6 +6,7 @@
 #include <Physics/ZR89.h>
 #include <Physics/BackBack.h>
 #include <Physics/Beam.h>
+#include <Physics/PositronDecay.h>
 #include <Sources/Source.h>
 #include <Sources/BeamPointSource.h>
 #include <Sources/VectorSource.h>

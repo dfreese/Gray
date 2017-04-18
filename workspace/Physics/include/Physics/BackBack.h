@@ -1,14 +1,12 @@
 #ifndef BackBack_H
 #define BackBack_H
 
-#include <Physics/Positron.h>
+#include <Physics/GammaPositron.h>
 
-class BackBack : public Positron
+class BackBack : public GammaPositron
 {
 public:
     BackBack(double acolinearity_deg_fwhm);
-    virtual void Decay(int photon_number, double time, int src_id,
-                       const VectorR3 & position);
 };
 
 #endif /* BackBack_H */

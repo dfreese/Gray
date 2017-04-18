@@ -12,8 +12,12 @@ public:
              double half_life,
              double positron_emis_prob);
     virtual void Reset();
+    virtual void Decay(int photon_number, double time, int src_id,
+                       const VectorR3 & position);
 
 protected:
+    bool use_positron_dbexp;
+    bool use_positron_gauss;
     double positronFWHM; // expressed in meters
     double positronC;
     double positronK1;

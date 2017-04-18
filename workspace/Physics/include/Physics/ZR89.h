@@ -23,8 +23,6 @@ class ZR89 : public GammaPositron
 {
 public:
     ZR89(double acolinearity_deg_fwhm);
-    virtual void Decay(int photon_number, double time, int src_id,
-                       const VectorR3 & position);
 protected:
     const double zr89_max_beta_energy_mev = 0.315;
 

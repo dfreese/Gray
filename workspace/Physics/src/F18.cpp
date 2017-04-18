@@ -7,9 +7,9 @@ using namespace std;
 // const double F18_MAX_BETA_ENERGY=0.315;
 
 F18::F18(double acolinearity_deg_fwhm) :
-    Positron(acolinearity_deg_fwhm,
-             6584.04, // Half-life in seconds
-             0.9686) // Positron Emission Probability
+    GammaPositron(acolinearity_deg_fwhm,
+                  6584.04, // Half-life in seconds
+                  0.9686) // Positron Emission Probability
 {
     /*******************************************************************************
      *            18F             11C            13N               15O             *
@@ -21,14 +21,7 @@ F18::F18(double acolinearity_deg_fwhm) :
     positronK1 = 27.9;
     positronK2 = 2.91;
     positronMaxRange = 3.0;
+    use_positron_dbexp = true;
+    use_positron_gauss = false;
     Reset();
-}
-
-void F18::Decay(int photon_number, double time, int src_id,
-                const VectorR3 & position)
-{
-    p.Reset();
-    AddNuclearDecay(&p);
-    p.Decay(photon_number, time, src_id, position, positronC, positronK1,
-            positronK2, positronMaxRange);
 }

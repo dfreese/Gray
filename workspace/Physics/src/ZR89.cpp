@@ -12,13 +12,7 @@ ZR89::ZR89(double acolinearity_deg_fwhm) :
     positronK1 = 27.9;
     positronK2 = 2.91;
     positronMaxRange = 3.0;
+    use_positron_dbexp = true;
+    use_positron_gauss = false;
     Reset();
-}
-
-void ZR89::Decay(int photon_number, double time, int src_id,
-                 const VectorR3 & position)
-{
-    AddNuclearDecay(&gp);
-    gp.Decay(photon_number, time, src_id, position, positronC, positronK1,
-             positronK2, positronMaxRange);
 }
