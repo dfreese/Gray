@@ -132,20 +132,36 @@ def test_merge_different_detectors():
     assert(output[0]['time'] == data[0]['time']), 'Time should be unchanged'
     assert(output[1] == data[1]), 'Second event should be unchanged'
 
-def test_egate_deadtime():
-    data = np.zeros(6, dtype=gray.no_position_dtype)
+def test_deadtime():
+    data = np.zeros(7, dtype=gray.no_position_dtype)
     deadtime = 100.0
 
-    times = np.array((0.0, 50.0, 75.0, 200.0, 299.999, 300.0),
+    times = np.array((0.0, 50.0, 75.0, 174.99, 300.0, 399.999, 400.0),
                         dtype=data.dtype['time'])
     data['time'] = times
-    expected = data[np.array((0, 3, 5))]
+    expected = data[np.array((0, 3, 4, 6))]
     output = _create_and_run_merge(data, ('deadtime', 'detector', deadtime))
+    check = _create_and_run_merge(data, ('deadtime', 'detector', deadtime,
+                                         'nonparalyzable'))
 
     assert(output.size == expected.size), \
-            'Expected number of events not cut'
+            'Expected number of events not cut for nonparalyzable deadtime'
     assert((output == expected).all()), \
-           '''Event times are not as expected for deadtime model'''
+           'Event times are not as expected for nonparalyzable deadtime'
+
+    assert(output.size == check.size), \
+            'nonparalyzable deadtime should be the default'
+    assert((output == check).all()), \
+           'nonparalyzable deadtime should be the default'
+
+    expected = data[np.array((0, 4))]
+    output = _create_and_run_merge(data, ('deadtime', 'detector', deadtime,
+                                          'paralyzable'))
+
+    assert(output.size == expected.size), \
+        'Expected number of events not cut for paralyzable deadtime'
+    assert((output == expected).all()), \
+        'Event times are not as expected for paralyzable deadtime'
 
 def test_egate_low():
     data = np.zeros(5, dtype=gray.no_position_dtype)

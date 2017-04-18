@@ -18,6 +18,7 @@
 #include <Pipeline/blur.h>
 #include <Pipeline/blurprocess.h>
 #include <Pipeline/coincprocess.h>
+#include <Pipeline/deadtimeprocess.h>
 #include <Pipeline/mergeprocess.h>
 #include <Pipeline/filterprocess.h>
 #include <Pipeline/sortprocess.h>
@@ -40,6 +41,7 @@ public:
         deltat_func([](const EventT & e0,
                        const EventT & e1)
                     {return (e0.time - e1.time);}),
+        get_time_func([](const EventT & e){return (e.time);}),
         time_less_than(TimeCompF())
     {
         if (initial_sort_window > 0) {
@@ -55,10 +57,6 @@ public:
             e0.det_id = e0.energy > e1.energy ? e0.det_id:e1.det_id;
             e0.energy += e1.energy;
         };
-
-        // Func for basic nonparalyzable deadtime.  Basically does nothing,
-        // causing event 1 to be dropped.
-        merge_types["deadtime_nonpara"] = [](EventT & e0, const EventT & e1){};
     }
 
     ~SinglesStream() {
@@ -75,6 +73,9 @@ public:
             delete p;
         }
         for (auto p: coinc_processes) {
+            delete p;
+        }
+        for (auto p: deadtime_processes) {
             delete p;
         }
     }
@@ -202,6 +203,7 @@ private:
     typedef std::function<void(EventT&, const EventT&)> MergeF;
     typedef std::function<bool(const EventT&)> FilterF;
     typedef std::function<void(EventT&)> BlurF;
+    typedef std::function<TimeT(const EventT&)> TimeF;
 
     ProcessStream<EventT> process_stream;
     typedef MergeProcess<EventT, TimeT, TimeDiffF, InfoF, TimeCompF, MergeF> MergeProcT;
@@ -209,12 +211,14 @@ private:
     typedef BlurProcess<EventT, BlurF> BlurProcT;
     typedef SortProcess<EventT, TimeT, TimeDiffF, TimeCompF> SortProcT;
     typedef CoincProcess<EventT, TimeT, TimeDiffF, TimeCompF> CoincProcT;
+    typedef DeadtimeProcess<EventT, TimeT, TimeF> DeadtimeT;
     std::map<std::string, std::vector<int>> id_maps;
     std::vector<MergeProcT*> merge_processes;
     std::vector<FilterProcT*> filter_processes;
     std::vector<BlurProcT*> blur_processes;
     std::vector<SortProcT*> sort_processes;
     std::vector<CoincProcT*> coinc_processes;
+    std::vector<DeadtimeT*> deadtime_processes;
     std::map<std::string, MergeF> merge_types;
 
     static int load_id_maps(const std::string & filename,
@@ -372,8 +376,9 @@ private:
                     return(-4);
                 }
             } else if (proc_desc.type == "deadtime") {
-                if (add_merge_process("deadtime_nonpara", proc_desc.component,
-                                      proc_desc.time) < 0) {
+                if (add_deadtime_process(proc_desc.component, proc_desc.time,
+                                         proc_desc.options) < 0)
+                {
                     return(-3);
                 }
             } else if (proc_desc.type == "filter") {
@@ -487,6 +492,8 @@ private:
      * First - Second.
      */
     TimeDiffF deltat_func;
+
+    TimeF get_time_func;
 
     TimeCompF time_less_than;
 
@@ -637,6 +644,36 @@ private:
                 reject_multiples, paralyzable, enable_delayed_window,
                 delayed_window_offset, time_less_than));
         process_stream.add_process(coinc_processes.back());
+        return(0);
+    }
+
+
+    int add_deadtime_process(const std::string & map_name, double deadtime,
+                             const std::vector<std::string> & options)
+    {
+        bool paralyzable = false;
+        for (size_t ii = 0; ii < options.size(); ii++) {
+            const std::string & option = options[ii];
+            if (option == "paralyzable") {
+                paralyzable = true;
+            } else if (option == "nonparalyzable") {
+                paralyzable = false;
+            } else {
+                std::cerr << "unrecognized coinc option: " << option
+                          << std::endl;
+                return(-1);
+            }
+        }
+
+        if (id_maps.count(map_name) == 0) {
+            std::cerr << "Unknown id map type: " << map_name << std::endl;
+            return(-2);
+        }
+        const std::vector<int> id_map = id_maps[map_name];
+        deadtime_processes.push_back(new DeadtimeT(id_map, deadtime,
+                                                   get_time_func, id_func,
+                                                   paralyzable));
+        process_stream.add_process(deadtime_processes.back());
         return(0);
     }
 };

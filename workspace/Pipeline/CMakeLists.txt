@@ -3,6 +3,7 @@ add_library(Pipeline
     src/Pipeline.cpp
     include/Pipeline/blurprocess.h
     include/Pipeline/coincprocess.h
+    include/Pipeline/deadtimeprocess.h
     include/Pipeline/filterprocess.h
     include/Pipeline/mergeprocess.h
     include/Pipeline/processor.h
