@@ -19,8 +19,7 @@
 template <
 class EventT,
 class TimeT,
-class TimeDiffType = std::function<TimeT(const EventT&, const EventT&)>,
-class TimeCompT = std::less<TimeT>
+class TimeDiffType = std::function<TimeT(const EventT&, const EventT&)>
 >
 class CoincProcess : public Processor<EventT> {
 public:
@@ -31,15 +30,13 @@ public:
                  bool reject_multiple_events = false,
                  bool is_paralyzable = true,
                  bool use_delay = false,
-                 TimeT delay_win_offset = TimeT(),
-                 TimeCompT time_lt_func = TimeCompT()) :
+                 TimeT delay_win_offset = TimeT()) :
         coinc_window(coinc_win),
         delay_offset(delay_win_offset),
         reject_multiples(reject_multiple_events),
         paralyzable(is_paralyzable),
         use_delayed_window(use_delay),
         deltat_func(dt_func),
-        time_less_than(time_lt_func),
         no_coinc_pair_events(0),
         no_coinc_multiples_events(0),
         no_coinc_single_events(0),
@@ -130,9 +127,7 @@ private:
             for (size_t jj = ii; jj < buffer.size(); jj++) {
                 EventPair & new_event = buffer[jj];
                 TimeT delta_t = deltat_func(new_event.first, ref_event.first);
-                bool within_coinc_window = time_less_than(delta_t,
-                                                          coinc_window_end);
-                if (within_coinc_window) {
+                if (delta_t < coinc_window_end) {
                     in_window.push_back(jj);
                     if (paralyzable) {
                         coinc_window_end = delta_t + coinc_window;
@@ -162,10 +157,8 @@ private:
                     EventPair & new_event = buffer[jj];
                     TimeT delta_t = deltat_func(new_event.first,
                                                 ref_event.first);
-                    bool inside_delay_end = time_less_than(delta_t,
-                                                           delay_window_end);
-                    bool inside_delay_start = time_less_than(delta_t,
-                                                             delay_window_start);
+                    bool inside_delay_end = (delta_t < delay_window_end);
+                    bool inside_delay_start = (delta_t < delay_window_start);
                     bool within_delay_window = (inside_delay_end &&
                                                 !inside_delay_start);
                     if (within_delay_window) {
@@ -254,7 +247,6 @@ private:
      * First - Second.
      */
     TimeDiffType deltat_func;
-    TimeCompT time_less_than;
 
     long no_coinc_pair_events;
     long no_coinc_multiples_events;

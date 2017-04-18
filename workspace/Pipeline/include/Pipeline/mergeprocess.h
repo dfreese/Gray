@@ -21,7 +21,6 @@ class EventT,
 class TimeT,
 class TimeDiffType = std::function<TimeT(const EventT&, const EventT&)>,
 class InfoType = std::function<int(const EventT&)>,
-class TimeCompT = std::less<TimeT>,
 class ModType = std::function<void(EventT&, const EventT&)>
 >
 
@@ -32,15 +31,13 @@ public:
      *
      */
     MergeProcess(const std::vector<int> & lookup, TimeT t_window,
-                 TimeDiffType dt_func, InfoType det_id_fun, ModType merge_fc,
-                 TimeCompT time_lt_func = TimeCompT()) :
+                 TimeDiffType dt_func, InfoType det_id_fun, ModType merge_fc) :
         id_lookup(lookup),
         no_detectors(lookup.size()),
         time_window(t_window),
         id_func(det_id_fun),
         deltat_func(dt_func),
-        merge_func(merge_fc),
-        time_less_than(time_lt_func)
+        merge_func(merge_fc)
     {
     }
 
@@ -55,7 +52,7 @@ private:
         for (; ii < event_buf.size(); ii++) {
             EventT & stored_event = event_buf[ii];
             TimeT delta_t = deltat_func(event, stored_event);
-            if (time_less_than(delta_t, time_window)) {
+            if (delta_t < time_window) {
                 // We've found an event that is too new, stop looking, and
                 // remember to start here next time.
                 break;
@@ -132,7 +129,6 @@ private:
      * if the pair could form a valid coincidence.
      */
     ModType merge_func;
-    TimeCompT time_less_than;
 
     std::vector<EventT> event_buf;
 };

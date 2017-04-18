@@ -26,10 +26,9 @@
 /*!
  * Creates a base class for events rolling merge of a user specified type.
  */
-template <class EventT>
+template <class EventT, class TimeT = decltype(EventT::time)>
 class SinglesStream {
 public:
-    typedef decltype(EventT::time) TimeT;
     /*!
      * If the initial sort window is greater than zero, a sorting process is
      * added to the stream immediately with that wait window.  Necessary for
@@ -41,8 +40,7 @@ public:
         deltat_func([](const EventT & e0,
                        const EventT & e1)
                     {return (e0.time - e1.time);}),
-        get_time_func([](const EventT & e){return (e.time);}),
-        time_less_than(TimeCompF())
+        get_time_func([](const EventT & e){return (e.time);})
     {
         if (initial_sort_window > 0) {
             add_sort_process("time", initial_sort_window,
@@ -199,18 +197,17 @@ public:
 private:
     typedef std::function<TimeT(const EventT&, const EventT&)> TimeDiffF;
     typedef std::function<int(const EventT&)> InfoF;
-    typedef std::less<TimeT> TimeCompF;
     typedef std::function<void(EventT&, const EventT&)> MergeF;
     typedef std::function<bool(const EventT&)> FilterF;
     typedef std::function<void(EventT&)> BlurF;
     typedef std::function<TimeT(const EventT&)> TimeF;
 
     ProcessStream<EventT> process_stream;
-    typedef MergeProcess<EventT, TimeT, TimeDiffF, InfoF, TimeCompF, MergeF> MergeProcT;
+    typedef MergeProcess<EventT, TimeT, TimeDiffF, InfoF, MergeF> MergeProcT;
     typedef FilterProcess<EventT, FilterF> FilterProcT;
     typedef BlurProcess<EventT, BlurF> BlurProcT;
-    typedef SortProcess<EventT, TimeT, TimeDiffF, TimeCompF> SortProcT;
-    typedef CoincProcess<EventT, TimeT, TimeDiffF, TimeCompF> CoincProcT;
+    typedef SortProcess<EventT, TimeT, TimeDiffF> SortProcT;
+    typedef CoincProcess<EventT, TimeT, TimeDiffF> CoincProcT;
     typedef DeadtimeProcess<EventT, TimeT, TimeF> DeadtimeT;
     std::map<std::string, std::vector<int>> id_maps;
     std::vector<MergeProcT*> merge_processes;
@@ -495,8 +492,6 @@ private:
 
     TimeF get_time_func;
 
-    TimeCompF time_less_than;
-
     int add_merge_process(const std::string & merge_name,
                            const std::string & map_name,
                            TimeT merge_time)
@@ -513,7 +508,7 @@ private:
         const std::vector<int> id_map = id_maps[map_name];
         merge_processes.push_back(new MergeProcT(id_map, merge_time,
                                                  deltat_func, id_func,
-                                                 merge_func, time_less_than));
+                                                 merge_func));
         process_stream.add_process(merge_processes.back());
         return(0);
     }
@@ -578,8 +573,7 @@ private:
             process_stream.add_process(blur_processes.back());
 
             // Sort the stream afterwards, based on the capped blur
-            sort_processes.push_back(new SortProcT(max_blur * 2, deltat_func,
-                                                   time_less_than));
+            sort_processes.push_back(new SortProcT(max_blur * 2, deltat_func));
             process_stream.add_process(sort_processes.back());
             return(0);
         } else {
@@ -592,8 +586,7 @@ private:
                          const std::vector<std::string> & options)
     {
         if (name == "time") {
-            sort_processes.push_back(new SortProcT(value, deltat_func,
-                                                   time_less_than));
+            sort_processes.push_back(new SortProcT(value, deltat_func));
             process_stream.add_process(sort_processes.back());
             return(0);
         } else {
@@ -642,7 +635,7 @@ private:
         }
         coinc_processes.push_back(new CoincProcT(value, deltat_func,
                 reject_multiples, paralyzable, enable_delayed_window,
-                delayed_window_offset, time_less_than));
+                delayed_window_offset));
         process_stream.add_process(coinc_processes.back());
         return(0);
     }
