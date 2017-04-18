@@ -19,14 +19,14 @@
 template <
 class EventT,
 class TimeT,
-class TimeDiffType = std::function<TimeT(const EventT&, const EventT&)>
+class TimeF = std::function<TimeT(const EventT&)>
 >
 class CoincProcess : public Processor<EventT> {
 public:
     /*!
      *
      */
-    CoincProcess(TimeT coinc_win, TimeDiffType dt_func,
+    CoincProcess(TimeT coinc_win, TimeF time_func,
                  bool reject_multiple_events = false,
                  bool is_paralyzable = true,
                  bool use_delay = false,
@@ -36,7 +36,8 @@ public:
         reject_multiples(reject_multiple_events),
         paralyzable(is_paralyzable),
         use_delayed_window(use_delay),
-        deltat_func(dt_func),
+        deltat_func([time_func](const EventT& e0, const EventT& e1){
+            return(time_func(e0) - time_func(e1));}),
         no_coinc_pair_events(0),
         no_coinc_multiples_events(0),
         no_coinc_single_events(0),
@@ -246,7 +247,7 @@ private:
      * A function type that calculates the time difference between two events.
      * First - Second.
      */
-    TimeDiffType deltat_func;
+    std::function<TimeT(const EventT&, const EventT&)> deltat_func;
 
     long no_coinc_pair_events;
     long no_coinc_multiples_events;

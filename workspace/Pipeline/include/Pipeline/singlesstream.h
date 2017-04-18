@@ -36,10 +36,7 @@ public:
      * are added.
      */
     SinglesStream(TimeT initial_sort_window = -1) :
-        id_func([](const EventT & e){return (e.det_id);}),
-        deltat_func([](const EventT & e0,
-                       const EventT & e1)
-                    {return (e0.time - e1.time);}),
+        get_id_func([](const EventT & e){return (e.det_id);}),
         get_time_func([](const EventT & e){return (e.time);})
     {
         if (initial_sort_window > 0) {
@@ -207,7 +204,7 @@ private:
     typedef FilterProcess<EventT, FilterF> FilterProcT;
     typedef BlurProcess<EventT, BlurF> BlurProcT;
     typedef SortProcess<EventT, TimeT, TimeF> SortProcT;
-    typedef CoincProcess<EventT, TimeT, TimeDiffF> CoincProcT;
+    typedef CoincProcess<EventT, TimeT, TimeF> CoincProcT;
     typedef DeadtimeProcess<EventT, TimeT, TimeF> DeadtimeT;
     std::map<std::string, std::vector<int>> id_maps;
     std::vector<MergeProcT*> merge_processes;
@@ -482,13 +479,7 @@ private:
     /*!
      * Returns the detector id for the event.  This is then mapped to a.
      */
-    InfoF id_func;
-
-    /*!
-     * A function type that calculates the time difference between two events.
-     * First - Second.
-     */
-    TimeDiffF deltat_func;
+    InfoF get_id_func;
 
     TimeF get_time_func;
 
@@ -507,7 +498,7 @@ private:
         MergeF merge_func = merge_types[merge_name];
         const std::vector<int> id_map = id_maps[map_name];
         merge_processes.push_back(new MergeProcT(id_map, merge_time,
-                                                 get_time_func, id_func,
+                                                 get_time_func, get_id_func,
                                                  merge_func));
         process_stream.add_process(merge_processes.back());
         return(0);
@@ -634,7 +625,7 @@ private:
             std::cerr << "Unknown coinc type: " << name << std::endl;
             return(-2);
         }
-        coinc_processes.push_back(new CoincProcT(value, deltat_func,
+        coinc_processes.push_back(new CoincProcT(value, get_time_func,
                 reject_multiples, paralyzable, enable_delayed_window,
                 delayed_window_offset));
         process_stream.add_process(coinc_processes.back());
@@ -665,7 +656,7 @@ private:
         }
         const std::vector<int> id_map = id_maps[map_name];
         deadtime_processes.push_back(new DeadtimeT(id_map, deadtime,
-                                                   get_time_func, id_func,
+                                                   get_time_func, get_id_func,
                                                    paralyzable));
         process_stream.add_process(deadtime_processes.back());
         return(0);
