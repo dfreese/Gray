@@ -154,7 +154,7 @@ def parse_log_word(log):
     return error, interaction, color, scatter, det_mat, src_id
 
 def collapse_detector_format(data):
-    new_data = np.zeros(data.shape, dtype=raw_detector_dtype)
+    new_data = np.zeros(data.shape, dtype=no_position_dtype)
     new_data['time'] = data['time']
     new_data['energy'] = data['energy']
     new_data['id'] = data['id']
@@ -166,9 +166,9 @@ def collapse_detector_format(data):
 
 def expand_detector_format(data, full=False):
     if full:
-        new_data = np.zeros(data.shape, dtype=full_dtype)
+        new_data = np.zeros(data.shape, dtype=standard_expanded_dtype)
     else:
-        new_data = np.zeros(data.shape, dtype=detector_dtype)
+        new_data = np.zeros(data.shape, dtype=no_position_expanded_dtype)
     new_data['time'] = data['time']
     new_data['energy'] = data['energy']
     if full:
@@ -182,9 +182,9 @@ def expand_detector_format(data, full=False):
 
 def load_detector_output(filename, full=False, expand=False):
     if full:
-        data = np.fromfile(filename, dtype=raw_full_dtype)
+        data = np.fromfile(filename, dtype=standard_dtype)
     else:
-        data = np.fromfile(filename, dtype=raw_detector_dtype)
+        data = np.fromfile(filename, dtype=no_position_dtype)
 
     if expand:
         return expand_detector_format(data, full)
