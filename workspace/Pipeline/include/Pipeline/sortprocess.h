@@ -19,7 +19,7 @@
 template <
 class EventT,
 class TimeT,
-class TimeDiffType = std::function<TimeT(const EventT&, const EventT&)>
+class TimeF = std::function<TimeT(const EventT&)>
 >
 class SortProcess : public Processor<EventT> {
 public:
@@ -27,11 +27,11 @@ public:
     /*!
      *
      */
-    SortProcess(TimeT max_time_to_wait, TimeDiffType dt_func) :
+    SortProcess(TimeT max_time_to_wait, TimeF time_func) :
         max_wait_time(max_time_to_wait),
-        deltat_func(dt_func),
-        event_min_heap([dt_func](const EventT& e0, const EventT& e1) {
-            return(0 < dt_func(e0, e1));})
+        get_time_func(time_func),
+        event_min_heap([time_func](const EventT& e0, const EventT& e1) {
+            return(time_func(e0) > time_func(e1));})
     {
 
     }
@@ -40,13 +40,13 @@ private:
     void _add_event(const EventT & event) {
 
         event_min_heap.push(event);
-        max_time_event = (0 < deltat_func(event, max_time_event)) ?
-                event : max_time_event;
+        TimeT event_time = get_time_func(event);
+        max_time = std::max(event_time, max_time);
 
         while(!event_min_heap.empty()) {
             const EventT & stored_event = event_min_heap.top();
-            TimeT delta_t = deltat_func(max_time_event, stored_event);
-            if (delta_t < max_wait_time) {
+            TimeT time = get_time_func(stored_event);
+            if ((max_time - time) < max_wait_time) {
                 // We've found an event that is too new, stop looking, and
                 // remember to start here next time.
                 break;
@@ -72,7 +72,7 @@ private:
             event_min_heap.pop();
         }
         // TODO: check that initialization of time will be okay
-        max_time_event = EventT();
+        max_time = TimeT();
     }
 
     /*!
@@ -82,13 +82,13 @@ private:
     }
 
     TimeT max_wait_time;
-    EventT max_time_event;
+    TimeT max_time;
 
     /*!
      * A function type that calculates the time difference between two events.
      * First - Second.
      */
-    TimeDiffType deltat_func;
+    TimeF get_time_func;
     std::priority_queue<EventT, std::vector<EventT>, EventTimeGreaterThanT> event_min_heap;
 };
 #endif // sortprocess_h

@@ -206,7 +206,7 @@ private:
     typedef MergeProcess<EventT, TimeT, TimeDiffF, InfoF, MergeF> MergeProcT;
     typedef FilterProcess<EventT, FilterF> FilterProcT;
     typedef BlurProcess<EventT, BlurF> BlurProcT;
-    typedef SortProcess<EventT, TimeT, TimeDiffF> SortProcT;
+    typedef SortProcess<EventT, TimeT, TimeF> SortProcT;
     typedef CoincProcess<EventT, TimeT, TimeDiffF> CoincProcT;
     typedef DeadtimeProcess<EventT, TimeT, TimeF> DeadtimeT;
     std::map<std::string, std::vector<int>> id_maps;
@@ -573,7 +573,8 @@ private:
             process_stream.add_process(blur_processes.back());
 
             // Sort the stream afterwards, based on the capped blur
-            sort_processes.push_back(new SortProcT(max_blur * 2, deltat_func));
+            sort_processes.push_back(new SortProcT(max_blur * 2,
+                                                   get_time_func));
             process_stream.add_process(sort_processes.back());
             return(0);
         } else {
@@ -586,7 +587,7 @@ private:
                          const std::vector<std::string> & options)
     {
         if (name == "time") {
-            sort_processes.push_back(new SortProcT(value, deltat_func));
+            sort_processes.push_back(new SortProcT(value, get_time_func));
             process_stream.add_process(sort_processes.back());
             return(0);
         } else {
