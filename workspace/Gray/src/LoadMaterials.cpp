@@ -40,7 +40,6 @@ bool LoadMaterials::ParseMaterialsFile(
         material_names.push_back(matname);
         material_sensitivities.push_back(matsensitive);
     }
-    cout << material_names.size() << " Materials Found " <<endl;
     matfile.close();
     return(true);
 }

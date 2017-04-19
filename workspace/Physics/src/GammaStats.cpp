@@ -126,8 +126,7 @@ bool GammaStats::Load()
     if (0 >= no_points) {
         return(false);
     }
-    cout << "Opening file: " << filename << " with " << no_points
-         << " points\n";
+
     SetSize(no_points);
     for (int i = 0; i < no_points; i++) {
         string pt_line;

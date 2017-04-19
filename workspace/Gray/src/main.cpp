@@ -96,7 +96,7 @@ int main( int argc, char** argv)
     if (!config.get_log_hits() && !config.get_log_singles()) {
         cout << "No output specified.  Exiting." << endl;
     }
-    
+
     if (config.get_run_physics()) {
 
         // We only want to send certain interaction types into the singles

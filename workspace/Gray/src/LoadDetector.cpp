@@ -256,7 +256,6 @@ bool LoadDetector::Load(const std::string & filename,
                 cerr << "invalid isotope: " << string << endl;
                 return(false);
             }
-            cout << "Debug: set isotope: " << string << endl;
         } else if (command == "voxel_src") {
             char string[256];
             VectorR3 position;
@@ -366,13 +365,6 @@ bool LoadDetector::Load(const std::string & filename,
                 print_parse_error(line);
                 return(false);
             }
-            cout << " New Ellipsoid Source " << endl;
-            cout << " New Center :: "  << (double)center.x  << "  " ;
-            cout << (double) center.y << "  " << (double) center.z <<  endl;
-            cout << " New Axis   :: "  << (double)axis1.x  << "  " ;
-            cout << (double) axis1.y << "  " << (double) axis1.z <<  endl;
-            cout << " New Radius   :: "  << (double)radius1  << "  " ;
-            cout << (double) radius2 << "  " << (double)radius3 <<  endl;
             EllipsoidSource *ve = new EllipsoidSource(
                     center, axis1, axis2, radius1, radius2, radius3,
                     actScale*activity);
@@ -389,7 +381,6 @@ bool LoadDetector::Load(const std::string & filename,
                                   &(center.x), &(center.y), &(center.z),
                                   &(axis.x), &(axis.y), &(axis.z),
                                   &radius1, &radius2, &height);
-            cout << "Reading Cylinder Source " <<endl;
             if (scanCode != 9) {
                 print_parse_error(line);
                 return(false);
@@ -414,7 +405,6 @@ bool LoadDetector::Load(const std::string & filename,
                                   &(center.x), &(center.y), &(center.z),
                                   &(axis.x), &(axis.y), &(axis.z),
                                   &radius1, &radius2, &height, &activity);
-            cout << "Reading Elliptic Cylinder Source " <<endl;
             if (scanCode != 10) {
                 print_parse_error(line);
                 return(false);
@@ -422,10 +412,6 @@ bool LoadDetector::Load(const std::string & filename,
             MatrixStack.top().Transform(&center);
             MatrixStack.top().Transform3x3(&axis);
             axis *= height;
-            cout << " New Center :: "  << (double)center.x  << "  " ;
-            cout << (double) center.y << "  " << (double) center.z <<  endl;
-            cout << " New Axis   :: "  << (double)axis.x  << "  " ;
-            cout << (double) axis.y << "  " << (double) axis.z <<  endl;
             EllipticCylinderSource * cyl = new EllipticCylinderSource(
                     center, radius1, radius2, axis, actScale*activity);
             cyl->SetMaterial(curMaterial);
@@ -442,7 +428,6 @@ bool LoadDetector::Load(const std::string & filename,
                                   &(center.x), &(center.y), &(center.z),
                                   &(axis.x), &(axis.y), &(axis.z),
                                   &radius1, &radius2, &height, &activity);
-            cout << "Reading Annulus Elliptic Cylinder Source " <<endl;
             if (scanCode != 10) {
                 print_parse_error(line);
                 return(false);
@@ -450,10 +435,6 @@ bool LoadDetector::Load(const std::string & filename,
             MatrixStack.top().Transform(&center);
             MatrixStack.top().Transform3x3(&axis);
             axis *= height;
-            cout << " New Center :: "  << (double)center.x  << "  " ;
-            cout << (double) center.y << "  " << (double) center.z <<  endl;
-            cout << " New Axis   :: "  << (double)axis.x  << "  " ;
-            cout << (double) axis.y << "  " << (double) axis.z <<  endl;
             AnnulusEllipticCylinderSource * cyl =
                     new AnnulusEllipticCylinderSource(center, radius1, radius2,
                                                       axis, actScale*activity);
@@ -470,7 +451,6 @@ bool LoadDetector::Load(const std::string & filename,
                                   &(center.x), &(center.y), &(center.z),
                                   &(axis.x), &(axis.y), &(axis.z),
                                   &radius, &height, &activity);
-            cout << "Reading Annulus Cylinder Source " <<endl;
             if (scanCode != 9) {
                 print_parse_error(line);
                 return(false);
@@ -479,10 +459,6 @@ bool LoadDetector::Load(const std::string & filename,
             MatrixStack.top().Transform(&center);
             MatrixStack.top().Transform3x3(&axis);
             axis *= height;
-            cout << " New Center :: "  << (double)center.x  << "  " ;
-            cout << (double) center.y << "  " << (double) center.z <<  endl;
-            cout << " New Axis   :: "  << (double)axis.x  << "  " ;
-            cout << (double) axis.y << "  " << (double) axis.z <<  endl;
             AnnulusCylinderSource * cyl = new AnnulusCylinderSource(
                     center, radius, axis, actScale*activity);
             cyl->SetMaterial(curMaterial);
@@ -645,11 +621,8 @@ bool LoadDetector::Load(const std::string & filename,
                 return(false);
             }
             sources.AddSource(curVectorSource);
-            cout << "Ending Vector Source:\n";
-            cout << curVectorSource->GetMin();
-            cout << "\n";
-            cout << curVectorSource->GetMax();
-            cout << "\n";
+            cout << "Ending Vector Source:\n" << curVectorSource->GetMin()
+                 << "\n" << curVectorSource->GetMax() << "\n";
             parse_VectorSource = false;
             curVectorSource = NULL;
         } else if (command == "time") {
@@ -701,9 +674,6 @@ bool LoadDetector::Load(const std::string & filename,
             if (scanCode != 5) {
                 print_parse_error(line);
                 return(false);
-            }
-            if (activity < 0.0) {
-                cout << "Negative Source " << activity << " uCi" << endl;
             }
 
             ViewableSphere * sp = new ViewableSphere(position, radius);
@@ -818,7 +788,6 @@ bool LoadDetector::Load(const std::string & filename,
                                   &(center.x), &(center.y), &(center.z),
                                   &(axis.x), &(axis.y), &(axis.z),
                                   &radius, &height, &activity);
-            cout << "Reading Cylinder Source " <<endl;
             if (scanCode != 9) {
                 print_parse_error(line);
                 return(false);
@@ -834,10 +803,6 @@ bool LoadDetector::Load(const std::string & filename,
             MatrixStack.top().Transform(&center);
             MatrixStack.top().Transform3x3(&axis);
             axis *= height;
-            cout << " New Center :: "  << (double)center.x  << "  " ;
-            cout << (double) center.y << "  " << (double) center.z <<  endl;
-            cout << " New Axis   :: "  << (double)axis.x  << "  " ;
-            cout << (double) axis.y << "  " << (double) axis.z <<  endl;
             CylinderSource * cyl = new CylinderSource(center, radius, axis,
                                                       actScale*activity);
             cyl->SetMaterial(curMaterial);

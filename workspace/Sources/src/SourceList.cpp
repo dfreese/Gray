@@ -103,7 +103,6 @@ void SourceList::AddSource(Source * s)
             string error = "Negative Source activities should be [-1,0)";
             throw(runtime_error(error));
         }
-        cout << "Adding negative source\n";
         neg_list.push_back(s);
         s->SetSourceNum(-1 * static_cast<int>(neg_list.size()));
     } else {
