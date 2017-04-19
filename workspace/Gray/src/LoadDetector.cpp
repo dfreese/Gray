@@ -555,6 +555,7 @@ bool LoadDetector::Load(const std::string & filename,
                 cerr << "Invalid filename: " << filename << endl;
                 return(false);
             }
+            filename = file_dir + filename;
             config.set_filename_mapping(filename);
         } else if (command == "save_detector") {
             char filename[256];
