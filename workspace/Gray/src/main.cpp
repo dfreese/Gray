@@ -72,17 +72,6 @@ int main( int argc, char** argv)
         return(0);
     }
 
-    Output output_hits;
-    Output output_singles;
-    if (config.get_log_hits()) {
-        output_hits.SetLogfile(config.get_filename_hits());
-        output_hits.SetFormat(config.get_format_hits());
-    }
-    if (config.get_log_singles()) {
-        output_singles.SetLogfile(config.get_filename_singles());
-        output_singles.SetFormat(config.get_format_singles());
-    }
-
     IntersectKdTree intersect_kd_tree(scene);
     sources.SetKdTree(intersect_kd_tree);
 
@@ -98,6 +87,17 @@ int main( int argc, char** argv)
     }
 
     if (config.get_run_physics()) {
+
+        Output output_hits;
+        Output output_singles;
+        if (config.get_log_hits()) {
+            output_hits.SetLogfile(config.get_filename_hits());
+            output_hits.SetFormat(config.get_format_hits());
+        }
+        if (config.get_log_singles()) {
+            output_singles.SetLogfile(config.get_filename_singles());
+            output_singles.SetFormat(config.get_format_singles());
+        }
 
         // We only want to send certain interaction types into the singles
         // processor.
