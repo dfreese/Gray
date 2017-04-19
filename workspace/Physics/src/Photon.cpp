@@ -21,18 +21,17 @@ void Photon::Reset()
     phantom_scatter = false;
 }
 
-Photon::Photon(int set_id, double e, const VectorR3 & p, const VectorR3 & d)
+Photon::Photon(int set_id, double e, const VectorR3 & p, const VectorR3 & d) :
+    pos(p),
+    dir(d),
+    energy(e),
+    time(0.0),
+    id(set_id),
+    color(P_BLUE),
+    det_id(-1),
+    phantom_scatter(false),
+    src_id(-1)
 {
-
-    det_id = -1;
-    color = P_BLUE;
-
-    energy = e;
-    pos = p;
-    dir = d;
-    time = 0.0;
-    id = set_id;
-    phantom_scatter = false;
 }
 
 ostream& operator<< ( ostream& os, const Photon& p )
@@ -53,32 +52,4 @@ ostream& operator<< ( ostream& os, const Photon& p )
         os << " 0 ";
     }
     return os;
-}
-
-bool operator==(const Photon &p1, const Photon &p2)
-{
-    if ((p1.id == p2.id) && (p1.color == p2.color)) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-Photon& Photon::operator=(const Photon &p2)
-{
-    pos = p2.pos;
-    dir =	p2.dir;
-    energy = p2.energy;
-    time =	p2.time;
-    id =	p2.id;
-    color = p2.color;
-    det_id =	p2.det_id;
-    src_id = p2.src_id;
-    phantom_scatter = p2.phantom_scatter;
-    return *this;
-}
-
-bool Photon::operator<(const Photon &p2)
-{
-    return !(time <= p2.time);
 }

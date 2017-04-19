@@ -39,9 +39,6 @@ public:
         return phantom_scatter;
     }
     friend std::ostream & operator<< (std::ostream & os, const Photon & p);
-    friend bool operator==(const Photon &p1, const Photon &p2);
-    Photon& operator=(const Photon &p2);
-    bool operator<(const Photon &p2);
 
 public:
     VectorR3 pos;
