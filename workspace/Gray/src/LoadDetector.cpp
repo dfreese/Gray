@@ -190,9 +190,9 @@ bool LoadDetector::Load(const std::string & filename,
         if (line.find_first_not_of(" ") == string::npos) {
             continue;
         }
+        line = line.substr(line.find_first_not_of(" "));
         // Remove leading spaces, and anything after a comment
-        line = line.substr(line.find_first_not_of(" "),
-                           line.find_first_of("#"));
+        line = line.substr(0, line.find_first_of("#"));
         // Ignore blank lines again after removing comments
         if (line.empty()) {
             continue;
