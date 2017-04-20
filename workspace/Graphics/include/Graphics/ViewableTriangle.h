@@ -37,11 +37,11 @@ public:
 
     bool IsTwoSided() const
     {
-        return (BackMat!=0);
+        return (ViewableBase::GetMaterialBack() != 0);
     }
     bool BackFaceCulled() const
     {
-        return (BackMat==0);
+        return (ViewableBase::GetMaterialBack() == 0);
     }
 
     // Returns an intersection if found with distance maxDistance

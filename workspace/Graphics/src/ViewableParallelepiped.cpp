@@ -183,12 +183,12 @@ bool ViewableParallelepiped::FindIntersectionNT (
         alpha = maxFrontDist;
         faceNum = frontFaceNum;
         returnedPoint.SetFrontFace();
-        returnedPoint.SetMaterial(*OuterMaterial);
+        returnedPoint.SetMaterial(*ViewableBase::GetMaterialBack());
     } else if ( minBackDist>0.0 && minBackDist<maxDistance ) {
         alpha = minBackDist;
         faceNum = backFaceNum;
         returnedPoint.SetBackFace();
-        returnedPoint.SetMaterial(*InnerMaterial);
+        returnedPoint.SetMaterial(*ViewableBase::GetMaterialFront());
     } else {
         return false;
     }

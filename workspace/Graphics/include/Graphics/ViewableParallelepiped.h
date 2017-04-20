@@ -90,28 +90,6 @@ public:
     void SetVertices( const VectorR3& vertA, const VectorR3& vertB,
                       const VectorR3& vertC, const VectorR3& vertD );
 
-    void SetMaterial( const MaterialBase *material )
-    {
-        InnerMaterial = material;
-        OuterMaterial = material;
-    };
-    void SetMaterialOuter( const MaterialBase* material )
-    {
-        OuterMaterial = material;
-    }
-    void SetMaterialInner( const MaterialBase* material )
-    {
-        InnerMaterial = material;
-    }
-    const MaterialBase& GetMaterialOuter() const
-    {
-        return *OuterMaterial;
-    }
-    const MaterialBase& GetMaterialInner() const
-    {
-        return *InnerMaterial;
-    }
-
     void GetVertices( double *verts ) const;
     void GetVertices( float *verts ) const;
     const VectorR3& GetVertexA() const
@@ -177,10 +155,6 @@ protected:
     // The plane containing A, C, D and its opposite
     VectorR3 NormalACD;
     double TopCoefACD, BottomCoefACD;
-
-    const MaterialBase* OuterMaterial;
-    const MaterialBase* InnerMaterial;
-
     void CalcPlaneInfo();
 
 };
@@ -192,9 +166,6 @@ inline void ViewableParallelepiped::Reset()
     VertexC.SetUnitY();
     VertexD.SetUnitZ();
     CalcPlaneInfo();
-
-    OuterMaterial = &Material::Default;
-    InnerMaterial = &Material::Default;
 }
 
 inline void ViewableParallelepiped::SetVertices( double *verts )

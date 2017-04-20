@@ -145,7 +145,15 @@ public:
     virtual ViewableType GetViewableType() const = 0;
 
 protected:
+    // The "NT" version is the one that does all the work of finding
+    //		the intersection point, and computing u,v coordinates.
+    //	The "NT" version does not call the texture map: this is left for
+    //		the non-NT version to do.
+    virtual bool FindIntersectionNT (
+        const VectorR3& viewPos, const VectorR3& viewDir, double maxDistance,
+        double *intersectDistance, VisiblePoint& returnedPoint ) const = 0;
 
+private:
     const TextureMapBase* TextureFront;		// Front texture map
     const TextureMapBase* TextureBack;		// Back Texture map
 
@@ -154,15 +162,6 @@ protected:
 
     const MaterialBase* FrontMat;
     const MaterialBase* BackMat;	// Null point if not visible from back
-
-
-    // The "NT" version is the one that does all the work of finding
-    //		the intersection point, and computing u,v coordinates.
-    //	The "NT" version does not call the texture map: this is left for
-    //		the non-NT version to do.
-    virtual bool FindIntersectionNT (
-        const VectorR3& viewPos, const VectorR3& viewDir, double maxDistance,
-        double *intersectDistance, VisiblePoint& returnedPoint ) const = 0;
 };
 
 inline ViewableBase::ViewableBase() :
