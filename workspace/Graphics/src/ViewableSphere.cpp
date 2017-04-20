@@ -62,7 +62,7 @@ bool ViewableSphere::FindIntersectionNT (
         v /= Radius;	// Normalize: normal out from intersection pt
         v.ReNormalize();
         returnedPoint.SetNormal( v );
-        returnedPoint.SetMaterial ( *OuterMaterial );
+        returnedPoint.SetMaterial (*GetMaterialOuter());
         returnedPoint.SetFrontFace();	// Front face direction
         CalcUV( v, &(returnedPoint.GetUV()) );
         returnedPoint.SetFaceNumber( 0 );
@@ -81,7 +81,7 @@ bool ViewableSphere::FindIntersectionNT (
         v /= Radius;	// Normalize, but still points outward
         v.ReNormalize(); // Just in case
         returnedPoint.SetNormal( v );
-        returnedPoint.SetMaterial ( *InnerMaterial );
+        returnedPoint.SetMaterial (*GetMaterialInner());
         returnedPoint.SetBackFace();
         CalcUV( v, &(returnedPoint.GetUV()) );
         return true;

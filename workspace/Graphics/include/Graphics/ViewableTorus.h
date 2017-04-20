@@ -61,18 +61,13 @@ public:
     //    the texture coordinate u=0.5 line is in the direction of the axisA.
     void SetRadialAxis( const VectorR3& axisA );
 
-    void SetMaterial( const MaterialBase *material )
-    {
-        InnerMaterial = material;
-        OuterMaterial = material;
-    };
     void SetMaterialOuter( const MaterialBase *material )
     {
-        OuterMaterial = material;
+        ViewableBase::SetMaterialFront(material);
     };
     void SetMaterialInner( const MaterialBase *material )
     {
-        InnerMaterial = material;
+        ViewableBase::SetMaterialBack(material);
     };
 
     double GetMajorRadius() const
@@ -103,11 +98,11 @@ public:
     }
     const MaterialBase* GetMaterialOuter () const
     {
-        return OuterMaterial;
+        return(ViewableBase::GetMaterialFront());
     }
     const MaterialBase* GetMaterialInner () const
     {
-        return InnerMaterial;
+        return(ViewableBase::GetMaterialBack());
     }
 
 protected:
@@ -115,9 +110,6 @@ protected:
     VectorR3 AxisC;			// Central Axis
     double MajorRadius;
     double MinorRadius;
-
-    const MaterialBase* OuterMaterial;
-    const MaterialBase* InnerMaterial;
 
     VectorR3 AxisA, AxisB;		// AxisA, AxisB, AxisC form a coordinate system
     double CenterCoefA, CenterCoefB, CenterCoefC;
@@ -136,8 +128,6 @@ inline void ViewableTorus::Reset()
     MajorRadius = 2.0;
     MinorRadius = 1.0;
     Center.SetZero();
-    OuterMaterial = &Material::Default;
-    InnerMaterial = &Material::Default;
     AxisC.SetUnitY();
     AxisA.SetUnitZ();
     AxisB.SetUnitX();

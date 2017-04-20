@@ -189,10 +189,10 @@ bool ViewableTorus::FindIntersectionNT (
 
             if ( i & 0x01 ) {
                 returnedPoint.SetBackFace();					// Orientation
-                returnedPoint.SetMaterial( *InnerMaterial );	// Material
+                returnedPoint.SetMaterial(*GetMaterialInner());	// Material
             } else {
                 returnedPoint.SetFrontFace();					// Orientation
-                returnedPoint.SetMaterial( *OuterMaterial );	// Material
+                returnedPoint.SetMaterial(*GetMaterialOuter());	// Material
             }
 
             // Outward normal

@@ -97,19 +97,18 @@ public:
         return IsRightCylinderFlag;
     }
 
-    // SetMaterial() sets all the materials at once.
-    // SetMaterialInner() - sets all the inner materials at once.
-    // SetMaterialOuter() - sets all the outer materials at once.
-    void SetMaterial(const MaterialBase *material);
-    void SetMaterialInner(const MaterialBase *material);
-    void SetMaterialOuter(const MaterialBase *material);
-    void SetMaterialSideInner(const MaterialBase *material);
-    void SetMaterialSideOuter(const MaterialBase *material);
-    void SetMaterialTopInner(const MaterialBase *material);
-    void SetMaterialTopOuter(const MaterialBase *material);
-    void SetMaterialBottomInner(const MaterialBase *material);
-    void SetMaterialBottomOuter(const MaterialBase *material);
-
+    void SetMaterialInner(const MaterialBase *material) {
+        ViewableBase::SetMaterialBack(material);
+    }
+    void SetMaterialOuter(const MaterialBase *material) {
+        ViewableBase::SetMaterialFront(material);
+    }
+    const MaterialBase* GetMaterialInner() const {
+        return(ViewableBase::GetMaterialBack());
+    }
+    const MaterialBase* GetMaterialOuter() const {
+        return(ViewableBase::GetMaterialFront());
+    }
     // U-V coordinates are returned with the sides in [0,1]x[0,1], the bottom
     //		in [-1,0]x[-1,0], and the top in [1,2]x[1,2].
 
@@ -194,30 +193,6 @@ public:
         *planenormal = TopNormal;
         *planeCoef = TopPlaneCoef;
     }
-    const MaterialBase* GetMaterialSideOuter() const
-    {
-        return SideOuterMat;
-    }
-    const MaterialBase* GetMaterialSideInner() const
-    {
-        return SideInnerMat;
-    }
-    const MaterialBase* GetMaterialTopOuter() const
-    {
-        return TopOuterMat;
-    }
-    const MaterialBase* GetMaterialTopInner() const
-    {
-        return TopInnerMat;
-    }
-    const MaterialBase* GetMaterialBottomOuter() const
-    {
-        return BottomOuterMat;
-    }
-    const MaterialBase* GetMaterialBottomInner() const
-    {
-        return BottomInnerMat;
-    }
 
     enum {
         SideFaceNum = 0,
@@ -246,14 +221,6 @@ protected:
 
     bool IsRightCylinderFlag;	// True for right cylinders
     // False for general bounding planes
-
-    const MaterialBase* SideOuterMat;
-    const MaterialBase* SideInnerMat;
-    const MaterialBase* TopOuterMat;
-    const MaterialBase* TopInnerMat;
-    const MaterialBase* BottomOuterMat;
-    const MaterialBase* BottomInnerMat;
-
 };
 
 inline void ViewableCylinder::Reset()
@@ -383,56 +350,6 @@ inline void ViewableCylinder::SetBottomFace( const VectorR3& planenormal,
     BottomNormal = planenormal/norm;
     BottomPlaneCoef = planeCoef/norm;
     IsRightCylinderFlag = false;
-}
-
-inline void ViewableCylinder::SetMaterial(const MaterialBase *material)
-{
-    SetMaterialInner( material );
-    SetMaterialOuter( material );
-}
-
-inline void ViewableCylinder::SetMaterialInner(const MaterialBase *material)
-{
-    SetMaterialSideInner( material );
-    SetMaterialTopInner( material );
-    SetMaterialBottomInner( material );
-}
-
-inline void ViewableCylinder::SetMaterialOuter(const MaterialBase *material)
-{
-    SetMaterialSideOuter( material );
-    SetMaterialTopOuter( material );
-    SetMaterialBottomOuter( material );
-}
-
-inline void ViewableCylinder::SetMaterialSideInner(const MaterialBase *material)
-{
-    SideInnerMat = material;
-}
-
-inline void ViewableCylinder::SetMaterialSideOuter(const MaterialBase *material)
-{
-    SideOuterMat = material;
-}
-
-inline void ViewableCylinder::SetMaterialTopInner(const MaterialBase *material)
-{
-    TopInnerMat = material;
-}
-
-inline void ViewableCylinder::SetMaterialTopOuter(const MaterialBase *material)
-{
-    TopOuterMat = material;
-}
-
-inline void ViewableCylinder::SetMaterialBottomInner(const MaterialBase *material)
-{
-    BottomInnerMat = material;
-}
-
-inline void ViewableCylinder::SetMaterialBottomOuter(const MaterialBase *material)
-{
-    BottomOuterMat = material;
 }
 
 #endif   // VIEWABLECYLINDER_H

@@ -160,9 +160,9 @@ bool ViewableCone::FindIntersectionNT (
     case 0:		// Base face
         returnedPoint.SetNormal( BaseNormal );
         if ( returnedPoint.IsFrontFacing() ) {
-            returnedPoint.SetMaterial( *BaseOuterMat );
+            returnedPoint.SetMaterial(*GetMaterialBaseOuter());
         } else {
-            returnedPoint.SetMaterial( *BaseInnerMat );
+            returnedPoint.SetMaterial(*GetMaterialBaseInner());
         }
 
         // Calculate U-V values for texture coordinates
@@ -182,9 +182,9 @@ bool ViewableCone::FindIntersectionNT (
         normal.Normalize();
         returnedPoint.SetNormal( normal );
         if ( returnedPoint.IsFrontFacing() ) {
-            returnedPoint.SetMaterial( *SideOuterMat );
+            returnedPoint.SetMaterial(*GetMaterialSideOuter());
         } else {
-            returnedPoint.SetMaterial( *SideInnerMat );
+            returnedPoint.SetMaterial(*GetMaterialSideInner());
         }
 
         // Calculate u-v coordinates for texture mapping (in range[0,1]x[0,1])

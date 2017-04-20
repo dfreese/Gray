@@ -94,16 +94,12 @@ public:
         return IsRightConeFlag;
     }
 
-    // SetMaterial() sets all the materials at once.
-    // SetMaterialInner() - sets all the inner materials at once.
-    // SetMaterialOuter() - sets all the outer materials at once.
-    void SetMaterial(const MaterialBase *material);
-    void SetMaterialInner(const MaterialBase *material);
-    void SetMaterialOuter(const MaterialBase *material);
-    void SetMaterialSideInner(const MaterialBase *material);
-    void SetMaterialSideOuter(const MaterialBase *material);
-    void SetMaterialBaseInner(const MaterialBase *material);
-    void SetMaterialBaseOuter(const MaterialBase *material);
+    void SetMaterialInner(const MaterialBase *material) {
+        ViewableBase::SetMaterialBack(material);
+    }
+    void SetMaterialOuter(const MaterialBase *material) {
+        ViewableBase::SetMaterialFront(material);
+    }
 
     // U-V coordinates are returned with the sides in [0,1]x[0,1], the base
     //		U-V coordinates are in the circle inscribed in [1,2]x[1,2].
@@ -185,19 +181,19 @@ public:
     }
     const MaterialBase* GetMaterialSideOuter() const
     {
-        return SideOuterMat;
+        return(ViewableBase::GetMaterialFront());
     }
     const MaterialBase* GetMaterialSideInner() const
     {
-        return SideInnerMat;
+        return(ViewableBase::GetMaterialBack());
     }
     const MaterialBase* GetMaterialBaseOuter() const
     {
-        return BaseOuterMat;
+        return(ViewableBase::GetMaterialFront());
     }
     const MaterialBase* GetMaterialBaseInner() const
     {
-        return BaseInnerMat;
+        return(ViewableBase::GetMaterialBack());
     }
 
     enum {
@@ -225,12 +221,6 @@ protected:
 
     bool IsRightConeFlag;		// True for right cones
     // False for general bounding planes
-
-    const MaterialBase* SideOuterMat;
-    const MaterialBase* SideInnerMat;
-    const MaterialBase* BaseOuterMat;
-    const MaterialBase* BaseInnerMat;
-
 };
 
 inline void ViewableCone::Reset()
@@ -347,44 +337,6 @@ inline void ViewableCone::SetBaseFace( const VectorR3& planenormal,
     BaseNormal = planenormal/norm;
     BasePlaneCoef = planeCoef/norm;
     IsRightConeFlag = false;
-}
-
-inline void ViewableCone::SetMaterial(const MaterialBase *material)
-{
-    SetMaterialInner( material );
-    SetMaterialOuter( material );
-}
-
-inline void ViewableCone::SetMaterialInner(const MaterialBase *material)
-{
-    SetMaterialSideInner( material );
-    SetMaterialBaseInner( material );
-}
-
-inline void ViewableCone::SetMaterialOuter(const MaterialBase *material)
-{
-    SetMaterialSideOuter( material );
-    SetMaterialBaseOuter( material );
-}
-
-inline void ViewableCone::SetMaterialSideInner(const MaterialBase *material)
-{
-    SideInnerMat = material;
-}
-
-inline void ViewableCone::SetMaterialSideOuter(const MaterialBase *material)
-{
-    SideOuterMat = material;
-}
-
-inline void ViewableCone::SetMaterialBaseInner(const MaterialBase *material)
-{
-    BaseInnerMat = material;
-}
-
-inline void ViewableCone::SetMaterialBaseOuter(const MaterialBase *material)
-{
-    BaseOuterMat = material;
 }
 
 #endif // VIEWABLECONE_H

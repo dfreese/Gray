@@ -58,18 +58,13 @@ public:
 
 
     void SetRadius( double radius );
-    void SetMaterial( const MaterialBase *material )
-    {
-        InnerMaterial = material;
-        OuterMaterial = material;
-    };
     void SetMaterialOuter( const MaterialBase *material )
     {
-        OuterMaterial = material;
+        ViewableBase::SetMaterialFront(material);
     };
     void SetMaterialInner( const MaterialBase *material )
     {
-        InnerMaterial = material;
+        ViewableBase::SetMaterialBack(material);
     };
     void SetCenter( double x, double y, double z );
     void SetCenter( const double *center );
@@ -96,11 +91,11 @@ public:
     }
     const MaterialBase* GetMaterialOuter () const
     {
-        return OuterMaterial;
+        return(ViewableBase::GetMaterialFront());
     }
     const MaterialBase* GetMaterialInner () const
     {
-        return InnerMaterial;
+        return(ViewableBase::GetMaterialBack());
     }
     void GetCenter( double *center);
     void GetCenter( float *center);
@@ -146,8 +141,6 @@ protected:
     double Radius;
     double RadiusSq;
     VectorR3 Center;
-    const MaterialBase* OuterMaterial;
-    const MaterialBase* InnerMaterial;
 
     int uvProjectionType;	// ==0 for spherical, ==1 for cylindrical
     VectorR3 AxisA;			// Axis for u = 0.5	(like z-axis)

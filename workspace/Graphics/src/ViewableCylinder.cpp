@@ -188,9 +188,9 @@ bool ViewableCylinder::FindIntersectionNT (
     case 0:		// Top surface
         returnedPoint.SetNormal( TopNormal );
         if ( returnedPoint.IsFrontFacing() ) {
-            returnedPoint.SetMaterial( *TopOuterMat );
+            returnedPoint.SetMaterial(*GetMaterialOuter());
         } else {
-            returnedPoint.SetMaterial( *TopInnerMat );
+            returnedPoint.SetMaterial(*GetMaterialInner());
         }
 
         // Calculate U-V values for texture coordinates
@@ -203,9 +203,9 @@ bool ViewableCylinder::FindIntersectionNT (
     case 1:		// Bottom face
         returnedPoint.SetNormal( BottomNormal );
         if ( returnedPoint.IsFrontFacing() ) {
-            returnedPoint.SetMaterial( *BottomOuterMat );
+            returnedPoint.SetMaterial(*GetMaterialOuter());
         } else {
-            returnedPoint.SetMaterial( *BottomInnerMat );
+            returnedPoint.SetMaterial(*GetMaterialInner());
         }
 
         // Calculate U-V values for texture coordinates
@@ -222,9 +222,9 @@ bool ViewableCylinder::FindIntersectionNT (
         normal.Normalize();
         returnedPoint.SetNormal( normal );
         if ( returnedPoint.IsFrontFacing() ) {
-            returnedPoint.SetMaterial( *SideOuterMat );
+            returnedPoint.SetMaterial(*GetMaterialOuter());
         } else {
-            returnedPoint.SetMaterial( *SideInnerMat );
+            returnedPoint.SetMaterial(*GetMaterialInner());
         }
 
         // Calculate u-v coordinates for texture mapping (in range[0,1]x[0,1])
