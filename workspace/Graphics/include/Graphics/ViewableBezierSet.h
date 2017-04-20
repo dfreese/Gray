@@ -66,20 +66,6 @@ public:
     int AddPatch(int uOrder, int vOrder, const VectorR3* controlPoints, int uStride = 0, int vStride = 0);
     int AddPatch(int uOrder, int vOrder, const VectorR4* controlPoints, int uStride = 0, int vStride = 0);
 
-    // Set the default materials (can be different for each patch).
-    void SetMaterial( const MaterialBase *material )
-    {
-        FrontMaterial = material;
-        BackMaterial = material;
-    };
-    void SetMaterialFront( const MaterialBase *material )
-    {
-        FrontMaterial = material;
-    };
-    void SetMaterialBack( const MaterialBase *material )
-    {
-        BackMaterial = material;
-    };
 
     // Set u-v texture map translation amount
     // Only square translation permitted.
@@ -93,15 +79,6 @@ public:
     void SetBoundingSphereCenter( const float *center );
     void SetBoundingSphereCenter( const VectorR3& center );
     void UnsetBoundingSphereCenter( );
-
-    const MaterialBase* GetMaterialFront () const
-    {
-        return FrontMaterial;
-    }
-    const MaterialBase* GetMaterialBack () const
-    {
-        return BackMaterial;
-    }
     void GetBoundingSphereCenter( double *center);
     void GetBoundingSphereCenter( float *center);
     const VectorR3& GetBoundingSphereCenter() const
@@ -137,10 +114,6 @@ protected:
 
     // The uv values for the next patch specified by AddPatch or AddRationalPatch
     VectorR2 NextUvMin, NextUvMax;
-
-    // These are the default materials for each patch, but can be overridden.
-    const MaterialBase* FrontMaterial;
-    const MaterialBase* BackMaterial;
 
     bool BoundingSphereSet;				// Bounding sphere calculated?
     bool BoundingSphereManuallySet;		// Bounding sphere center been set by the user?
@@ -265,8 +238,6 @@ inline ViewableBezierSet::ViewableBezierSet()
     SetUvRange(0.0, 0.0, 1.0, 1.0);
     BoundingSphereSet = false;
     BoundingSphereManuallySet = false;
-    BackMaterial = &Material::Default;
-    FrontMaterial = &Material::Default;
 }
 
 inline ViewableBezierSet::~ViewableBezierSet() {}

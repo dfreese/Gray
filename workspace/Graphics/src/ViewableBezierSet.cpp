@@ -153,10 +153,10 @@ bool ViewableBezierSet::FindIntersectionNT (
                     bestIntersection->SetNormal ( temp );
                     if ( (viewDir^temp) < 0 ) {	// if front face hit
                         bestIntersection->SetFrontFace();
-                        bestIntersection->SetMaterial( *FrontMaterial );
+                        bestIntersection->SetMaterial(*ViewableBase::GetMaterialFront());
                     } else {
                         bestIntersection->SetBackFace();
-                        bestIntersection->SetMaterial( *BackMaterial );
+                        bestIntersection->SetMaterial(*ViewableBase::GetMaterialBack());
                     }
                 }
                 // Done with this patch.  Remove from stack and continue looping
@@ -457,8 +457,9 @@ int ViewableBezierSet::AddPatchInner(int uOrder, int vOrder, VectorR4 controlPts
     BezierPatch* bp = new BezierPatch(controlPts);
     bp->SetUvRange( NextUvMin, NextUvMax );
     bp->FaceNum = PatchCounter;
-    bp->FrontMaterial = FrontMaterial;
-    bp->BackMaterial = BackMaterial;
+    // Set Defaults
+    bp->FrontMaterial = ViewableBase::GetMaterialFront();
+    bp->BackMaterial = ViewableBase::GetMaterialBack();
 
     std::list<BezierPatch *> bp_list;
     bp_list.push_back(bp);

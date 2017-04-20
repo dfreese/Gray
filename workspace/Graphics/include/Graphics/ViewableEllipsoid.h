@@ -67,18 +67,13 @@ public:
     void SetuvCylindrical();	// Sets u,v coords to be cylidrical projection
     void ResetUV();
 
-    void SetMaterial( const MaterialBase *material )
-    {
-        InnerMaterial = material;
-        OuterMaterial = material;
-    };
     void SetMaterialOuter( const MaterialBase *material )
     {
-        OuterMaterial = material;
+        SetMaterialFront(material);
     };
     void SetMaterialInner( const MaterialBase *material )
     {
-        InnerMaterial = material;
+        SetMaterialBack(material);
     };
 
     // Get routines
@@ -147,11 +142,11 @@ public:
     }
     const MaterialBase* GetMaterialOuter()  const
     {
-        return OuterMaterial;
+        return GetMaterialFront();
     };
     const MaterialBase* GetMaterialInner()  const
     {
-        return InnerMaterial;
+        return GetMaterialBack();
     };
     int GetUVType() const
     {
@@ -184,10 +179,6 @@ protected:
     double RadiusC;
 
     int uvProjectionType;	// ==0 for spherical, ==1 for cylindrical
-
-    const MaterialBase* InnerMaterial;
-    const MaterialBase* OuterMaterial;
-
     // AxisA is the center axis (v-axis) for purposes of u-v coordinates for
     //		texture maps.
 
@@ -199,8 +190,6 @@ inline void ViewableEllipsoid::Reset()
     AxisC.SetUnitY();
     AxisA.SetUnitZ();
     AxisB.SetUnitX();
-    OuterMaterial = &Material::Default;
-    InnerMaterial = &Material::Default;
     RadiusA = 1.0;
     RadiusB = 1.0;
     RadiusC = 1.0;
