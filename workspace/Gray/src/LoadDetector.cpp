@@ -209,23 +209,9 @@ bool LoadDetector::Load(const std::string & filename,
 
         string args = ScanForSecondField(line);
         int global_id = -1;
-        int scanCode;
 
-        if (command == "begin_repeat") {
-            int no_repeats;
-            if ((line_ss >> no_repeats).fail()) {
-                print_parse_error(line);
-                cerr << "Unable to parse number of repeats" << endl;
-                return(false);
-            }
-            repeat_info_stack.push(RepeatInfo());
-            repeat_info_stack.top().no_repeats = no_repeats;
-            repeat_info_stack.top().no_complete = 0;
-            repeat_info_stack.top().starting_file = filename_stack.top();
-            repeat_info_stack.top().starting_line = file_lines_read_stack.top();
-            // The first line will be the next line put into the buffer
-            repeat_info_stack.top().start_idx = current_idx;
-        } else if (command == "end_repeat") {
+        // Privileged commands that will skip all others
+        if (command == "end_repeat") {
             if (repeat_info_stack.empty()) {
                 print_parse_error(line);
                 cerr << "Found unpaired end_repeat" << endl;
@@ -243,6 +229,25 @@ bool LoadDetector::Load(const std::string & filename,
                     current_idx = 0;
                 }
             }
+            continue;
+        }
+
+        // Unprivileged commands
+        if (command == "begin_repeat") {
+            int no_repeats;
+            if ((line_ss >> no_repeats).fail()) {
+                print_parse_error(line);
+                cerr << "Unable to parse number of repeats" << endl;
+                return(false);
+            }
+            repeat_info_stack.push(RepeatInfo());
+            repeat_info_stack.top().no_repeats = no_repeats;
+            // Need to read all lines first
+            repeat_info_stack.top().no_complete = -1;
+            repeat_info_stack.top().starting_file = filename_stack.top();
+            repeat_info_stack.top().starting_line = file_lines_read_stack.top();
+            // The first line will be the next line put into the buffer
+            repeat_info_stack.top().start_idx = current_idx;
         } else if (command == "echo") {
             cout << "echo: " << args << endl;
         } else if (command == "isotope") {
@@ -560,9 +565,9 @@ bool LoadDetector::Load(const std::string & filename,
             // Sphere object
             VectorR3 position;
             double radius = -1.0;
-            scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf",
-                              &(position.x), &(position.y), &(position.z),
-                              &radius);
+            int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf",
+                                  &(position.x), &(position.y), &(position.z),
+                                  &radius);
             if (scanCode != 4) {
                 print_parse_error(line);
                 return(false);
@@ -578,11 +583,11 @@ bool LoadDetector::Load(const std::string & filename,
             VectorR3 axis;
             double angle = -1.0;
             double activity = -1.0;
-            scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf",
-                              &(position.x), &(position.y), &(position.z),
-                              &(axis.x), &(axis.y), &(axis.z),
-                              &angle,
-                              &activity );
+            int scanCode = sscanf(args.c_str(),
+                                  "%lf %lf %lf %lf %lf %lf %lf %lf",
+                                  &(position.x), &(position.y), &(position.z),
+                                  &(axis.x), &(axis.y), &(axis.z),
+                                  &angle, &activity);
             if (scanCode != 8) {
                 print_parse_error(line);
                 return(false);
@@ -595,7 +600,7 @@ bool LoadDetector::Load(const std::string & filename,
             s->SetMaterial(curMaterial);
         } else if (command == "acolinearity") {
             double acon = -1.0;
-            scanCode = sscanf(args.c_str(), "%lf", &acon);
+            int scanCode = sscanf(args.c_str(), "%lf", &acon);
             if (scanCode != 1) {
                 print_parse_error(line);
                 return(false);
@@ -669,9 +674,9 @@ bool LoadDetector::Load(const std::string & filename,
             VectorR3 position;
             double radius = -1.0;
             double activity = -1.0;
-            scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf",
-                              &(position.x), &(position.y), &(position.z),
-                              &radius, &activity);
+            int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf",
+                                  &(position.x), &(position.y), &(position.z),
+                                  &radius, &activity);
             if (scanCode != 5) {
                 print_parse_error(line);
                 return(false);
@@ -690,7 +695,7 @@ bool LoadDetector::Load(const std::string & filename,
             VectorR3 baseCenter;
             VectorR3 baseSize;
             double activity = -1.0;
-            scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf",
+            int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf",
                               &baseCenter.x, &baseCenter.y, &baseCenter.z,
                               &baseSize.x, &baseSize.y, &baseSize.z, &activity);
             if (scanCode != 7) {
@@ -711,12 +716,12 @@ bool LoadDetector::Load(const std::string & filename,
             int num_x = -1;
             int num_y = -1;
             int num_z = -1;
-            scanCode = sscanf(args.c_str(),
-                              "%lf %lf %lf %d %d %d %lf %lf %lf %lf %lf %lf",
-                              &(StartPos.x), &(StartPos.y), &(StartPos.z),
-                              &num_x, &num_y, &num_z,
-                              &(UnitStep.x), &(UnitStep.y), &(UnitStep.z),
-                              &(UnitSize.x), &(UnitSize.y), &(UnitSize.z));
+            int scanCode = sscanf(args.c_str(),
+                                  "%lf %lf %lf %d %d %d %lf %lf %lf %lf %lf %lf",
+                                  &(StartPos.x), &(StartPos.y), &(StartPos.z),
+                                  &num_x, &num_y, &num_z,
+                                  &(UnitStep.x), &(UnitStep.y), &(UnitStep.z),
+                                  &(UnitSize.x), &(UnitSize.y), &(UnitSize.z));
             if (scanCode != 12) {
                 print_parse_error(line);
                 cerr << "unable to process array."
@@ -813,10 +818,10 @@ bool LoadDetector::Load(const std::string & filename,
         } else if (command == "l") {
             // light
             VectorR3 lightPos, lightColor;
-            scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf",
-                              &(lightPos.x), &(lightPos.y), &(lightPos.z),
-                              &(lightColor.x), &(lightColor.y),
-                              &(lightColor.z));
+            int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf",
+                                  &(lightPos.x), &(lightPos.y), &(lightPos.z),
+                                  &(lightColor.x), &(lightColor.y),
+                                  &(lightColor.z));
             if ((scanCode != 3) && (scanCode != 6)) {
                 print_parse_error(line);
                 return(false);
@@ -830,8 +835,8 @@ bool LoadDetector::Load(const std::string & filename,
         } else if (command == "t") {
             // translate
             VectorR3 trans;
-            scanCode = sscanf(args.c_str(), "%lf %lf %lf",
-                              &(trans.x), &(trans.y), &(trans.z));
+            int scanCode = sscanf(args.c_str(), "%lf %lf %lf",
+                                  &(trans.x), &(trans.y), &(trans.z));
             if (scanCode != 3) {
                 print_parse_error(line);
                 return(false);
@@ -1169,8 +1174,8 @@ bool LoadDetector::ReadVertexR3(VectorR3& vert, std::ifstream & curFile)
     if (!getline(curFile, line)) {
         return false;
     }
-    int scanCode;
-    scanCode = sscanf(line.c_str(), "%lf %lf %lf", &vert.x, &vert.y, &vert.z );
+    int scanCode = sscanf(line.c_str(), "%lf %lf %lf",
+                          &vert.x, &vert.y, &vert.z);
     return (scanCode == 3);
 }
 
