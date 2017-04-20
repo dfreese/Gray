@@ -9,6 +9,7 @@
 #include <Graphics/TransformViewable.h>
 #include <Graphics/VisiblePoint.h>
 #include <Graphics/ViewableBase.h>
+#include <Graphics/ViewableParallelepiped.h>
 #include <Graphics/ViewableSphere.h>
 #include <Graphics/ViewableEllipsoid.h>
 #include <Graphics/ViewableTriangle.h>
@@ -1051,75 +1052,34 @@ void LoadDetector::ProcessDetector(const VectorR3 & detCenter,
                                    SceneDescription & scene,
                                    const RigidMapR3 & current_matrix)
 {
-    // TODO: change this over to ViewableParallelpiped
-    ViewableTriangle *vt[12];
-    for (int i = 0; i < 12; i++) {
-        vt[i] = new ViewableTriangle();
-        vt[i]->SetMaterialFront(curMaterial);
-        vt[i]->SetMaterialBack(curMaterial);
-        vt[i]->SetDetectorId(id);
-    }
+    ViewableParallelepiped * vp = new ViewableParallelepiped();
+    vp->SetMaterialFront(curMaterial);
+    vp->SetMaterialBack(curMaterial);
+    vp->SetDetectorId(id);
 
-    VectorR3 va;
-    VectorR3 vb;
-    VectorR3 vc;
-    VectorR3 vd;
-    VectorR3 ve;
-    VectorR3 vf;
-    VectorR3 vg;
-    VectorR3 vh;
+    VectorR3 va, vb, vc, vd;
+    va = vb = vc = vd = detCenter;
+    VectorR3 half_sz = detSize / 2.0;
 
-    VectorR3 sz_tmp = detSize;
-    sz_tmp /= 2.0;
+    va.x -= half_sz.x;
+    va.y -= half_sz.y;
+    va.z -= half_sz.z;
 
-    va = vb = vc = vd = ve = detCenter;
-    vf = vg = vh = detCenter;
-    va.x -= sz_tmp.x;
-    va.y -= sz_tmp.y;
-    va.z += sz_tmp.z;
-    vb.x += sz_tmp.x;
-    vb.y -= sz_tmp.y;
-    vb.z += sz_tmp.z;
-    vc.x -= sz_tmp.x;
-    vc.y += sz_tmp.y;
-    vc.z += sz_tmp.z;
-    vd.x -= sz_tmp.x;
-    vd.y -= sz_tmp.y;
-    vd.z -= sz_tmp.z;
+    vb.x -= half_sz.x;
+    vb.y += half_sz.y;
+    vb.z -= half_sz.z;
 
-    ve.x += sz_tmp.x;
-    ve.y += sz_tmp.y;
-    ve.z += sz_tmp.z; // same plane as A C B
-    vf.x -= sz_tmp.x;
-    vf.y += sz_tmp.y;
-    vf.z -= sz_tmp.z; // same plane as A C D
-    vg.x += sz_tmp.x;
-    vg.y += sz_tmp.y;
-    vg.z -= sz_tmp.z; // same plane as B E H
-    vh.x += sz_tmp.x;
-    vh.y -= sz_tmp.y;
-    vh.z -= sz_tmp.z; // same plane as B E G
+    vc.x -= half_sz.x;
+    vc.y -= half_sz.y;
+    vc.z += half_sz.z;
 
-    vt[0]->Init(va, vb, vc);
-    vt[1]->Init(va, vc, vd);
-    vt[2]->Init(va, vd, vb);
-    vt[3]->Init(ve, vc, vb);
-    vt[4]->Init(vf, vd, vc);
-    vt[5]->Init(vc, ve, vf);
+    vd.x += half_sz.x;
+    vd.y -= half_sz.y;
+    vd.z -= half_sz.z;
 
-    vt[6]->Init(vg, vf, ve);
-
-    vt[7]->Init(ve, vb, vg);
-    vt[8]->Init(vh, vg, vb);
-
-    vt[9]->Init(vg, vh, vf);
-    vt[10]->Init(vd, vf, vh);
-    vt[11]->Init(vh, vb, vd);
-
-    for (int i = 0; i < 12; i++) {
-        TransformWithRigid(vt[i], current_matrix);
-        scene.AddViewable(vt[i]);
-    }
+    vp->SetVertices(va, vb, vc, vd);
+    TransformWithRigid(vp, current_matrix);
+    scene.AddViewable(vp);
 }
 
 void LoadDetector::SetCameraViewInfo(CameraView& theView,
