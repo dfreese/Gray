@@ -40,7 +40,7 @@ push
 t 0.0 -45.75 0.0
 # create 8 panels of LSO at 45 degree rotations
 begin_repeat 8
-    array 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
+    array 0.0 0.0 0.0 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
     raxis 0.0 0.0 1.0 45.0
 end_repeat
 # return to previous transformation matrix
@@ -55,7 +55,7 @@ t 0.0 -45.75 0.0
 t 0.0 -1.5 0.0
 # create 8 panels of BGO at 45 degree rotations
 begin_repeat 8
-    array 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
+    array 0.0 0.0 0.0 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
     raxis 0.0 0.0 1.0 45.0
 end_repeat
 pop
@@ -66,7 +66,7 @@ push
 t 0.0 -45.75 0.0
 t 0.0 3.35 0.0
 begin_repeat 8
-    array 1 1 5 0.0 0.0 10.0 32.0 5.0 0.05
+    array 0.0 0.0 0.0 1 1 5 0.0 0.0 10.0 32.0 5.0 0.05
     raxis 0.0 0.0 1.0 45.0
 end_repeat
 pop
@@ -77,7 +77,7 @@ color 0.05 0.05 0.05  0.05 0.05 0.05  0.0 0.0 0.0  0.0 0.0 0.0  0.1 0.1 0.1 1.05
 push
 t 0.0 -44.75 0.0
 begin_repeat 8
-    array 1 1 2 0.0 0.0 40.11 32.0 8.0 0.1
+    array 0.0 0.0 0.0 1 1 2 0.0 0.0 40.11 32.0 8.0 0.1
     raxis 0.0 0.0 1.0 45.0
 end_repeat
 pop
