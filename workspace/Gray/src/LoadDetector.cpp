@@ -210,19 +210,25 @@ bool LoadDetector::Load(const std::string & filename,
         string args = ScanForSecondField(line);
         int global_id = -1;
 
-        // Privileged commands that will skip all others
+        // Privileged commands that won't be skipped if we're still waiting for
+        // the end of a repeat.
         if (command == "end_repeat") {
             if (repeat_info_stack.empty()) {
                 print_parse_error(line);
                 cerr << "Found unpaired end_repeat" << endl;
                 return(false);
             }
-            repeat_info_stack.top().no_complete++;
-            if (repeat_info_stack.top().no_complete <
-                repeat_info_stack.top().no_repeats)
-            {
-                current_idx = repeat_info_stack.top().start_idx;
+            RepeatInfo & info = repeat_info_stack.top();
+            info.no_complete++;
+            if (info.no_complete <= 0) {
+                // Initialize
+                info.no_complete = 0;
+                current_idx = info.start_idx;
+            } else if (info.no_complete < info.no_repeats) {
+                // Process
+                current_idx = info.start_idx;
             } else {
+                // Cleanup
                 repeat_info_stack.pop();
                 if (repeat_info_stack.empty()) {
                     repeat_buffer.clear();
@@ -230,6 +236,13 @@ bool LoadDetector::Load(const std::string & filename,
                 }
             }
             continue;
+        }
+
+        // skip the remainder of the commands
+        if (!repeat_info_stack.empty()) {
+            if (repeat_info_stack.top().no_complete < 0) {
+                continue;
+            }
         }
 
         // Unprivileged commands
