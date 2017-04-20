@@ -2,7 +2,7 @@
 # Elements/Compounds are CASE SeNsiTiVe !!!!!!!!!!
 air             N2                      1.2E-3      0
 al              Al                      2.7         0
-bgo             Bi12GeO20               7.13        1
+bgo             Bi4Ge3O12               7.13        1
 lead            Pb                      11.35       0
 lso             Lu2SiO5                 7.4         1
 tungsten        W                       19.3        0
