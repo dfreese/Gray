@@ -19,17 +19,17 @@ color 0.1 0.1 0.1 0.6 0.6 0.6 0.3 0.3 0.3 0.0 0.0 0.0 0.0 0.0 0.0 1.0
 time 0.14285714285
 # start pet detector
 # change coordinates for detector
-m 4
+m lso
 # from blender coords to gray coords
 # -1 * x swap z and y
 push
 raxis 0 1 0 22.65
 scale 3.27
-t -1.208407 -1.539849 4.523287 
+t -1.208407 -1.539849 4.523287
 # place breast PET panels
 scale 1.0
-repeat 2 16 70 7.5 1.0 0.13 0.8 0.8 0.1
-repeat 2 16 70 9.5 1.0 0.13 0.8 0.8 0.1
+array 0.0 0.0 0.0 2 16 70 7.5 1.0 0.13 0.8 0.8 0.1
+array 0.0 0.0 0.0 2 16 70 9.5 1.0 0.13 0.8 0.8 0.1
 pop
 # blender import
 push
@@ -37,7 +37,7 @@ raxis 1.0 0.0 0.0 270.0
 raxis 0.0 0.0 1.0 180.0
 scale 3.27
 # tungsten shielding
-m 5
+m tungsten
 p 3
 8.930380 7.688163 -4.474087
 3.547464 7.189680 -4.474087
@@ -46583,11 +46583,8 @@ pop
 scale 0.86968085106382978723
 sp_src 2.8030 -3.9354 31.6020 4.5 300
 # sp_src 2.8030 -3.9354 27.6020 4.5 1000
-positron on
-log_all true
-log_det_id true
-# log_det_coord true
-save_detector ./pet_mam_det.txt
+log_positron
+log_all
+# log_det_coord
+save_detector ./data/pet_mam_det.txt
 seed 62389174
-save_coinc ./pet_mam_coinc.dat
-save_singles ./pet_mam_sing.dat
