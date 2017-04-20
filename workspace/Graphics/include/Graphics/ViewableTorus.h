@@ -46,10 +46,6 @@ public:
     void CalcBoundingPlanes( const VectorR3& u, double *minDot, double *maxDot ) const;
     bool CalcPartials( const VisiblePoint& visPoint,
                        VectorR3& retPartialU, VectorR3& retPartialV ) const;
-    ViewableType GetViewableType() const
-    {
-        return Viewable_Torus;
-    }
 
     void SetCenter( double x, double y, double z );
     void SetCenter( double *centerpos );

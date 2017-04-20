@@ -54,10 +54,6 @@ public:
     bool CalcExtentsInBox( const AABB& boundingAABB, AABB& retAABB ) const;
     bool CalcPartials( const VisiblePoint& visPoint,
                        VectorR3& retPartialU, VectorR3& retPartialV ) const;
-    ViewableType GetViewableType() const
-    {
-        return Viewable_Triangle;
-    }
 
     const VectorR3& GetVertexA() const
     {

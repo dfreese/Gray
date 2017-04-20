@@ -44,10 +44,6 @@ public:
     void CalcBoundingPlanes( const VectorR3& u, double *minDot, double *maxDot ) const;
     bool CalcPartials( const VisiblePoint& visPoint,
                        VectorR3& retPartialU, VectorR3& retPartialV ) const;
-    ViewableType GetViewableType() const
-    {
-        return Viewable_Cone;
-    }
 
     // The center axis point up out of the top of the cone.
     // SetCenterAxis(...) should be called before the other set routines, otherwise

@@ -50,10 +50,6 @@ public:
     bool CalcExtentsInBox( const AABB& boundingAABB, AABB& retAABB ) const;
     bool CalcPartials( const VisiblePoint& visPoint,
                        VectorR3& retPartialU, VectorR3& retPartialV ) const;
-    ViewableType GetViewableType() const
-    {
-        return Viewable_Parallelepiped;
-    }
 
     // The next tests are good for bounding parallelepipeds
     //  They return the distance to the hit and check against maxDistance,

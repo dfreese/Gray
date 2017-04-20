@@ -43,41 +43,6 @@
 #include <Graphics/ViewableTorus.h>
 #include <Graphics/ViewableTriangle.h>
 
-void TransformWithRigid(  ViewableBase* theObject, const RigidMapR3& theTransform )
-{
-    switch ( theObject->GetViewableType() ) {
-    case ViewableBase::Viewable_BezierSet:
-        TransformWithRigid( (ViewableBezierSet*)theObject, theTransform );
-        break;
-    case ViewableBase::Viewable_Cone:
-        TransformWithRigid( (ViewableCone*)theObject, theTransform );
-        break;
-    case ViewableBase::Viewable_Cylinder:
-        TransformWithRigid( (ViewableCylinder*)theObject, theTransform );
-        break;
-    case ViewableBase::Viewable_Ellipsoid:
-        TransformWithRigid( (ViewableEllipsoid*)theObject, theTransform );
-        break;
-    case ViewableBase::Viewable_Parallelepiped:
-        TransformWithRigid( (ViewableParallelepiped*)theObject, theTransform );
-        break;
-    case ViewableBase::Viewable_Parallelogram:
-        TransformWithRigid( (ViewableParallelogram*)theObject, theTransform );
-        break;
-    case ViewableBase::Viewable_Sphere:
-        TransformWithRigid( (ViewableSphere*)theObject, theTransform );
-        break;
-    case ViewableBase::Viewable_Torus:
-        TransformWithRigid( (ViewableTorus*)theObject, theTransform );
-        break;
-    case ViewableBase::Viewable_Triangle:
-        TransformWithRigid( (ViewableTriangle*)theObject, theTransform );
-        break;
-    default:
-        assert(0);
-    }
-}
-
 void TransformWithRigid(  ViewableBezierSet* theObject, const RigidMapR3& theTransform )
 {
     BezierArray thePatches = theObject->GetPatchList();

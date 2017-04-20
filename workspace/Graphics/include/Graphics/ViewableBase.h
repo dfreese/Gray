@@ -130,20 +130,6 @@ public:
         return BackMat;
     }
 
-    // For run time typing, we use the following "type code":
-    enum ViewableType {
-        Viewable_BezierSet,
-        Viewable_Cone,
-        Viewable_Cylinder,
-        Viewable_Ellipsoid,
-        Viewable_Parallelepiped,
-        Viewable_Parallelogram,
-        Viewable_Sphere,
-        Viewable_Torus,
-        Viewable_Triangle
-    };
-    virtual ViewableType GetViewableType() const = 0;
-
 protected:
     // The "NT" version is the one that does all the work of finding
     //		the intersection point, and computing u,v coordinates.

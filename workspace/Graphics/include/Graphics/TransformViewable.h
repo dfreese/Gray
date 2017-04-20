@@ -30,7 +30,6 @@
 
 
 class RigidMapR3;
-class ViewableBase;
 class ViewableBezierSet;
 class ViewableCone;
 class ViewableCylinder;
@@ -42,7 +41,6 @@ class ViewableTorus;
 class ViewableTriangle;
 class BezierPatch;
 
-void TransformWithRigid(  ViewableBase* theObject, const RigidMapR3& theTransform );
 void TransformWithRigid(  ViewableBezierSet* theObject, const RigidMapR3& theTransform );
 void TransformWithRigid(  ViewableCone* theObject, const RigidMapR3& theTransform );
 void TransformWithRigid(  ViewableCylinder* theObject, const RigidMapR3& theTransform );

@@ -58,10 +58,6 @@ public:
     void CalcBoundingPlanes( const VectorR3& u, double *minDot, double *maxDot ) const;
     bool CalcPartials( const VisiblePoint& visPoint,
                        VectorR3& retPartialU, VectorR3& retPartialV ) const;
-    ViewableType GetViewableType() const
-    {
-        return Viewable_BezierSet;
-    }
 
     int AddPatch(int uOrder, int vOrder, const double* controlPoints, int uStride = 0, int vStride = 0);
     int AddRationalPatch(int uOrder, int vOrder, const double* controlPoints, int uStride = 0, int vStride = 0);
