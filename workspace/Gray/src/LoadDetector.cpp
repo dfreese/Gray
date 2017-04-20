@@ -704,31 +704,33 @@ bool LoadDetector::Load(const std::string & filename,
             sources.AddSource(s);
         } else if (command == "array") {
             // repeat detector in 3d
+            VectorR3 StartPos;
             VectorR3 UnitStep; // center to center between repeated cell
             VectorR3 UnitSize; // detector size
             int num_x = -1;
             int num_y = -1;
             int num_z = -1;
-            scanCode = sscanf(args.c_str(), "%d %d %d %lf %lf %lf %lf %lf %lf",
+            scanCode = sscanf(args.c_str(),
+                              "%lf %lf %lf %d %d %d %lf %lf %lf %lf %lf %lf",
+                              &(StartPos.x), &(StartPos.y), &(StartPos.z),
                               &num_x, &num_y, &num_z,
                               &(UnitStep.x), &(UnitStep.y), &(UnitStep.z),
                               &(UnitSize.x), &(UnitSize.y), &(UnitSize.z));
-            if (scanCode != 9) {
+            if (scanCode != 12) {
                 print_parse_error(line);
+                cerr << "unable to process array."
+                     << "  Format:  [center xyz] [repeats xyz] [pitch xyz]"
+                     << " [size xyz]" << endl;
                 return(false);
             }
-            VectorR3 StartPos;
-            StartPos.x = 0.0;
-            StartPos.y = 0.0;
-            StartPos.z = 0.0;
             VectorR3 CurrentPos;
 
             UnitStep *= polygonScale;
             UnitSize *= polygonScale;
 
-            StartPos.x = -1.0 * (double)(num_x-1) * UnitStep.x / 2.0;
-            StartPos.y = -1.0 * (double)(num_y-1) * UnitStep.y / 2.0;
-            StartPos.z = -1.0 * (double)(num_z-1) * UnitStep.z / 2.0;
+            StartPos.x -= (double)(num_x-1) * UnitStep.x / 2.0;
+            StartPos.y -= (double)(num_y-1) * UnitStep.y / 2.0;
+            StartPos.z -= (double)(num_z-1) * UnitStep.z / 2.0;
             for (int i = 0; i < num_x; i++) {
                 for (int j = 0; j < num_y; j++) {
                     for (int k = 0; k < num_z; k++) {
@@ -1049,7 +1051,7 @@ void LoadDetector::ProcessDetector(const VectorR3 & detCenter,
                                    SceneDescription & scene,
                                    const RigidMapR3 & current_matrix)
 {
-
+    // TODO: change this over to ViewableParallelpiped
     ViewableTriangle *vt[12];
     for (int i = 0; i < 12; i++) {
         vt[i] = new ViewableTriangle();
