@@ -841,6 +841,13 @@ bool LoadDetector::Load(const std::string & filename,
             // Add a copy of the current matrix to the top of the stack
             MatrixStack.push(MatrixStack.top());
         } else if (command == "pop") {
+            // The default matrix is placed at the bottom of the stack.
+            // We should never pop that off.
+            if (MatrixStack.empty() || (MatrixStack.size() == 1)) {
+                print_parse_error(line);
+                cerr << "Unpaired pop command found" << endl;
+                return(false);
+            }
             MatrixStack.pop();
         } else if (command == "b") {
             // background color
