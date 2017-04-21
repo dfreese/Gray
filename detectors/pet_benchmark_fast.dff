@@ -50,13 +50,13 @@ begin_repeat rotate 8 45.0 0.0 0.0 1.0
             m lso
             # place it at x = (44.0 + 2.5 - 0.75) for the head radius, module
             # translation and crystal layer translation respectively.
-            k 45.75 0.0 0.0 1.5 1.49 1.9
+            k 45.75 0.0 0.0 1.49 1.5 1.9
 
             # BGO Crystal Layer
             m bgo
             # place it at x = (44.0 + 2.5 + 0.75) for the head radius, module
             # translation and crystal layer translation respectively.
-            k 47.25 0.0 0.0 1.5 1.49 1.9
+            k 47.25 0.0 0.0 1.49 1.5 1.9
         end_repeat
     end_repeat
 
