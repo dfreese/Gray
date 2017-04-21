@@ -235,7 +235,8 @@ bool LoadDetector::Load(const std::string & filename,
                 // Initialize
                 info.no_complete = 0;
                 current_idx = info.start_idx;
-                // push the current matrix before repeating
+                // push the current matrix before repeating as some repeat
+                // commands will modify the matrix.
                 MatrixStack.push(MatrixStack.top());
                 switch (info.type) {
                     case RepeatInfo::rotate: {
@@ -254,9 +255,21 @@ bool LoadDetector::Load(const std::string & filename,
                         break;
                     }
                 }
+                // push the current matrix again before repeating to protect
+                // against translations inside of the repeat.
+                MatrixStack.push(MatrixStack.top());
             } else if (info.no_complete < info.no_repeats) {
                 // Process
                 current_idx = info.start_idx;
+                // pop off the internal protection matrix
+                if (MatrixStack.empty() || (MatrixStack.size() == 1)) {
+                    print_parse_error(line);
+                    cerr << "Probably an unpaired push command in repeat\n"
+                    << "Repeats imply a push command" << endl;
+                    return(false);
+                }
+                MatrixStack.pop();
+
                 switch (info.type) {
                     case RepeatInfo::rotate: {
                         ApplyRotation(info.rotate_axis,
@@ -293,6 +306,10 @@ bool LoadDetector::Load(const std::string & filename,
                         break;
                     }
                 }
+
+                // push the current matrix again before repeating to protect
+                // against translations inside of the repeat.
+                MatrixStack.push(MatrixStack.top());
             } else {
                 // Cleanup
                 if (MatrixStack.empty() || (MatrixStack.size() == 1)) {
