@@ -57,12 +57,8 @@ int process_file(const std::string & filename_map,
 
 
     if (verbose) {
-        cout << "Number of events: " << singles_stream.no_events() << endl;
-        cout << "Number dropped: " << singles_stream.no_dropped() << endl;
-        cout << "  Number merged: " << singles_stream.no_merged() << endl;
-        cout << "  Number filtered: " << singles_stream.no_filtered() << endl;
-        cout << "  Number coinc win: " << singles_stream.no_coinc_dropped() << endl;
-        cout << "Number written: " << singles_stream.no_kept() << endl;
+        cout << "______________\n DAQ Stats\n______________\n"
+             << singles_stream << endl;
     }
     return(0);
 }
