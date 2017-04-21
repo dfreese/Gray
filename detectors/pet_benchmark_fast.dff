@@ -68,7 +68,7 @@ begin_repeat rotate 8 45.0 0.0 0.0 1.0
 
     # End Shielding
     m lead
-    # center shielding at the head radius of y=-44.0cm
+    # center shielding at the head radius of x=44.0cm
     array 44.0 0.0 0.0 1 1 2 0.0 0.0 40.11 8.0 32.0 0.1
 end_repeat
 
