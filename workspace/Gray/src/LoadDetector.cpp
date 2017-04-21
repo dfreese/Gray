@@ -981,6 +981,7 @@ bool LoadDetector::Load(const std::string & filename,
             }
 
             trans *= polygonScale;
+            MatrixStack.top().Transform3x3(&trans);
             MatrixStack.top().ApplyTranslationLeft(trans);
         } else if (command == "push") {
             // push matrix
