@@ -72,8 +72,6 @@ void GammaStats::SetSize(int s)
     size = s;
     energy.clear();
     energy.resize(s, -1);
-    mu.clear();
-    mu.resize(s, -1);
     photoelectric.clear();
     photoelectric.resize(s, -1);
     compton.clear();
@@ -143,23 +141,8 @@ bool GammaStats::Load()
                  << (i + 1) << endl;
             return(false);
         }
-        mu[i] = compton[i] + photoelectric[i] + rayleigh[i];
     }
     return(true);
-}
-
-double GammaStats::GetMu(double e) const {
-    int idx = GetIndex(e);
-    if (idx == 0) {
-        return(mu[0]);
-    } else {
-        double delta = energy[idx] - energy[idx-1];
-        double alpha = (e - energy[idx-1])/delta;
-        if (alpha > 1.0) {
-            alpha = 1.0;
-        }
-        return((1.0 - alpha) * mu[idx - 1] + alpha * mu[idx]);
-    }
 }
 
 void GammaStats::GetInteractionProbs(double e, double & pe, double & comp,

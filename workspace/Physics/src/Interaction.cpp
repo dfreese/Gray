@@ -258,66 +258,70 @@ double Interaction::RandomExponentialDistance(double mu) {
     }
 }
 
+Interaction Interaction::GammaInteraction(
+        Photon &photon, double dist, const GammaStats & mat_gamma_prop)
+{
+    Interaction::INTER_TYPE type = InteractionType(photon, dist,
+                                                   mat_gamma_prop);
+
+    // move photon to interaction point, or exit point of material
+    photon.pos += (dist * photon.dir.Normalize());
+    photon.time += (dist * inverse_speed_of_light);
+
+    // test for Photoelectric interaction
+    switch (type) {
+        case PHOTOELECTRIC: {
+            return(Photoelectric(photon, mat_gamma_prop));
+        }
+        case XRAY_ESCAPE: {
+            return(XrayEscape(photon, 0, mat_gamma_prop));
+        }
+        case COMPTON: {
+            // perform compton kinematics
+            double deposit;
+            ComptonScatter(photon, deposit);
+            return(Compton(photon, deposit, mat_gamma_prop));
+        }
+        case RAYLEIGH: {
+            RayleighScatter(photon);
+            return(Rayleigh(photon, mat_gamma_prop));
+        }
+        case NO_INTERACTION: {
+            return(NoInteraction());
+        }
+        default: {
+            throw(runtime_error("Unexpected interaction type in Interaction::GammaInteraction"));
+        }
+    }
+}
+
 /*!
  * Takes an energy (MeV) and uses that to calculate if there was an interaction
  * or not by calling RandomExponentialDistance.  dist is modified to be the
  * random distance if an interaction occurs.
  */
-bool Interaction::PhotonInteracts(double energy,
-                                  double & dist,
-                                  const GammaStats & mat_gamma_prop)
-{
-    if (!mat_gamma_prop.enable_interactions) {
-        return(false);
-    }
-    double mu = mat_gamma_prop.GetMu(energy);
-    double rand_dist = RandomExponentialDistance(mu);
-    if (dist > rand_dist) {
-        dist = rand_dist;
-        return(true);
-    } else {
-        return(false);
-    }
-}
-
-Interaction Interaction::GammaInteraction(
-        Photon &photon, double dist, const GammaStats & mat_gamma_prop)
-{
-    if (!PhotonInteracts(photon.energy, dist, mat_gamma_prop)) {
-        return(NoInteraction());
-    }
-
-    // move photon to interaction point
-    photon.pos += (dist * photon.dir.Normalize());
-    photon.time += (dist * inverse_speed_of_light);
-
-    // test for Photoelectric interaction
-    switch (InteractionType(photon, mat_gamma_prop)) {
-    case PHOTOELECTRIC:
-        return(Photoelectric(photon, mat_gamma_prop));
-    case XRAY_ESCAPE:
-        return(XrayEscape(photon, 0, mat_gamma_prop));
-    case COMPTON:
-        // perform compton kinematics
-        double deposit;
-        ComptonScatter(photon, deposit);
-        return(Compton(photon, deposit, mat_gamma_prop));
-    case RAYLEIGH:
-        RayleighScatter(photon);
-        return(Rayleigh(photon, mat_gamma_prop));
-    default:
-        cerr << "ERROR: Incorrect interaction\n";
-        exit(0);
-        break;
-    }
-}
-
 Interaction::INTER_TYPE Interaction::InteractionType(
         Photon &p,
+        double & dist,
         const GammaStats & mat_gamma_prop)
 {
+    if (!mat_gamma_prop.enable_interactions) {
+        return(NO_INTERACTION);
+    }
+
     double pe, compton, rayleigh;
     mat_gamma_prop.GetInteractionProbs(p.energy, pe, compton, rayleigh);
+
+    // TODO: add back in rayleigh scattering once the distribution is fixed
+    // double rand_dist = RandomExponentialDistance(pe + compton + rayleigh);
+    double rand_dist = RandomExponentialDistance(pe + compton);
+    if (dist > rand_dist) {
+        dist = rand_dist;
+    } else {
+        return(NO_INTERACTION);
+    }
+
+
     // TODO: add back in rayleigh scattering once the distribution is fixed
     // double rand = (pe + compton + rayleigh) * Random::Uniform();
     double rand = (pe + compton) * Random::Uniform();

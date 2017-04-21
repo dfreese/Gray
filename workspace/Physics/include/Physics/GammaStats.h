@@ -16,7 +16,6 @@ public:
     bool Load();
     int GetIndex(double e) const;
     int GetMaterial() const;
-    double GetMu(double e) const;
     void GetInteractionProbs(double e, double & pe, double & comp,
                              double & ray) const;
     void AddEscape(double * xray_escapes, double * xray_probs, double * auger_probs, int num);
@@ -37,7 +36,6 @@ private:
     std::string name;
     std::string filename;
     std::vector<double> energy;
-    std::vector<double> mu;
     std::vector<double> photoelectric;
     std::vector<double> compton;
     std::vector<double> rayleigh;

@@ -80,9 +80,6 @@ void GammaRayTrace::TracePhoton(
             } else {
                 throw(runtime_error("Material has no face"));
             }
-            // calculate the time taken to travel distance of the non-interaction
-            photon.time += (hitDist * Interaction::inverse_speed_of_light);
-
             // Make sure not to hit same place in kdtree
             photon.pos = visPoint.GetPosition() + photon.dir * Epsilon;
         } else {
