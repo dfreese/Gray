@@ -309,6 +309,33 @@ bool LoadDetector::Load(const std::string & filename,
                 }
             }
             continue;
+        } else if (command == "include") {
+            char string[256];
+            int scanCode = sscanf(args.c_str(), "%s", string);
+            // Reference all of the include files to the directory of the
+            // top level file.
+            std::string include_filename = file_dir + std::string(string);
+            if (scanCode != 1) {
+                print_parse_error(line);
+                return(false);
+            }
+            file_stack.emplace(include_filename.c_str());
+            if (!file_stack.top()) {
+                print_parse_error(line);
+                cerr << "Include File doesn't exist: "
+                << include_filename << endl;
+                return(false);
+            }
+            file_lines_read_stack.push(0);
+            filename_stack.push(include_filename);
+
+            // Drop the include line from the repeat buffer if it's there, as
+            // we just assume including a file is like dropping all of the text
+            // onto that line.
+            if (!repeat_buffer.empty()) {
+                repeat_buffer.pop_back();
+                current_idx--;
+            }
         }
 
         // skip the remainder of the commands
@@ -433,25 +460,6 @@ bool LoadDetector::Load(const std::string & filename,
                 s->SetMaterial(curMaterial);
                 sources.AddSource(s);
             }
-        } else if (command == "include") {
-            char string[256];
-            int scanCode = sscanf(args.c_str(), "%s", string);
-            // Reference all of the include files to the directory of the
-            // top level file.
-            std::string include_filename = file_dir + std::string(string);
-            if (scanCode != 1) {
-                print_parse_error(line);
-                return(false);
-            }
-            file_stack.emplace(include_filename.c_str());
-            if (!file_stack.top()) {
-                print_parse_error(line);
-                cerr << "Include File doesn't exist: "
-                     << include_filename << endl;
-                return(false);
-            }
-            file_lines_read_stack.push(0);
-            filename_stack.push(include_filename);
         } else if (command == "increment") {
             VectorR3 StartPos;
             VectorR3 UnitSize;
