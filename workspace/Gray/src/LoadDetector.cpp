@@ -312,12 +312,14 @@ bool LoadDetector::Load(const std::string & filename,
                 MatrixStack.push(MatrixStack.top());
             } else {
                 // Cleanup
-                if (MatrixStack.empty() || (MatrixStack.size() == 1)) {
+                // We should have at least
+                if (MatrixStack.size() < 3) {
                     print_parse_error(line);
                     cerr << "Probably an unpaired push command in repeat\n"
                     << "Repeats imply a push command" << endl;
                     return(false);
                 }
+                MatrixStack.pop();
                 MatrixStack.pop();
                 repeat_info_stack.pop();
                 if (repeat_info_stack.empty()) {
