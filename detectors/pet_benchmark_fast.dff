@@ -43,33 +43,33 @@ begin_repeat rotate 8 45.0 0.0 0.0 1.0
     # in this way so that the detector ids, block logic, and mapping to the gate
     # simulation is easier.
     # Module Repeats
-    begin_repeat grid 4 1 4 8.0 0.0 10.0
+    begin_repeat grid 1 4 4 0.0 8.0 10.0
         # Block Repeats
-        begin_repeat grid 5 1 5 1.6 0.0 2.0
+        begin_repeat grid 1 5 5 0.0 1.6 2.0
             # LSO Crystal Layer
             m lso
-            # place it at y = (-44.0 - 2.5 + 0.75) for the head radius, module
+            # place it at x = (44.0 + 2.5 - 0.75) for the head radius, module
             # translation and crystal layer translation respectively.
-            k 0.0 -45.75 0.0 1.5 1.49 1.9
+            k 45.75 0.0 0.0 1.5 1.49 1.9
 
             # BGO Crystal Layer
             m bgo
-            # place it at y = (-44.0 - 2.5 - 0.75) for the head radius, module
+            # place it at x = (44.0 + 2.5 + 0.75) for the head radius, module
             # translation and crystal layer translation respectively.
-            k 0.0 -47.25 0.0 1.5 1.49 1.9
+            k 47.25 0.0 0.0 1.5 1.49 1.9
         end_repeat
     end_repeat
 
     # Septa
     m tungsten
-    # place it at y = (-44.0 + 1.6) for the head radius, module
+    # place it at x = (44.0 + 1.6) for the head radius, module
     # translation and crystal layer translation respectively.
-    array 0.0 -42.4 0.0 1 1 3 0.0 0.0 10.0 32.0 5.0 0.05
+    array 42.4 0.0 0.0 1 1 3 0.0 0.0 10.0 5.0 32.0 0.05
 
     # End Shielding
     m lead
     # center shielding at the head radius of y=-44.0cm
-    array 0.0 -44.0 0.0 1 1 2 0.0 0.0 40.11 32.0 8.0 0.1
+    array 44.0 0.0 0.0 1 1 2 0.0 0.0 40.11 8.0 32.0 0.1
 end_repeat
 
 mapping_file gate_benchmark_fast.map
