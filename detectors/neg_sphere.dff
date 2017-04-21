@@ -11,10 +11,23 @@ resolution 256 256
 # create two bright white lightsources
 l -17.0 0.0 0.0 1.0 1.0 1.0
 l 17.0 0.0 0.0 1.0 1.0 1.0
+# Set colors for each of the materials
+# Color is 5 RGB pairs for the Ambient, Diffuse, Specular, Transmissive,
+# Reflective colors respectively, then one value for the index of refraction.
+m water
+color 0.1 0.1 0.1  0.0 0.0 0.0 0.5 0.5 0.5 0.5 0.5 1.0 0.0 0.0 0.0 1.03
+m lso
+color 0.05 0.20 0.05  0.1 0.4 0.1  0.3 0.3 0.3  0.0 0.0 0.0  0.2 0.50 0.2 1.05
+m bgo
+color 0.3 0.3 0.05  0.6 0.6 0.1  0.3 0.3 0.3  0.0 0.0 0.0  0.5 0.5 0.1 1.05
+m tungsten
+color 0.05 0.05 0.05  0.05 0.05 0.05  0.0 0.0 0.0  0.0 0.0 0.0  0.1 0.1 0.1 1.05
+m lead
+color 0.05 0.05 0.05  0.05 0.05 0.05  0.0 0.0 0.0  0.0 0.0 0.0  0.1 0.1 0.1 1.05
+
+
 # create water cylinder
 m water
-# set water color: a d s t r ior
-color 0.1 0.1 0.1  0.0 0.0 0.0 0.5 0.5 0.5 0.5 0.5 1.0 0.0 0.0 0.0 1.03
 push
 t -2.0 0.0 0.0
 sphere 0.0 0.0 0.0 6.0
@@ -34,21 +47,11 @@ begin_repeat 2
     include include_test_0.dff
 end_repeat
 
-# lso detector
-m lso
-# set color of lso detector to blue
-color 0.05 0.20 0.05  0.1 0.4 0.1  0.3 0.3 0.3  0.0 0.0 0.0  0.2 0.50 0.2 1.05
-# save current transformation matrix
-push
-# translate down detector ring radius
-t 0.0 -45.75 0.0
 # create 8 panels of LSO at 45 degree rotations
-begin_repeat 8
-    array 0.0 0.0 0.0 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
-    raxis 0.0 0.0 1.0 45.0
+begin_repeat rotate 8 45.0 0.0 0.0 1.0
+    m lso
+    array 0.0 -45.75 0.0 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
 end_repeat
-# return to previous transformation matrix
-pop
 
 log_positron
 log_all

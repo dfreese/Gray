@@ -11,10 +11,22 @@ resolution 256 256
 # create two bright white lightsources
 l -17.0 0.0 0.0 1.0 1.0 1.0
 l 17.0 0.0 0.0 1.0 1.0 1.0
+# Set colors for each of the materials
+# Color is 5 RGB pairs for the Ambient, Diffuse, Specular, Transmissive,
+# Reflective colors respectively, then one value for the index of refraction.
+m water
+color 0.1 0.1 0.1  0.0 0.0 0.0 0.5 0.5 0.5 0.5 0.5 1.0 0.0 0.0 0.0 1.03
+m lso
+color 0.05 0.20 0.05  0.1 0.4 0.1  0.3 0.3 0.3  0.0 0.0 0.0  0.2 0.50 0.2 1.05
+m bgo
+color 0.3 0.3 0.05  0.6 0.6 0.1  0.3 0.3 0.3  0.0 0.0 0.0  0.5 0.5 0.1 1.05
+m tungsten
+color 0.05 0.05 0.05  0.05 0.05 0.05  0.0 0.0 0.0  0.0 0.0 0.0  0.1 0.1 0.1 1.05
+m lead
+color 0.05 0.05 0.05  0.05 0.05 0.05  0.0 0.0 0.0  0.0 0.0 0.0  0.1 0.1 0.1 1.05
+
 # create water cylinder
 m water
-# set water color: a d s t r ior
-color 0.1 0.1 0.1  0.0 0.0 0.0 0.5 0.5 0.5 0.5 0.5 1.0 0.0 0.0 0.0 1.03
 cyl 0.0 0.0 0.0 0.0 0.0 1.0 10 70
 # create two cylindrical sources
 isotope F18
@@ -24,44 +36,41 @@ cyl_src 0.0 2.0 0.0 0.0 0.0 1.0 0.01 68 2.7027
 # set the simulation time to be 5 seconds
 time 240.0
 
-# lso detector
-m lso
-# set color of lso detector to blue
-color 0.05 0.20 0.05  0.1 0.4 0.1  0.3 0.3 0.3  0.0 0.0 0.0  0.2 0.50 0.2 1.05
-# save current transformation matrix
-push
 # create 8 panels at 45 degree rotations
-begin_repeat 8
-    # LSO Crystal Layer
-    m lso
-    color 0.05 0.20 0.05  0.1 0.4 0.1  0.3 0.3 0.3  0.0 0.0 0.0  0.2 0.50 0.2 1.05
-    # place it at y = (-44.0 - 2.5 + 0.75) for the head radius, module
-    # translation and crystal layer translation respectively.
-    array 0.0 -45.75 0.0 100 1 100 0.32 0.0 0.40 0.30 1.49 0.38
+begin_repeat rotate 8 45.0 0.0 0.0 1.0
+    # The entire geometry of the system could be taken care of in a single
+    # repeat command for both the LSO and BGO layers, but we instead place them
+    # in this way so that the detector ids, block logic, and mapping to the gate
+    # simulation is easier.
+    # Module Repeats
+    begin_repeat grid 4 1 4 8.0 0.0 10.0
+        # Block Repeats
+        begin_repeat grid 5 1 5 1.6 0.0 2.0
+            # LSO Crystal Layer
+            m lso
+            # place it at y = (-44.0 - 2.5 + 0.75) for the head radius, module
+            # translation and crystal layer translation respectively.
+            array 0.0 -45.75 0.0 5 1 5 0.32 0.0 0.40 0.30 1.49 0.38
 
-    # BGO Crystal Layer
-    m bgo
-    color 0.3 0.3 0.05  0.6 0.6 0.1  0.3 0.3 0.3  0.0 0.0 0.0  0.5 0.5 0.1 1.05
-    # place it at y = (-44.0 - 2.5 - 0.75) for the head radius, module
-    # translation and crystal layer translation respectively.
-    array 0.0 -47.25 0.0 100 1 100 0.32 0.0 0.40 0.30 1.49 0.38
+            # BGO Crystal Layer
+            m bgo
+            # place it at y = (-44.0 - 2.5 - 0.75) for the head radius, module
+            # translation and crystal layer translation respectively.
+            array 0.0 -47.25 0.0 5 1 5 0.32 0.0 0.40 0.30 1.49 0.38
+        end_repeat
+    end_repeat
 
     # Septa
     m tungsten
-    color 0.05 0.05 0.05  0.05 0.05 0.05  0.0 0.0 0.0  0.0 0.0 0.0  0.1 0.1 0.1 1.05
     # place it at y = (-44.0 + 1.6) for the head radius, module
     # translation and crystal layer translation respectively.
     array 0.0 -42.4 0.0 1 1 3 0.0 0.0 10.0 32.0 5.0 0.05
 
     # End Shielding
     m lead
-    color 0.05 0.05 0.05  0.05 0.05 0.05  0.0 0.0 0.0  0.0 0.0 0.0  0.1 0.1 0.1 1.05
     # center shielding at the head radius of y=-44.0cm
     array 0.0 -44.0 0.0 1 1 2 0.0 0.0 40.11 32.0 8.0 0.1
-    raxis 0.0 0.0 1.0 45.0
 end_repeat
-pop
-# return to previous transformation matrix
 
 mapping_file gate_benchmark.map
 pipeline_file gate_benchmark_process.pdc
