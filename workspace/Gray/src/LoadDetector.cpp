@@ -156,11 +156,22 @@ bool LoadDetector::Load(const std::string & filename,
     GammaMaterial* curMaterial = dynamic_cast<GammaMaterial*>(&theScene.GetMaterial(0));
 
     struct RepeatInfo {
+        enum RepeatType {
+            basic,
+            rotate,
+            grid
+        };
+        RepeatType type;
         int no_repeats;
         int no_complete;
         size_t start_idx;
         string starting_file;
         size_t starting_line;
+        VectorR3 grid_no_complete;
+        VectorR3 grid_repeats;
+        VectorR3 grid_step;
+        double rotate_angle;
+        VectorR3 rotate_axis;
     };
     stack<RepeatInfo> repeat_info_stack;
     vector<string> repeat_buffer;
@@ -224,11 +235,73 @@ bool LoadDetector::Load(const std::string & filename,
                 // Initialize
                 info.no_complete = 0;
                 current_idx = info.start_idx;
+                // push the current matrix before repeating
+                MatrixStack.push(MatrixStack.top());
+                switch (info.type) {
+                    case RepeatInfo::rotate: {
+                        break;
+                    }
+                    case RepeatInfo::grid: {
+                        VectorR3 init_step = info.grid_step * -0.5;
+                        init_step.x *= info.grid_repeats.x - 1;
+                        init_step.y *= info.grid_repeats.y - 1;
+                        init_step.z *= info.grid_repeats.z - 1;
+                        MatrixStack.top().Transform3x3(&init_step);
+                        MatrixStack.top().ApplyTranslationLeft(init_step);
+                        break;
+                    }
+                    case RepeatInfo::basic: {
+                        break;
+                    }
+                }
             } else if (info.no_complete < info.no_repeats) {
                 // Process
                 current_idx = info.start_idx;
+                switch (info.type) {
+                    case RepeatInfo::rotate: {
+                        ApplyRotation(info.rotate_axis,
+                                      info.rotate_angle * (M_PI/180.0),
+                                      MatrixStack.top());
+                        break;
+                    }
+                    case RepeatInfo::grid: {
+                        VectorR3 x_step(info.grid_step.x, 0, 0);
+                        VectorR3 y_step(0, info.grid_step.y, 0);
+                        VectorR3 z_step(0, 0, info.grid_step.z);
+                        MatrixStack.top().Transform3x3(&x_step);
+                        MatrixStack.top().Transform3x3(&y_step);
+                        MatrixStack.top().Transform3x3(&z_step);
+                        MatrixStack.top().ApplyTranslationLeft(z_step);
+                        info.grid_no_complete.z++;
+                        if (info.grid_no_complete.z >= info.grid_repeats.z) {
+                            // Reset z, step y
+                            MatrixStack.top().ApplyTranslationLeft(z_step * -1 * info.grid_no_complete.z);
+                            info.grid_no_complete.z = 0;
+                            MatrixStack.top().ApplyTranslationLeft(y_step);
+                            info.grid_no_complete.y++;
+                        }
+                        if (info.grid_no_complete.y >= info.grid_repeats.y) {
+                            // Reset y, step x
+                            MatrixStack.top().ApplyTranslationLeft(y_step * -1 * info.grid_no_complete.y);
+                            info.grid_no_complete.y = 0;
+                            MatrixStack.top().ApplyTranslationLeft(x_step);
+                            info.grid_no_complete.x++;
+                        }
+                        break;
+                    }
+                    case RepeatInfo::basic: {
+                        break;
+                    }
+                }
             } else {
                 // Cleanup
+                if (MatrixStack.empty() || (MatrixStack.size() == 1)) {
+                    print_parse_error(line);
+                    cerr << "Probably an unpaired push command in repeat\n"
+                    << "Repeats imply a push command" << endl;
+                    return(false);
+                }
+                MatrixStack.pop();
                 repeat_info_stack.pop();
                 if (repeat_info_stack.empty()) {
                     repeat_buffer.clear();
@@ -247,14 +320,73 @@ bool LoadDetector::Load(const std::string & filename,
 
         // Unprivileged commands
         if (command == "begin_repeat") {
-            int no_repeats;
-            if ((line_ss >> no_repeats).fail()) {
+            string repeat_type;
+            if ((line_ss >> repeat_type).fail()) {
                 print_parse_error(line);
-                cerr << "Unable to parse number of repeats" << endl;
+                cerr << "Unable to parse repeat type" << endl;
                 return(false);
             }
-            repeat_info_stack.push(RepeatInfo());
-            repeat_info_stack.top().no_repeats = no_repeats;
+            if (repeat_type == "rotate") {
+                bool fail = false;
+                int no_repeats;
+                double angle;
+                VectorR3 axis;
+                fail |= (line_ss >> no_repeats).fail();
+                fail |= (line_ss >> angle).fail();
+                fail |= (line_ss >> axis.x).fail();
+                fail |= (line_ss >> axis.y).fail();
+                fail |= (line_ss >> axis.z).fail();
+                if (fail) {
+                    print_parse_error(line);
+                    cerr << "Unable to parse grid repeats\n"
+                    << "Format: [steps] [size deg] [axis x y z]" << endl;
+                    return(false);
+                }
+
+                repeat_info_stack.push(RepeatInfo());
+                repeat_info_stack.top().type = RepeatInfo::rotate;
+                repeat_info_stack.top().no_repeats = no_repeats;
+                repeat_info_stack.top().rotate_axis = axis;
+                repeat_info_stack.top().rotate_angle = angle;
+            } else if (repeat_type == "grid") {
+                bool fail = false;
+                VectorR3 repeats_xyz;
+                VectorR3 step_xyz;
+                fail |= (line_ss >> repeats_xyz.x).fail();
+                fail |= (line_ss >> repeats_xyz.y).fail();
+                fail |= (line_ss >> repeats_xyz.z).fail();
+                fail |= (line_ss >> step_xyz.x).fail();
+                fail |= (line_ss >> step_xyz.y).fail();
+                fail |= (line_ss >> step_xyz.z).fail();
+                if (fail) {
+                    print_parse_error(line);
+                    cerr << "Unable to parse grid repeats\n"
+                         << "Format: [steps x y z] [stride x y z]" << endl;
+                    return(false);
+                }
+
+                repeat_info_stack.push(RepeatInfo());
+                repeat_info_stack.top().type = RepeatInfo::grid;
+                repeat_info_stack.top().no_repeats = (repeats_xyz.x *
+                                                      repeats_xyz.y *
+                                                      repeats_xyz.z);
+
+                repeat_info_stack.top().type = RepeatInfo::grid;
+                repeat_info_stack.top().grid_repeats = repeats_xyz;
+                repeat_info_stack.top().grid_step = step_xyz;
+                repeat_info_stack.top().grid_no_complete = VectorR3(0, 0, 0);
+            } else {
+                stringstream type_ss(repeat_type);
+                int no_repeats;
+                if ((type_ss >> no_repeats).fail()) {
+                    print_parse_error(line);
+                    cerr << "Unable to parse number of repeats" << endl;
+                    return(false);
+                }
+                repeat_info_stack.push(RepeatInfo());
+                repeat_info_stack.top().type = RepeatInfo::basic;
+                repeat_info_stack.top().no_repeats = no_repeats;
+            }
             // Need to read all lines first
             repeat_info_stack.top().no_complete = -1;
             repeat_info_stack.top().starting_file = filename_stack.top();
@@ -320,13 +452,6 @@ bool LoadDetector::Load(const std::string & filename,
             }
             file_lines_read_stack.push(0);
             filename_stack.push(include_filename);
-            // Drop the include line from the repeat buffer if it's there, as
-            // we just assume including a file is like dropping all of the text
-            // onto that line.
-            if (!repeat_buffer.empty()) {
-                repeat_buffer.pop_back();
-                current_idx--;
-            }
         } else if (command == "increment") {
             VectorR3 StartPos;
             VectorR3 UnitSize;
