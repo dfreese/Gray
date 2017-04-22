@@ -77,7 +77,8 @@ for name, data in gray_mats.iteritems():
     energy, coh_scat, incoh_scat, photoelec = xcom.compound(data['formula'],
         energies_mev=energies_mev, standard_grid=True, window_min=0.011,
         window_max=1.5)
-    emis_probs = mat_emis_probs[name]
+    if mat_emis_probs is not None:
+        emis_probs = mat_emis_probs[name]
     with open(name + '.dat', 'w') as out_fid:
         # Print out the scattering and absorption values first
         print >>out_fid, '%d' % len(energy)
@@ -93,10 +94,11 @@ for name, data in gray_mats.iteritems():
                 e, pe * data['density'], ics * data['density'],
                 cs * data['density'])
         # Then add on the flourescent emission
-        no_emissions = sum((len(d.keys()) for d in emis_probs.itervalues()))
-        print >>out_fid, '%d' % no_emissions
-        for bind_e in sorted(emis_probs):
-            b_dict = emis_probs[bind_e]
-            for e in sorted(b_dict):
-                p = b_dict[e]
-                print >>out_fid, '%15.9f   %15.9f   %15.9f' % (bind_e, e, p)
+        if mat_emis_probs is not None:
+            no_emissions = sum((len(d.keys()) for d in emis_probs.itervalues()))
+            print >>out_fid, '%d' % no_emissions
+            for bind_e in sorted(emis_probs):
+                b_dict = emis_probs[bind_e]
+                for e in sorted(b_dict):
+                    p = b_dict[e]
+                    print >>out_fid, '%15.9f   %15.9f   %15.9f' % (bind_e, e, p)
