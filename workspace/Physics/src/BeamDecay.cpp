@@ -33,7 +33,7 @@ void BeamDecay::Decay(int photon_number, double time, int src_id,
     if (angle) {
         Random::Acolinearity(axis, blue.dir, angle);
     } else {
-        blue.pos = axis;
+        blue.dir = axis;
     }
     red = blue;
 

@@ -763,6 +763,7 @@ bool LoadDetector::Load(const std::string & filename,
             BeamPointSource * s = new BeamPointSource(position, axis, angle,
                                                       actScale*activity);
             s->SetMaterial(curMaterial);
+            sources.AddSource(s);
         } else if (command == "acolinearity") {
             double acon = -1.0;
             int scanCode = sscanf(args.c_str(), "%lf", &acon);

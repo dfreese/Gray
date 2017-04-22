@@ -20,6 +20,7 @@ void Beam::Decay(int photon_number, double time, int src_id,
 {
     beam.SetBeam(beam_axis, beam_angle);
     beam.Decay(photon_number, time, src_id, position);
+    AddNuclearDecay(&beam);
 }
 
 void Beam::Reset()
