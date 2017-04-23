@@ -265,21 +265,15 @@ Interaction Interaction::GammaInteraction(
     Interaction::INTER_TYPE type = InteractionType(photon, dist,
                                                    mat_gamma_prop, deposit);
 
-    // move photon to interaction point, or exit point of material
-    photon.pos += (dist * photon.dir.Normalize());
-    photon.time += (dist * inverse_speed_of_light);
-
     // test for Photoelectric interaction
     switch (type) {
         case PHOTOELECTRIC: {
             return(Photoelectric(photon, mat_gamma_prop));
         }
         case XRAY_ESCAPE: {
-            return(XrayEscape(photon, 0, mat_gamma_prop));
+            return(XrayEscape(photon, deposit, mat_gamma_prop));
         }
         case COMPTON: {
-            // perform compton kinematics
-            ComptonScatter(photon, deposit);
             return(Compton(photon, deposit, mat_gamma_prop));
         }
         case RAYLEIGH: {
@@ -306,6 +300,9 @@ Interaction::INTER_TYPE Interaction::InteractionType(
         double & deposit)
 {
     if (!mat_gamma_prop.enable_interactions) {
+        // move photon to interaction point, or exit point of material
+        photon.pos += (dist * photon.dir.Normalize());
+        photon.time += (dist * inverse_speed_of_light);
         return(NO_INTERACTION);
     }
 
@@ -317,7 +314,12 @@ Interaction::INTER_TYPE Interaction::InteractionType(
     double rand_dist = RandomExponentialDistance(pe + compton);
     if (dist > rand_dist) {
         dist = rand_dist;
-    } else {
+    }
+
+    // move photon to interaction point, or exit point of material
+    photon.pos += (dist * photon.dir.Normalize());
+    photon.time += (dist * inverse_speed_of_light);
+    if (dist < rand_dist || !mat_gamma_prop.enable_interactions) {
         return(NO_INTERACTION);
     }
 
@@ -333,8 +335,11 @@ Interaction::INTER_TYPE Interaction::InteractionType(
             return PHOTOELECTRIC;
         }
     } else if (rand <= (pe + compton)) {
+        // perform compton kinematics
+        ComptonScatter(photon, deposit);
         return COMPTON;
     } else {
+        // perform rayleigh kinematics
         RayleighScatter(photon);
         return RAYLEIGH;
     }
@@ -458,5 +463,14 @@ bool Interaction::XrayEscape(Photon &p, const GammaStats & mat_gamma_prop,
     double rand = Random::Uniform();
     rand /= mat_gamma_prop.GetXrayBindEnergyScale(p.energy);
     size_t idx = upper_bound(prob_e.begin(), prob_e.end(), rand) - prob_e.begin();
-    return(false);
+    double xray_energy = emit_e[idx];
+    if (xray_energy == 0) {
+        return(false);
+    } else {
+        return(false);
+        deposit = p.energy - xray_energy;
+        p.energy = xray_energy;
+        Random::UniformSphere(p.dir);
+        return(true);
+    }
 }
