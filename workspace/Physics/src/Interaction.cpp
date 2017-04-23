@@ -451,50 +451,9 @@ void Interaction::RayleighScatter(Photon &p)
 
 bool Interaction::XrayEscape(Photon &p, const GammaStats & mat_gamma_prop)
 {
-    int num_escape = mat_gamma_prop.GetNumEscape();
-    double photon_energy = p.energy;
-    double * xray_escape = mat_gamma_prop.GetXrayEscape();
-    double * xray_escape_probability = mat_gamma_prop.GetXrayEscapeProb();
+    const std::vector<double> & emit_e = mat_gamma_prop.GetXrayEmissionEnergies();
+    const std::vector<double> & prob_e = mat_gamma_prop.GetXrayEmissionCumProb();
     double rand = Random::Uniform();
-
-    if (num_escape == 0) {
-        //cerr << "X-ray excape not defined\n";
-        return false;
-    } else if (num_escape == 1) {
-        if (photon_energy > xray_escape[0]) {
-            // Inner shell interaction
-            if (Random::Uniform() < mat_gamma_prop.GetAugerProb(0)) {
-                p.energy = xray_escape[0];
-                return true;
-            } else {
-                // Auger electron
-                return false;
-            }
-        } else {
-            return false;
-        }
-    } else {
-        if (photon_energy < xray_escape[num_escape-1]) {
-            // photon energy too small, no escapes
-            return false;
-        }
-        for (int i = 0; i < num_escape; i++) {
-            if (rand < xray_escape_probability[i]) {
-                // Inner shell interaction
-                if (photon_energy <= xray_escape[i]) // complete absorption
-                    // TODO: log deposit energy and emit characteristic x-ray
-                {
-                    return false;
-                }
-                // Perform Auger Electron Check
-                if (Random::Uniform() < mat_gamma_prop.GetAugerProb(i)) {
-                    p.energy = xray_escape[i];
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        }
-        return false;
-    }
+    rand *= mat_gamma_prop.GetXrayBindEnergyScale(p.energy);
+    return(false);
 }

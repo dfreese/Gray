@@ -18,16 +18,14 @@ public:
     int GetMaterial() const;
     void GetInteractionProbs(double e, double & pe, double & comp,
                              double & ray) const;
-    void AddEscape(double * xray_escapes, double * xray_probs, double * auger_probs, int num);
-    bool GetEscape(double rand, const double photon_energy, double &xray_energy) const;
-    int GetNumEscape() const;
-    double * GetXrayEscape() const;
-    double * GetXrayEscapeProb() const;
-    double GetAugerProb(int i) const;
     bool log_material;
     bool enable_interactions;
     void DisableInteractions();
     std::string GetName() const;
+    const std::vector<double> & GetXrayEmissionEnergies() const;
+    const std::vector<double> & GetXrayEmissionCumProb() const;
+
+    double GetXrayBindEnergyScale(double energy) const;
 
 private:
 
@@ -39,9 +37,13 @@ private:
     std::vector<double> photoelectric;
     std::vector<double> compton;
     std::vector<double> rayleigh;
-    double * xray_escape;
-    double * xray_escape_probability;
-    double * auger;
+    std::vector<double> xray_binding_energy;
+    std::vector<double> xray_emission_energy;
+    std::vector<double> xray_emission_prob;
+    std::vector<double> xray_emission_cumprob;
+
+    std::vector<double> unique_xray_binding_energy;
+    std::vector<double> xray_binding_enery_scale;
 
     // cache for energy lookup
     double cache_energy;
