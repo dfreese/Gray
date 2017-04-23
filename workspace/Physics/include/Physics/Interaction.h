@@ -57,12 +57,14 @@ public:
                                         const GammaStats & mat_gamma_prop);
     static INTER_TYPE InteractionType(Photon &p,
                                       double & dist,
-                                      const GammaStats & mat_gamma_prop);
+                                      const GammaStats & mat_gamma_prop,
+                                      double & deposit);
     static void ComptonScatter(Photon &p, double & deposit);
     static void KleinNishinaAngle(double energy, double & theta,
                                     double & phi);
     static double KleinNishinaEnergy(double energy, double theta);
-    static bool XrayEscape(Photon &p, const GammaStats & mat_gamma_prop);
+    static bool XrayEscape(Photon &p, const GammaStats & mat_gamma_prop,
+                           double & deposit);
     static const double speed_of_light_cmpers;
     static const double inverse_speed_of_light;
     static void RayleighScatter(Photon &p);

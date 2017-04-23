@@ -261,8 +261,9 @@ double Interaction::RandomExponentialDistance(double mu) {
 Interaction Interaction::GammaInteraction(
         Photon &photon, double dist, const GammaStats & mat_gamma_prop)
 {
+    double deposit = 0;
     Interaction::INTER_TYPE type = InteractionType(photon, dist,
-                                                   mat_gamma_prop);
+                                                   mat_gamma_prop, deposit);
 
     // move photon to interaction point, or exit point of material
     photon.pos += (dist * photon.dir.Normalize());
@@ -278,12 +279,10 @@ Interaction Interaction::GammaInteraction(
         }
         case COMPTON: {
             // perform compton kinematics
-            double deposit;
             ComptonScatter(photon, deposit);
             return(Compton(photon, deposit, mat_gamma_prop));
         }
         case RAYLEIGH: {
-            RayleighScatter(photon);
             return(Rayleigh(photon, mat_gamma_prop));
         }
         case NO_INTERACTION: {
@@ -301,16 +300,17 @@ Interaction Interaction::GammaInteraction(
  * random distance if an interaction occurs.
  */
 Interaction::INTER_TYPE Interaction::InteractionType(
-        Photon &p,
+        Photon & photon,
         double & dist,
-        const GammaStats & mat_gamma_prop)
+        const GammaStats & mat_gamma_prop,
+        double & deposit)
 {
     if (!mat_gamma_prop.enable_interactions) {
         return(NO_INTERACTION);
     }
 
     double pe, compton, rayleigh;
-    mat_gamma_prop.GetInteractionProbs(p.energy, pe, compton, rayleigh);
+    mat_gamma_prop.GetInteractionProbs(photon.energy, pe, compton, rayleigh);
 
     // TODO: add back in rayleigh scattering once the distribution is fixed
     // double rand_dist = RandomExponentialDistance(pe + compton + rayleigh);
@@ -326,7 +326,7 @@ Interaction::INTER_TYPE Interaction::InteractionType(
     // double rand = (pe + compton + rayleigh) * Random::Uniform();
     double rand = (pe + compton) * Random::Uniform();
     if (rand <= pe) {
-        if (XrayEscape(p, mat_gamma_prop)) {
+        if (XrayEscape(photon, mat_gamma_prop, deposit)) {
             // TODO: Get x-ray escape physics working again
             return XRAY_ESCAPE;
         } else {
@@ -335,6 +335,7 @@ Interaction::INTER_TYPE Interaction::InteractionType(
     } else if (rand <= (pe + compton)) {
         return COMPTON;
     } else {
+        RayleighScatter(photon);
         return RAYLEIGH;
     }
 }
@@ -449,11 +450,13 @@ void Interaction::RayleighScatter(Photon &p)
     p.SetScatter();
 }
 
-bool Interaction::XrayEscape(Photon &p, const GammaStats & mat_gamma_prop)
+bool Interaction::XrayEscape(Photon &p, const GammaStats & mat_gamma_prop,
+                             double & deposit)
 {
     const std::vector<double> & emit_e = mat_gamma_prop.GetXrayEmissionEnergies();
     const std::vector<double> & prob_e = mat_gamma_prop.GetXrayEmissionCumProb();
     double rand = Random::Uniform();
-    rand *= mat_gamma_prop.GetXrayBindEnergyScale(p.energy);
+    rand /= mat_gamma_prop.GetXrayBindEnergyScale(p.energy);
+    size_t idx = upper_bound(prob_e.begin(), prob_e.end(), rand) - prob_e.begin();
     return(false);
 }
