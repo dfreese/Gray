@@ -461,8 +461,8 @@ bool Interaction::XrayEscape(Photon &p, const GammaStats & mat_gamma_prop,
     const std::vector<double> & emit_e = mat_gamma_prop.GetXrayEmissionEnergies();
     const std::vector<double> & prob_e = mat_gamma_prop.GetXrayEmissionCumProb();
     double rand = Random::Uniform();
-    rand /= mat_gamma_prop.GetXrayBindEnergyScale(p.energy);
-    size_t idx = upper_bound(prob_e.begin(), prob_e.end(), rand) - prob_e.begin();
+    rand *= mat_gamma_prop.GetXrayBindEnergyScale(p.energy);
+    size_t idx = lower_bound(prob_e.begin(), prob_e.end(), rand) - prob_e.begin();
     double xray_energy = emit_e[idx];
     if (xray_energy == 0) {
         return(false);

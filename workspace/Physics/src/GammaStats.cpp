@@ -210,7 +210,7 @@ const std::vector<double> & GammaStats::GetXrayEmissionEnergies() const {
 }
 
 const std::vector<double> & GammaStats::GetXrayEmissionCumProb() const {
-    return(xray_emission_prob);
+    return(xray_emission_cumprob);
 }
 
 double GammaStats::GetXrayBindEnergyScale(double energy) const {
