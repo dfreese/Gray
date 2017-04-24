@@ -37,6 +37,7 @@ public:
                              GammaMaterial const * const default_material,
                              bool log_nuclear_decays,
                              bool log_nonsensitive,
+                             bool log_nointeractions,
                              bool log_errors,
                              TraceStats & stats);
 private:
@@ -47,6 +48,7 @@ private:
                             GammaMaterial const * const start_material,
                             int MaxTraceDepth,
                             bool log_nonsensitive,
+                            bool log_nointeractions,
                             bool log_errors,
                             TraceStats & stats);
     static const double Epsilon;

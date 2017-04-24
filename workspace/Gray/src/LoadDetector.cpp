@@ -772,8 +772,6 @@ bool LoadDetector::Load(const std::string & filename,
                 return(false);
             }
             sources.SetAcolinearity(acon);
-        } else if (command == "log_all") {
-            Output::SetLogAll(true);
         } else if (command == "start_vecsrc") {
             double activity = -1.0;
             int scanCode = sscanf(args.c_str(), "%lf", &activity);
@@ -834,7 +832,15 @@ bool LoadDetector::Load(const std::string & filename,
             }
             Random::Seed((unsigned long)seed);
         } else if (command == "log_positron") {
-            Output::SetLogPositron(true);
+            config.set_log_nuclear_decays(true);
+        } else if (command == "log_nonsensitive") {
+            config.set_log_nonsensitive(true);
+        } else if (command == "log_nointeraction") {
+            config.set_log_nointeraction(true);
+        } else if (command == "log_errors") {
+            config.set_log_errors(true);
+        } else if (command == "log_all") {
+            config.set_log_all(true);
         } else if (command == "sp_src") {
             // Sphere source
             VectorR3 position;

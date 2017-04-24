@@ -41,6 +41,16 @@ public:
     bool get_log_singles();
     void add_pipeline_line(const std::string & line);
     std::vector<std::string> get_pipeline_lines();
+    void set_log_nuclear_decays(bool val);
+    void set_log_nonsensitive(bool val);
+    void set_log_nointeraction(bool val);
+    void set_log_errors(bool val);
+    void set_log_all(bool val);
+    bool get_log_nuclear_decays();
+    bool get_log_nonsensitive();
+    bool get_log_nointeraction();
+    bool get_log_errors();
+    bool get_log_all();
 
 private:
     std::string filename_scene;
@@ -56,6 +66,11 @@ private:
     bool format_singles_set;
     Output::Format format_hits;
     Output::Format format_singles;
+    bool log_nuclear_decays;
+    bool log_nonsensitive;
+    bool log_nointeraction;
+    bool log_errors;
+    bool log_all;
     std::vector<std::string> pipeline_config_lines;
 };
 

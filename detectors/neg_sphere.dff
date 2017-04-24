@@ -54,4 +54,5 @@ begin_repeat rotate 8 45.0 0.0 0.0 1.0
 end_repeat
 
 log_positron
-log_all
+log_errors
+log_nonsensitive

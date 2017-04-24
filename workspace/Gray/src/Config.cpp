@@ -20,7 +20,12 @@ Config::Config() :
     format_hits_set(false),
     format_singles_set(false),
     format_hits(Output::FULL_ASCII),
-    format_singles(Output::FULL_ASCII)
+    format_singles(Output::FULL_ASCII),
+    log_nuclear_decays(false),
+    log_nonsensitive(false),
+    log_nointeraction(false),
+    log_errors(false),
+    log_all(false)
 {
 
 }
@@ -199,4 +204,44 @@ void Config::add_pipeline_line(const std::string & line) {
 
 std::vector<std::string> Config::get_pipeline_lines() {
     return(pipeline_config_lines);
+}
+
+void Config::set_log_nuclear_decays(bool val) {
+    log_nuclear_decays = val;
+}
+
+void Config::set_log_nonsensitive(bool val) {
+    log_nonsensitive = val;
+}
+
+void Config::set_log_nointeraction(bool val) {
+    log_nointeraction = val;
+}
+
+void Config::set_log_errors(bool val) {
+    log_errors = val;
+}
+
+void Config::set_log_all(bool val) {
+    log_all = val;
+}
+
+bool Config::get_log_nuclear_decays() {
+    return(log_nuclear_decays || log_all);
+}
+
+bool Config::get_log_nonsensitive() {
+    return(log_nonsensitive || log_all);
+}
+
+bool Config::get_log_nointeraction() {
+    return(log_nointeraction || log_all);
+}
+
+bool Config::get_log_errors() {
+    return(log_errors || log_all);
+}
+
+bool Config::get_log_all() {
+    return(log_all);
 }

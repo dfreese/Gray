@@ -7,7 +7,6 @@
 #include <Physics/Interaction.h>
 #include <Physics/Positron.h>
 #include <Physics/Photon.h>
-#include <Output/Output.h>
 #include <Sources/Source.h>
 #include <Sources/SourceList.h>
 #include <stack>
@@ -23,6 +22,7 @@ void GammaRayTrace::TracePhoton(
         GammaMaterial const * const start_material,
         int MaxTraceDepth,
         bool log_nonsensitive,
+        bool log_nointeractions,
         bool log_errors,
         TraceStats & stats)
 {
@@ -35,16 +35,6 @@ void GammaRayTrace::TracePhoton(
     // Add the material that the photon started in.
     MatStack.push(start_material);
     for (int trace_depth = 0; trace_depth < MaxTraceDepth; trace_depth++) {
-        double hitDist;
-        VisiblePoint visPoint;
-        long intersectNum = tree.SeekIntersection(photon.pos, photon.dir,
-                                                  &hitDist, visPoint, -1);
-        // There was nothing further in the environment to hit, so return.
-        if (intersectNum < 0) {
-            stats.no_interaction++;
-            return;
-        }
-
         if (MatStack.empty()) {
             // Should always have the default material at the bottom of the
             // stack.  If we somehow pop that out, it means we somehow detected
@@ -60,6 +50,20 @@ void GammaRayTrace::TracePhoton(
         }
         const GammaMaterial & mat_gamma_prop = *MatStack.top();
 
+
+        double hitDist;
+        VisiblePoint visPoint;
+        long intersectNum = tree.SeekIntersection(photon.pos, photon.dir,
+                                                  &hitDist, visPoint, -1);
+        // There was nothing further in the environment to hit, so return.
+        if (intersectNum < 0) {
+            stats.no_interaction++;
+            if (log_nointeractions) {
+                interactions.push_back(Interaction::NoInteraction(photon,
+                                                                  mat_gamma_prop));
+            }
+            return;
+        }
 
         double deposit = 0;
         Interaction::INTER_TYPE type = Interaction::InteractionType(
@@ -154,6 +158,7 @@ void GammaRayTrace::TraceSources(SourceList & sources,
                                  GammaMaterial const * const default_material,
                                  bool log_nuclear_decays,
                                  bool log_nonsensitive,
+                                 bool log_nointeractions,
                                  bool log_errors,
                                  TraceStats & stats)
 {
@@ -183,7 +188,7 @@ void GammaRayTrace::TraceSources(SourceList & sources,
                 stats.photons++;
                 TracePhoton(photon, interactions, tree, default_material,
                             source->GetMaterial(), 100, log_nonsensitive,
-                            log_errors, stats);
+                            log_nointeractions, log_errors, stats);
             }
         }
 
