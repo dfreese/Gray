@@ -258,36 +258,6 @@ double Interaction::RandomExponentialDistance(double mu) {
     }
 }
 
-Interaction Interaction::GammaInteraction(
-        Photon &photon, double dist, const GammaStats & mat_gamma_prop)
-{
-    double deposit = 0;
-    Interaction::INTER_TYPE type = InteractionType(photon, dist,
-                                                   mat_gamma_prop, deposit);
-
-    // test for Photoelectric interaction
-    switch (type) {
-        case PHOTOELECTRIC: {
-            return(Photoelectric(photon, mat_gamma_prop));
-        }
-        case XRAY_ESCAPE: {
-            return(XrayEscape(photon, deposit, mat_gamma_prop));
-        }
-        case COMPTON: {
-            return(Compton(photon, deposit, mat_gamma_prop));
-        }
-        case RAYLEIGH: {
-            return(Rayleigh(photon, mat_gamma_prop));
-        }
-        case NO_INTERACTION: {
-            return(NoInteraction());
-        }
-        default: {
-            throw(runtime_error("Unexpected interaction type in Interaction::GammaInteraction"));
-        }
-    }
-}
-
 /*!
  * Takes an energy (MeV) and uses that to calculate if there was an interaction
  * or not by calling RandomExponentialDistance.  dist is modified to be the

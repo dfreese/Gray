@@ -58,59 +58,82 @@ void GammaRayTrace::TracePhoton(
             stats.error++;
             return;
         }
-        GammaMaterial const * const curMaterial = MatStack.top();
+        const GammaMaterial & mat_gamma_prop = *MatStack.top();
 
 
-        // set detector id in photon
-        Interaction interact = Interaction::GammaInteraction(photon, hitDist,
-                                                             *curMaterial);
-
-        if (interact.type == Interaction::NO_INTERACTION) {
-            // If not interaction, recursively traverse the in the direction
-            // the photon was travelling
-            if (visPoint.IsFrontFacing()) {
-                // This detector id will be used to determine if we scatter
-                // in a detector or inside a phantom
-                photon.det_id = visPoint.GetObject().GetDetectorId();
-                MatStack.push(dynamic_cast<GammaMaterial const * const>(
-                        &visPoint.GetMaterial()));
-            } else if (visPoint.IsBackFacing()) {
-                photon.det_id = -1;
-                MatStack.pop();
-            } else {
-                throw(runtime_error("Material has no face"));
+        double deposit = 0;
+        Interaction::INTER_TYPE type = Interaction::InteractionType(
+                photon, hitDist, mat_gamma_prop, deposit);
+        bool is_sensitive = (photon.det_id >= 0);
+        bool log_interact = ((!is_sensitive && log_nonsensitive) ||
+                             is_sensitive);
+        // test for Photoelectric interaction
+        switch (type) {
+            case Interaction::NO_INTERACTION: {
+                // If not interaction, recursively traverse the in the direction
+                // the photon was travelling
+                if (visPoint.IsFrontFacing()) {
+                    // This detector id will be used to determine if we scatter
+                    // in a detector or inside a phantom
+                    photon.det_id = visPoint.GetObject().GetDetectorId();
+                    MatStack.push(dynamic_cast<GammaMaterial const * const>(
+                            &visPoint.GetMaterial()));
+                } else if (visPoint.IsBackFacing()) {
+                    photon.det_id = -1;
+                    MatStack.pop();
+                } else {
+                    throw(runtime_error("Material has no face"));
+                }
+                // Make sure not to hit same place in kdtree
+                photon.pos = visPoint.GetPosition() + photon.dir * Epsilon;
+                break;
             }
-            // Make sure not to hit same place in kdtree
-            photon.pos = visPoint.GetPosition() + photon.dir * Epsilon;
-        } else {
-            bool is_sensitive = (photon.det_id >= 0);
-            bool log_interact = ((!is_sensitive && log_nonsensitive) ||
-                                 is_sensitive);
-            if (log_interact) {
-                interactions.push_back(interact);
-            }
-            // Keep track of what happened
-            if (interact.type == Interaction::PHOTOELECTRIC) {
+            case Interaction::PHOTOELECTRIC: {
+                if (log_interact) {
+                    interactions.push_back(
+                            Interaction::Photoelectric(photon, mat_gamma_prop));
+                }
                 stats.photoelectric++;
                 if (is_sensitive) {
                     stats.photoelectric_sensitive++;
                 }
                 return;
-            } else if (interact.type == Interaction::XRAY_ESCAPE) {
+            }
+            case Interaction::XRAY_ESCAPE: {
+                if (log_interact) {
+                    interactions.push_back(Interaction::XrayEscape(photon, deposit,
+                                                                   mat_gamma_prop));
+                }
                 stats.xray_escape++;
                 if (is_sensitive) {
                     stats.xray_escape_sensitive++;
                 }
-            } else if (interact.type == Interaction::COMPTON) {
+                break;
+            }
+            case Interaction::COMPTON: {
+                if (log_interact) {
+                    interactions.push_back(Interaction::Compton(photon, deposit,
+                                                                mat_gamma_prop));
+                }
                 stats.compton++;
                 if (is_sensitive) {
                     stats.compton_sensitive++;
                 }
-            } else if (interact.type == Interaction::RAYLEIGH) {
+                break;
+            }
+            case Interaction::RAYLEIGH: {
+                if (log_interact) {
+                    interactions.push_back(Interaction::Rayleigh(photon,
+                                                                 mat_gamma_prop));
+                }
                 stats.rayleigh++;
                 if (is_sensitive) {
                     stats.rayleigh_sensitive++;
                 }
+                break;
+            }
+            default: {
+                throw(runtime_error("Unexpected interaction type in Interaction::GammaInteraction"));
             }
         }
     }

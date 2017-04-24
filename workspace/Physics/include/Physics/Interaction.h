@@ -52,9 +52,6 @@ public:
                                        const GammaStats & mat_gamma_prop);
     static Interaction ErrorEmtpy(const Photon & p);
 
-    static Interaction GammaInteraction(Photon &p,
-                                        double dist,
-                                        const GammaStats & mat_gamma_prop);
     static INTER_TYPE InteractionType(Photon &p,
                                       double & dist,
                                       const GammaStats & mat_gamma_prop,
