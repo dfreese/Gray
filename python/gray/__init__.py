@@ -51,7 +51,7 @@ minimum_dtype = np.dtype([
 SIGMA_TO_FWHM = 2.0 * np.sqrt(2.0 * np.log(2.0))
 FWHM_TO_SIGMA = 1.0 / SIGMA_TO_FWHM
 
-def blur_energy(data, energy_res, copy=False):
+def blur_energy(data, energy_res, ref_energy=None, copy=False):
     '''
     Add a gaussian blur to the energy of the Gray detector output.  Blur is
     computed using:
@@ -78,6 +78,11 @@ def blur_energy(data, energy_res, copy=False):
         depending on the copy flag.
 
     '''
+    if ref_energy is not None:
+        energy_res = energy_res * np.ones(data['energy'].shape)
+        valid = (data['energy'] > 0)
+        energy_res[valid] = (energy_res * np.sqrt(ref_energy) /
+                             np.sqrt(data['energy'][valid]))
     blur = 1.0 + energy_res * FWHM_TO_SIGMA * np.random.randn(data.size)
     if copy:
         data = data.copy()
