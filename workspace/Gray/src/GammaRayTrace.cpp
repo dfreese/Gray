@@ -101,7 +101,6 @@ void GammaRayTrace::TracePhoton(
                 if (is_sensitive) {
                     stats.xray_escape_sensitive++;
                 }
-                return;
             } else if (interact.type == Interaction::COMPTON) {
                 stats.compton++;
                 if (is_sensitive) {
