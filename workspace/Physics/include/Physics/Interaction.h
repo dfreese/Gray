@@ -38,6 +38,8 @@ public:
     bool sensitive_mat;
 
     static Interaction NoInteraction();
+    static Interaction NoInteraction(const Photon & p,
+                                     const GammaStats & mat_gamma_prop);
     static Interaction Photoelectric(const Photon & p,
                                      const GammaStats & mat_gamma_prop);
     static Interaction XrayEscape(const Photon & p, double deposit,

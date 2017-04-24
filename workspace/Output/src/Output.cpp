@@ -4,10 +4,6 @@
 
 using namespace std;
 
-bool Output::log_data = false;
-bool Output::log_positron = false;
-bool Output::log_all = false;
-
 Output::Output(const std::string & logfile, Format fmt) :
     format(fmt)
 {
@@ -18,9 +14,7 @@ Output::Output(const std::string & logfile, Format fmt) :
 
 Output::~Output()
 {
-    if (log_data) {
-        log_file.close();
-    }
+    log_file.close();
 }
 
 int Output::MakeLogWord(Interaction::INTER_TYPE interaction, int color,
@@ -38,12 +32,6 @@ void Output::SetFormat(Format format) {
 }
 
 void Output::LogInteraction(const Interaction & interact) {
-    bool log_event = ((log_data & interact.sensitive_mat) | log_all |
-            (log_positron & (interact.type == Interaction::NUCLEAR_DECAY))) &
-            (interact.type != Interaction::NO_INTERACTION);
-    if (!log_event) {
-        return;
-    }
     if (format == FULL_BINARY) {
         GrayBinaryStandard b;
         b.i = interact.id;
@@ -103,23 +91,8 @@ bool Output::SetLogfile(const std::string & name)
         cerr << " log file.\n";
         return false;
     } else {
-        log_data = true;
         return true;
     }
-}
-
-void Output::SetLogAll(bool val)
-{
-    log_all = val;
-}
-
-void Output::SetLogPositron(bool val)
-{
-    log_positron = val;
-}
-
-bool Output::GetLogPositron() const {
-    return(log_positron);
 }
 
 int Output::GetFormat(const std::string & identifier, Output::Format & fmt) {

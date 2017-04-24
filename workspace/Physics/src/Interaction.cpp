@@ -27,6 +27,24 @@ Interaction Interaction::NoInteraction() {
     return(Interaction());
 }
 
+Interaction Interaction::NoInteraction(const Photon & p,
+                                       const GammaStats & mat_gamma_prop)
+{
+    Interaction hit;
+    hit.type = NO_INTERACTION;
+    hit.id = p.id;
+    hit.time = p.time;
+    hit.pos = p.pos;
+    hit.energy = p.energy;
+    hit.color = p.color;
+    hit.src_id = p.GetSrc();
+    hit.mat_id = mat_gamma_prop.GetMaterial();
+    hit.det_id = p.det_id;
+    hit.scatter = p.phantom_scatter;
+    hit.sensitive_mat = mat_gamma_prop.log_material;
+    return(hit);
+}
+
 Interaction Interaction::Photoelectric(const Photon & p,
                                        const GammaStats & mat_gamma_prop)
 {
