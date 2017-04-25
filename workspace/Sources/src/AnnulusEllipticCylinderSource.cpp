@@ -1,5 +1,6 @@
 #include <Sources/AnnulusEllipticCylinderSource.h>
 #include <cmath>
+#include <algorithm>
 #include <Random/Random.h>
 
 using namespace std;

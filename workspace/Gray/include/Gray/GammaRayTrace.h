@@ -2,6 +2,7 @@
 #define GAMMARAYTRACE_H
 
 #include <vector>
+#include <ostream>
 
 class GammaMaterial;
 class Interaction;

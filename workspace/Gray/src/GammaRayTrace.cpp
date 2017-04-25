@@ -26,7 +26,7 @@ void GammaRayTrace::TracePhoton(
         bool log_errors,
         TraceStats & stats)
 {
-    std::stack<GammaMaterial const * const> MatStack;
+    std::stack<GammaMaterial const *> MatStack;
     // We don't get the material information from the visible point as we are
     // exiting a material.  This may be problem with the scene setup, but we
     // need to have the default material to enter into once we've exited a
