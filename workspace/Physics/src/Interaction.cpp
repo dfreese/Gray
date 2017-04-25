@@ -230,8 +230,9 @@ double Interaction::KleinNishina::dsigma_max(double energy_mev)
     if (alpha > 1.0) {
         alpha = 1.0;
     }
-    return((1.0 - alpha) * dsigma_max_val[idx - 1] +
-           alpha * dsigma_max_val[idx]);
+    double dsigma_max = ((1.0 - alpha) * dsigma_max_val[idx - 1] +
+                         alpha * dsigma_max_val[idx]);
+    return(dsigma_max);
 }
 
 
@@ -338,14 +339,9 @@ void Interaction::KleinNishinaAngle(double energy, double & theta,
 {
     /* Generate scattering angles - phi and theta */
     // Theta is the compton angle
-
-    theta = M_PI * Random::Uniform();
-    double r = Random::Uniform();
-
-    while (klein_nishina.dsigma_over_max(theta, energy) < r) {
+    do {
         theta = M_PI * Random::Uniform();
-        r = Random::Uniform();
-    }
+    } while (klein_nishina.dsigma_over_max(theta, energy) < Random::Uniform());
 
     // phi is symmetric around a circle of 360 degrees
     phi = M_2_PI * Random::Uniform();
