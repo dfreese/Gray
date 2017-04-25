@@ -188,7 +188,7 @@ bool ViewableCone::FindIntersectionNT (
         }
 
         // Calculate u-v coordinates for texture mapping (in range[0,1]x[0,1])
-        double uCoord = atan2( vdotuB, vdotuA )/M_2_PI + 0.5;
+        double uCoord = atan2( vdotuB, vdotuA )/ (2 * M_PI) + 0.5;
         double vCoord;
         if ( IsRightCone() ) {
             vCoord = (vdotuCtr+Height)/Height;
@@ -312,7 +312,7 @@ bool ViewableCone::CalcPartials( const VisiblePoint& visPoint,
         break;
 
     case SideFaceNum:
-        double phi = M_2_PI*(visPoint.GetU()-0.5);	// From [0,1] to [-pi,pi]
+        double phi = 2 * M_PI*(visPoint.GetU()-0.5);	// From [0,1] to [-pi,pi]
         double sinphi = sin(phi);
         double cosphi = cos(phi);
         distDown = -(retPartialV^CenterAxis);
@@ -323,7 +323,7 @@ bool ViewableCone::CalcPartials( const VisiblePoint& visPoint,
         retPartialU += temp;
         retPartialU *= BaseNormal;
         retPartialU *= BaseNormal;
-        retPartialU *= -M_2_PI;		// Adjust sign and for range [-pi,pi]
+        retPartialU *= -2 * M_PI;		// Adjust sign and for range [-pi,pi]
 
         // distance again measured along central axis.
         retPartialV = Apex;

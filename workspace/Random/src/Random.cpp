@@ -57,7 +57,7 @@ bool Random::SeedSet() {
 void Random::UniformSphere(VectorR3 & p)
 {
     double cost = 2.0 * Random::Uniform() - 1.0;
-    double phi = M_2_PI * Random::Uniform();
+    double phi = 2 * M_PI * Random::Uniform();
     double sint = std::sqrt(1.0 - cost * cost);
     p.x = sint * std::cos(phi);
     p.y = sint * std::sin(phi);
@@ -69,7 +69,7 @@ void Random::Acolinearity(const VectorR3 & b, VectorR3 &r, double radians)
 {
     // Theta: angle relative to other photon, mean around 180.0 degrees
     // Phi: Angle around central axis any of 360 degrees in a circle
-    double phi = M_2_PI * Random::Uniform();
+    double phi = 2 * M_PI * Random::Uniform();
     double theta = M_PI;
 
     // Generate acolinearity angle away from blue photon

@@ -344,7 +344,7 @@ void Interaction::KleinNishinaAngle(double energy, double & theta,
     } while (klein_nishina.dsigma_over_max(theta, energy) < Random::Uniform());
 
     // phi is symmetric around a circle of 360 degrees
-    phi = M_2_PI * Random::Uniform();
+    phi = 2 * M_PI * Random::Uniform();
 }
 
 double Interaction::KleinNishinaEnergy(double energy, double theta)
@@ -408,7 +408,7 @@ void Interaction::RayleighScatter(Photon &p)
     }
 
     // phi is symmetric around a circle of 360 degrees
-    double phi = M_2_PI * Random::Uniform();
+    double phi = 2 * M_PI * Random::Uniform();
 
     // Create rotation axis this is perpendicular to Y axis
     // to generate the scattering angle theta

@@ -104,7 +104,7 @@ void ViewableEllipsoid::CalcBoundingPlanes( const VectorR3& u, double *minDot, d
 bool ViewableEllipsoid::CalcPartials( const VisiblePoint& visPoint,
                                       VectorR3& retPartialU, VectorR3& retPartialV ) const
 {
-    double theta = M_2_PI*(visPoint.GetU()-0.5);	// Range [-pi,pi]
+    double theta = 2 * M_PI*(visPoint.GetU()-0.5);	// Range [-pi,pi]
     double phi = M_PI*(visPoint.GetV()-0.5);		// Range [-pi/2,pi/2]
     double sinphi = sin(phi);
     double cosphi = cos(phi);
