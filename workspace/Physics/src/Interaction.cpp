@@ -94,9 +94,7 @@ Interaction Interaction::Compton(const Photon & p, double deposit,
     hit.src_id = p.GetSrc();
     hit.mat_id = mat_gamma_prop.GetMaterial();
     hit.det_id = p.det_id;
-    // This is a phantom scatter flag, so only flag if the material isn't
-    // sensitive.
-    hit.scatter = p.phantom_scatter || (!mat_gamma_prop.log_material);
+    hit.scatter = p.phantom_scatter;
     hit.sensitive_mat = mat_gamma_prop.log_material;
     return(hit);
 }
@@ -114,9 +112,7 @@ Interaction Interaction::Rayleigh(const Photon & p,
     hit.src_id = p.GetSrc();
     hit.mat_id = mat_gamma_prop.GetMaterial();
     hit.det_id = p.det_id;
-    // This is a phantom scatter flag, so only flag if the material isn't
-    // sensitive.
-    hit.scatter = p.phantom_scatter || (!mat_gamma_prop.log_material);
+    hit.scatter = p.phantom_scatter;
     hit.sensitive_mat = mat_gamma_prop.log_material;
     return(hit);
 }
@@ -134,8 +130,6 @@ Interaction Interaction::NuclearDecay(const class NuclearDecay &p,
     hit.src_id = p.GetSourceId();
     hit.mat_id = mat_gamma_prop.GetMaterial();
     hit.det_id = -1;
-    // This is a phantom scatter flag, so only flag if the material isn't
-    // sensitive.
     hit.scatter = false;
     hit.sensitive_mat = mat_gamma_prop.log_material;
     return(hit);
@@ -156,8 +150,7 @@ Interaction Interaction::ErrorTraceDepth(const Photon & p,
     hit.mat_id = mat_gamma_prop.GetMaterial();
     hit.det_id = p.det_id;
     hit.scatter = p.phantom_scatter;
-    // Always log errors
-    hit.sensitive_mat = true;
+    hit.sensitive_mat = mat_gamma_prop.log_material;
     return(hit);
 }
 
@@ -174,8 +167,7 @@ Interaction Interaction::ErrorEmtpy(const Photon & p)
     hit.mat_id = -1;
     hit.det_id = p.det_id;
     hit.scatter = p.phantom_scatter;
-    // Always log errors
-    hit.sensitive_mat = true;
+    hit.sensitive_mat = false;
     return(hit);
 }
 
