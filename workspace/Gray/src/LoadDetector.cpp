@@ -854,9 +854,6 @@ bool LoadDetector::Load(const std::string & filename,
                 return(false);
             }
 
-            ViewableSphere * sp = new ViewableSphere(position, radius);
-            TransformWithRigid(sp,MatrixStack.top());
-
             MatrixStack.top().Transform(&position);
             SphereSource * s = new SphereSource(position, radius,
                                                 actScale*activity);
@@ -972,13 +969,6 @@ bool LoadDetector::Load(const std::string & filename,
                 print_parse_error(line);
                 return(false);
             }
-            ViewableCylinder *vc = new ViewableCylinder();
-            vc->SetRadius(radius);
-            vc->SetCenterAxis(axis);
-            vc->SetCenter(center);
-            vc->SetHeight(height);
-            vc->SetMaterial(curMaterial);
-            TransformWithRigid(vc,MatrixStack.top());
 
             MatrixStack.top().Transform(&center);
             MatrixStack.top().Transform3x3(&axis);
@@ -1196,6 +1186,12 @@ bool LoadDetector::Load(const std::string & filename,
         cerr << "unpaired begin_repeat found in: \""
              << repeat_info_stack.top().starting_file << "\", line: "
              << repeat_info_stack.top().starting_line << endl;
+        return(false);
+    }
+
+    if (parse_VectorSource) {
+        cerr << "unpaired start_vecsrc command" << endl;
+        delete curVectorSource;
         return(false);
     }
 
