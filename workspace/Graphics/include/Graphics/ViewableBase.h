@@ -47,7 +47,7 @@ public:
     // Returns an intersection if found with distance maxDistance
     // viewDir must be a unit vector.
     // intersectDistance and visPoint are returned values.
-    virtual bool FindIntersection (
+    bool FindIntersection (
         const VectorR3& viewPos, const VectorR3& viewDir, double maxDistance,
         double *intersectDistance, VisiblePoint& returnedPoint ) const;
 
@@ -219,26 +219,5 @@ inline bool ViewableBase::FindIntersection (
     }
     return found;
 }
-
-
-// NOW THEY ARE PURELY VIRTUAL
-// Eventually these routine should be purely virtual, but first I have to implement
-//		lots of special cases.
-//inline bool ViewableBase::CalcPartials( const VisiblePoint& visPoint,
-//									    VectorR3& retPartialU, VectorR3& retPartialV ) const
-//{
-//	assert(0);		// Not yet implemented for this class!
-//	return false;
-//}
-
-// This routine could be made purely virtual, but perhaps it is not implemented
-//		for all classes.
-//inline void ViewableBase::CalcBoundingPlanes( const VectorR3& u,
-//											  double *minDot, double *maxDot )
-//{
-//	assert(0);			// Not implemented for this class (comment out if desired)
-//	*minDot = -DBL_MAX;
-//	*maxDot =  DBL_MAX;
-//}
 
 #endif // VIEWABLEBASE_H
