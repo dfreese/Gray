@@ -1199,7 +1199,9 @@ bool LoadDetector::Load(const std::string & filename,
         return(false);
     }
     if (!view_pos_set) {
-        viewPos.z = 5 * theScene.GetExtents().GetMinZ();
+        AABB extents = theScene.GetExtents();
+        viewPos.z = (2.5 * (extents.GetMaxZ() - extents.GetMinZ()) +
+                     0.5 * (extents.GetMaxZ() + extents.GetMinZ()));
     }
     if (theScene.NumLights() == 0) {
         theScene.SetGlobalAmbientLight(1.0, 1.0, 1.0);
