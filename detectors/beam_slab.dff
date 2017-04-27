@@ -1,0 +1,13 @@
+# Create an incredibly simple setup of a beam source directed at a very large
+# Slab of LSO, so we can do a quick test of attenuation and compton scatter
+# spectra.
+
+m air
+beam 0.0 0.0 0.0 0.0 0.0 1.0 0.0 2.7027
+time 1.0
+
+m lso
+color 0.05 0.20 0.05  0.1 0.4 0.1  0.3 0.3 0.3  0.0 0.0 0.0  0.2 0.50 0.2 1.05
+k 0.0 0.0 51.0 100.0 100.0 100.0
+
+hits_format full_binary
