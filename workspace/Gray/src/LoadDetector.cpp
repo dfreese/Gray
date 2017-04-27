@@ -140,13 +140,16 @@ bool LoadDetector::Load(const std::string & filename,
         file_dir = filename.substr(0, dir_pos + 1);
     }
 
-    int viewCmdStatus = false;		// True if currently handling a "v" command
+    bool view_pos_set = false;
     VectorR3 viewPos;
-    VectorR3 lookAtPos;
-    VectorR3 upVector;
-    double fovy;		// Field of view angle (in radians)
-    int screenWidth, screenHeight;
-    double hither;
+    VectorR3 lookAtPos(0, 0, 0);
+    VectorR3 upVector(0, 1, 0);
+    double fovy = 35 * M_PI / 180.0; // Field of view angle (in radians)
+    int screenWidth = 0;
+    int screenHeight = 0;
+    double hither = -100;
+
+    theScene.SetBackGroundColor(1.0, 1.0, 1.0);
 
     // Vectorial Source parsing
     bool parse_VectorSource = false;
@@ -814,7 +817,7 @@ bool LoadDetector::Load(const std::string & filename,
             }
             sources.SetStartTime(start_time);
         } else if (command == "v") {
-            viewCmdStatus = true;
+            // Deprecated, and generic defaults added
         } else if (command == "scale") {
             double t_polygonScale = -1.0;
             int scanCode = sscanf(args.c_str(), "%lf", &t_polygonScale);
@@ -1048,6 +1051,7 @@ bool LoadDetector::Load(const std::string & filename,
                 print_parse_error(line);
                 return(false);
             }
+            view_pos_set = true;
         } else if (command == "at") {
             int scanCode = sscanf(args.c_str(), "%lf %lf %lf", &(lookAtPos.x),
                                   &(lookAtPos.y), &(lookAtPos.z));
@@ -1194,12 +1198,15 @@ bool LoadDetector::Load(const std::string & filename,
         delete curVectorSource;
         return(false);
     }
-
-    if (viewCmdStatus) {
-        SetCameraViewInfo(theScene.GetCameraView(),
-                          viewPos, lookAtPos, upVector, fovy,
-                          screenWidth, screenHeight, hither);
+    if (!view_pos_set) {
+        viewPos.z = 5 * theScene.GetExtents().GetMinZ();
     }
+    if (theScene.NumLights() == 0) {
+        theScene.SetGlobalAmbientLight(1.0, 1.0, 1.0);
+    }
+    SetCameraViewInfo(theScene.GetCameraView(),
+                      viewPos, lookAtPos, upVector, fovy,
+                      screenWidth, screenHeight, hither);
     if (filename_detector != "") {
         ofstream det_file(filename_detector.c_str());
         det_file << detector_array;
