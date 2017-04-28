@@ -806,7 +806,7 @@ bool LoadDetector::Load(const std::string & filename,
                 print_parse_error(line);
                 return(false);
             }
-            sources.SetSimulationTime(simulationTime);
+            config.set_time(simulationTime);
         } else if (command == "start_time") {
             // simulation time in seconds
             double start_time;
@@ -815,7 +815,7 @@ bool LoadDetector::Load(const std::string & filename,
                 cerr << "Invalid start time" << endl;
                 return(false);
             }
-            sources.SetStartTime(start_time);
+            config.set_start_time(start_time);
         } else if (command == "v") {
             // Deprecated, and generic defaults added
         } else if (command == "scale") {

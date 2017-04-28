@@ -51,6 +51,10 @@ public:
     bool get_log_nointeraction();
     bool get_log_errors();
     bool get_log_all();
+    void set_time(double val);
+    double get_time() const;
+    void set_start_time(double val);
+    double get_start_time() const;
 
 private:
     std::string filename_scene;
@@ -72,6 +76,10 @@ private:
     bool log_errors;
     bool log_all;
     std::vector<std::string> pipeline_config_lines;
+    double time;
+    double start_time;
+    bool time_set;
+    bool start_time_set;
 };
 
 #endif /* Config_h */

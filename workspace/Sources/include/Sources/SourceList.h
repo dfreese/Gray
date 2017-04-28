@@ -22,10 +22,13 @@ public:
     void SetAcolinearity(double acolinearity_deg_fwhm);
     void SetKdTree(IntersectKdTree & tree);
     void SetSimulationTime(double time);
-    double GetTime();
+    double GetTime() const;
+    double GetElapsedTime() const;
     double GetSimulationTime() const;
+    double GetEndTime() const;
     void SetSimulateIsotopeHalfLife(bool val);
     void SetStartTime(double val);
+    void InitSources();
 
 private:
     std::vector <Source*> list;

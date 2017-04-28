@@ -25,7 +25,11 @@ Config::Config() :
     log_nonsensitive(false),
     log_nointeraction(false),
     log_errors(false),
-    log_all(false)
+    log_all(false),
+    time(0),
+    start_time(0),
+    time_set(false),
+    start_time_set(false)
 {
 
 }
@@ -69,6 +73,18 @@ bool Config::ProcessCommandLine(int argc, char **argv)
             filename_hits = following_argument;
         } else if (argument == "-o") {
             filename_singles = following_argument;
+        } else if (argument == "-t") {
+            if ((follow_arg_ss >> time).fail()) {
+                cerr << "Invalid time: " << following_argument << endl;
+                return(-1);
+            }
+            time_set = true;
+        } else if (argument == "--start") {
+            if ((follow_arg_ss >> start_time).fail()) {
+                cerr << "Invalid start time: " << following_argument << endl;
+                return(-1);
+            }
+            start_time_set = true;
         }
     }
     if (filename_scene == "") {
@@ -99,6 +115,8 @@ void Config::usage() {
     << "  -i [filename] : set the output for the hits file\n"
     << "  -o [filename] : set the output for the singles file\n"
     << "  -s : set the seed for the rand number generator\n"
+    << "  -t : set length of time in for the simulation in seconds\n"
+    << "  --start : set the start time in seconds\n"
     << endl;
 }
 
@@ -244,4 +262,26 @@ bool Config::get_log_errors() {
 
 bool Config::get_log_all() {
     return(log_all);
+}
+
+void Config::set_time(double val) {
+    if (!time_set) {
+        time = val;
+        time_set = true;
+    }
+}
+
+double Config::get_time() const {
+    return(time);
+}
+
+void Config::set_start_time(double val) {
+    if (!start_time_set) {
+        start_time = val;
+        start_time_set = true;
+    }
+}
+
+double Config::get_start_time() const {
+    return(start_time);
 }

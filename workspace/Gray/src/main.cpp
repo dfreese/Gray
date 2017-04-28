@@ -83,7 +83,7 @@ int main( int argc, char** argv)
     }
 
     if (!config.get_log_hits() && !config.get_log_singles()) {
-        cout << "No output specified.  Exiting." << endl;
+        cout << "Warning: No output specified." << endl;
     }
 
     if (config.get_run_physics()) {
@@ -98,6 +98,10 @@ int main( int argc, char** argv)
             output_singles.SetLogfile(config.get_filename_singles());
             output_singles.SetFormat(config.get_format_singles());
         }
+
+        sources.SetSimulationTime(config.get_time());
+        sources.SetStartTime(config.get_start_time());
+        sources.InitSources();
 
         // We only want to send certain interaction types into the singles
         // processor.
@@ -120,7 +124,7 @@ int main( int argc, char** argv)
         const size_t interactions_soft_max = 100000;
         vector<Interaction> interactions;
         interactions.reserve(interactions_soft_max + 50);
-        while (sources.GetTime() < sources.GetSimulationTime()) {
+        while (sources.GetTime() < sources.GetEndTime()) {
             interactions.clear();
             GammaRayTrace::TraceSources(
                     sources, intersect_kd_tree, interactions,
@@ -153,7 +157,9 @@ int main( int argc, char** argv)
                 }
                 singles_stream.clear();
             }
-            for (; current_tick < (sources.GetTime() / tick_mark); current_tick++) {
+            for (; current_tick < (sources.GetElapsedTime() / tick_mark);
+                 current_tick++)
+            {
                 cout << "=" << flush;
             }
         }

@@ -162,7 +162,7 @@ void GammaRayTrace::TraceSources(SourceList & sources,
                                  bool log_errors,
                                  TraceStats & stats)
 {
-    while (sources.GetTime() < sources.GetSimulationTime()) {
+    while (sources.GetTime() < sources.GetEndTime()) {
         Source * source = sources.Decay();
         stats.events++;
         if (!source) {
