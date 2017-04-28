@@ -18,7 +18,11 @@ Interaction::Interaction() :
     src_id(0),
     mat_id(0),
     det_id(-1),
-    scatter(false),
+    scatter_compton_phantom(0),
+    scatter_compton_detector(0),
+    scatter_rayleigh_phantom(0),
+    scatter_rayleigh_detector(0),
+    xray_flouresence(0),
     sensitive_mat(false)
 {
 }
@@ -40,7 +44,11 @@ Interaction Interaction::NoInteraction(const Photon & p,
     hit.src_id = p.GetSrc();
     hit.mat_id = mat_gamma_prop.GetMaterial();
     hit.det_id = p.det_id;
-    hit.scatter = p.scatter_compton_phantom;
+    hit.scatter_compton_phantom = p.scatter_compton_phantom;
+    hit.scatter_compton_detector = p.scatter_compton_detector;
+    hit.scatter_rayleigh_phantom = p.scatter_rayleigh_phantom;
+    hit.scatter_rayleigh_detector = p.scatter_rayleigh_detector;
+    hit.xray_flouresence = p.xray_flouresence;
     hit.sensitive_mat = mat_gamma_prop.log_material;
     return(hit);
 }
@@ -58,7 +66,11 @@ Interaction Interaction::Photoelectric(const Photon & p,
     hit.src_id = p.GetSrc();
     hit.mat_id = mat_gamma_prop.GetMaterial();
     hit.det_id = p.det_id;
-    hit.scatter = p.scatter_compton_phantom;
+    hit.scatter_compton_phantom = p.scatter_compton_phantom;
+    hit.scatter_compton_detector = p.scatter_compton_detector;
+    hit.scatter_rayleigh_phantom = p.scatter_rayleigh_phantom;
+    hit.scatter_rayleigh_detector = p.scatter_rayleigh_detector;
+    hit.xray_flouresence = p.xray_flouresence;
     hit.sensitive_mat = mat_gamma_prop.log_material;
     return(hit);
 }
@@ -76,7 +88,11 @@ Interaction Interaction::XrayEscape(const Photon & p, double deposit,
     hit.src_id = p.GetSrc();
     hit.mat_id = mat_gamma_prop.GetMaterial();
     hit.det_id = p.det_id;
-    hit.scatter = p.scatter_compton_phantom;
+    hit.scatter_compton_phantom = p.scatter_compton_phantom;
+    hit.scatter_compton_detector = p.scatter_compton_detector;
+    hit.scatter_rayleigh_phantom = p.scatter_rayleigh_phantom;
+    hit.scatter_rayleigh_detector = p.scatter_rayleigh_detector;
+    hit.xray_flouresence = p.xray_flouresence;
     hit.sensitive_mat = mat_gamma_prop.log_material;
     return(hit);
 }
@@ -94,7 +110,11 @@ Interaction Interaction::Compton(const Photon & p, double deposit,
     hit.src_id = p.GetSrc();
     hit.mat_id = mat_gamma_prop.GetMaterial();
     hit.det_id = p.det_id;
-    hit.scatter = p.scatter_compton_phantom;
+    hit.scatter_compton_phantom = p.scatter_compton_phantom;
+    hit.scatter_compton_detector = p.scatter_compton_detector;
+    hit.scatter_rayleigh_phantom = p.scatter_rayleigh_phantom;
+    hit.scatter_rayleigh_detector = p.scatter_rayleigh_detector;
+    hit.xray_flouresence = p.xray_flouresence;
     hit.sensitive_mat = mat_gamma_prop.log_material;
     return(hit);
 }
@@ -112,7 +132,11 @@ Interaction Interaction::Rayleigh(const Photon & p,
     hit.src_id = p.GetSrc();
     hit.mat_id = mat_gamma_prop.GetMaterial();
     hit.det_id = p.det_id;
-    hit.scatter = p.scatter_compton_phantom;
+    hit.scatter_compton_phantom = p.scatter_compton_phantom;
+    hit.scatter_compton_detector = p.scatter_compton_detector;
+    hit.scatter_rayleigh_phantom = p.scatter_rayleigh_phantom;
+    hit.scatter_rayleigh_detector = p.scatter_rayleigh_detector;
+    hit.xray_flouresence = p.xray_flouresence;
     hit.sensitive_mat = mat_gamma_prop.log_material;
     return(hit);
 }
@@ -130,7 +154,11 @@ Interaction Interaction::NuclearDecay(const class NuclearDecay &p,
     hit.src_id = p.GetSourceId();
     hit.mat_id = mat_gamma_prop.GetMaterial();
     hit.det_id = -1;
-    hit.scatter = false;
+    hit.scatter_compton_phantom = 0;
+    hit.scatter_compton_detector = 0;
+    hit.scatter_rayleigh_phantom = 0;
+    hit.scatter_rayleigh_detector = 0;
+    hit.xray_flouresence = 0;
     hit.sensitive_mat = mat_gamma_prop.log_material;
     return(hit);
 }
@@ -149,7 +177,11 @@ Interaction Interaction::ErrorTraceDepth(const Photon & p,
     hit.src_id = p.GetSrc();
     hit.mat_id = mat_gamma_prop.GetMaterial();
     hit.det_id = p.det_id;
-    hit.scatter = p.scatter_compton_phantom;
+    hit.scatter_compton_phantom = p.scatter_compton_phantom;
+    hit.scatter_compton_detector = p.scatter_compton_detector;
+    hit.scatter_rayleigh_phantom = p.scatter_rayleigh_phantom;
+    hit.scatter_rayleigh_detector = p.scatter_rayleigh_detector;
+    hit.xray_flouresence = p.xray_flouresence;
     hit.sensitive_mat = mat_gamma_prop.log_material;
     return(hit);
 }
@@ -166,7 +198,11 @@ Interaction Interaction::ErrorEmtpy(const Photon & p)
     hit.src_id = p.GetSrc();
     hit.mat_id = -1;
     hit.det_id = p.det_id;
-    hit.scatter = p.scatter_compton_phantom;
+    hit.scatter_compton_phantom = p.scatter_compton_phantom;
+    hit.scatter_compton_detector = p.scatter_compton_detector;
+    hit.scatter_rayleigh_phantom = p.scatter_rayleigh_phantom;
+    hit.scatter_rayleigh_detector = p.scatter_rayleigh_detector;
+    hit.xray_flouresence = p.xray_flouresence;
     hit.sensitive_mat = false;
     return(hit);
 }

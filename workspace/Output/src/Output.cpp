@@ -42,7 +42,7 @@ void Output::LogInteraction(const Interaction & interact) {
         b.z = (float) interact.pos.z;
         b.det_id = interact.det_id;
         b.log = MakeLogWord(interact.type, interact.color,
-                            interact.scatter, interact.mat_id,
+                            interact.scatter_compton_phantom, interact.mat_id,
                             interact.src_id);
         log_file.write(reinterpret_cast<char*>(&b), sizeof(b));
     } else if (format == NO_POS_BINARY) {
@@ -52,7 +52,7 @@ void Output::LogInteraction(const Interaction & interact) {
         b.energy = interact.energy;
         b.det_id = interact.det_id;
         b.log = MakeLogWord(interact.type, interact.color,
-                            interact.scatter, interact.mat_id,
+                            interact.scatter_compton_phantom, interact.mat_id,
                             interact.src_id);
         log_file.write(reinterpret_cast<char*>(&b), sizeof(b));
     } else if (format == FULL_ASCII) {
@@ -69,7 +69,7 @@ void Output::LogInteraction(const Interaction & interact) {
                 (float) interact.pos.z,
                 interact.src_id);
         log_file << str;
-        if (interact.scatter) {
+        if (interact.scatter_compton_phantom) {
             log_file << " 1 ";
         } else {
             log_file << " 0 ";

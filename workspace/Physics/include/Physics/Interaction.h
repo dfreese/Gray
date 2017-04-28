@@ -34,7 +34,11 @@ public:
     int src_id;
     int mat_id;
     int det_id;
-    bool scatter;
+    int scatter_compton_phantom;
+    int scatter_compton_detector;
+    int scatter_rayleigh_phantom;
+    int scatter_rayleigh_detector;
+    int xray_flouresence;
     bool sensitive_mat;
 
     static Interaction NoInteraction();
