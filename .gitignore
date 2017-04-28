@@ -14,6 +14,7 @@ CMakeScripts
 /Gray
 /neg_sphere.dat
 /neg_sphere_singles.dat
+/pet_benchmark_fast.dat
 Gray.build
 Gray.xcodeproj
 Gray/Debug
