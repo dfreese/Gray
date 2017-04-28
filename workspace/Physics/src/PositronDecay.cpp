@@ -145,7 +145,7 @@ void PositronDecay::PositronRange(VectorR3 & p, double positronC,
     // that allows it to be monte-carlo generated
     double cp = (positronC)/(positronC+positronK1/positronK2*(1-positronC));
     do {
-        if (Random::Uniform() < cp) {   
+        if (Random::Uniform() < cp) {
             range = Random::Exponential(positronK1);
         } else {
             range = Random::Exponential(positronK2);
