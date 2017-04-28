@@ -46,6 +46,7 @@ bool Config::ProcessCommandLine(int argc, char **argv)
     }
 
     materials_filename = gray_include_env + "/Gray_Materials.txt";
+    isotopes_filename = gray_include_env + "/Gray_Isotopes.txt";
 
 
     // Arguments not requiring an input
@@ -128,6 +129,7 @@ void Config::usage() {
     << "  -t : set length of time in for the simulation in seconds\n"
     << "  --start : set the start time in seconds\n"
     << "  --mat : set Gray Materials file. default $GRAY_INCLUDE/Gray_Materials.txt\n"
+    << "  --iso : set Gray Isotopes file. default $GRAY_INCLUDE/Gray_Isotopes.txt\n"
     << endl;
 }
 
@@ -300,3 +302,8 @@ double Config::get_start_time() const {
 std::string Config::get_materials_filename() const {
     return(materials_filename);
 }
+
+std::string Config::get_isotopes_filename() const {
+    return(isotopes_filename);
+}
+

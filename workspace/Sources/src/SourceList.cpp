@@ -9,37 +9,17 @@
 #include <VrMath/LinearR3.h>
 #include <exception>
 #include <limits>
+#include <fstream>
+#include <sstream>
 
 using namespace std;
 
 SourceList::SourceList() :
     decay_number(0),
-    current_isotope("BackBack"),
     acolinearity(PositronDecay::default_acolinearity),
     simulate_isotope_half_life(true),
     start_time(0)
 {
-    // TODO: read these isotopes and their properties in from a file
-    const double inf = std::numeric_limits<double>::infinity();
-    valid_positrons["BackBack"] = Positron(acolinearity, inf);
-    valid_positrons["F18"] = Positron(acolinearity, 6584.04, 0.9686);
-    valid_positrons["F18"].SetPositronRange(0.519, 27.9, 2.91, 3.0);
-
-    valid_positrons["O15"] = Positron(acolinearity, 122.46, 0.99885);
-    valid_positrons["O15"].SetPositronRange(0.263, 33.2, 1.0, 3.0);
-
-    valid_positrons["N13"] = Positron(acolinearity, 598.02, 0.99818);
-    valid_positrons["N13"].SetPositronRange(0.433, 25.4, 1.44, 3.0);
-
-    valid_positrons["C11"] = Positron(acolinearity, 1221.66, 0.9975);
-    valid_positrons["C11"].SetPositronRange(0.501, 24.5, 1.76, 3.0);
-
-    // FIXME: stop using F18 positron range for In110 and Zr89.
-    valid_positrons["In110"] = Positron(acolinearity, 17676.0, 0.61, 0.657750);
-    valid_positrons["In110"].SetPositronRange(0.519, 27.9, 2.91, 3.0);
-
-    valid_positrons["Zr89"] = Positron(acolinearity, 282280.32, 0.227, 0.90915);
-    valid_positrons["Zr89"].SetPositronRange(0.519, 27.9, 2.91, 3.0);
 }
 
 SourceList::~SourceList()
@@ -68,7 +48,7 @@ void SourceList::AddSource(Source * s)
     if (beam_pt_src) {
         isotope = static_cast<Isotope *>(new Beam());
     } else {
-        if (valid_positrons.count(current_isotope)) {
+        if (valid_positrons.count(current_isotope) > 0) {
             Positron * pos = new Positron(valid_positrons[current_isotope]);
             pos->set_acolinearity(acolinearity);
             isotope = static_cast<Isotope *>(pos);
@@ -229,3 +209,97 @@ void SourceList::InitSources() {
     }
 }
 
+bool SourceList::LoadIsotopes(const std::string &filename) {
+    ifstream input(filename);
+
+    if (!input) {
+        cerr << filename << " not found." << endl;
+        return(false);
+    }
+
+    string line;
+    while (getline(input, line)) {
+        if (line.empty()) {
+            continue;
+        }
+        line = line.substr(0, line.find_first_of("#"));
+        // Ignore blank lines again after removing comments
+        if (line.empty()) {
+            continue;
+        }
+        string isotope_name;
+        double half_life;
+        double pos_emission_prob;
+        double gamma_emission_energy;
+        string positron_model;
+
+        stringstream line_ss(line);
+        bool fail = false;
+        fail |= (line_ss >> isotope_name).fail();
+        fail |= (line_ss >> half_life).fail();
+        fail |= (line_ss >> pos_emission_prob).fail();
+        fail |= (line_ss >> gamma_emission_energy).fail();
+        fail |= (line_ss >> positron_model).fail();
+        if (fail) {
+            return(false);
+        }
+        if (half_life <= 0) {
+            half_life = std::numeric_limits<double>::infinity();
+        }
+
+        if ((pos_emission_prob < 0) || (pos_emission_prob > 1.0)) {
+            pos_emission_prob = 1.0;
+        }
+        if (gamma_emission_energy <= 0) {
+            valid_positrons[isotope_name] = Positron(acolinearity, half_life,
+                                                     pos_emission_prob);
+        } else {
+            valid_positrons[isotope_name] = Positron(acolinearity, half_life,
+                                                     pos_emission_prob,
+                                                     gamma_emission_energy);
+        }
+
+        if (positron_model == "none") {
+        } else if (positron_model == "gauss") {
+            double fwhm_mm;
+            double max_mm;
+            fail |= (line_ss >> fwhm_mm).fail();
+            fail |= (line_ss >> max_mm).fail();
+            if (fail) {
+                cerr << "Unable to parse gauss fwhm_mm or max_mm" << endl;
+                return(false);
+            }
+            valid_positrons[isotope_name] = Positron(acolinearity, half_life,
+                                                     pos_emission_prob,
+                                                     gamma_emission_energy);
+            valid_positrons[isotope_name].SetPositronRange(fwhm_mm, max_mm);
+        } else if (positron_model == "levin_exp") {
+            double c;
+            double k1;
+            double k2;
+            double max_mm;
+            fail |= (line_ss >> c).fail();
+            fail |= (line_ss >> k1).fail();
+            fail |= (line_ss >> k2).fail();
+            fail |= (line_ss >> max_mm).fail();
+            if (fail) {
+                cerr << "Unable to parse levin_exp options" << endl;
+                return(false);
+            }
+            valid_positrons[isotope_name] = Positron(acolinearity, half_life,
+                                                     pos_emission_prob,
+                                                     gamma_emission_energy);
+            valid_positrons[isotope_name].SetPositronRange(c, k1, k2, max_mm);
+        } else {
+            cerr << "unrecognized positron model: " << positron_model << endl;
+            return(false);
+        }
+
+        // Set the default isotope to the first one
+        if (current_isotope == "") {
+            current_isotope = isotope_name;
+        }
+    }
+    input.close();
+    return(true);
+}

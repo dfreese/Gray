@@ -28,6 +28,13 @@ int main( int argc, char** argv)
     DetectorArray detector_array;
     SceneDescription scene;
     SourceList sources;
+    if (!sources.LoadIsotopes(config.get_isotopes_filename())) {
+        cerr << "Unable to load isotopes file: \""
+        << config.get_isotopes_filename() << "\"\n"
+        << "Check GRAY_INCLUDE env variable or specify name with --iso"
+        << endl;
+        return(1);
+    }
     if (!LoadMaterials::LoadPhysicsFiles(scene,
                                          config.get_materials_filename()))
     {

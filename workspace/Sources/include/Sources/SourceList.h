@@ -29,6 +29,7 @@ public:
     void SetSimulateIsotopeHalfLife(bool val);
     void SetStartTime(double val);
     void InitSources();
+    bool LoadIsotopes(const std::string & filename);
 
 private:
     std::vector <Source*> list;

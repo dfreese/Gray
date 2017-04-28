@@ -56,6 +56,7 @@ public:
     void set_start_time(double val);
     double get_start_time() const;
     std::string get_materials_filename() const;
+    std::string get_isotopes_filename() const;
 
 private:
     std::string filename_scene;
@@ -83,6 +84,7 @@ private:
     bool start_time_set;
     std::string gray_include_env;
     std::string materials_filename;
+    std::string isotopes_filename;
 };
 
 #endif /* Config_h */
