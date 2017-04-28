@@ -22,6 +22,7 @@ void BeamDecay::Decay(int photon_number, double time, int src_id,
     this->position = position;
     this->decay_number = photon_number;
 
+    blue.Reset();
     blue.time = time;
     blue.pos = position;
     blue.energy = ENERGY_511;

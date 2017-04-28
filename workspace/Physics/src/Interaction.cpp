@@ -40,7 +40,7 @@ Interaction Interaction::NoInteraction(const Photon & p,
     hit.src_id = p.GetSrc();
     hit.mat_id = mat_gamma_prop.GetMaterial();
     hit.det_id = p.det_id;
-    hit.scatter = p.phantom_scatter;
+    hit.scatter = p.scatter_compton_phantom;
     hit.sensitive_mat = mat_gamma_prop.log_material;
     return(hit);
 }
@@ -58,7 +58,7 @@ Interaction Interaction::Photoelectric(const Photon & p,
     hit.src_id = p.GetSrc();
     hit.mat_id = mat_gamma_prop.GetMaterial();
     hit.det_id = p.det_id;
-    hit.scatter = p.phantom_scatter;
+    hit.scatter = p.scatter_compton_phantom;
     hit.sensitive_mat = mat_gamma_prop.log_material;
     return(hit);
 }
@@ -76,7 +76,7 @@ Interaction Interaction::XrayEscape(const Photon & p, double deposit,
     hit.src_id = p.GetSrc();
     hit.mat_id = mat_gamma_prop.GetMaterial();
     hit.det_id = p.det_id;
-    hit.scatter = p.phantom_scatter;
+    hit.scatter = p.scatter_compton_phantom;
     hit.sensitive_mat = mat_gamma_prop.log_material;
     return(hit);
 }
@@ -94,7 +94,7 @@ Interaction Interaction::Compton(const Photon & p, double deposit,
     hit.src_id = p.GetSrc();
     hit.mat_id = mat_gamma_prop.GetMaterial();
     hit.det_id = p.det_id;
-    hit.scatter = p.phantom_scatter;
+    hit.scatter = p.scatter_compton_phantom;
     hit.sensitive_mat = mat_gamma_prop.log_material;
     return(hit);
 }
@@ -112,7 +112,7 @@ Interaction Interaction::Rayleigh(const Photon & p,
     hit.src_id = p.GetSrc();
     hit.mat_id = mat_gamma_prop.GetMaterial();
     hit.det_id = p.det_id;
-    hit.scatter = p.phantom_scatter;
+    hit.scatter = p.scatter_compton_phantom;
     hit.sensitive_mat = mat_gamma_prop.log_material;
     return(hit);
 }
@@ -149,7 +149,7 @@ Interaction Interaction::ErrorTraceDepth(const Photon & p,
     hit.src_id = p.GetSrc();
     hit.mat_id = mat_gamma_prop.GetMaterial();
     hit.det_id = p.det_id;
-    hit.scatter = p.phantom_scatter;
+    hit.scatter = p.scatter_compton_phantom;
     hit.sensitive_mat = mat_gamma_prop.log_material;
     return(hit);
 }
@@ -166,7 +166,7 @@ Interaction Interaction::ErrorEmtpy(const Photon & p)
     hit.src_id = p.GetSrc();
     hit.mat_id = -1;
     hit.det_id = p.det_id;
-    hit.scatter = p.phantom_scatter;
+    hit.scatter = p.scatter_compton_phantom;
     hit.sensitive_mat = false;
     return(hit);
 }
@@ -379,7 +379,7 @@ void Interaction::ComptonScatter(Photon &p, double & deposit)
 
     // If the photon scatters on a non-detector, it is a scatter, checked
     // inside SetScatter
-    p.SetScatter();
+    p.SetScatterCompton();
 }
 
 /*!
@@ -428,7 +428,7 @@ void Interaction::RayleighScatter(Photon &p)
 
     // If the photon scatters on a non-detector, it is a scatter, checked
     // inside SetScatter
-    p.SetScatter();
+    p.SetScatterRayleigh();
 }
 
 bool Interaction::XrayEscape(Photon &p, const GammaStats & mat_gamma_prop,
@@ -447,6 +447,7 @@ bool Interaction::XrayEscape(Photon &p, const GammaStats & mat_gamma_prop,
         deposit = p.energy - xray_energy;
         p.energy = xray_energy;
         Random::UniformSphere(p.dir);
+        p.SetXrayFlouresence();
         return(true);
     }
 }

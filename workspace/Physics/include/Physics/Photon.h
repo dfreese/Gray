@@ -33,12 +33,9 @@ public:
         return src_id;
     }
     void Reset();
-    void SetScatter();
-    bool CheckScatter() const
-    {
-        return phantom_scatter;
-    }
-    friend std::ostream & operator<< (std::ostream & os, const Photon & p);
+    void SetScatterCompton();
+    void SetScatterRayleigh();
+    void SetXrayFlouresence();
 
 public:
     VectorR3 pos;
@@ -48,15 +45,12 @@ public:
     int id;
     Color color;
     int det_id;
-    bool phantom_scatter;
+    int scatter_compton_phantom;
+    int scatter_compton_detector;
+    int scatter_rayleigh_phantom;
+    int scatter_rayleigh_detector;
+    int xray_flouresence;
     int src_id;
 };
-
-void inline Photon::SetScatter()
-{
-    if (det_id == -1) {
-        phantom_scatter = true;
-    }
-}
 
 #endif

@@ -84,7 +84,11 @@ void PositronDecay::Decay(int photon_number, double time, int src_id,
         yellow.id = photon_number;
         yellow.det_id = -1;
         yellow.src_id = src_id;
-        yellow.phantom_scatter = false;
+        yellow.scatter_compton_detector = 0;
+        yellow.scatter_compton_phantom = 0;
+        yellow.scatter_rayleigh_detector = 0;
+        yellow.scatter_rayleigh_phantom = 0;
+        yellow.xray_flouresence = 0;
         yellow.color = Photon::P_YELLOW;
         AddPhoton(&yellow);
     }
@@ -97,7 +101,11 @@ void PositronDecay::Decay(int photon_number, double time, int src_id,
         blue.id = photon_number;
         blue.det_id = -1;
         blue.src_id = src_id;
-        blue.phantom_scatter = false;
+        blue.scatter_compton_detector = 0;
+        blue.scatter_compton_phantom = 0;
+        blue.scatter_rayleigh_detector = 0;
+        blue.scatter_rayleigh_phantom = 0;
+        blue.xray_flouresence = 0;
         red = blue;
 
         blue.SetBlue();

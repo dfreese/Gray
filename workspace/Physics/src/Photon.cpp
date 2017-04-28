@@ -18,7 +18,11 @@ void Photon::Reset()
     src_id = -1;
     det_id = -1;
     color = P_BLUE;
-    phantom_scatter = false;
+    scatter_compton_phantom = 0;
+    scatter_compton_detector = 0;
+    scatter_rayleigh_phantom = 0;
+    scatter_rayleigh_detector = 0;
+    xray_flouresence = 0;
 }
 
 Photon::Photon(int set_id, double e, const VectorR3 & p, const VectorR3 & d) :
@@ -29,27 +33,33 @@ Photon::Photon(int set_id, double e, const VectorR3 & p, const VectorR3 & d) :
     id(set_id),
     color(P_BLUE),
     det_id(-1),
-    phantom_scatter(false),
+    scatter_compton_phantom(0),
+    scatter_compton_detector(0),
+    scatter_rayleigh_phantom(0),
+    scatter_rayleigh_detector(0),
+    xray_flouresence(0),
     src_id(-1)
 {
 }
 
-ostream& operator<< ( ostream& os, const Photon& p )
+void Photon::SetScatterCompton()
 {
-    char str[256];
-
-    os << p.id;
-    os << " " << p.color << " ";
-    sprintf(str,"%23.16e ",p.time);
-    os << str;
-    sprintf(str,"%12.6e ",p.energy);
-    os << str;
-    sprintf(str,"%15.8e %15.8e %15.8e %2d ",(float) p.pos.x, (float) p.pos.y, (float) p.pos.z, p.src_id);
-    os << str;
-    if (p.phantom_scatter == true ) {
-        os << " 1 ";
+    if (det_id == -1) {
+        scatter_compton_phantom++;
     } else {
-        os << " 0 ";
+        scatter_compton_detector++;
     }
-    return os;
+}
+
+void Photon::SetScatterRayleigh()
+{
+    if (det_id == -1) {
+        scatter_compton_phantom++;
+    } else {
+        scatter_compton_detector++;
+    }
+}
+
+void Photon::SetXrayFlouresence() {
+    xray_flouresence++;
 }

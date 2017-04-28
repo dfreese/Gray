@@ -27,7 +27,11 @@ void GammaDecay::Decay(int photon_number, double time, int src_id,
     gamma.color = Photon::P_YELLOW;
     gamma.dir.SetUnitZ();
     gamma.src_id = src_id;
-    gamma.phantom_scatter = false;
+    gamma.scatter_compton_phantom = 0;
+    gamma.scatter_compton_detector = 0;
+    gamma.scatter_rayleigh_phantom = 0;
+    gamma.scatter_rayleigh_detector = 0;
+    gamma.xray_flouresence = 0;
     Random::UniformSphere(gamma.dir);
     AddPhoton(&gamma);
 }
