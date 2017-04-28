@@ -8,7 +8,6 @@ NuclearDecay::NuclearDecay() :
     position(0, 0, 0),
     time(0)
 {
-    Random::Gaussian();
 }
 
 Photon * NuclearDecay::NextPhoton()
