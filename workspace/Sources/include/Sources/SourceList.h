@@ -2,9 +2,9 @@
 #define CSE167_SOURCELIST_H
 
 #include <map>
-#include <set>
 #include <string>
 #include <vector>
+#include <Physics/Positron.h>
 
 class Source;
 class Isotope;
@@ -37,7 +37,7 @@ private:
     double CalculateTime();
     bool Inside(const VectorR3 & pos);
     int decay_number;
-    std::set<std::string> valid_isotopes;
+    std::map<std::string, Positron> valid_positrons;
     std::string current_isotope;
     // a microcurie is 37kevents/second
     const double microCurie = 37.0e3;

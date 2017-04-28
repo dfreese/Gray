@@ -2,6 +2,15 @@
 
 using namespace std;
 
+Positron::Positron() :
+    Isotope(),
+    p(),
+    use_positron_dbexp(false),
+    use_positron_gauss(false)
+{
+}
+
+
 Positron::Positron(double acolinearity_deg_fwhm, double half_life) :
     Isotope(half_life),
     p(acolinearity_deg_fwhm),
@@ -60,4 +69,8 @@ void Positron::SetPositronRange(double fwhm, double max) {
     use_positron_gauss  = false;
     positronFWHM = fwhm;
     positronMaxRange = max;
+}
+
+void Positron::set_acolinearity(double acolinearity_deg_fwhm) {
+    p.set_acolinearity(acolinearity_deg_fwhm);
 }

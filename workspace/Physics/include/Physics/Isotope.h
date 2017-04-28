@@ -10,6 +10,7 @@
 class Isotope
 {
 public:
+    Isotope();
     Isotope(double half_life_s);
     virtual ~Isotope() {};
     virtual void Decay(int photon_number, double time, int src_id,

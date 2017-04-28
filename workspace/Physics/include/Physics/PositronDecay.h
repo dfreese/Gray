@@ -7,6 +7,7 @@
 class PositronDecay : public NuclearDecay
 {
 public:
+    PositronDecay();
     PositronDecay(double acolinearity_deg_fwhm);
     PositronDecay(double acolinearity_deg_fwhm,
                        double positron_emis_prob);
@@ -27,13 +28,14 @@ public:
                               double positronMaxRange);
     static void PositronRange(VectorR3 & p, double positronFWHM,
                               double positronMaxRange);
+    void set_acolinearity(double acolinearity_deg_fwhm);
 
     static const double default_acolinearity;
 
 protected:
-    const double acolinearity;
-    const double gamma_decay_energy;
-    const double positron_emission_prob;
+    double acolinearity;
+    double gamma_decay_energy;
+    double positron_emission_prob;
     Photon blue;
     Photon red;
     Photon yellow;

@@ -12,6 +12,15 @@ namespace {
 
 const double PositronDecay::default_acolinearity = 0.47;
 
+PositronDecay::PositronDecay() :
+    acolinearity(default_acolinearity / 180.0 * M_PI * CONST_FWHM_TO_SIGMA),
+    gamma_decay_energy(-1.0),
+    positron_emission_prob(1.0),
+    gamma_position_set(false),
+    emit_gamma(false)
+{
+}
+
 PositronDecay::PositronDecay(double acolinearity_deg_fwhm) :
     acolinearity(acolinearity_deg_fwhm / 180.0 * M_PI * CONST_FWHM_TO_SIGMA),
     gamma_decay_energy(-1.0),
@@ -173,5 +182,9 @@ void PositronDecay::PositronRange(VectorR3 & p, double positronFWHM,
     positronDir *= range;
 
     p += positronDir;
+}
+
+void PositronDecay::set_acolinearity(double acolinearity_deg_fwhm) {
+    acolinearity = acolinearity_deg_fwhm / 180.0 * M_PI * CONST_FWHM_TO_SIGMA;
 }
 

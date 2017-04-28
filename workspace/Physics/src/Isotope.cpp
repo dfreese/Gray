@@ -1,5 +1,11 @@
 #include <Physics/Isotope.h>
 #include <cmath>
+#include <limits>
+
+Isotope::Isotope() :
+    half_life(std::numeric_limits<double>::infinity())
+{
+}
 
 Isotope::Isotope(double half_life_s) :
     half_life(half_life_s)

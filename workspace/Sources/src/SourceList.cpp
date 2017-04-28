@@ -14,13 +14,32 @@ using namespace std;
 
 SourceList::SourceList() :
     decay_number(0),
-    valid_isotopes({"F18", "O15", "N13", "C11", "IN110", "ZR89", "BackBack",
-                    "Beam"}),
     current_isotope("BackBack"),
     acolinearity(PositronDecay::default_acolinearity),
     simulate_isotope_half_life(true),
     start_time(0)
 {
+    // TODO: read these isotopes and their properties in from a file
+    const double inf = std::numeric_limits<double>::infinity();
+    valid_positrons["BackBack"] = Positron(acolinearity, inf);
+    valid_positrons["F18"] = Positron(acolinearity, 6584.04, 0.9686);
+    valid_positrons["F18"].SetPositronRange(0.519, 27.9, 2.91, 3.0);
+
+    valid_positrons["O15"] = Positron(acolinearity, 122.46, 0.99885);
+    valid_positrons["O15"].SetPositronRange(0.263, 33.2, 1.0, 3.0);
+
+    valid_positrons["N13"] = Positron(acolinearity, 598.02, 0.99818);
+    valid_positrons["N13"].SetPositronRange(0.433, 25.4, 1.44, 3.0);
+
+    valid_positrons["C11"] = Positron(acolinearity, 1221.66, 0.9975);
+    valid_positrons["C11"].SetPositronRange(0.501, 24.5, 1.76, 3.0);
+
+    // FIXME: stop using F18 positron range for In110 and Zr89.
+    valid_positrons["In110"] = Positron(acolinearity, 17676.0, 0.61, 0.657750);
+    valid_positrons["In110"].SetPositronRange(0.519, 27.9, 2.91, 3.0);
+
+    valid_positrons["Zr89"] = Positron(acolinearity, 282280.32, 0.227, 0.90915);
+    valid_positrons["Zr89"].SetPositronRange(0.519, 27.9, 2.91, 3.0);
 }
 
 SourceList::~SourceList()
@@ -49,49 +68,13 @@ void SourceList::AddSource(Source * s)
     if (beam_pt_src) {
         isotope = static_cast<Isotope *>(new Beam());
     } else {
-        // TODO: read these isotopes and their properties in from a file
-        if (current_isotope == "F18") {
-            // Half-life in seconds, and probability of emiting a positron
-            Positron * f18 = new Positron(acolinearity, 6584.04, 0.9686);
-            f18->SetPositronRange(0.519, 27.9, 2.91, 3.0);
-            isotope = static_cast<Isotope *>(f18);
-        } else if (current_isotope == "O15") {
-            Positron * o15 = new Positron(acolinearity, 122.46, 0.99885);
-            o15->SetPositronRange(0.263, 33.2, 1.0, 3.0);
-            isotope = static_cast<Isotope *>(o15);
-        } else if (current_isotope == "N13") {
-            Positron * n13 = new Positron(acolinearity, 598.02, 0.99818);
-            n13->SetPositronRange(0.433, 25.4, 1.44, 3.0);
-            isotope = static_cast<Isotope *>(n13);
-        } else if (current_isotope == "C11") {
-            Positron * c11 = new Positron(acolinearity, 1221.66, 0.9975);
-            c11->SetPositronRange(0.501, 24.5, 1.76, 3.0);
-            isotope = static_cast<Isotope *>(c11);
-        } else if (current_isotope == "IN110") {
-            // Half-life in seconds, probability of emiting a positron, and
-            // energy (MeV) of the gamma emitted.
-            // TODO: stop using F18 positron range currently being used.
-            Positron * in110 = new Positron(acolinearity, 17676.0, 0.61,
-                                            0.657750);
-            in110->SetPositronRange(0.519, 27.9, 2.91, 3.0);
-            isotope = static_cast<Isotope *>(in110);
-        } else if (current_isotope == "ZR89") {
-            // Half-life in seconds, probability of emiting a positron, and
-            // energy (MeV) of the gamma emitted.
-            // TODO: stop using F18 positron range currently being used.
-            Positron * zr89 = new Positron(acolinearity, 282280.32, 0.227,
-                                           0.90915);
-            zr89->SetPositronRange(0.519, 27.9, 2.91, 3.0);
-            isotope = static_cast<Isotope *>(zr89);
-        } else if (current_isotope == "BackBack") {
-            // Infinite half-life
-            isotope = static_cast<Isotope *>(new Positron(
-                    acolinearity, std::numeric_limits<double>::infinity()));
-        } else if (current_isotope == "Beam") {
-            isotope = static_cast<Isotope *>(new Beam());
+        if (valid_positrons.count(current_isotope)) {
+            Positron * pos = new Positron(valid_positrons[current_isotope]);
+            pos->set_acolinearity(acolinearity);
+            isotope = static_cast<Isotope *>(pos);
         } else {
             string error = "Isotope named " + current_isotope
-            + " passed valid_isotope test, but was not implemented";
+                + " somehow set as current isotope, but was not implemented";
             throw(runtime_error(error));
         }
     }
@@ -208,7 +191,7 @@ bool SourceList::Inside(const VectorR3 & pos)
 
 bool SourceList::SetCurIsotope(const std::string & iso)
 {
-    if (valid_isotopes.count(iso)) {
+    if (valid_positrons.count(iso)) {
         current_isotope = iso;
         return(true);
     } else {

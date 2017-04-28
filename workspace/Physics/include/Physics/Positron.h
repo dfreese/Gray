@@ -7,6 +7,7 @@
 class Positron: public Isotope
 {
 public:
+    Positron();
     Positron(double acolinearity_deg_fwhm, double half_life);
     Positron(double acolinearity_deg_fwhm, double half_life,
              double positron_emis_prob);
@@ -20,6 +21,7 @@ public:
                               double positronMaxRange);
     static void PositronRange(VectorR3 & p, double positronFWHM,
                               double positronMaxRange);
+    void set_acolinearity(double acolinearity_deg_fwhm);
 
     static const double default_acolinearity;
     void SetPositronRange(double c, double k1, double k2, double max);
