@@ -40,6 +40,14 @@ bool Config::ProcessCommandLine(int argc, char **argv)
         return(false);
     }
 
+    char * include_cstr = getenv ("GRAY_INCLUDE");
+    if (include_cstr) {
+        gray_include_env = string(include_cstr);
+    }
+
+    materials_filename = gray_include_env + "/Gray_Materials.txt";
+
+
     // Arguments not requiring an input
     for (int ix = 1; ix < argc; ix++) {
         string argument(argv[ix]);
@@ -85,6 +93,8 @@ bool Config::ProcessCommandLine(int argc, char **argv)
                 return(-1);
             }
             start_time_set = true;
+        } else if (argument == "--mat") {
+            materials_filename = following_argument;
         }
     }
     if (filename_scene == "") {
@@ -117,6 +127,7 @@ void Config::usage() {
     << "  -s : set the seed for the rand number generator\n"
     << "  -t : set length of time in for the simulation in seconds\n"
     << "  --start : set the start time in seconds\n"
+    << "  --mat : set Gray Materials file. default $GRAY_INCLUDE/Gray_Materials.txt\n"
     << endl;
 }
 
@@ -284,4 +295,8 @@ void Config::set_start_time(double val) {
 
 double Config::get_start_time() const {
     return(start_time);
+}
+
+std::string Config::get_materials_filename() const {
+    return(materials_filename);
 }

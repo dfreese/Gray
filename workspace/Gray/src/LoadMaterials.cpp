@@ -1,6 +1,4 @@
 #include <Gray/LoadMaterials.h>
-#include <stdlib.h>
-#include <string.h>
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -45,19 +43,21 @@ bool LoadMaterials::ParseMaterialsFile(
 }
 
 
-bool LoadMaterials::LoadPhysicsFiles(SceneDescription& theScene)
+bool LoadMaterials::LoadPhysicsFiles(SceneDescription& theScene,
+                                     const std::string & materials_filename)
 {
-    char * pPath = getenv ("GRAY_INCLUDE");
-    if (pPath==NULL) {
-        printf("No GRAY_INCLUDE variable set !\n");
-        printf("Execute export GRAY_INCLUDE=yourpath\n");
-        return(false);
+    // Find the directory in the filename.
+    // FIXME: Not generally portable.
+    std::string include_location = "";
+    size_t dir_pos = materials_filename.find_last_of('/');
+    if (dir_pos != std::string::npos) {
+        // Include everything, excluding slash
+        include_location = materials_filename.substr(0, dir_pos);
     }
-    string include_location(pPath);
-    string matfilelocation = include_location + "/Gray_Materials.txt";
+
     vector<string> material_names;
     vector<bool> material_sensitivities;
-    if (!ParseMaterialsFile(matfilelocation,
+    if (!ParseMaterialsFile(materials_filename,
                             material_names,
                             material_sensitivities))
     {

@@ -28,7 +28,13 @@ int main( int argc, char** argv)
     DetectorArray detector_array;
     SceneDescription scene;
     SourceList sources;
-    if (!LoadMaterials::LoadPhysicsFiles(scene)) {
+    if (!LoadMaterials::LoadPhysicsFiles(scene,
+                                         config.get_materials_filename()))
+    {
+        cerr << "Unable to load materials file: \""
+             << config.get_materials_filename() << "\"\n"
+             << "Check GRAY_INCLUDE env variable or specify name with --mat"
+             << endl;
         return(1);
     }
     if (!LoadDetector::Load(config.get_filename_scene(), scene, sources,

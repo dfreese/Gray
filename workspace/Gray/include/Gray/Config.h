@@ -55,6 +55,7 @@ public:
     double get_time() const;
     void set_start_time(double val);
     double get_start_time() const;
+    std::string get_materials_filename() const;
 
 private:
     std::string filename_scene;
@@ -80,6 +81,8 @@ private:
     double start_time;
     bool time_set;
     bool start_time_set;
+    std::string gray_include_env;
+    std::string materials_filename;
 };
 
 #endif /* Config_h */
