@@ -140,14 +140,12 @@ void PositronDecay::PositronRange(VectorR3 & p, double positronC,
     // First generate a direction that the photon will be blurred
     VectorR3 positronDir;
     Random::UniformSphere(positronDir);
-    double range = 0.0;
-    double cp;
+    double range;
     // generate cprime which is the scales the dual exponential into a form
     // that allows it to be monte-carlo generated
-    cp = (positronC)/(positronC+positronK1/positronK2*(1-positronC));
+    double cp = (positronC)/(positronC+positronK1/positronK2*(1-positronC));
     do {
-
-        if (Random::Uniform() < cp) {
+        if (Random::Uniform() < cp) {   
             range = Random::Exponential(positronK1);
         } else {
             range = Random::Exponential(positronK2);
@@ -169,10 +167,9 @@ void PositronDecay::PositronRange(VectorR3 & p, double positronFWHM,
     double range = 0.0;
     // must return cm, sigma expressed in mm
     do {
-        range = Random::Gaussian() * positronFWHM *
-        CONST_FWHM_TO_SIGMA * CONST_MM_TO_CM;
+        range = Random::Gaussian() * positronFWHM * CONST_FWHM_TO_SIGMA;
     } while (range > positronMaxRange); // rejection test positron range
-
+    range *= CONST_MM_TO_CM;
     positronDir *= range;
 
     p += positronDir;

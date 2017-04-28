@@ -1,0 +1,16 @@
+# Create a bunch of positrons in water and log all of their annihilation
+# positions
+time 1.0
+
+m water
+color 0.1 0.1 0.1  0.0 0.0 0.0 0.5 0.5 0.5 0.5 0.5 1.0 0.0 0.0 0.0 1.03
+isotope F18
+sp_src 0.0 0.0 0.0 0.0001 10
+# The positron range is set at a max of 3.0mm, so nothing should occur outside
+# of this sphere
+sphere 0.0 0.0 0.0 0.3
+
+hits_format full_binary
+
+# Since there are no sensitive materials all that will be logged is positrons
+log_positron
