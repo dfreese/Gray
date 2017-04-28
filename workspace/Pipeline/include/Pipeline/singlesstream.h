@@ -30,13 +30,18 @@
 template <class EventT, class TimeT = decltype(EventT::time)>
 class SinglesStream {
 public:
+    typedef std::function<void(EventT&, const EventT&)> MergeF;
     /*!
      * If the initial sort window is greater than zero, a sorting process is
      * added to the stream immediately with that wait window.  Necessary for
      * gray, where we need to guarantee sorting before the user's preferences
      * are added.
      */
-    SinglesStream(TimeT initial_sort_window = -1) :
+    SinglesStream(
+            TimeT initial_sort_window = -1,
+            MergeF merge_info = [](EventT & e0, const EventT & e1) {
+                e0.energy += e1.energy;}) :
+        merge_info_func(merge_info),
         get_id_func([](const EventT & e){return (e.det_id);}),
         get_time_func([](const EventT & e){return (e.time);})
     {
@@ -45,13 +50,13 @@ public:
                              std::vector<std::string>());
         }
         // Func to merge events in an array, and place the event at the first.
-        merge_types["merge_first"] = [](EventT & e0, const EventT & e1) {
-            e0.energy += e1.energy;
+        merge_types["merge_first"] = [this](EventT & e0, const EventT & e1) {
+            this->merge_info_func(e0, e1);
         };
         // Func to merge events, and place the event at the max energy.
-        merge_types["merge_max"] = [](EventT & e0, const EventT & e1) {
+        merge_types["merge_max"] = [this](EventT & e0, const EventT & e1) {
             e0.det_id = e0.energy > e1.energy ? e0.det_id:e1.det_id;
-            e0.energy += e1.energy;
+            this->merge_info_func(e0, e1);
         };
     }
 
@@ -195,7 +200,6 @@ public:
 private:
     typedef std::function<TimeT(const EventT&, const EventT&)> TimeDiffF;
     typedef std::function<int(const EventT&)> InfoF;
-    typedef std::function<void(EventT&, const EventT&)> MergeF;
     typedef std::function<bool(const EventT&)> FilterF;
     typedef std::function<void(EventT&)> BlurF;
     typedef std::function<TimeT(const EventT&)> TimeF;
@@ -421,7 +425,7 @@ private:
         const std::vector<int> & bz = this->id_maps[block_maps[2]];
         const int no_by = block_size[1];
         const int no_bz = block_size[2];
-        auto merge_array_eweight = [bx, by, bz, no_by, no_bz](EventT & e0,
+        auto merge_array_eweight = [bx, by, bz, no_by, no_bz, this](EventT & e0,
                                                               const EventT & e1)
         {
             float energy_result = e0.energy + e1.energy;
@@ -445,7 +449,7 @@ private:
             // linear like this.
             e0.det_id -= (row0 * no_by + col0) * no_bz + lay0;
             e0.det_id += (row_result * no_by + col_result) * no_bz + lay_result;
-            e0.energy = energy_result;
+            this->merge_info_func(e0, e1);
         };
         merge_types[merge_name] = merge_array_eweight;
     }
@@ -477,6 +481,13 @@ private:
     }
 
     int no_array_eweight;
+
+    /*!
+     * merge_info_func handles all of the information besides the assignment of
+     * the detector id when two events are merged together.  This can be
+     * specifed, or will be the sum of the energies as a default.
+     */
+    MergeF merge_info_func;
 
     /*!
      * Returns the detector id for the event.  This is then mapped to a.
