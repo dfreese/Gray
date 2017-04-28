@@ -1,23 +1,10 @@
 /*
- * SimpleNurbs.h
- *
- * Author: Samuel R. Buss
- *
- * Software accompanying the book
- *		3D Computer Graphics: A Mathematical Introduction with OpenGL,
- *		by S. Buss, Cambridge University Press, 2003.
- *
- * Software is "as-is" and carries no warranty.  It may be used without
- *   restriction, but if you modify it, please change the filenames to
- *   prevent confusion between different versions.
- * Bug reports: Sam Buss, sbuss@ucsd.edu.
- * Web page: http://math.ucsd.edu/~sbuss/MathCG
+ * Source.h
  */
 
-#ifndef CSE167_SOURCE_H
-#define CSE167_SOURCE_H
+#ifndef SOURCE_H
+#define SOURCE_H
 
-// Function prototypes
 #include <stdlib.h>
 #include <math.h>
 #include <limits.h>
@@ -28,7 +15,6 @@
 #include <Physics/Isotope.h>
 #include <Physics/Photon.h>
 
-using namespace std;
 class GammaMaterial;
 
 class Source
@@ -43,6 +29,7 @@ public:
         position(0, 0, 0)
     {
     }
+
     Source(const VectorR3 & pos, double act) :
         isotope(NULL),
         activity(act),
@@ -57,28 +44,54 @@ public:
             negative = false;
         }
     }
-    virtual ~Source() {};
-    double GetActivity() const;
-    virtual void SetIsotope(Isotope * i)
+    virtual ~Source() {}
+
+    double GetActivity() const {
+        return activity;
+    }
+
+    void SetIsotope(Isotope * i)
     {
         isotope = i;
-    };
-    void SetMaterial(GammaMaterial * mat);
+    }
+
+    void SetMaterial(GammaMaterial * mat) {
+        material = mat;
+    }
+
     void SetPosition(const VectorR3 & pos)
     {
         position = pos;
     }
+
     void SetSourceNum(int i)
     {
         source_num = i;
     }
-    GammaMaterial * GetMaterial();
-    bool isNegative();
+
+    GammaMaterial * GetMaterial() {
+        return material;
+    }
+
+    GammaMaterial * const GetMaterial() const {
+        return material;
+    }
+
+    bool isNegative() const {
+        return negative;
+    }
+
     Isotope * GetIsotope()
     {
         return isotope;
     }
-    void Reset();
+
+    void Reset() {
+        if (isotope == NULL) {
+            return;
+        }
+        isotope->Reset();
+    }
 
     virtual bool Inside(const VectorR3 &pos) const = 0;
     virtual VectorR3 Decay(int photon_number, double time) = 0;
@@ -92,33 +105,4 @@ protected:
     VectorR3 position;
 };
 
-inline bool Source::isNegative()
-{
-    return negative;
-}
-
-inline double Source::GetActivity() const
-{
-    return activity;
-}
-
-inline void Source::SetMaterial(GammaMaterial * mat)
-{
-    material = mat;
-}
-
-inline GammaMaterial * Source::GetMaterial()
-{
-    return material;
-}
-
-inline void Source::Reset()
-{
-    //cout << "Reset\n";
-    if (isotope == NULL) {
-        return;
-    }
-    isotope->Reset();
-}
-
-#endif
+#endif // SOURCE_H

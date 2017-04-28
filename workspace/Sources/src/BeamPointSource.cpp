@@ -1,5 +1,6 @@
 #include <Sources/BeamPointSource.h>
 #include <Physics/Beam.h>
+#include <exception>
 
 BeamPointSource::BeamPointSource(const VectorR3 &p, const VectorR3 &a, double angle, double act) :
     Source(p, act),
@@ -13,7 +14,7 @@ void BeamPointSource::SetIsotope(Isotope * i)
 {
     isotope = dynamic_cast<Beam*>(i);
     if (!isotope) {
-        throw(runtime_error("BeamPointSource requires Beam Isotope"));
+        throw(std::runtime_error("BeamPointSource requires Beam Isotope"));
     }
 };
 

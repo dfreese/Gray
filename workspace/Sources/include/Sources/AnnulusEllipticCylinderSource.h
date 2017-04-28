@@ -22,7 +22,7 @@ private:
     double radius1;
     double radius2;
     double length;
-    vector<double>circ;
+    std::vector<double>circ;
     VectorR3 axis;
     Matrix3x3 RotMtrx;
     Matrix3x3 RotMtrxInv;

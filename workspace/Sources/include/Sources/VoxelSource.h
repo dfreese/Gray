@@ -2,6 +2,7 @@
 #define CSE167_VOXELSOURCE_H
 
 #include <Sources/Source.h>
+#include <vector>
 
 class VoxelSource : public Source
 {
@@ -19,8 +20,8 @@ private:
     size_t search(double e, size_t b_idx, size_t s_idx);
     int AddSource(double val);
 
-    vector <double> prob;
-    vector <int*> index;
+    std::vector <double> prob;
+    std::vector <int*> index;
 };
 
 #endif
