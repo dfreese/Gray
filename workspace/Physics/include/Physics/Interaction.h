@@ -1,6 +1,7 @@
 #ifndef CSE167_INTERACTION_H
 #define CSE167_INTERACTION_H
 
+#include <ostream>
 #include <iostream>
 #include <vector>
 #include <Physics/Photon.h>
@@ -58,6 +59,36 @@ public:
                                        const GammaStats & mat_gamma_prop);
     static Interaction ErrorEmtpy(const Photon & p);
     static void merge_interactions(Interaction & i0, const Interaction & i1);
+
+    static int header_start_magic_number;
+    static int output_version_number;
+    static bool write_header(std::ostream & output, bool binary);
+
+    struct WriteFlags {
+        bool time;
+        bool id;
+        bool color;
+        bool type;
+        bool pos;
+        bool energy;
+        bool det_id;
+        bool src_id;
+        bool mat_id;
+        bool scatter_compton_phantom;
+        bool scatter_compton_detector;
+        bool scatter_rayleigh_phantom;
+        bool scatter_rayleigh_detector;
+        bool xray_flouresence;
+        bool sensitive_mat;
+    };
+    static void write_flags_stats(const WriteFlags & flags, int & no_fields,
+                                  int & no_active);
+    static int event_size(const WriteFlags & flags);
+    static bool write_write_flags(const WriteFlags & flags,
+                                  std::ostream & output, bool binary);
+    static bool write_interaction(const Interaction & inter,
+                                  std::ostream & output,
+                                  const WriteFlags & flags, bool binary);
 
     static INTER_TYPE InteractionType(Photon &p,
                                       double & dist,
