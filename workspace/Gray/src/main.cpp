@@ -58,9 +58,12 @@ int main( int argc, char** argv)
     }
     cout << "Using Seed: " << Random::GetSeed() << endl;
 
+    
     // Setup the singles processor and load a default or specified mapping file
     SinglesStream<Interaction> singles_stream(
-            5 * scene.GetMaxDistance() * Interaction::inverse_speed_of_light);
+            5 * scene.GetMaxDistance() * Interaction::inverse_speed_of_light,
+            Interaction::merge_interactions);
+
 
     if (config.get_filename_mapping() == "") {
         singles_stream.set_mappings(detector_array.default_mapping());

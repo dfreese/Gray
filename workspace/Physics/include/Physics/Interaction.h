@@ -57,6 +57,7 @@ public:
     static Interaction ErrorTraceDepth(const Photon & p,
                                        const GammaStats & mat_gamma_prop);
     static Interaction ErrorEmtpy(const Photon & p);
+    static void merge_interactions(Interaction & i0, const Interaction & i1);
 
     static INTER_TYPE InteractionType(Photon &p,
                                       double & dist,

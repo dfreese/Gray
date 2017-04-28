@@ -207,6 +207,15 @@ Interaction Interaction::ErrorEmtpy(const Photon & p)
     return(hit);
 }
 
+void Interaction::merge_interactions(Interaction & i0, const Interaction & i1) {
+    i0.energy += i1.energy;
+    i0.scatter_compton_phantom += i1.scatter_compton_phantom;
+    i0.scatter_compton_detector += i1.scatter_compton_detector;
+    i0.scatter_rayleigh_phantom += i1.scatter_rayleigh_phantom;
+    i0.scatter_rayleigh_detector += i1.scatter_rayleigh_detector;
+    i0.xray_flouresence += i1.xray_flouresence;
+}
+
 Interaction::KleinNishina::KleinNishina() :
     // These energies were chosen, as they give less than 0.5% error from 0 to
     // 1.5MeV when linear interpolation is performed.
