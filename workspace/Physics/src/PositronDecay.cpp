@@ -54,6 +54,7 @@ void PositronDecay::Decay(int photon_number, double time, int src_id,
     this->decay_number = photon_number;
     this->src_id = src_id;
     this->time = time;
+    this->position = position;
 
     if (emit_gamma) {
         // If the gamma position was already set by the positron range
@@ -109,7 +110,6 @@ void PositronDecay::Decay(int photon_number, double time, int src_id,
     // because we assume the gamma is emitted from the nucleus, rather than the
     // positron.
     yellow.pos = position;
-    this->position = position;
     // And set a flag to make sure the position is not overridden by the next
     // Decay call.
     gamma_position_set = true;
@@ -126,7 +126,6 @@ void PositronDecay::Decay(int photon_number, double time, int src_id,
     // because we assume the gamma is emitted from the nucleus, rather than the
     // positron.
     yellow.pos = position;
-    this->position = position;
     // And set a flag to make sure the position is not overridden by the next
     // Decay call.
     gamma_position_set = true;
