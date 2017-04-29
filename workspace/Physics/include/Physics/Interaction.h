@@ -63,6 +63,8 @@ public:
     static int header_start_magic_number;
     static int output_version_number;
     static bool write_header(std::ostream & output, bool binary);
+    static bool read_header(std::istream & input, bool & binary,
+                            int & version);
 
     struct WriteFlags {
         bool time;
@@ -86,9 +88,14 @@ public:
     static int event_size(const WriteFlags & flags);
     static bool write_write_flags(const WriteFlags & flags,
                                   std::ostream & output, bool binary);
+    static bool read_write_flags(WriteFlags & flags,
+                                 std::istream & input, bool binary);
     static bool write_interaction(const Interaction & inter,
                                   std::ostream & output,
                                   const WriteFlags & flags, bool binary);
+    static bool read_interaction(Interaction & inter,
+                                 std::istream & input,
+                                 const WriteFlags & flags, bool binary);
 
     static INTER_TYPE InteractionType(Photon &p,
                                       double & dist,

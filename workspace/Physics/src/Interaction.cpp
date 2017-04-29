@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <algorithm>
 #include <iomanip>
+#include <sstream>
 
 using namespace std;
 
@@ -237,6 +238,33 @@ bool Interaction::write_header(std::ostream & output, bool binary) {
     }
 }
 
+bool Interaction::read_header(std::istream & input, bool & binary,
+                              int & version)
+{
+    auto init_pos = input.tellg();
+    int magic_number;
+    input.read(reinterpret_cast<char *>(&magic_number), sizeof(magic_number));
+    if (magic_number == header_start_magic_number) {
+        binary = true;
+        input.read(reinterpret_cast<char *>(&version), sizeof(version));
+    } else {
+        binary = false;
+        input.seekg(init_pos);
+        string line;
+        getline(input, line);
+        stringstream line_ss(line);
+        line_ss >> line; // dump the "gray_output_version" text
+        if ((line_ss >> version).fail()) {
+            return(false);
+        }
+    }
+    if (input.fail()) {
+        return(false);
+    } else {
+        return(true);
+    }
+}
+
 void Interaction::write_flags_stats(const WriteFlags & flags, int & no_fields,
                                     int & no_active)
 {
@@ -391,6 +419,116 @@ bool Interaction::write_write_flags(const WriteFlags & flags,
     }
 }
 
+bool Interaction::read_write_flags(WriteFlags & flags, std::istream & input,
+                                   bool binary)
+{
+    int read_no_fields;
+    int read_no_active;
+
+    if (binary) {
+        input.read(reinterpret_cast<char*>(&read_no_fields),
+                   sizeof(read_no_fields));
+        input.read(reinterpret_cast<char*>(&read_no_active),
+                   sizeof(read_no_active));
+
+        int per_event_size;
+        input.read(reinterpret_cast<char*>(&per_event_size),
+                   sizeof(per_event_size));
+
+        int read_val;
+        input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
+        flags.time = static_cast<bool>(read_val);
+        input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
+        flags.id = static_cast<bool>(read_val);
+        input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
+        flags.color = static_cast<bool>(read_val);
+        input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
+        flags.type = static_cast<bool>(read_val);
+        input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
+        flags.pos = static_cast<bool>(read_val);
+        input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
+        flags.energy = static_cast<bool>(read_val);
+        input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
+        flags.det_id = static_cast<bool>(read_val);
+        input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
+        flags.src_id = static_cast<bool>(read_val);
+        input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
+        flags.mat_id = static_cast<bool>(read_val);
+        input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
+        flags.scatter_compton_phantom = static_cast<bool>(read_val);
+        input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
+        flags.scatter_compton_detector = static_cast<bool>(read_val);
+        input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
+        flags.scatter_rayleigh_phantom = static_cast<bool>(read_val);
+        input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
+        flags.scatter_rayleigh_detector = static_cast<bool>(read_val);
+        input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
+        flags.xray_flouresence = static_cast<bool>(read_val);
+        input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
+        flags.sensitive_mat = static_cast<bool>(read_val);
+
+        int expected_per_event_size = event_size(flags);
+        if (expected_per_event_size != per_event_size) {
+            return(false);
+        }
+
+    } else {
+        string line;
+        stringstream ss;
+        string value_name;
+
+        getline(input, line); ss.clear(); ss << line;
+        ss >> value_name;  ss >> read_no_fields;
+
+        getline(input, line); ss.clear(); ss << line;
+        ss >> value_name;  ss >> read_no_active;
+
+        getline(input, line); ss.clear(); ss << line;
+        ss >> value_name;  ss >> flags.time;
+        getline(input, line); ss.clear(); ss << line;
+        ss >> value_name;  ss >> flags.id;
+        getline(input, line); ss.clear(); ss << line;
+        ss >> value_name;  ss >> flags.color;
+        getline(input, line); ss.clear(); ss << line;
+        ss >> value_name;  ss >> flags.type;
+        getline(input, line); ss.clear(); ss << line;
+        ss >> value_name;  ss >> flags.pos;
+        getline(input, line); ss.clear(); ss << line;
+        ss >> value_name;  ss >> flags.energy;
+        getline(input, line); ss.clear(); ss << line;
+        ss >> value_name;  ss >> flags.det_id;
+        getline(input, line); ss.clear(); ss << line;
+        ss >> value_name;  ss >> flags.src_id;
+        getline(input, line); ss.clear(); ss << line;
+        ss >> value_name;  ss >> flags.mat_id;
+        getline(input, line); ss.clear(); ss << line;
+        ss >> value_name;  ss >> flags.scatter_compton_phantom;
+        getline(input, line); ss.clear(); ss << line;
+        ss >> value_name;  ss >> flags.scatter_compton_detector;
+        getline(input, line); ss.clear(); ss << line;
+        ss >> value_name;  ss >> flags.scatter_rayleigh_phantom;
+        getline(input, line); ss.clear(); ss << line;
+        ss >> value_name;  ss >> flags.scatter_rayleigh_detector;
+        getline(input, line); ss.clear(); ss << line;
+        ss >> value_name;  ss >> flags.xray_flouresence;
+        getline(input, line); ss.clear(); ss << line;
+        ss >> value_name;  ss >> flags.sensitive_mat;
+    }
+
+    int no_fields;
+    int no_active;
+    write_flags_stats(flags, no_fields, no_active);
+    if ((read_no_fields != no_fields) || (read_no_active != no_active)) {
+        return(false);
+    }
+
+    if (input.fail()) {
+        return(false);
+    } else {
+        return(true);
+    }
+}
+
 bool Interaction::write_interaction(const Interaction & inter,
                                     std::ostream & output,
                                     const WriteFlags & flags,
@@ -517,6 +655,141 @@ bool Interaction::write_interaction(const Interaction & inter,
     }
 
     if (output.fail()) {
+        return(false);
+    } else {
+        return(true);
+    }
+}
+
+bool Interaction::read_interaction(Interaction & inter, std::istream & input,
+                                   const WriteFlags & flags, bool binary)
+{
+    if (binary) {
+        if (flags.time) {
+            input.read(reinterpret_cast<char*>(&inter.time),
+                       sizeof(inter.time));
+        }
+        if (flags.id) {
+            input.read(reinterpret_cast<char*>(&inter.id),
+                       sizeof(inter.id));
+        }
+        if (flags.color) {
+            int value;
+            input.read(reinterpret_cast<char*>(&value),
+                       sizeof(value));
+            inter.color = static_cast<Photon::Color>(value);
+        }
+        if (flags.type) {
+            int value;
+            input.read(reinterpret_cast<char*>(&value),
+                       sizeof(value));
+            inter.type = static_cast<Interaction::INTER_TYPE>(value);
+        }
+        if (flags.pos) {
+            input.read(reinterpret_cast<char*>(&inter.pos.x),
+                       sizeof(inter.pos.x));
+            input.read(reinterpret_cast<char*>(&inter.pos.y),
+                       sizeof(inter.pos.y));
+            input.read(reinterpret_cast<char*>(&inter.pos.z),
+                       sizeof(inter.pos.z));
+        }
+        if (flags.energy) {
+            input.read(reinterpret_cast<char*>(&inter.energy),
+                       sizeof(inter.energy));
+        }
+        if (flags.det_id) {
+            input.read(reinterpret_cast<char*>(&inter.det_id),
+                       sizeof(inter.det_id));
+        }
+        if (flags.src_id) {
+            input.read(reinterpret_cast<char*>(&inter.src_id),
+                       sizeof(inter.src_id));
+        }
+        if (flags.mat_id) {
+            input.read(reinterpret_cast<char*>(&inter.mat_id),
+                       sizeof(inter.mat_id));
+        }
+        if (flags.scatter_compton_phantom) {
+            input.read(reinterpret_cast<char*>(&inter.scatter_compton_phantom),
+                       sizeof(inter.scatter_compton_phantom));
+        }
+        if (flags.scatter_compton_detector) {
+            input.read(reinterpret_cast<char*>(&inter.scatter_compton_detector),
+                       sizeof(inter.scatter_compton_detector));
+        }
+        if (flags.scatter_rayleigh_phantom) {
+            input.read(reinterpret_cast<char*>(&inter.scatter_rayleigh_phantom),
+                       sizeof(inter.scatter_rayleigh_phantom));
+        }
+        if (flags.scatter_rayleigh_detector) {
+            input.read(reinterpret_cast<char*>(&inter.scatter_rayleigh_detector),
+                       sizeof(inter.scatter_rayleigh_detector));
+        }
+        if (flags.xray_flouresence) {
+            input.read(reinterpret_cast<char*>(&inter.xray_flouresence),
+                       sizeof(inter.xray_flouresence));
+        }
+        if (flags.sensitive_mat) {
+            input.read(reinterpret_cast<char*>(&inter.sensitive_mat),
+                       sizeof(inter.sensitive_mat));
+        }
+    } else {
+        string line;
+        stringstream line_ss(line);
+        if (flags.time) {
+            line_ss >> inter.time;
+        }
+        if (flags.id) {
+            line_ss >> inter.id;
+        }
+        if (flags.color) {
+            int color;
+            line_ss >> color;
+            inter.color = static_cast<Photon::Color>(color);
+        }
+        if (flags.type) {
+            int type;
+            line_ss >> type;
+            inter.type = static_cast<Interaction::INTER_TYPE>(type);
+        }
+        if (flags.pos) {
+            line_ss >> inter.pos.x;
+            line_ss >> inter.pos.y;
+            line_ss >> inter.pos.z;
+        }
+        if (flags.energy) {
+            line_ss >> inter.energy;
+        }
+        if (flags.det_id) {
+            line_ss >> inter.det_id;
+        }
+        if (flags.src_id) {
+            line_ss >> inter.src_id;
+        }
+        if (flags.mat_id) {
+            line_ss >> inter.mat_id;
+        }
+        if (flags.scatter_compton_phantom) {
+            line_ss >> inter.scatter_compton_phantom;
+        }
+        if (flags.scatter_compton_detector) {
+            line_ss >> inter.scatter_compton_detector;
+        }
+        if (flags.scatter_rayleigh_phantom) {
+            line_ss >> inter.scatter_rayleigh_phantom;
+        }
+        if (flags.scatter_rayleigh_detector) {
+            line_ss >> inter.scatter_rayleigh_detector;
+        }
+        if (flags.xray_flouresence) {
+            line_ss >> inter.xray_flouresence;
+        }
+        if (flags.sensitive_mat) {
+            line_ss >> inter.sensitive_mat;
+        }
+    }
+
+    if (input.fail()) {
         return(false);
     } else {
         return(true);
