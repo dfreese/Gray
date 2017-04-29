@@ -15,7 +15,9 @@ public:
     enum Format {
         FULL_ASCII,
         FULL_BINARY,
-        NO_POS_BINARY
+        NO_POS_BINARY,
+        VARIABLE_ASCII,
+        VARIABLE_BINARY,
     };
 
     Output(const std::string & logfile = "", Format fmt = FULL_ASCII);
@@ -31,6 +33,7 @@ private:
 
     std::ofstream log_file;
     Format format;
+    Interaction::WriteFlags var_format_write_flags;
 };
 
 #endif /*OUTPUT_H_*/

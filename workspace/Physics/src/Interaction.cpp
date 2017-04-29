@@ -603,7 +603,7 @@ bool Interaction::write_interaction(const Interaction & inter,
     } else {
         if (flags.time) {
             output << " " << std::resetiosflags(std::ios::floatfield)
-                   << std::scientific << std::setprecision(16) << inter.time;
+                   << std::scientific << std::setprecision(23) << inter.time;
         }
         if (flags.id) {
             output << " " << std::setw(9) << inter.id;

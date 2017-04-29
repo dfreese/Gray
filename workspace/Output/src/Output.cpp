@@ -32,7 +32,13 @@ void Output::SetFormat(Format format) {
 }
 
 void Output::LogInteraction(const Interaction & interact) {
-    if (format == FULL_BINARY) {
+    if (format == VARIABLE_ASCII) {
+        Interaction::write_interaction(interact, log_file,
+                                       var_format_write_flags, false);
+    } else if (format == VARIABLE_BINARY) {
+        Interaction::write_interaction(interact, log_file,
+                                       var_format_write_flags, true);
+    } else if (format == FULL_BINARY) {
         GrayBinaryStandard b;
         b.i = interact.id;
         b.time = interact.time;
@@ -90,13 +96,25 @@ bool Output::SetLogfile(const std::string & name)
         cerr << name;
         cerr << " log file.\n";
         return false;
-    } else {
-        return true;
     }
+
+    if (format == VARIABLE_ASCII) {
+        Interaction::write_header(log_file, false);
+        Interaction::write_write_flags(var_format_write_flags, log_file, false);
+    } else if (format == VARIABLE_BINARY) {
+        Interaction::write_header(log_file, true);
+        Interaction::write_write_flags(var_format_write_flags, log_file, true);
+    }
+
+    return(true);
 }
 
 int Output::GetFormat(const std::string & identifier, Output::Format & fmt) {
-    if (identifier == "full_ascii") {
+    if (identifier == "var_ascii") {
+        fmt = VARIABLE_ASCII;
+    } else if (identifier == "var_binary") {
+        fmt = VARIABLE_BINARY;
+    } else if (identifier == "full_ascii") {
         fmt = FULL_ASCII;
     } else if (identifier == "full_binary") {
         fmt = FULL_BINARY;

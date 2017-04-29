@@ -107,12 +107,12 @@ int main( int argc, char** argv)
         Output output_hits;
         Output output_singles;
         if (config.get_log_hits()) {
-            output_hits.SetLogfile(config.get_filename_hits());
             output_hits.SetFormat(config.get_format_hits());
+            output_hits.SetLogfile(config.get_filename_hits());
         }
         if (config.get_log_singles()) {
-            output_singles.SetLogfile(config.get_filename_singles());
             output_singles.SetFormat(config.get_format_singles());
+            output_singles.SetLogfile(config.get_filename_singles());
         }
 
         sources.SetSimulationTime(config.get_time());
