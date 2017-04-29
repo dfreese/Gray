@@ -4,4 +4,5 @@ add_executable(daqmodel
 
 target_include_directories(daqmodel PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(daqmodel Output)
+target_link_libraries(daqmodel Physics)
 target_link_libraries(daqmodel Pipeline)

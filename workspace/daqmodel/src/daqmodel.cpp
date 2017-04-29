@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <Output/BinaryFormat.h>
+#include <Physics/Interaction.h>
 #include <Pipeline/singlesstream.h>
 
 using namespace std;
@@ -62,6 +63,69 @@ int process_file(const std::string & filename_map,
     }
     return(0);
 }
+
+
+template<>
+int process_file<Interaction>(const std::string & filename_map,
+                              const std::string & filename_process,
+                              std::ifstream & input,
+                              std::ofstream & output,
+                              bool verbose)
+{
+    SinglesStream<Interaction> singles_stream(-1,
+                                              Interaction::merge_interactions);
+    int no_detectors = singles_stream.load_mappings(filename_map);
+    if (no_detectors < 0) {
+        cerr << "Loading mapping file failed" << endl;
+        return(-2);
+    }
+
+    int proc_load_status = singles_stream.load_processes(filename_process);
+    if (proc_load_status < 0) {
+        cerr << "Loading process file failed" << endl;
+        return(-2);
+    }
+
+    bool binary;
+    int version;
+    Interaction::read_header(input, binary, version);
+
+    Interaction::WriteFlags flags;
+    Interaction::read_write_flags(flags, input, binary);
+
+    Interaction::write_header(output, binary);
+    Interaction::write_write_flags(flags, output, binary);
+
+    Interaction input_event;
+    while (Interaction::read_interaction(input_event, input, flags, binary)) {
+        singles_stream.add_event(input_event);
+        if (singles_stream.no_ready() > 100000) {
+            const vector<Interaction> & events = singles_stream.get_ready();
+            for (const auto & event: events) {
+                Interaction::write_interaction(event, output, flags, binary);
+            }
+            singles_stream.clear();
+        }
+    }
+
+    input.close();
+    singles_stream.stop();
+    const vector<Interaction> & events = singles_stream.get_ready();
+    for (const auto & event: events) {
+        Interaction::write_interaction(event, output, flags, binary);
+    }
+    singles_stream.clear();
+
+    output.close();
+
+
+    if (verbose) {
+        cout << "______________\n DAQ Stats\n______________\n"
+        << singles_stream << endl;
+    }
+    return(0);
+}
+
 
 int main(int argc, char ** argv) {
     if (argc == 1) {
@@ -148,6 +212,9 @@ int main(int argc, char ** argv) {
     } else if (filetype == 1) {
         status = process_file<GrayBinaryNoPosition>(
                 filename_map, filename_process, input, output, verbose);
+    } else if (filetype == 2) {
+        status = process_file<Interaction>(filename_map, filename_process,
+                                           input, output, verbose);
     }
     if (status < 0) {
         return(5);

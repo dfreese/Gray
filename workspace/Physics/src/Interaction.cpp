@@ -761,6 +761,7 @@ bool Interaction::read_interaction(Interaction & inter, std::istream & input,
         }
     } else {
         string line;
+        getline(input, line);
         stringstream line_ss(line);
         if (flags.time) {
             line_ss >> inter.time;
@@ -814,12 +815,7 @@ bool Interaction::read_interaction(Interaction & inter, std::istream & input,
             line_ss >> inter.sensitive_mat;
         }
     }
-
-    if (input.fail()) {
-        return(false);
-    } else {
-        return(true);
-    }
+    return(input.good());
 }
 
 Interaction::KleinNishina::KleinNishina() :
