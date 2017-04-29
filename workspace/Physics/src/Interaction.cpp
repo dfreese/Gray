@@ -529,6 +529,32 @@ bool Interaction::read_write_flags(WriteFlags & flags, std::istream & input,
     }
 }
 
+/*!
+ * Turn a string of ones and zeros into write flags
+ */
+bool Interaction::parse_write_flags_mask(WriteFlags & flags,
+                                         const std::string & mask)
+{
+    stringstream line_ss(mask);
+    line_ss >> flags.time;
+    line_ss >> flags.id;
+    line_ss >> flags.color;
+    line_ss >> flags.type;
+    line_ss >> flags.pos;
+    line_ss >> flags.energy;
+    line_ss >> flags.det_id;
+    line_ss >> flags.src_id;
+    line_ss >> flags.mat_id;
+    line_ss >> flags.scatter_compton_phantom;
+    line_ss >> flags.scatter_compton_detector;
+    line_ss >> flags.scatter_rayleigh_phantom;
+    line_ss >> flags.scatter_rayleigh_detector;
+    line_ss >> flags.xray_flouresence;
+    line_ss >> flags.sensitive_mat;
+
+    return(!line_ss.fail());
+}
+
 bool Interaction::write_interaction(const Interaction & inter,
                                     std::ostream & output,
                                     const WriteFlags & flags,

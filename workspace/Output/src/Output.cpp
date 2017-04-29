@@ -138,3 +138,7 @@ int Output::GetFormat(const std::string & identifier, Output::Format & fmt) {
     }
     return(0);
 }
+
+void Output::SetVariableOutputMask(const Interaction::WriteFlags & flags) {
+    var_format_write_flags = flags;
+}

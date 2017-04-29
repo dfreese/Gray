@@ -26,6 +26,7 @@ public:
     void SetFormat(Format format);
     void LogInteraction(const Interaction & interact);
     static int GetFormat(const std::string & identifier, Format & fmt);
+    void SetVariableOutputMask(const Interaction::WriteFlags & flags);
 
 private:
     int MakeLogWord(Interaction::INTER_TYPE interaction, int color,

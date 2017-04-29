@@ -108,6 +108,8 @@ public:
                                   std::ostream & output, bool binary);
     static bool read_write_flags(WriteFlags & flags,
                                  std::istream & input, bool binary);
+    static bool parse_write_flags_mask(WriteFlags & flags,
+                                       const std::string & mask);
     static bool write_interaction(const Interaction & inter,
                                   std::ostream & output,
                                   const WriteFlags & flags, bool binary);

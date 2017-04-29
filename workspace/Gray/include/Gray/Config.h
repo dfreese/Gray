@@ -11,6 +11,7 @@
 
 #include <string>
 #include <Output/Output.h>
+#include <Physics/Interaction.h>
 
 class Config {
 public:
@@ -57,6 +58,10 @@ public:
     double get_start_time() const;
     std::string get_materials_filename() const;
     std::string get_isotopes_filename() const;
+    bool set_hits_var_output_write_flags(const std::string & mask);
+    Interaction::WriteFlags get_hits_var_output_write_flags() const;
+    bool set_singles_var_output_write_flags(const std::string & mask);
+    Interaction::WriteFlags get_singles_var_output_write_flags() const;
 
 private:
     std::string filename_scene;
@@ -85,6 +90,8 @@ private:
     std::string gray_include_env;
     std::string materials_filename;
     std::string isotopes_filename;
+    Interaction::WriteFlags hits_var_output_write_flags;
+    Interaction::WriteFlags singles_var_output_write_flags;
 };
 
 #endif /* Config_h */

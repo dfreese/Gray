@@ -720,6 +720,18 @@ bool LoadDetector::Load(const std::string & filename,
                 print_parse_error(line);
                 return(false);
             }
+        } else if (command == "hits_var_mask") {
+            if (!config.set_hits_var_output_write_flags(args)) {
+                print_parse_error(line);
+                cerr << "Unable to parse the variable mask given" << endl;
+                return(false);
+            }
+        } else if (command == "singles_var_mask") {
+            if (!config.set_singles_var_output_write_flags(args)) {
+                print_parse_error(line);
+                cerr << "Unable to parse the variable mask given" << endl;
+                return(false);
+            }
         } else if (command == "scale_act") {
             double t_actScale = -1.0;
             int scanCode = sscanf(args.c_str(), "%lf", &t_actScale);
