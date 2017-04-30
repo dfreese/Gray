@@ -358,6 +358,7 @@ bool LoadDetector::Load(const std::string & filename,
                 repeat_buffer.pop_back();
                 current_idx--;
             }
+            continue;
         }
 
         // skip the remainder of the commands
