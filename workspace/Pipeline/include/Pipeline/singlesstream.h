@@ -43,7 +43,8 @@ public:
                 e0.energy += e1.energy;}) :
         merge_info_func(merge_info),
         get_id_func([](const EventT & e){return (e.det_id);}),
-        get_time_func([](const EventT & e){return (e.time);})
+        get_time_func([](const EventT & e){return (e.time);}),
+        no_array_eweight(0)
     {
         if (initial_sort_window > 0) {
             add_sort_process("time", initial_sort_window,
@@ -228,7 +229,16 @@ private:
             return(-1);
         }
         std::string headers;
-        getline(input, headers);
+        // Find the first non-blank line, including comments
+        while (getline(input, headers)) {
+            if (headers.empty()) {
+                continue;
+            }
+            headers = headers.substr(0, headers.find_first_of("#"));
+            if (!headers.empty()) {
+                break;
+            }
+        }
         std::stringstream head_ss(headers);
         std::string header;
         std::vector<std::string> header_vec;
@@ -240,6 +250,13 @@ private:
         std::string line;
         int no_detectors = 0;
         while (getline(input, line)) {
+            if (line.empty()) {
+                continue;
+            }
+            line = line.substr(0, line.find_first_of("#"));
+            if (line.empty()) {
+                continue;
+            }
             std::stringstream line_ss(line);
             for (const auto & header: header_vec) {
                 int val;
@@ -364,9 +381,11 @@ private:
                 } else if (proc_desc.options[0] == "array_eweight") {
                     // Give each eweight process a unique name, so that is can
                     // have unique settings.
-                    std::stringstream ss("merge_array_eweight_");
-                    ss << no_array_eweight++;
-                    add_array_eweight_func(proc_desc.options, ss.str());
+                    std::stringstream ss;
+                    ss << "merge_array_eweight_" << no_array_eweight++;
+                    if (add_array_eweight_func(proc_desc.options, ss.str()) < 0) {
+                        return(-3);
+                    }
                     if (add_merge_process(ss.str(), proc_desc.component,
                                           proc_desc.time) < 0)
                     {
