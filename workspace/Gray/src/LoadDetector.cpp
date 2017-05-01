@@ -742,6 +742,8 @@ bool LoadDetector::Load(const std::string & filename,
             }
             actScale = t_actScale;
             cout << "scale act:" << actScale << "\n";
+        } else if (command == "disable_half_life") {
+            sources.SetSimulateIsotopeHalfLife(false);
         } else if (command == "sphere") {
             // Sphere object
             VectorR3 position;
