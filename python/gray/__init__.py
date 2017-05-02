@@ -48,6 +48,33 @@ minimum_dtype = np.dtype([
     ('energy', np.float32),
     ('det', np.int32)], align=True)
 
+interaction_fields = (
+    ('time', np.float64),
+    ('id', np.int32),
+    ('color', np.int32),
+    ('type', np.int32),
+    ('pos', np.float64, (3,)),
+    ('energy', np.float64),
+    ('det_id', np.int32),
+    ('src_id', np.int32),
+    ('mat_id', np.int32),
+    ('scatter_compton_phantom', np.int32),
+    ('scatter_compton_detector', np.int32),
+    ('scatter_rayleigh_phantom', np.int32),
+    ('scatter_rayleigh_detector', np.int32),
+    ('xray_flouresence', np.int32),
+    ('sensitive_mat', np.int32),
+    )
+
+interaction_all_dtype = np.dtype(list(interaction_fields))
+
+def create_variable_dtype(write_mask):
+    vals = []
+    for field, mask in zip(interaction_fields, write_mask):
+        if mask:
+            vals.append(field)
+    return np.dtype(vals)
+
 SIGMA_TO_FWHM = 2.0 * np.sqrt(2.0 * np.log(2.0))
 FWHM_TO_SIGMA = 1.0 / SIGMA_TO_FWHM
 
@@ -195,3 +222,21 @@ def load_detector_output(filename, full=False, expand=False):
         return expand_detector_format(data, full)
     else:
         return data
+
+def load_variable_binary(filename):
+    with open(filename, 'r') as fid:
+        magic_number = np.fromfile(fid, dtype=np.int32, count=1)
+        if magic_number != 65531:
+            RuntimeError('Invalid binary file start')
+        version_number = np.fromfile(fid, dtype=np.int32, count=1)
+        if version_number != 1:
+            RuntimeError('Invalid version number')
+        no_fields = np.fromfile(fid, dtype=np.int32, count=1)
+        no_active = np.fromfile(fid, dtype=np.int32, count=1)
+        event_size = np.fromfile(fid, dtype=np.int32, count=1)
+        read_mask = np.fromfile(fid, dtype=np.int32, count=no_fields).astype(bool)
+        if read_mask.sum() != no_active:
+            RuntimeError('Number of active fields does not match header')
+        cur_dtype = create_variable_dtype(read_mask)
+        events = np.fromfile(fid, dtype=cur_dtype)
+    return events
