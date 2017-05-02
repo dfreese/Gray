@@ -187,7 +187,7 @@ void GammaRayTrace::TraceSources(SourceList & sources,
                 Photon & photon = *decay->NextPhoton();
                 stats.photons++;
                 TracePhoton(photon, interactions, tree, default_material,
-                            source->GetMaterial(), 100, log_nonsensitive,
+                            source->GetMaterial(), 500, log_nonsensitive,
                             log_nointeractions, log_errors, stats);
             }
         }
