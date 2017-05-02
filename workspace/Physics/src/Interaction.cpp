@@ -291,8 +291,8 @@ int Interaction::event_size(const WriteFlags & flags) {
     int event_size = 0;
     if (flags.time) event_size += sizeof(Interaction::time);
     if (flags.id) event_size += sizeof(Interaction::id);
-    if (flags.color) event_size += sizeof(Interaction::color);
-    if (flags.type) event_size += sizeof(Interaction::type);
+    if (flags.color) event_size += sizeof(int);
+    if (flags.type) event_size += sizeof(int);
     if (flags.pos) {
         event_size += sizeof(Interaction::pos.x);
         event_size += sizeof(Interaction::pos.y);
@@ -317,7 +317,7 @@ int Interaction::event_size(const WriteFlags & flags) {
     if (flags.xray_flouresence) {
         event_size += sizeof(Interaction::xray_flouresence);
     }
-    if (flags.sensitive_mat) event_size += sizeof(Interaction::sensitive_mat);
+    if (flags.sensitive_mat) event_size += sizeof(int);
     return(event_size);
 }
 
@@ -623,8 +623,8 @@ bool Interaction::write_interaction(const Interaction & inter,
                          sizeof(inter.xray_flouresence));
         }
         if (flags.sensitive_mat) {
-            output.write(reinterpret_cast<const char*>(&inter.sensitive_mat),
-                         sizeof(inter.sensitive_mat));
+            int val = inter.sensitive_mat;
+            output.write(reinterpret_cast<const char*>(&val), sizeof(val));
         }
     } else {
         if (flags.time) {
