@@ -41,10 +41,10 @@ public:
             TimeT initial_sort_window = -1,
             MergeF merge_info = [](EventT & e0, const EventT & e1) {
                 e0.energy += e1.energy;}) :
+        no_array_eweight(0),
         merge_info_func(merge_info),
         get_id_func([](const EventT & e){return (e.det_id);}),
-        get_time_func([](const EventT & e){return (e.time);}),
-        no_array_eweight(0)
+        get_time_func([](const EventT & e){return (e.time);})
     {
         if (initial_sort_window > 0) {
             add_sort_process("time", initial_sort_window,
