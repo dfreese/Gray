@@ -13,6 +13,7 @@
 #include <Graphics/SceneDescription.h>
 #include <GraphicsTrees/IntersectionKdTree.h>
 #include <GraphicsTrees/ShadowKdTree.h>
+#include <Viewer/GlutRenderer.h>
 #include <Viewer/PixelArray.h>
 
 namespace {
@@ -283,6 +284,12 @@ extern void RayTraceView(void)
 
 }
 
+extern void OpenGLRender() {
+    GlutRenderer glut;
+    glut.RenderScene(*ActiveScene);
+
+}
+
 void run_viewer(int argc, char** argv,
                 SceneDescription & FileScene,
                 IntersectKdTree & intersect_kd_tree)
@@ -313,11 +320,11 @@ void run_viewer(int argc, char** argv,
     glutReshapeFunc( ResizeWindow );
     
     // call this in main loop
-    glutDisplayFunc(RayTraceView);
+    glutDisplayFunc(OpenGLRender);
     try {
         glutMainLoop();
     } catch (...) {
         cout << "exit command caught" << endl;
     }
-    
+
 }
