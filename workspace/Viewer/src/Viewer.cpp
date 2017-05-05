@@ -11,10 +11,7 @@
 #endif
 
 #include <Graphics/SceneDescription.h>
-#include <GraphicsTrees/IntersectionKdTree.h>
-#include <GraphicsTrees/ShadowKdTree.h>
 #include <Viewer/GlutRenderer.h>
-#include <Viewer/PixelArray.h>
 
 namespace {
 
