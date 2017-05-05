@@ -21,23 +21,6 @@
 #ifndef GLUT_RENDERER
 #define GLUT_RENDERER
 
-// Including stdlib.h and disabling the atexit_hack seem to work everywhere.
-//	Eventually there should be a new version of glut.h that doesn't need this.
-#include <stdlib.h>
-// #define GLUT_DISABLE_ATEXIT_HACK
-
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
-#ifdef __APPLE__
-#include <OpenGL/gl.h>
-#include <GLUT/glut.h>
-#else
-#include <GL/gl.h>
-#include <GL/glut.h>
-#endif
-
 #include <VrMath/LinearR3.h>
 #include <vector>
 class CameraView;
@@ -138,7 +121,6 @@ private:
 
     void SetFrontMaterial( const MaterialBase* mat );
     void SetBackMaterial( const MaterialBase* mat );
-    void SetFaceMaterial( GLenum faceID, const MaterialBase* mat );
     void SetNormal( const VectorR3& normal );
     void PutVertex( const VectorR3& vertPos );
 

@@ -21,6 +21,23 @@
 
 #include <Viewer/GlutRenderer.h>
 
+// Including stdlib.h and disabling the atexit_hack seem to work everywhere.
+//	Eventually there should be a new version of glut.h that doesn't need this.
+#include <stdlib.h>
+// #define GLUT_DISABLE_ATEXIT_HACK
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#include <GLUT/glut.h>
+#else
+#include <GL/gl.h>
+#include <GL/glut.h>
+#endif
+
 #include <Graphics/CameraView.h>
 #include <Graphics/SceneDescription.h>
 #include <Graphics/ViewableBezierSet.h>
@@ -636,6 +653,24 @@ void GlutRenderer::RenderViewableTriangle( const ViewableTriangle& object )
     glEnd();
 }
 
+namespace {
+void SetFaceMaterial( GLenum faceID, const MaterialBase* mat )
+{
+    GLfloat temp[4];							// Risky: must be C++ "float" or "double"
+    // If fails, write new LinearR4::Dump() for new type
+    mat->GetColorAmbient().Dump(temp);
+    glMaterialfv ( faceID, GL_AMBIENT, temp );
+    mat->GetColorDiffuse().Dump(temp);
+    glMaterialfv ( faceID, GL_DIFFUSE, temp );
+    mat->GetColorSpecular().Dump(temp);
+    glMaterialfv ( faceID, GL_SPECULAR, temp );
+    mat->GetColorEmissive().Dump(temp);
+    glMaterialfv ( faceID, GL_EMISSION, temp );
+
+    glMaterialf( faceID, GL_SHININESS, Min( mat->GetPhongShininess(), 127.00 ) );   // Clamp to < 128.0 for safety.
+}
+}
+
 void GlutRenderer::SetFrontMaterial( const MaterialBase* mat )
 {
     if ( mat==0 ) {				// If no front material
@@ -650,22 +685,6 @@ void GlutRenderer::SetBackMaterial( const MaterialBase* mat )
         mat = &(Material::Default);
     }
     SetFaceMaterial( GL_BACK, mat );
-}
-
-void GlutRenderer::SetFaceMaterial( GLenum faceID, const MaterialBase* mat )
-{
-    GLfloat temp[4];							// Risky: must be C++ "float" or "double"
-    // If fails, write new LinearR4::Dump() for new type
-    mat->GetColorAmbient().Dump(temp);
-    glMaterialfv ( faceID, GL_AMBIENT, temp );
-    mat->GetColorDiffuse().Dump(temp);
-    glMaterialfv ( faceID, GL_DIFFUSE, temp );
-    mat->GetColorSpecular().Dump(temp);
-    glMaterialfv ( faceID, GL_SPECULAR, temp );
-    mat->GetColorEmissive().Dump(temp);
-    glMaterialfv ( faceID, GL_EMISSION, temp );
-
-    glMaterialf( faceID, GL_SHININESS, Min( mat->GetPhongShininess(), 127.00 ) );   // Clamp to < 128.0 for safety.
 }
 
 void GlutRenderer::SetNormal( const VectorR3& normal )
