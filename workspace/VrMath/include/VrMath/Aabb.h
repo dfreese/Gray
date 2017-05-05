@@ -44,7 +44,6 @@ public:
 
     AABB() {}
     AABB( const VectorR3& boxMin, const VectorR3& boxMax );
-    AABB( const AABB& aabb );
 
     void Set( const VectorR3& boxMin, const VectorR3& boxMax );
 
@@ -53,20 +52,20 @@ public:
 
     const VectorR3& GetBoxMin() const
     {
-        return BoxMin;
+        return bounds[0];
     }
     const VectorR3& GetBoxMax() const
     {
-        return BoxMax;
+        return bounds[1];
     }
 
     VectorR3& GetBoxMin()
     {
-        return BoxMin;
+        return bounds[0];
     }
     VectorR3& GetBoxMax()
     {
-        return BoxMax;
+        return bounds[1];
     }
 
     double GetMinX() const
@@ -132,26 +131,18 @@ public:
                        double *exitDist, int *exitFaceId );
 
 private:
-    VectorR3 BoxMin;		// Lower corner (min value for all three coordinates)
-    VectorR3 BoxMax;		// Upper corner (max value for all three coordinates)
+    VectorR3 bounds[2];
 };
 
 inline AABB::AABB( const VectorR3& boxMin, const VectorR3& boxMax )
-    : BoxMin(boxMin), BoxMax(boxMax)
 {
-    assert( WellFormed() );
-}
-
-inline AABB::AABB( const AABB& aabb )
-    : BoxMin(aabb.BoxMin), BoxMax(aabb.BoxMax )
-{
-    assert( WellFormed() );
+    Set(boxMin, boxMax);
 }
 
 inline void AABB::Set( const VectorR3& boxMin, const VectorR3& boxMax )
 {
-    BoxMin = boxMin;
-    BoxMax = boxMax;
+    GetBoxMin() = boxMin;
+    GetBoxMax() = boxMax;
     assert( WellFormed() );
 
 }
@@ -161,13 +152,13 @@ inline void AABB::SetNewAxisMin ( int axisNum, double newMin )
 {
     switch (axisNum) {
     case 0:
-        BoxMin.x = newMin;
+        GetBoxMin().x = newMin;
         break;
     case 1:
-        BoxMin.y = newMin;
+        GetBoxMin().y = newMin;
         break;
     case 2:
-        BoxMin.z = newMin;
+        GetBoxMin().z = newMin;
         break;
     }
 }
@@ -177,13 +168,13 @@ inline void AABB::SetNewAxisMax ( int axisNum, double newMax )
 {
     switch (axisNum) {
     case 0:
-        BoxMax.x = newMax;
+        GetBoxMax().x = newMax;
         break;
     case 1:
-        BoxMax.y = newMax;
+        GetBoxMax().y = newMax;
         break;
     case 2:
-        BoxMax.z = newMax;
+        GetBoxMax().z = newMax;
         break;
     }
 }
