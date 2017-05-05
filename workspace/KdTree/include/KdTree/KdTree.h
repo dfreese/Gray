@@ -33,7 +33,7 @@
 #ifndef KDTREE_H
 #define KDTREE_H
 
-#include <KdTree/ShellSort.h>
+#include <algorithm>
 #include <KdTree/Array.h>
 #include <VrMath/Aabb.h>
 class RayTraceStats;    // Statistics for KdTree traversal
@@ -376,7 +376,7 @@ public:
     // Add either a min and a max or a flat.
     long AddToEnd ( double min, double max, long objectID );
 
-    void Sort() { ShellSort( TripleArray, NumTriples() ); }
+    void Sort() {std::sort(TripleArray, TripleArray + NumTriples());}
 
 private:
     ExtentTriple* TripleArray;        // Pointer to an array of triples
