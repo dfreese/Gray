@@ -4,8 +4,6 @@
 class SceneDescription;
 class IntersectKdTree;
 
-void run_viewer(int argc, char** argv,
-                SceneDescription & FileScene,
-                IntersectKdTree & intersect_kd_tree);
+void run_viewer(int argc, char** argv, SceneDescription & FileScene);
 
 #endif // VIEWER_H

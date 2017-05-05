@@ -94,7 +94,7 @@ int main( int argc, char** argv)
 
     if (config.get_run_viewer()) {
 #ifdef USE_OPENGL
-        run_viewer(argc, argv, scene, intersect_kd_tree);
+        run_viewer(argc, argv, scene);
 #endif
     }
 

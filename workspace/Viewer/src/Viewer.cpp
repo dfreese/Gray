@@ -98,10 +98,7 @@ extern void OpenGLRender() {
     glut.RenderScene(*ActiveScene);
 }
 
-void run_viewer(int argc, char** argv,
-                SceneDescription & FileScene,
-                IntersectKdTree & intersect_kd_tree)
-{
+void run_viewer(int argc, char** argv, SceneDescription & FileScene) {
     ActiveScene = &FileScene;
     ActiveScene->RegisterCameraView();
 
