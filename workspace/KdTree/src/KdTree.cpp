@@ -269,6 +269,8 @@ void KdTree::BuildTree(long numObjects)
     if (TreeNodes.size() > 0) {
         return;
     }
+    // If it's a perfect binary tree, in the worst case we need 2x nodes.
+    TreeNodes.reserve(numObjects * 2);
 	NumObjects = numObjects;
 
 	// Get total cost of all objects

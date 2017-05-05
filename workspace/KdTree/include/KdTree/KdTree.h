@@ -561,9 +561,10 @@ inline void KdTree::Stats_GetAll( long* numNodes, long* numNonEmptyLeaves, long*
     *numObjsInLeaves = Stats_NumberKdObjectsInLeaves;
 }
 
-// Allocate the next entry for the KdTree 
-//  Call this to pre-allocate to avoid having the Array for the KdTree
-//        automatically re-sized at a bad time.
+/*!
+ * Emplace an object at the end of TreeNodes, and bump the size.  If we run
+ * out of capacity, reserve 25% more.
+ */
 inline long KdTree::NextIndex() 
 {
     long i = TreeNodes.size();
