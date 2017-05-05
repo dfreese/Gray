@@ -55,111 +55,48 @@ double AABB::SurfaceArea() const
     return 2.0*(delta.x*delta.y + delta.x*delta.z + delta.y*delta.z);
 }
 
-// Find intersection points with a ray.
-bool AABB::RayEntryExit( const VectorR3& startPos, const VectorR3& dir,
-                         double *entryDist, int *entryFaceId,
-                         double *exitDist, int *exitFaceId )
+bool AABB::RayIntersect(const VectorR3& startPos, const VectorR3& dir,
+                        VectorR3 & dirInv, int & signDirX, int & signDirY,
+                        int & signDirZ, double t0, double t1, double & tmin,
+                        double & tmax) const
 {
-    VectorR3 dirInv;
-    int signDirX = Sign(dir.x);
-    if ( signDirX!=0 ) {
-        dirInv.x = 1.0/dir.x;
-    }
-    int signDirY = Sign(dir.y);
-    if ( signDirY!=0 ) {
-        dirInv.y = 1.0/dir.y;
-    }
-    int signDirZ = Sign(dir.z);
-    if ( signDirZ!=0 ) {
-        dirInv.z = 1.0/dir.z;
-    }
-    return RayEntryExit( startPos, signDirX, signDirY, signDirZ, dirInv,
-                         entryDist, entryFaceId, exitDist, exitFaceId );
+    dirInv.x = 1 / dir.x;
+    dirInv.y = 1 / dir.y;
+    dirInv.z = 1 / dir.z;
+    signDirX = (dirInv.x < 0);
+    signDirY = (dirInv.y < 0);
+    signDirZ = (dirInv.z < 0);
+    return(RayIntersect(startPos, dirInv, signDirX, signDirY, signDirZ,
+                        t0, t1, tmin, tmax));
 }
 
-bool AABB::RayEntryExit( const VectorR3& startPos,
-                         int signDirX, int signDirY, int signDirZ, const VectorR3& dirInv,
-                         double *entryDist, int *entryFaceId,
-                         double *exitDist, int *exitFaceId )
+/*!
+ * This implementation is careful about the IEEE spec for handling divide by
+ * 0 cases.  For more details see this paper here:
+ * http://people.csail.mit.edu/amy/papers/box-jgt.pdf
+ */
+bool AABB::RayIntersect(const VectorR3& startPos, const VectorR3 & dirInv,
+                        int & signDirX, int & signDirY, int & signDirZ,
+                        double t0, double t1, double & tmin,
+                        double & tmax) const
 {
-    double& maxEnterDist=*entryDist;
-    int& maxEnterAxis = *entryFaceId;
-    double& minExitDist = *exitDist;
-    int& minExitAxis = *exitFaceId;
+    tmin = (bounds[signDirX].x - startPos.x) * dirInv.x;
+    tmax = (bounds[1-signDirX].x - startPos.x) * dirInv.x;
+    float tymin = (bounds[signDirY].y - startPos.y) * dirInv.y;
+    float tymax = (bounds[1-signDirY].y - startPos.y) * dirInv.y;
+    if ((tmin > tymax) || (tymin > tmax)) {
+        return(false);
+    }
+    if (tymin > tmin) tmin = tymin;
+    if (tymax < tmax) tmax = tymax;
 
-    double mx, mn;
-    if ( signDirX!=0 ) {
-        if ( signDirX==1 ) {
-            mx = GetBoxMax().x;
-            mn = GetBoxMin().x;
-        } else {
-            mx = GetBoxMin().x;
-            mn = GetBoxMax().x;
-        }
-        maxEnterDist = (mn-startPos.x)*dirInv.x;
-        minExitDist = (mx-startPos.x)*dirInv.x;
-        maxEnterAxis = 0;
-        minExitAxis = 0;
-    } else {
-        if ( startPos.x<GetBoxMin().x || startPos.x>GetBoxMax().x ) {
-            return false;
-        }
-        maxEnterDist = -DBL_MAX;
-        minExitDist = DBL_MAX;
-        maxEnterAxis = -1;
-        minExitAxis = -1;
+    float tzmin = (bounds[signDirZ].z - startPos.z) * dirInv.z;
+    float tzmax = (bounds[1-signDirZ].z - startPos.z) * dirInv.z;
+    if ((tmin > tzmax) || (tzmin > tmax)) {
+        return(false);
     }
 
-    if ( signDirY!=0 ) {
-        if ( signDirY==1 ) {
-            mx = GetBoxMax().y;
-            mn = GetBoxMin().y;
-        } else {
-            mx = GetBoxMin().y;
-            mn = GetBoxMax().y;
-        }
-        double newEnterDist = (mn-startPos.y)*dirInv.y;
-        double newExitDist = (mx-startPos.y)*dirInv.y;
-        if ( maxEnterDist<newEnterDist ) {
-            maxEnterDist = newEnterDist;
-            maxEnterAxis = 1;
-        }
-        if ( minExitDist>newExitDist ) {
-            minExitDist = newExitDist;
-            minExitAxis = 1;
-        }
-    } else {
-        if ( startPos.y<GetBoxMin().y || startPos.y>GetBoxMax().y ) {
-            return false;
-        }
-    }
-
-    if ( signDirZ!=0 ) {
-        if ( signDirZ==1 ) {
-            mx = GetBoxMax().z;
-            mn = GetBoxMin().z;
-        } else {
-            mx = GetBoxMin().z;
-            mn = GetBoxMax().z;
-        }
-        double newEnterDist = (mn-startPos.z)*dirInv.z;
-        double newExitDist = (mx-startPos.z)*dirInv.z;
-        if ( maxEnterDist<newEnterDist ) {
-            maxEnterDist = newEnterDist;
-            maxEnterAxis = 2;
-        }
-        if ( minExitDist>newExitDist ) {
-            minExitDist = newExitDist;
-            minExitAxis = 2;
-        }
-    } else {
-        if ( startPos.z<GetBoxMin().z || startPos.z>GetBoxMax().z ) {
-            return false;
-        }
-    }
-
-    if ( minExitDist<maxEnterDist ) {
-        return false;
-    }
-    return true;
+    if (tzmin > tmin) tmin = tzmin;
+    if (tzmax < tmax) tmax = tzmax;
+    return((tmin < t1) && (tmax > t0));
 }

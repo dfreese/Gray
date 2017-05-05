@@ -68,32 +68,16 @@ KdTree::~KdTree()
 
 bool KdTree::Traverse(const VectorR3& startPos, const VectorR3& dir)
 {
-	double entryDist, exitDist;
-	int entryFaceId, exitFaceId;
-
-	// Set sign of dir components and inverse values of non-zero entries.
-	VectorR3 dirInv;
-	int signDirX = Sign(dir.x);
-	if ( signDirX!=0 ) {
-		dirInv.x = 1.0/dir.x;
-	}
-	int signDirY = Sign(dir.y);
-	if ( signDirY!=0 ) {
-		dirInv.y = 1.0/dir.y;
-	}
-	int signDirZ = Sign(dir.z);
-	if ( signDirZ!=0 ) {
-		dirInv.z = 1.0/dir.z;
-	}
-
-	bool intersectsAABB = BoundingBox.RayEntryExit(startPos, signDirX, signDirY,
-                                                   signDirZ, dirInv, &entryDist,
-                                                   &entryFaceId, &exitDist,
-                                                   &exitFaceId);
-	if ( !intersectsAABB || exitDist<0.0 ) {
-		return false;
-	}
-
+    // Set sign of dir components and inverse values of non-zero entries.
+    VectorR3 dirInv;
+    int sign[3];
+    double entryDist, exitDist;
+    bool intersects = BoundingBox.RayIntersect(startPos, dir, dirInv,
+                                               sign[0], sign[1], sign[2],
+                                               0, DBL_MAX, entryDist, exitDist);
+    if (!intersects) {
+        return(false);
+    }
 	// Main traversal loop
 
 	long currentNodeIndex = RootIndex(); // The current node in the traversal
@@ -113,23 +97,27 @@ bool KdTree::Traverse(const VectorR3& startPos, const VectorR3& dir)
 			Stats_NodeTraversed();
 			// Handle non-leaf nodes
 			//		These do not contain primitive objects.
-			int thisSign;
+            int thisSign;
+            double thisDir;
 			double thisDirInv;
 			double thisStartPt;
 			switch ( currentNode->NodeType ) 
 			{
 			case KD_SPLIT_X:
-				thisSign = signDirX;
+                thisSign = sign[0];
+                thisDir = dir.x;
 				thisDirInv = dirInv.x;
 				thisStartPt = startPos.x;
 				break;
 			case KD_SPLIT_Y:
-				thisSign = signDirY;
+                thisSign = sign[1];
+                thisDir = dir.y;
 				thisDirInv = dirInv.y;
 				thisStartPt = startPos.y;
 				break;
 			case KD_SPLIT_Z:
-				thisSign = signDirZ;
+                thisSign = sign[2];
+                thisDir = dir.z;
 				thisDirInv = dirInv.z;
 				thisStartPt = startPos.z;
 				break;
@@ -138,7 +126,7 @@ bool KdTree::Traverse(const VectorR3& startPos, const VectorR3& dir)
 			}
 			long nearNodeIdx;
 			long farNodeIdx;
-			if ( thisSign==0 ) {
+			if (thisDir == 0) {
 				// Handle hitting exactly parallel to the splitting plane
 				double thisSplitVal = currentNode->SplitValue();
 				if ( thisSplitVal<thisStartPt ) {
@@ -165,13 +153,11 @@ bool KdTree::Traverse(const VectorR3& startPos, const VectorR3& dir)
 						UpdateMax(maxDistance,parallelHitMax);
 					}
 				}
-			}
-			else {
-				if ( thisSign>0 ) {
+			} else {
+				if (thisSign == 0) {
 					nearNodeIdx = currentNode->LeftChildIndex();
 					farNodeIdx = currentNode->RightChildIndex();
-				}
-				else {
+				} else {
 					nearNodeIdx = currentNode->RightChildIndex();
 					farNodeIdx = currentNode->LeftChildIndex();
 				}
@@ -179,16 +165,13 @@ bool KdTree::Traverse(const VectorR3& startPos, const VectorR3& dir)
 				if ( splitDistance<minDistance ) {
 					// Far node is the new current node
 					currentNodeIndex = farNodeIdx;
-				}
-				else if ( splitDistance>maxDistance ) {
+				} else if ( splitDistance>maxDistance ) {
 					// Near node is the new current node
 					currentNodeIndex = nearNodeIdx;
-				}
-				else if ( nearNodeIdx == -1 ) {
+				} else if ( nearNodeIdx == -1 ) {
 						minDistance = splitDistance;
 						currentNodeIndex = farNodeIdx;
-				}
-				else {
+				} else {
 					// Push the far node -- if it exists
                     if ( farNodeIdx != -1 ) {
                         traverseStack.push(Kd_TraverseNodeData(

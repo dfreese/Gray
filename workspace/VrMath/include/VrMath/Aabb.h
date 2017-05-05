@@ -121,14 +121,14 @@ public:
     // Use IsEmpty to check if result has is non-empty.
     void IntersectAgainst( const AABB& aabb1 );
 
-    // Find intersection points with a ray.
-    bool RayEntryExit( const VectorR3& startPos, const VectorR3& dir,
-                       double *entryDist, int *entryFaceId,
-                       double *exitDist, int *exitFaceId );
-    bool RayEntryExit( const VectorR3& startPos,
-                       int signDirX, int signDirY, int signDirZ, const VectorR3& dirInv,
-                       double *entryDist, int *entryFaceId,
-                       double *exitDist, int *exitFaceId );
+    bool RayIntersect(const VectorR3& startPos, const VectorR3& dir,
+                      VectorR3 & dirInv, int & signDirX, int & signDirY,
+                      int & signDirZ, double t0, double t1, double & tmin,
+                      double & tmax) const;
+    bool RayIntersect(const VectorR3& startPos, const VectorR3 & dirInv,
+                      int & signDirX, int & signDirY, int & signDirZ,
+                      double t0, double t1, double & tmin,
+                      double & tmax) const;
 
 private:
     VectorR3 bounds[2];
