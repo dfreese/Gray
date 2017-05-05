@@ -59,10 +59,7 @@ bool VectorSource::RejectionTest(const VectorR3 &pos)
 
     double hitDist;
     VisiblePoint visPoint;
-    int avoidK = -1;
-
-    long intersectNum = kd_tree->SeekIntersection(pos, dir, &hitDist,
-                                                  visPoint, avoidK);
+    long intersectNum = kd_tree->SeekIntersection(pos, dir, hitDist, visPoint);
 
     if ( intersectNum<0 ) {
         return true;

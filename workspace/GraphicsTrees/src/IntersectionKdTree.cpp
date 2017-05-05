@@ -38,22 +38,12 @@ bool IntersectKdTree::ObjectCallback(long objectNum, double* retStopDistance)
     double thisHitDistance;
     bool hitFlag;
     VisiblePoint tempPoint;
-    if (objectNum == kdTraverseAvoid) {
-        hitFlag = ActiveScene->GetViewable(objectNum).FindIntersection(
-                kdStartPosAvoid, kdTraverseDir, bestHitDistance,
-                &thisHitDistance, tempPoint);
-        if ( !hitFlag ) {
-            return false;
-        }
-        thisHitDistance += isectEpsilon;		// Adjust back to real hit distance
-    } else {
-        hitFlag = ActiveScene->GetViewable(objectNum).FindIntersection(kdStartPos, kdTraverseDir,
-                                                                       bestHitDistance, &thisHitDistance, tempPoint);
-        if ( !hitFlag ) {
-            return false;
-        }
+    hitFlag = ActiveScene->GetViewable(objectNum).FindIntersection(
+            kdStartPos, kdTraverseDir, bestHitDistance, &thisHitDistance,
+            tempPoint);
+    if ( !hitFlag ) {
+        return false;
     }
-
     *bestHitPoint = tempPoint;		// The visible point that was hit
     bestObject = objectNum;				// The object that was hit
     bestHitDistance = thisHitDistance;
@@ -69,29 +59,24 @@ bool IntersectKdTree::ObjectCallback(long objectNum, double* retStopDistance)
 // This "Kd" version uses the Kd-Tree
 long IntersectKdTree::SeekIntersection(const VectorR3& pos,
                                        const VectorR3& direction,
-                                       double *hitDist,
-                                       VisiblePoint& returnedPoint,
-                                       long avoidK)
+                                       double & hitDist,
+                                       VisiblePoint& returnedPoint)
 {
     bestObject = -1;
     bestHitDistance = DBL_MAX;
-    kdTraverseAvoid = avoidK;
     kdStartPos = pos;
     kdTraverseDir = direction;
-    kdStartPosAvoid = pos;
-    kdStartPosAvoid.AddScaled( direction, isectEpsilon );
     bestHitPoint = &returnedPoint;
 
-    bestObject = -1;
     Traverse(pos, direction);
 
     if ( bestObject>=0 ) {
         // FIXME: NAN in KDTREE Traversal
         if(isnan(bestHitDistance)) {
-            *hitDist = DBL_MAX;
+            hitDist = DBL_MAX;
             bestObject = -1;
         } else {
-            *hitDist = bestHitDistance;
+            hitDist = bestHitDistance;
         }
     }
     return bestObject;

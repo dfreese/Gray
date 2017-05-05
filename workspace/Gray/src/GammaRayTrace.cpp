@@ -54,7 +54,7 @@ void GammaRayTrace::TracePhoton(
         double hitDist;
         VisiblePoint visPoint;
         long intersectNum = tree.SeekIntersection(photon.pos, photon.dir,
-                                                  &hitDist, visPoint, -1);
+                                                  hitDist, visPoint);
         // There was nothing further in the environment to hit, so return.
         if (intersectNum < 0) {
             stats.no_interaction++;

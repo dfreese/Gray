@@ -20,11 +20,8 @@ public:
     IntersectKdTree(const SceneDescription & scene,
                     double object_cost=8.0,
                     bool use_double_recurse_split=true);
-    virtual long SeekIntersection(const VectorR3& pos,
-                                  const VectorR3& direction,
-                                  double *hitDist,
-                                  VisiblePoint& returnedPoint,
-                                  long avoidK);
+    long SeekIntersection(const VectorR3& pos, const VectorR3& direction,
+                          double & hitDist, VisiblePoint& returnedPoint);
 
 protected:
     virtual bool ObjectCallback(long objectNum, double* retStopDistance);
@@ -33,13 +30,10 @@ protected:
                                  AABB& boundingBox);
     SceneDescription const * ActiveScene;
     long bestObject;
-    long kdTraverseAvoid;
     double bestHitDistance;
     VectorR3 kdStartPos;
-    VectorR3 kdStartPosAvoid;
     VectorR3 kdTraverseDir;
     VisiblePoint* bestHitPoint;
-    const double isectEpsilon = 1.0e-6;
 };
 
 #endif /* IntersectionKdTree_h */
