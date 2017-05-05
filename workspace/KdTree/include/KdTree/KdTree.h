@@ -69,9 +69,6 @@ public:
     // Destructor
     virtual ~KdTree();
 
-    // ******** Accessors ****************
-    const KdTreeNode& GetNode( long i ) const;
-
     void ResetStats();
     void Stats_ObjectsInLeaves( long objNum = 1 );
     void Stats_NodeTraversed();
@@ -121,7 +118,6 @@ public:
     double TotalObjectCosts;    // Total cost of all objects in the tree
 
 private:
-    long TreeSize() const { return TreeNodes.SizeUsed(); }        // Number of nodes in the tree
 
     Array<KdTreeNode> TreeNodes;
     long RootIndex() const { return 0; }    // Index for the first entry in the array.
@@ -563,11 +559,6 @@ inline void KdTree::Stats_GetAll( long* numNodes, long* numNonEmptyLeaves, long*
     *numNodes = Stats_NumberKdNodesTraversed;
     *numNonEmptyLeaves = Stats_NumberKdLeavesTraversed;
     *numObjsInLeaves = Stats_NumberKdObjectsInLeaves;
-}
-
-inline const KdTreeNode& KdTree::GetNode( long i ) const 
-{ 
-    return TreeNodes[i]; 
 }
 
 // Allocate the next entry for the KdTree 

@@ -40,14 +40,14 @@ std::stack<Kd_TraverseNodeData> traverseStack;
 // Destructor
 KdTree::~KdTree()
 {
-	if ( TreeSize()==0 ) {
+	if (TreeNodes.SizeUsed() == 0) {
 		return;
 	}
 	// Traverse the tree and delete object lists in each non-empty leaf node
     std::stack<long> IdxStack;
 	long currentNodeIndex = RootIndex();			// The current node in the traversal
 	while ( true ) {
-		KdTreeNode* currentNode = &TreeNodes[currentNodeIndex];
+		KdTreeNode* currentNode = &TreeNodes.GetEntry(currentNodeIndex);
 		if ( currentNode->IsLeaf() ){
 			delete[] currentNode->Data.Leaf.ObjectList;
 		}
@@ -100,7 +100,7 @@ bool KdTree::Traverse( const VectorR3& startPos, const VectorR3& dir, double see
 
 	long currentNodeIndex = RootIndex();			// The current node in the traversal
 	assert ( currentNodeIndex != -1 ) ;				// The tree should not be empty
-    KdTreeNode* currentNode = &TreeNodes[currentNodeIndex];
+    KdTreeNode* currentNode = &TreeNodes.GetEntry(currentNodeIndex);
 	double minDistance = Max(0.0, entryDist);					
 	double maxDistance = exitDist;
 	bool hitParallel = false;
@@ -211,7 +211,7 @@ bool KdTree::Traverse( const VectorR3& startPos, const VectorR3& dir, double see
 				}
 			}
 			if ( currentNodeIndex != -1 ) {
-				currentNode = &TreeNodes[currentNodeIndex];
+                currentNode = &TreeNodes.GetEntry(currentNodeIndex);
 				continue;
 			}
 			// If we reach here, we are at an empty leaf and can fall through.
@@ -252,7 +252,7 @@ bool KdTree::Traverse( const VectorR3& startPos, const VectorR3& dir, double see
 				}
 			}
 			currentNodeIndex = topNode.GetNodeNumber();
-			currentNode = &TreeNodes[currentNodeIndex];
+			currentNode = &TreeNodes.GetEntry(currentNodeIndex);
 			maxDistance = topNode.GetMaxDist(); 
 		}
 
@@ -266,7 +266,9 @@ bool KdTree::Traverse( const VectorR3& startPos, const VectorR3& dir, double see
  ***********************************************************************************************/
 void KdTree::BuildTree(long numObjects)
 {
-	assert (TreeSize() == 0);
+    if (TreeNodes.SizeUsed() > 0) {
+        return;
+    }
 	NumObjects = numObjects;
 
 	// Get total cost of all objects
@@ -323,7 +325,8 @@ void KdTree::BuildTree(long numObjects)
 	ZextentList.Sort();
 		
 	// Recursively build the entire tree!
-	KdTreeNode& RootNode = TreeNodes[RootIndex()];
+    long root_index = NextIndex();
+	KdTreeNode& RootNode = TreeNodes.GetEntry(root_index);
 	RootNode.ParentIdx = -1;				// No parent, it is the root node
 	BuildSubTree ( RootIndex(), BoundingBox, TotalObjectCosts, XextentList, YextentList, ZextentList, spaceAvailable );
 
@@ -400,7 +403,7 @@ void KdTree::BuildSubTree( long baseIndex, AABB& aabb, double totalObjectCost,
 		// One child is empty
 		long childIndex = NextIndex();		// WARNING: NextIndex() can trigger memory movement
 		KdTreeNode& baseNode = TreeNodes.GetEntry(baseIndex);
-		KdTreeNode& childNode = TreeNodes[childIndex];
+		KdTreeNode& childNode = TreeNodes.GetEntry(childIndex);
 		childNode.ParentIdx = baseIndex;
 		baseNode.NodeType = splitAxisID;
 		baseNode.Data.Split.SplitValue = splitValue;
@@ -456,8 +459,8 @@ void KdTree::BuildSubTree( long baseIndex, AABB& aabb, double totalObjectCost,
 	long leftChildIndex = NextIndex();		// Warning: NextIndex() can trigger memory movement
 	long rightChildIndex = NextIndex();
 	KdTreeNode& baseNode = TreeNodes.GetEntry(baseIndex);
-	KdTreeNode& leftChildNode = TreeNodes[leftChildIndex];
-	KdTreeNode& rightChildNode = TreeNodes[rightChildIndex];
+	KdTreeNode& leftChildNode = TreeNodes.GetEntry(leftChildIndex);
+	KdTreeNode& rightChildNode = TreeNodes.GetEntry(rightChildIndex);
 	baseNode.NodeType = splitAxisID;
 	baseNode.Data.Split.LeftChildIdx = leftChildIndex;
 	baseNode.Data.Split.RightChildIdx = rightChildIndex;
