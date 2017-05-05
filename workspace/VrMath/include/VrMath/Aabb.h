@@ -71,40 +71,40 @@ public:
 
     double GetMinX() const
     {
-        return BoxMin.x;
+        return GetBoxMin().x;
     }
     double GetMaxX() const
     {
-        return BoxMax.x;
+        return GetBoxMax().x;
     }
     double GetMinY() const
     {
-        return BoxMin.y;
+        return GetBoxMin().y;
     }
     double GetMaxY() const
     {
-        return BoxMax.y;
+        return GetBoxMax().y;
     }
     double GetMinZ() const
     {
-        return BoxMin.z;
+        return GetBoxMin().z;
     }
     double GetMaxZ() const
     {
-        return BoxMax.z;
+        return GetBoxMax().z;
     }
 
     bool IsFlatX() const
     {
-        return (BoxMin.x==BoxMax.x);
+        return (GetBoxMin().x==GetBoxMax().x);
     }
     bool IsFlatY() const
     {
-        return (BoxMin.y==BoxMax.y);
+        return (GetBoxMin().y==GetBoxMax().y);
     }
     bool IsFlatZ() const
     {
-        return (BoxMin.z==BoxMax.z);
+        return (GetBoxMin().z==GetBoxMax().z);
     }
 
     bool WellFormed() const;	// If has non-negative volume
@@ -192,27 +192,28 @@ inline void AABB::SetNewAxisMax ( int axisNum, double newMax )
 // Use IsEmpty to check if result has is non-empty.
 inline void AABB::IntersectAgainst( const AABB& aabb1 )
 {
-    UpdateMax( aabb1.BoxMin.x, BoxMin.x );
-    UpdateMax( aabb1.BoxMin.y, BoxMin.y );
-    UpdateMax( aabb1.BoxMin.z, BoxMin.z );
-    UpdateMin( aabb1.BoxMax.x, BoxMax.x );
-    UpdateMin( aabb1.BoxMax.y, BoxMax.y );
-    UpdateMin( aabb1.BoxMax.z, BoxMax.z );
+    VectorR3 & a_min = GetBoxMin();
+    VectorR3 & a_max = GetBoxMax();
+    const VectorR3 & b_min = aabb1.GetBoxMin();
+    const VectorR3 & b_max = aabb1.GetBoxMax();
+    a_min.x = std::max(a_min.x, b_min.x);
+    a_min.y = std::max(a_min.y, b_min.y);
+    a_min.z = std::max(a_min.z, b_min.z);
+    a_max.x = std::min(a_max.x, b_max.x);
+    a_max.y = std::min(a_max.y, b_max.y);
+    a_max.z = std::min(a_max.z, b_max.z);
 }
 
 inline bool AABB::WellFormed() const
 {
-    return ( BoxMin.x<=BoxMax.x
-             && BoxMin.y<=BoxMax.y
-             && BoxMin.z<=BoxMax.z);
+    return (!IsEmpty());
 }
 
 // Flat boxes do not count as "empty"
 inline bool AABB::IsEmpty() const
 {
-    return ( BoxMax.x<BoxMin.x
-             || BoxMax.y<BoxMin.y
-             || BoxMax.z<BoxMin.z );
+    return ((GetBoxMax().x < GetBoxMin().x) || (GetBoxMax().y < GetBoxMin().y) ||
+            (GetBoxMax().z < GetBoxMin().z));
 }
 
 #endif

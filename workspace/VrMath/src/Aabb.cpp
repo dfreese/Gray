@@ -33,23 +33,25 @@
 //	as use is acknowledged.
 
 #include <VrMath/Aabb.h>
-#include <VrMath/MathMisc.h>
 
 // Update the Aabb to include the "newAabb"
 void AABB::EnlargeToEnclose ( const AABB& aabbToEnclose )
 {
-    UpdateMin( aabbToEnclose.BoxMin.x, BoxMin.x );
-    UpdateMin( aabbToEnclose.BoxMin.y, BoxMin.y );
-    UpdateMin( aabbToEnclose.BoxMin.z, BoxMin.z );
-    UpdateMax( aabbToEnclose.BoxMax.x, BoxMax.x );
-    UpdateMax( aabbToEnclose.BoxMax.y, BoxMax.y );
-    UpdateMax( aabbToEnclose.BoxMax.z, BoxMax.z );
+    VectorR3 & a_min = GetBoxMin();
+    VectorR3 & a_max = GetBoxMax();
+    const VectorR3 & b_min = aabbToEnclose.GetBoxMin();
+    const VectorR3 & b_max = aabbToEnclose.GetBoxMax();
+    a_min.x = std::min(a_min.x, b_min.x);
+    a_min.y = std::min(a_min.y, b_min.y);
+    a_min.z = std::min(a_min.z, b_min.z);
+    a_max.x = std::max(a_max.x, b_max.x);
+    a_max.y = std::max(a_max.y, b_max.y);
+    a_max.z = std::max(a_max.z, b_max.z);
 }
 
 double AABB::SurfaceArea() const
 {
-    VectorR3 delta = BoxMax;
-    delta -= BoxMin;
+    VectorR3 delta = GetBoxMax() - GetBoxMin();
     return 2.0*(delta.x*delta.y + delta.x*delta.z + delta.y*delta.z);
 }
 
@@ -88,18 +90,18 @@ bool AABB::RayEntryExit( const VectorR3& startPos,
     double mx, mn;
     if ( signDirX!=0 ) {
         if ( signDirX==1 ) {
-            mx = BoxMax.x;
-            mn = BoxMin.x;
+            mx = GetBoxMax().x;
+            mn = GetBoxMin().x;
         } else {
-            mx = BoxMin.x;
-            mn = BoxMax.x;
+            mx = GetBoxMin().x;
+            mn = GetBoxMax().x;
         }
         maxEnterDist = (mn-startPos.x)*dirInv.x;
         minExitDist = (mx-startPos.x)*dirInv.x;
         maxEnterAxis = 0;
         minExitAxis = 0;
     } else {
-        if ( startPos.x<BoxMin.x || startPos.x>BoxMax.x ) {
+        if ( startPos.x<GetBoxMin().x || startPos.x>GetBoxMax().x ) {
             return false;
         }
         maxEnterDist = -DBL_MAX;
@@ -110,11 +112,11 @@ bool AABB::RayEntryExit( const VectorR3& startPos,
 
     if ( signDirY!=0 ) {
         if ( signDirY==1 ) {
-            mx = BoxMax.y;
-            mn = BoxMin.y;
+            mx = GetBoxMax().y;
+            mn = GetBoxMin().y;
         } else {
-            mx = BoxMin.y;
-            mn = BoxMax.y;
+            mx = GetBoxMin().y;
+            mn = GetBoxMax().y;
         }
         double newEnterDist = (mn-startPos.y)*dirInv.y;
         double newExitDist = (mx-startPos.y)*dirInv.y;
@@ -127,18 +129,18 @@ bool AABB::RayEntryExit( const VectorR3& startPos,
             minExitAxis = 1;
         }
     } else {
-        if ( startPos.y<BoxMin.y || startPos.y>BoxMax.y ) {
+        if ( startPos.y<GetBoxMin().y || startPos.y>GetBoxMax().y ) {
             return false;
         }
     }
 
     if ( signDirZ!=0 ) {
         if ( signDirZ==1 ) {
-            mx = BoxMax.z;
-            mn = BoxMin.z;
+            mx = GetBoxMax().z;
+            mn = GetBoxMin().z;
         } else {
-            mx = BoxMin.z;
-            mn = BoxMax.z;
+            mx = GetBoxMin().z;
+            mn = GetBoxMax().z;
         }
         double newEnterDist = (mn-startPos.z)*dirInv.z;
         double newExitDist = (mx-startPos.z)*dirInv.z;
@@ -151,7 +153,7 @@ bool AABB::RayEntryExit( const VectorR3& startPos,
             minExitAxis = 2;
         }
     } else {
-        if ( startPos.z<BoxMin.z || startPos.z>BoxMax.z ) {
+        if ( startPos.z<GetBoxMin().z || startPos.z>GetBoxMax().z ) {
             return false;
         }
     }
