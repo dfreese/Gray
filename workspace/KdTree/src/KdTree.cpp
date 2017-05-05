@@ -40,14 +40,14 @@ std::stack<Kd_TraverseNodeData> traverseStack;
 // Destructor
 KdTree::~KdTree()
 {
-	if (TreeNodes.SizeUsed() == 0) {
+	if (TreeNodes.size() == 0) {
 		return;
 	}
 	// Traverse the tree and delete object lists in each non-empty leaf node
     std::stack<long> IdxStack;
 	long currentNodeIndex = RootIndex();			// The current node in the traversal
 	while ( true ) {
-		KdTreeNode* currentNode = &TreeNodes.GetEntry(currentNodeIndex);
+		KdTreeNode* currentNode = &TreeNodes.at(currentNodeIndex);
 		if ( currentNode->IsLeaf() ){
 			delete[] currentNode->Data.Leaf.ObjectList;
 		}
@@ -100,7 +100,7 @@ bool KdTree::Traverse( const VectorR3& startPos, const VectorR3& dir, double see
 
 	long currentNodeIndex = RootIndex();			// The current node in the traversal
 	assert ( currentNodeIndex != -1 ) ;				// The tree should not be empty
-    KdTreeNode* currentNode = &TreeNodes.GetEntry(currentNodeIndex);
+    KdTreeNode* currentNode = &TreeNodes.at(currentNodeIndex);
 	double minDistance = Max(0.0, entryDist);					
 	double maxDistance = exitDist;
 	bool hitParallel = false;
@@ -211,7 +211,7 @@ bool KdTree::Traverse( const VectorR3& startPos, const VectorR3& dir, double see
 				}
 			}
 			if ( currentNodeIndex != -1 ) {
-                currentNode = &TreeNodes.GetEntry(currentNodeIndex);
+                currentNode = &TreeNodes.at(currentNodeIndex);
 				continue;
 			}
 			// If we reach here, we are at an empty leaf and can fall through.
@@ -252,7 +252,7 @@ bool KdTree::Traverse( const VectorR3& startPos, const VectorR3& dir, double see
 				}
 			}
 			currentNodeIndex = topNode.GetNodeNumber();
-			currentNode = &TreeNodes.GetEntry(currentNodeIndex);
+			currentNode = &TreeNodes.at(currentNodeIndex);
 			maxDistance = topNode.GetMaxDist(); 
 		}
 
@@ -266,7 +266,7 @@ bool KdTree::Traverse( const VectorR3& startPos, const VectorR3& dir, double see
  ***********************************************************************************************/
 void KdTree::BuildTree(long numObjects)
 {
-    if (TreeNodes.SizeUsed() > 0) {
+    if (TreeNodes.size() > 0) {
         return;
     }
 	NumObjects = numObjects;
@@ -326,7 +326,7 @@ void KdTree::BuildTree(long numObjects)
 		
 	// Recursively build the entire tree!
     long root_index = NextIndex();
-	KdTreeNode& RootNode = TreeNodes.GetEntry(root_index);
+	KdTreeNode& RootNode = TreeNodes.at(root_index);
 	RootNode.ParentIdx = -1;				// No parent, it is the root node
 	BuildSubTree ( RootIndex(), BoundingBox, TotalObjectCosts, XextentList, YextentList, ZextentList, spaceAvailable );
 
@@ -367,7 +367,7 @@ void KdTree::BuildSubTree( long baseIndex, AABB& aabb, double totalObjectCost,
 			{
 				// No splitting occurs
 				// Copy object triples into an array
-				KdTreeNode& baseNode = TreeNodes.GetEntry(baseIndex);
+				KdTreeNode& baseNode = TreeNodes.at(baseIndex);
 				baseNode.NodeType = KD_LEAF;
 				long numInLeaf = xExtents.NumObjects();
 				assert ( yExtents.NumObjects() == numInLeaf && zExtents.NumObjects() == numInLeaf );
@@ -402,8 +402,8 @@ void KdTree::BuildSubTree( long baseIndex, AABB& aabb, double totalObjectCost,
 		assert ( numObjectsToLeft!=0 || numObjectsToRight!=0 );
 		// One child is empty
 		long childIndex = NextIndex();		// WARNING: NextIndex() can trigger memory movement
-		KdTreeNode& baseNode = TreeNodes.GetEntry(baseIndex);
-		KdTreeNode& childNode = TreeNodes.GetEntry(childIndex);
+		KdTreeNode& baseNode = TreeNodes.at(baseIndex);
+		KdTreeNode& childNode = TreeNodes.at(childIndex);
 		childNode.ParentIdx = baseIndex;
 		baseNode.NodeType = splitAxisID;
 		baseNode.Data.Split.SplitValue = splitValue;
@@ -458,9 +458,9 @@ void KdTree::BuildSubTree( long baseIndex, AABB& aabb, double totalObjectCost,
 	// Set all other tree pointers. (Indices)
 	long leftChildIndex = NextIndex();		// Warning: NextIndex() can trigger memory movement
 	long rightChildIndex = NextIndex();
-	KdTreeNode& baseNode = TreeNodes.GetEntry(baseIndex);
-	KdTreeNode& leftChildNode = TreeNodes.GetEntry(leftChildIndex);
-	KdTreeNode& rightChildNode = TreeNodes.GetEntry(rightChildIndex);
+	KdTreeNode& baseNode = TreeNodes.at(baseIndex);
+	KdTreeNode& leftChildNode = TreeNodes.at(leftChildIndex);
+	KdTreeNode& rightChildNode = TreeNodes.at(rightChildIndex);
 	baseNode.NodeType = splitAxisID;
 	baseNode.Data.Split.LeftChildIdx = leftChildIndex;
 	baseNode.Data.Split.RightChildIdx = rightChildIndex;

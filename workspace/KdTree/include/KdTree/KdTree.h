@@ -34,7 +34,7 @@
 #define KDTREE_H
 
 #include <algorithm>
-#include <KdTree/Array.h>
+#include <vector>
 #include <VrMath/Aabb.h>
 class RayTraceStats;    // Statistics for KdTree traversal
 
@@ -119,7 +119,7 @@ public:
 
 private:
 
-    Array<KdTreeNode> TreeNodes;
+    std::vector<KdTreeNode> TreeNodes;
     long RootIndex() const { return 0; }    // Index for the first entry in the array.
     long NextIndex();        // Preallocate the next entry ahead of time.
 
@@ -565,9 +565,12 @@ inline void KdTree::Stats_GetAll( long* numNodes, long* numNonEmptyLeaves, long*
 //  Call this to pre-allocate to avoid having the Array for the KdTree
 //        automatically re-sized at a bad time.
 inline long KdTree::NextIndex() 
-{ 
-    long i = TreeNodes.SizeUsed(); 
-    TreeNodes.Touch(i); 
+{
+    long i = TreeNodes.size();
+    if (i > TreeNodes.capacity()) {
+        TreeNodes.reserve(i * 1.25);
+    }
+    TreeNodes.emplace_back();
     return i; 
 }
 

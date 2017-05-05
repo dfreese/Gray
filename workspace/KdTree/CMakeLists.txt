@@ -1,6 +1,5 @@
 
 add_library(KdTree
-    include/KdTree/Array.h
     src/DoubleRecurse.cpp
     include/KdTree/DoubleRecurse.h
     include/KdTree/KdTree.h
