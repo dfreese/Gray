@@ -96,8 +96,7 @@ bool KdTree::Traverse(const VectorR3& startPos, const VectorR3& dir)
 
 	// Main traversal loop
 
-	long currentNodeIndex = RootIndex();			// The current node in the traversal
-	assert ( currentNodeIndex != -1 ) ;				// The tree should not be empty
+	long currentNodeIndex = RootIndex(); // The current node in the traversal
     KdTreeNode* currentNode = &TreeNodes.at(currentNodeIndex);
 	double minDistance = Max(0.0, entryDist);					
 	double maxDistance = exitDist;
@@ -233,7 +232,6 @@ bool KdTree::Traverse(const VectorR3& startPos, const VectorR3& dir)
 		}
 		else {
 			Kd_TraverseNodeData& topNode = traverseStack.top();
-            traverseStack.pop();
 			minDistance = topNode.GetMinDist();
 			if ( stopDistanceActive && minDistance>stopDistance ) {
 				if ( !hitParallel || minDistance>=parallelHitMax ) {
@@ -243,7 +241,8 @@ bool KdTree::Traverse(const VectorR3& startPos, const VectorR3& dir)
 			}
 			currentNodeIndex = topNode.GetNodeNumber();
 			currentNode = &TreeNodes.at(currentNodeIndex);
-			maxDistance = topNode.GetMaxDist(); 
+			maxDistance = topNode.GetMaxDist();
+            traverseStack.pop();
 		}
 
 	}
@@ -319,6 +318,7 @@ void KdTree::BuildTree(long numObjects)
     // Could clear ObjectAABBs if memory was wanted.
 	delete[] ET_Lists;
 	delete[] LeftRightStatus;
+    TreeNodes.shrink_to_fit();
 }
 
 // Recursively build a subtree.
