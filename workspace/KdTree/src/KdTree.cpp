@@ -35,8 +35,6 @@
 #include <KdTree/KdTree.h>
 #include <KdTree/DoubleRecurse.h>
 
-std::stack<Kd_TraverseNodeData> traverseStack;
-
 // Destructor
 KdTree::~KdTree()
 {
@@ -68,7 +66,7 @@ KdTree::~KdTree()
 	}
 }
 
-bool KdTree::Traverse( const VectorR3& startPos, const VectorR3& dir, double seekDistance, bool obeySeekDistance )
+bool KdTree::Traverse(const VectorR3& startPos, const VectorR3& dir)
 {
 	double entryDist, exitDist;
 	int entryFaceId, exitFaceId;
@@ -88,10 +86,10 @@ bool KdTree::Traverse( const VectorR3& startPos, const VectorR3& dir, double see
 		dirInv.z = 1.0/dir.z;
 	}
 
-	bool intersectsAABB = BoundingBox.RayEntryExit( startPos, 
-													signDirX, signDirY, signDirZ, dirInv, 
-													&entryDist, &entryFaceId, 
-													&exitDist, &exitFaceId );
+	bool intersectsAABB = BoundingBox.RayEntryExit(startPos, signDirX, signDirY,
+                                                   signDirZ, dirInv, &entryDist,
+                                                   &entryFaceId, &exitDist,
+                                                   &exitFaceId);
 	if ( !intersectsAABB || exitDist<0.0 ) {
 		return false;
 	}
@@ -105,18 +103,10 @@ bool KdTree::Traverse( const VectorR3& startPos, const VectorR3& dir, double see
 	double maxDistance = exitDist;
 	bool hitParallel = false;
 	double parallelHitMax = -DBL_MAX;
-	bool stopDistanceActive = obeySeekDistance;
-	double stopDistance = seekDistance;
-	if ( obeySeekDistance && maxDistance>seekDistance ) {
-		if ( seekDistance<minDistance ) {
-			return false;
-		}
-		maxDistance = seekDistance;
-	}
+	bool stopDistanceActive = false;
+	double stopDistance = 0.0;
 	assert ( minDistance<=maxDistance );
-    while (!traverseStack.empty()) {
-        traverseStack.pop();
-    }
+    std::stack<Kd_TraverseNodeData> traverseStack;
 
 	while ( true ) {
 		
@@ -279,22 +269,17 @@ void KdTree::BuildTree(long numObjects)
 
 	// Allocate space for the AABB's for each object
 	//	This is used only during the tree construction and is then released.
-	ObjectAABBs = new AABB[numObjects];
+    ObjectAABBs.resize(numObjects);
 
 	// Calculate all initial extents
-	long i;
-	AABB* ObjectAabbPtr = ObjectAABBs;
-	for (i=0; i<numObjects; i++ ) {
-		ExtentFunc(i, *ObjectAabbPtr);
-		ObjectAabbPtr++;
+	for (size_t ii = 0; ii < numObjects; ii++ ) {
+		ExtentFunc(ii, ObjectAABBs[ii]);
 	}
 
 	// Pick the overall BoundingBox to enclose all the individual bounding boxes.
-	BoundingBox = *ObjectAABBs;
-	ObjectAabbPtr = ObjectAABBs+1;
-	for (i=1; i<numObjects; i++ ) {
-		BoundingBox.EnlargeToEnclose( *ObjectAabbPtr );
-		ObjectAabbPtr++;
+	BoundingBox = ObjectAABBs[0];
+    for (auto aabb: ObjectAABBs) {
+		BoundingBox.EnlargeToEnclose(aabb);
 	}
 	BoundingBoxSurfaceArea = BoundingBox.SurfaceArea();
 
@@ -309,12 +294,11 @@ void KdTree::BuildTree(long numObjects)
 	LeftRightStatus = new unsigned char[NumObjects];
 
 	// Loop over all objects, creating the extent triples.
-	ObjectAabbPtr = ObjectAABBs;
-	for ( i=0; i<numObjects; i++ ) {
-		XextentList.AddToEnd( ObjectAabbPtr->GetMinX(), ObjectAabbPtr->GetMaxX(), i );
-		YextentList.AddToEnd( ObjectAabbPtr->GetMinY(), ObjectAabbPtr->GetMaxY(), i );
-		ZextentList.AddToEnd( ObjectAabbPtr->GetMinZ(), ObjectAabbPtr->GetMaxZ(), i );
-		ObjectAabbPtr++;
+	for (size_t ii = 0; ii < numObjects; ii++ ) {
+        const AABB & aabb = ObjectAABBs[ii];
+		XextentList.AddToEnd(aabb.GetMinX(), aabb.GetMaxX(), ii);
+		YextentList.AddToEnd(aabb.GetMinY(), aabb.GetMaxY(), ii);
+		ZextentList.AddToEnd(aabb.GetMinZ(), aabb.GetMaxZ(), ii);
 	}
 
 	// Estimate upper bound on the space available.  
@@ -332,7 +316,7 @@ void KdTree::BuildTree(long numObjects)
 	RootNode.ParentIdx = -1;				// No parent, it is the root node
 	BuildSubTree ( RootIndex(), BoundingBox, TotalObjectCosts, XextentList, YextentList, ZextentList, spaceAvailable );
 
-	delete[] ObjectAABBs;
+    // Could clear ObjectAABBs if memory was wanted.
 	delete[] ET_Lists;
 	delete[] LeftRightStatus;
 }

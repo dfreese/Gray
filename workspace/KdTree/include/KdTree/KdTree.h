@@ -77,8 +77,7 @@ public:
 
 protected:
     // ****** Tree traversal routines ******
-    bool Traverse(const VectorR3 & startPos, const VectorR3 & dir,
-                  double seekDistance = 0.0, bool useSeekDistance = false);
+    bool Traverse(const VectorR3 & startPos, const VectorR3 & dir);
 
 public:
     // ****** Tree building routines *******
@@ -161,7 +160,8 @@ private:
     virtual bool ExtentInBoxFunc(long objectNum, const AABB& clippingBox,
                                  AABB& boundingBox) = 0;
 
-    AABB* ObjectAABBs;            // Holds extents (and extents in boxes) for each object.
+    // Holds extents (and extents in boxes) for each object.
+    std::vector<AABB> ObjectAABBs;
     ExtentTriple* ET_Lists;        // Tons of storage for extent lists.
     double BoundingBoxSurfaceArea;    // Surface area of the tree's bounding box
     unsigned char* LeftRightStatus;        // Info on whether objects go left or right in split.
