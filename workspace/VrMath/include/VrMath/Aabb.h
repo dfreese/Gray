@@ -126,7 +126,7 @@ public:
                       int & signDirZ, double t0, double t1, double & tmin,
                       double & tmax) const;
     bool RayIntersect(const VectorR3& startPos, const VectorR3 & dirInv,
-                      int & signDirX, int & signDirY, int & signDirZ,
+                      int signDirX, int signDirY, int signDirZ,
                       double t0, double t1, double & tmin,
                       double & tmax) const;
 

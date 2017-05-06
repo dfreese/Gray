@@ -76,7 +76,7 @@ bool AABB::RayIntersect(const VectorR3& startPos, const VectorR3& dir,
  * http://people.csail.mit.edu/amy/papers/box-jgt.pdf
  */
 bool AABB::RayIntersect(const VectorR3& startPos, const VectorR3 & dirInv,
-                        int & signDirX, int & signDirY, int & signDirZ,
+                        int signDirX, int signDirY, int signDirZ,
                         double t0, double t1, double & tmin,
                         double & tmax) const
 {

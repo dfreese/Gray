@@ -15,7 +15,7 @@ IntersectKdTree::IntersectKdTree(const SceneDescription & scene,
 {
     ActiveScene = &scene;
     SetDoubleRecurseSplitting(use_double_recurse_split);
-    SetObjectCost(use_double_recurse_split);
+    SetObjectCost(object_cost);
     BuildTree(ActiveScene->NumViewables());
 }
 
