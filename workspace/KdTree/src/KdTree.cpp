@@ -82,7 +82,7 @@ bool KdTree::Traverse(const VectorR3& startPos, const VectorR3& dir)
 
 	long currentNodeIndex = RootIndex(); // The current node in the traversal
     KdTreeNode* currentNode = &TreeNodes.at(currentNodeIndex);
-	double minDistance = Max(0.0, entryDist);					
+    double minDistance = std::max(0.0, entryDist);
 	double maxDistance = exitDist;
 	bool hitParallel = false;
 	double parallelHitMax = -DBL_MAX;

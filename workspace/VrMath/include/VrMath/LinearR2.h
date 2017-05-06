@@ -156,7 +156,7 @@ public:
     }
     double L1Norm() const
     {
-        return (Max(fabs(x),fabs(y)));
+        return (std::max(fabs(x),fabs(y)));
     }
     double Dist( const VectorR2& u ) const;	// Distance from u
     double DistSq( const VectorR2& u ) const;	// Distance from u

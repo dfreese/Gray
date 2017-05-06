@@ -606,7 +606,7 @@ LinearMapR3& LinearMapR3::InvertPosDefSafe()
     //   L = ( (1 0 0)(a 0 0)(b 0 0) * * ( (1 0 0)(0 1 0)(0 c 1) ).
     //	 D is diagonal. - d1, d2, d3 are *inverses* of the diagonal entries.
     assert ( m11 > -epsilon );		// Check for nearly non-negative definite
-    m11 = Max( epsilon, m11 );		// Force divide only by positive number
+    m11 = std::max( epsilon, m11 );		// Force divide only by positive number
     double d1 = 1.0/m11;
     double a = m12*d1;
     double b = m13*d1;
@@ -614,12 +614,12 @@ LinearMapR3& LinearMapR3::InvertPosDefSafe()
     double u23star = m23 - m12*b;
     double u33star = m33 - m13*b;
     assert ( u22star > -epsilon );		// Check for nearly non-negative definite
-    u22star = Max( epsilon, u22star );	// Force divide only by positive number
+    u22star = std::max( epsilon, u22star );	// Force divide only by positive number
     double d2 = 1.0/u22star;
     double c = u23star*d2;
     double u33starstar = u33star - u23star*c;
     assert ( u33starstar > - epsilon );		// Check for nearly non-negative definite
-    u33starstar = Max( epsilon, u33starstar );	// Force divide only by positive number
+    u33starstar = std::max( epsilon, u33starstar );	// Force divide only by positive number
     double d3 = 1.0/u33starstar;
 
     // Compute the inverse

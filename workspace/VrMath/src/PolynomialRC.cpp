@@ -443,7 +443,7 @@ int PolySolveRealAll( int degree, double* coefsarray, double* rootsarray)
                     startF = EvalPoly_POLYRC(degree, coefsarray, last2Root );
                 }
             } else {
-                startX = Min(cur1Root,*p2Ptr)-1;	// Before first root of p'(x) too
+                startX = std::min(cur1Root,*p2Ptr)-1;	// Before first root of p'(x) too
                 startF = EvalPoly_POLYRC(degree, coefsarray, startX);
                 assert( -DBL_MAX<startX && startX<DBL_MAX );
             }

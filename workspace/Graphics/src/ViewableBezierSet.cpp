@@ -123,7 +123,7 @@ bool ViewableBezierSet::FindIntersectionNT (
         if ( !bp->MgrNeedToRecurse() ) {
             // Intersect with the midpoint of where enters and exits patch
             double alpha;
-            alpha = 0.5*( Max(BpPpdDistIn[i],0.0) + Min(BpPpdDistOut[i],maxDist) );
+            alpha = 0.5*( std::max(BpPpdDistIn[i],0.0) + std::min(BpPpdDistOut[i],maxDist) );
             assert ( alpha>= 0.0 );
             hitPosMaybe = viewDir;
             hitPosMaybe *= alpha;
@@ -610,8 +610,8 @@ void BezierPatch::GetMinMaxDotRecursive(const VectorR3& n, double* minDot, doubl
         SplitPatchA->GetMinMaxDotRecursive( n, &minA, &maxA );
         double minB, maxB;
         SplitPatchB->GetMinMaxDotRecursive( n, &minB, &maxB );
-        *minDot = Min(minA, minB);
-        *maxDot = Max(maxA, maxB);
+        *minDot = std::min(minA, minB);
+        *maxDot = std::max(maxA, maxB);
     } else {
         GetMinMaxDot( n, minDot, maxDot );
     }

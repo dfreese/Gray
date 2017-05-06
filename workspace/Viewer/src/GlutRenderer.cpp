@@ -667,7 +667,7 @@ void SetFaceMaterial( GLenum faceID, const MaterialBase* mat )
     mat->GetColorEmissive().Dump(temp);
     glMaterialfv ( faceID, GL_EMISSION, temp );
 
-    glMaterialf( faceID, GL_SHININESS, Min( mat->GetPhongShininess(), 127.00 ) );   // Clamp to < 128.0 for safety.
+    glMaterialf( faceID, GL_SHININESS, std::min( mat->GetPhongShininess(), 127.00 ) );   // Clamp to < 128.0 for safety.
 }
 }
 

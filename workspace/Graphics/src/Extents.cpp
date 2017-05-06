@@ -375,16 +375,16 @@ inline bool CalcExtentsHelpForSphere( double boxMin, double boxMax,
         return false;		// Test uses <= to ignore single points of intersectio
     }
     if ( boxMin<(-minPos) ) {
-        *minExtent = Max(boxMin,-maxPos);
+        *minExtent = std::max(boxMin,-maxPos);
         if ( boxMax>minPos ) {
-            *maxExtent = Min(boxMax,maxPos);
+            *maxExtent = std::min(boxMax,maxPos);
         } else {
-            *maxExtent = Min(boxMax,-minPos);
+            *maxExtent = std::min(boxMax,-minPos);
         }
         return true;
     } else if ( boxMax>minPos ) {
-        *minExtent = Max(boxMin,minPos);
-        *maxExtent = Min(boxMax,maxPos);
+        *minExtent = std::max(boxMin,minPos);
+        *maxExtent = std::min(boxMax,maxPos);
         return true;
     } else {
         return false;

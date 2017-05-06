@@ -91,16 +91,6 @@ inline double InnerProduct( double x, double y )
 // Comparisons
 //
 
-template<class T> inline T Min ( const T& x, const T& y )
-{
-    return (x<y ? x : y);
-}
-
-template<class T> inline T Max ( const T& x, const T& y )
-{
-    return (y<x ? x : y);
-}
-
 template<class T> inline T ClampRange ( const T& x, const T& min, const T& max)
 {
     if ( x<min ) {

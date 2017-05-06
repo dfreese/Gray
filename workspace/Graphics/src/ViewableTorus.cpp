@@ -149,7 +149,7 @@ bool ViewableTorus::FindIntersectionNT (
     //	D = 4[(p \cdot p)(u \cdot p) - (M^2+m^2)(u \cdot p) + 2M^2(u_C \dot p)^2]
     //	E = ((p \cdot p)^2 - 2(M^2+m^2)(p \cdot p) + 4M^2(u_C\cdot p)^2 +(M^2-m^2)^2
 
-    double moveFwdDist = Max(0.0,maxDistFront);
+    double moveFwdDist = std::max(0.0,maxDistFront);
 
     double coefs[5];
     double roots[4];
