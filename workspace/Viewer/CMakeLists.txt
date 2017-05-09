@@ -1,10 +1,6 @@
 add_library(Viewer
     src/GlutRenderer.cpp
     include/Viewer/GlutRenderer.h
-    src/PixelArray.cpp
-    include/Viewer/PixelArray.h
-    src/OpenGlRgbImage.cpp
-    include/Viewer/OpenGlRgbImage.h
     src/Viewer.cpp
     include/Viewer/Viewer.h
 )
