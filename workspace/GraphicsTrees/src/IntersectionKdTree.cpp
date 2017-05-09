@@ -72,7 +72,7 @@ long IntersectKdTree::SeekIntersection(const VectorR3& pos,
 
     if ( bestObject>=0 ) {
         // FIXME: NAN in KDTREE Traversal
-        if(isnan(bestHitDistance)) {
+        if(std::isnan(bestHitDistance)) {
             hitDist = DBL_MAX;
             bestObject = -1;
         } else {

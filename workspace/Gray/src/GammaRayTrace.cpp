@@ -44,7 +44,6 @@ void GammaRayTrace::TracePhoton(
             if (log_errors){
                 interactions.push_back(Interaction::ErrorEmtpy(photon));
             }
-            cout << "ERROR: empty materials stack" << endl;
             stats.error++;
             return;
         }
@@ -146,7 +145,6 @@ void GammaRayTrace::TracePhoton(
         interactions.push_back(Interaction::ErrorTraceDepth(
                 photon, *MatStack.top()));
     }
-    cout << "ERROR_TRACE_DEPTH" << endl;
     stats.error++;
     return;
 }
