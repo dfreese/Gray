@@ -179,6 +179,9 @@ bool LoadDetector::Load(const std::string & filename,
     stack<RepeatInfo> repeat_info_stack;
     vector<string> repeat_buffer;
     size_t current_idx = 0;
+    // Stores the detector id number for sets of polygons.  This will be used if
+    // the material is sensitive and if "increment" is called.
+    int polygon_det_id = -1;
 
     while (!file_stack.empty()) {
         string line;
@@ -222,7 +225,6 @@ bool LoadDetector::Load(const std::string & filename,
         }
 
         string args = ScanForSecondField(line);
-        int global_id = -1;
 
         // Privileged commands that won't be skipped if we're still waiting for
         // the end of a repeat.
@@ -493,9 +495,9 @@ bool LoadDetector::Load(const std::string & filename,
             UnitSize.y = 1.0;
             UnitSize.z = 1.0;
 
-            global_id = detector_array.AddDetector(StartPos, UnitSize,
-                                                   MatrixStack.top(),
-                                                   0, 0, 0, 0);
+            polygon_det_id = detector_array.AddDetector(StartPos, UnitSize,
+                                                        MatrixStack.top(),
+                                                        0, 0, 0, 0);
         } else if (command == "ellipse") {
             VectorR3 center;
             VectorR3 axis1;
@@ -932,11 +934,11 @@ bool LoadDetector::Load(const std::string & filename,
                         CurrentPos.y += (double)j * UnitStep.y;
                         CurrentPos.z += (double)k * UnitStep.z;
                         if (curMaterial->log_material == true) {
-                            global_id = detector_array.AddDetector(
+                            int det_id = detector_array.AddDetector(
                                     CurrentPos, UnitSize, MatrixStack.top(),
                                     i, j, k, block_id);
                             ProcessDetector(CurrentPos, UnitSize,
-                                            curMaterial, global_id,
+                                            curMaterial, det_id,
                                             theScene, MatrixStack.top());
                         }  else {
                             ProcessDetector(CurrentPos, UnitSize,
@@ -1121,12 +1123,12 @@ bool LoadDetector::Load(const std::string & filename,
                      << endl;
                 return(false);
             }
-            // FIXED: arbitrary triangles must use increment to advance detector ids
-            // FIXED: detector only is used when material is sensitive
+            // arbitrary triangles must use increment to advance detector ids
+            // detector only is used when material is sensitive
             if (curMaterial->log_material) {
                 ProcessFaceDFF(numVerts, curMaterial, file_stack.top(),
                                curVectorSource, parse_VectorSource,
-                               global_id, theScene, polygonScale,
+                               polygon_det_id, theScene, polygonScale,
                                MatrixStack.top());
             } else {
                 ProcessFaceDFF(numVerts, curMaterial, file_stack.top(),
@@ -1182,14 +1184,14 @@ bool LoadDetector::Load(const std::string & filename,
             baseSize *= polygonScale;
             // FIXED: detector only is used when material is sensitive
             if (curMaterial->log_material) {
-                global_id = detector_array.AddDetector(baseCenter,
+                int det_id = detector_array.AddDetector(baseCenter,
                                                        baseSize,
                                                        MatrixStack.top(),
                                                        0, 0, 0,
                                                        block_id);
                 block_id++;
                 ProcessDetector(baseCenter, baseSize, curMaterial,
-                                global_id, theScene, MatrixStack.top());
+                                det_id, theScene, MatrixStack.top());
             } else {
                 ProcessDetector(baseCenter, baseSize, curMaterial, -1,
                                 theScene, MatrixStack.top());
@@ -1315,7 +1317,7 @@ bool LoadDetector::ProcessFaceDFF(int numVerts,
                                   std::ifstream & curFile,
                                   VectorSource *s,
                                   bool parse_VectorSource,
-                                  unsigned id,
+                                  int det_id,
                                   SceneDescription & scene,
                                   double polygonScale,
                                   const RigidMapR3 & current_matrix)
@@ -1327,8 +1329,7 @@ bool LoadDetector::ProcessFaceDFF(int numVerts,
     if ( !ReadVertexR3(prevVert, curFile) ) {
         return false;
     }
-    int i;
-    for ( i=2; i<numVerts; i++ ) {
+    for (int i = 2; i < numVerts; i++) {
         if ( !ReadVertexR3(thisVert, curFile) ) {
             return false;
         }
@@ -1337,7 +1338,7 @@ bool LoadDetector::ProcessFaceDFF(int numVerts,
         thisVert *= polygonScale;
 
         ViewableTriangle* vt = new ViewableTriangle();
-        vt->SetDetectorId(id);
+        vt->SetDetectorId(det_id);
         vt->Init( firstVert, prevVert, thisVert );
         vt->SetMaterialFront( curMaterial );
         vt->SetMaterialBack( curMaterial );

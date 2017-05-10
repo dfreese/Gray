@@ -41,7 +41,7 @@ private:
                               RigidMapR3 & current_matrix);
     static bool ProcessFaceDFF(int numVerts, const Material* mat,
                                std::ifstream & curFile, VectorSource * s,
-                               bool parse_VectorSource, unsigned id,
+                               bool parse_VectorSource, int det_id,
                                SceneDescription & theScene,
                                double polygonScale,
                                const RigidMapR3 & current_matrix);
