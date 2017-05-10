@@ -1,6 +1,4 @@
 add_library(Graphics
-    src/BumpMapFunction.cpp
-    include/Graphics/BumpMapFunction.h
     src/CameraView.cpp
     include/Graphics/CameraView.h
     src/DirectLight.cpp
@@ -11,24 +9,8 @@ add_library(Graphics
     src/Material.cpp
     include/Graphics/Material.h
     include/Graphics/MaterialBase.h
-    src/RgbImage.cpp
-    include/Graphics/RgbImage.h
     src/SceneDescription.cpp
     include/Graphics/SceneDescription.h
-    src/TextureAffineXform.cpp
-    include/Graphics/TextureAffineXform.h
-    src/TextureBilinearXform.cpp
-    include/Graphics/TextureBilinearXform.h
-    src/TextureCheckered.cpp
-    include/Graphics/TextureCheckered.h
-    src/TextureMapBase.cpp
-    include/Graphics/TextureMapBase.h
-    src/TextureMultiFaces.cpp
-    include/Graphics/TextureMultiFaces.h
-    src/TextureRgbImage.cpp
-    include/Graphics/TextureRgbImage.h
-    src/TextureSequence.cpp
-    include/Graphics/TextureSequence.h
     src/TransformViewable.cpp
     include/Graphics/TransformViewable.h
     include/Graphics/View.h

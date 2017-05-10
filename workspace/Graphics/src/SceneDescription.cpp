@@ -20,25 +20,46 @@
 
 #include <Graphics/SceneDescription.h>
 
-// Garry: Added destructor for proper cleanup
+
+SceneDescription::SceneDescription()
+{
+    TheBackgroundColor.Set( 0.0, 0.0, 0.0 );
+    TheGlobalAmbientLight.SetZero();
+    ScreenRegistered = false;
+}
+
+int SceneDescription::AddLight( Light* newLight )
+{
+    int index = (int)LightArray.size();
+    LightArray.push_back(newLight);
+    return index;
+}
+
+int SceneDescription::AddMaterial(MaterialBase * newMaterial )
+{
+    int index = (int)MaterialArray.size();
+    MaterialArray.push_back(newMaterial);
+    material_names_map[newMaterial->GetName()] = index;
+    return index;
+}
+
+int SceneDescription::AddViewable( ViewableBase* newViewable )
+{
+    int index = (int)ViewableArray.size();
+    ViewableArray.push_back(newViewable);
+    return index;
+}
+
+void SceneDescription::DeleteAll()
+{
+    DeleteAllLights();
+    DeleteAllMaterials();
+    DeleteAllViewables();
+}
+
 SceneDescription::~SceneDescription()
 {
-    while (!LightArray.empty()) {
-        delete LightArray.back();
-        LightArray.pop_back();
-    }
-    while (!MaterialArray.empty()) {
-        delete MaterialArray.back();
-        MaterialArray.pop_back();
-    }
-    while (!TextureArray.empty()) {
-        delete TextureArray.back();
-        TextureArray.pop_back();
-    }
-    while (!ViewableArray.empty()) {
-        delete ViewableArray.back();
-        ViewableArray.pop_back();
-    }
+    DeleteAll();
 }
 
 // Once you have set up an initial CameraView, you can call RegisterCameraView.
@@ -67,7 +88,6 @@ void SceneDescription::CalcNewScreenDims( float aspectRatio )
     }
 }
 
-
 void SceneDescription::DeleteAllLights()
 {
     while (!LightArray.empty()) {
@@ -81,14 +101,6 @@ void SceneDescription::DeleteAllMaterials()
     while (!MaterialArray.empty()) {
         delete MaterialArray.back();
         MaterialArray.pop_back();
-    }
-}
-
-void SceneDescription::DeleteAllTextures()
-{
-    while (!TextureArray.empty()) {
-        delete TextureArray.back();
-        TextureArray.pop_back();
     }
 }
 

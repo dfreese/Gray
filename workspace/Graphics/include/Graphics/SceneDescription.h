@@ -7,14 +7,6 @@
 #include <Graphics/CameraView.h>
 #include <Graphics/Light.h>
 #include <Graphics/Material.h>
-#include <Graphics/TextureMapBase.h>
-#include <Graphics/TextureAffineXform.h>
-#include <Graphics/TextureBilinearXform.h>
-#include <Graphics/TextureCheckered.h>
-#include <Graphics/TextureMultiFaces.h>
-#include <Graphics/TextureRgbImage.h>
-#include <Graphics/TextureSequence.h>
-#include <Graphics/BumpMapFunction.h>
 #include <Graphics/ViewableBase.h>
 
 class SceneDescription
@@ -124,49 +116,6 @@ public:
         return *MaterialArray[i];
     }
 
-    size_t NumTextures() const
-    {
-        return TextureArray.size();
-    }
-
-    int AddTexture( TextureMapBase* newTexture );
-    TextureAffineXform* NewTextureAffineXform();
-    TextureBilinearXform* NewTextureBilinearXform();
-    TextureCheckered* NewTextureCheckered();
-
-    TextureMultiFaces* NewTextureMultiFaces( int numTexMaps );
-    TextureMultiFaces* NewTextureMultiFaces( int numTexturesMaps, TextureMapBase* textureMaps[] );
-    TextureMultiFaces* NewTextureMultiFaces( TextureMapBase* textureMap0, TextureMapBase* textureMap1 );
-    TextureMultiFaces* NewTextureMultiFaces( TextureMapBase* textureMap0, TextureMapBase* textureMap1,
-            TextureMapBase* textureMap2 );
-    TextureMultiFaces* NewTextureMultiFaces( TextureMapBase* textureMap0, TextureMapBase* textureMap1,
-            TextureMapBase* textureMap2, TextureMapBase* textureMap3 );
-    TextureMultiFaces* NewTextureMultiFaces( TextureMapBase* textureMap0, TextureMapBase* textureMap1,
-            TextureMapBase* textureMap2, TextureMapBase* textureMap3,
-            TextureMapBase* textureMap4, TextureMapBase* textureMap5  );
-
-    TextureRgbImage* NewTextureRgbImage();
-    TextureRgbImage* NewTextureRgbImage( const RgbImage& rgbImage );
-    TextureRgbImage* NewTextureRgbImage( const char* filename );
-
-    TextureSequence* NewTextureSequence( int numTexMaps );
-    TextureSequence* NewTextureSequence( int numTexturesMaps, TextureMapBase* textureMaps[] );
-    TextureSequence* NewTextureSequence( TextureMapBase* textureMap0, TextureMapBase* textureMap1 );
-    TextureSequence* NewTextureSequence( TextureMapBase* textureMap0, TextureMapBase* textureMap1,
-                                         TextureMapBase* textureMap2 );
-    TextureSequence* NewTextureSequence( TextureMapBase* textureMap0, TextureMapBase* textureMap1,
-                                         TextureMapBase* textureMap2, TextureMapBase* textureMap3 );
-
-    BumpMapFunction* NewBumpMapFunction();
-    TextureMapBase& GetTexture(size_t i )
-    {
-        return *TextureArray[i];
-    }
-    const TextureMapBase& GetTexture(size_t i ) const
-    {
-        return *TextureArray[i];
-    }
-
     size_t NumViewables() const
     {
         return ViewableArray.size();
@@ -195,7 +144,6 @@ public:
     double GetMaxDistance();
 
     void DeleteAllLights();
-    void DeleteAllTextures();
     void DeleteAllMaterials();
     void DeleteAllViewables();
     void DeleteAll();
@@ -211,207 +159,9 @@ private:
     bool ScreenRegistered;
 
     std::vector<Light*> LightArray;
-
     std::vector<MaterialBase*> MaterialArray;
-
-    std::vector<TextureMapBase*> TextureArray;
-
     std::vector<ViewableBase*> ViewableArray;
     std::map<std::string, int> material_names_map;
 };
-
-inline SceneDescription::SceneDescription()
-{
-    TheBackgroundColor.Set( 0.0, 0.0, 0.0 );
-    TheGlobalAmbientLight.SetZero();
-    ScreenRegistered = false;
-}
-
-inline int SceneDescription::AddLight( Light* newLight )
-{
-    int index = (int)LightArray.size();
-    LightArray.push_back(newLight);
-    return index;
-}
-
-inline int SceneDescription::AddMaterial(MaterialBase * newMaterial )
-{
-    int index = (int)MaterialArray.size();
-    MaterialArray.push_back(newMaterial);
-    material_names_map[newMaterial->GetName()] = index;
-    return index;
-}
-
-inline int SceneDescription::AddTexture( TextureMapBase* newTexture )
-{
-    int index = (int)TextureArray.size();
-    TextureArray.push_back(newTexture);
-    return index;
-}
-
-inline int SceneDescription::AddViewable( ViewableBase* newViewable )
-{
-    int index = (int)ViewableArray.size();
-    ViewableArray.push_back(newViewable);
-    return index;
-}
-
-inline TextureAffineXform* SceneDescription::NewTextureAffineXform()
-{
-    TextureAffineXform* newTex = new TextureAffineXform();
-    TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.push_back(newTexBase);
-    return newTex;
-}
-
-inline TextureBilinearXform* SceneDescription::NewTextureBilinearXform()
-{
-    TextureBilinearXform* newTex = new TextureBilinearXform();
-    TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.push_back(newTexBase);
-    return newTex;
-}
-
-inline TextureCheckered* SceneDescription::NewTextureCheckered()
-{
-    TextureCheckered* newTex = new TextureCheckered();
-    TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.push_back(newTexBase);
-    return newTex;
-}
-
-inline TextureRgbImage* SceneDescription::NewTextureRgbImage()
-{
-    TextureRgbImage* newTex = new TextureRgbImage();
-    TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.push_back(newTexBase);
-    return newTex;
-}
-
-inline TextureRgbImage* SceneDescription::NewTextureRgbImage( const RgbImage& rgbImage)
-{
-    TextureRgbImage* newTex = new TextureRgbImage( rgbImage );
-    TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.push_back(newTexBase);
-    return newTex;
-}
-
-inline TextureRgbImage* SceneDescription::NewTextureRgbImage( const char* filename )
-{
-    TextureRgbImage* newTex = new TextureRgbImage();
-    TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.push_back(newTexBase);
-    return newTex;
-}
-
-inline TextureMultiFaces* SceneDescription::NewTextureMultiFaces( int numTexMaps )
-{
-    TextureMultiFaces* newTex = new TextureMultiFaces( numTexMaps );
-    TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.push_back(newTexBase);
-    return newTex;
-}
-
-inline TextureMultiFaces* SceneDescription::NewTextureMultiFaces( int numTexturesMaps, TextureMapBase* textureMaps[] )
-{
-    TextureMultiFaces* newTex = new TextureMultiFaces( numTexturesMaps, textureMaps );
-    TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.push_back(newTexBase);
-    return newTex;
-}
-
-inline TextureMultiFaces* SceneDescription::NewTextureMultiFaces( TextureMapBase* textureMap0, TextureMapBase* textureMap1 )
-{
-    TextureMultiFaces* newTex = new TextureMultiFaces( textureMap0, textureMap1 );
-    TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.push_back(newTexBase);
-    return newTex;
-}
-
-inline TextureMultiFaces* SceneDescription::NewTextureMultiFaces( TextureMapBase* textureMap0, TextureMapBase* textureMap1,
-        TextureMapBase* textureMap2 )
-{
-    TextureMultiFaces* newTex = new TextureMultiFaces( textureMap0, textureMap1, textureMap2 );
-    TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.push_back(newTexBase);
-    return newTex;
-}
-
-inline TextureMultiFaces* SceneDescription::NewTextureMultiFaces(TextureMapBase* textureMap0, TextureMapBase* textureMap1,
-        TextureMapBase* textureMap2, TextureMapBase* textureMap3 )
-{
-    TextureMultiFaces* newTex = new TextureMultiFaces( textureMap0, textureMap1, textureMap2, textureMap3 );
-    TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.push_back(newTexBase);
-    return newTex;
-}
-
-inline TextureMultiFaces* SceneDescription::NewTextureMultiFaces( TextureMapBase* textureMap0, TextureMapBase* textureMap1,
-        TextureMapBase* textureMap2, TextureMapBase* textureMap3,
-        TextureMapBase* textureMap4, TextureMapBase* textureMap5 )
-{
-    TextureMultiFaces* newTex = new TextureMultiFaces( textureMap0, textureMap1, textureMap2, textureMap3,
-            textureMap4, textureMap5 );
-    TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.push_back(newTexBase);
-    return newTex;
-}
-
-inline TextureSequence* SceneDescription::NewTextureSequence( int numTexMaps )
-{
-    TextureSequence* newTex = new TextureSequence( numTexMaps );
-    TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.push_back( newTexBase );
-    return newTex;
-}
-
-inline TextureSequence* SceneDescription::NewTextureSequence( int numTexturesMaps, TextureMapBase* textureMaps[] )
-{
-    TextureSequence* newTex = new TextureSequence( numTexturesMaps, textureMaps );
-    TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.push_back(newTexBase);
-    return newTex;
-}
-inline TextureSequence* SceneDescription::NewTextureSequence( TextureMapBase* textureMap0, TextureMapBase* textureMap1 )
-{
-    TextureSequence* newTex = new TextureSequence( textureMap0, textureMap1 );
-    TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.push_back(newTexBase);
-    return newTex;
-}
-
-inline TextureSequence* SceneDescription::NewTextureSequence( TextureMapBase* textureMap0, TextureMapBase* textureMap1,
-        TextureMapBase* textureMap2 )
-{
-    TextureSequence* newTex = new TextureSequence( textureMap0, textureMap1, textureMap2 );
-    TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.push_back(newTexBase);
-    return newTex;
-}
-
-inline TextureSequence* SceneDescription::NewTextureSequence( TextureMapBase* textureMap0, TextureMapBase* textureMap1,
-        TextureMapBase* textureMap2, TextureMapBase* textureMap3 )
-{
-    TextureSequence* newTex = new TextureSequence( textureMap0, textureMap1, textureMap2, textureMap3 );
-    TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.push_back(newTexBase);
-    return newTex;
-}
-
-inline BumpMapFunction* SceneDescription::NewBumpMapFunction()
-{
-    BumpMapFunction* newTex = new BumpMapFunction();
-    TextureMapBase* newTexBase = (TextureMapBase*)newTex;
-    TextureArray.push_back(newTexBase);
-    return newTex;
-}
-
-inline void SceneDescription::DeleteAll()
-{
-    DeleteAllLights();
-    DeleteAllTextures();
-    DeleteAllMaterials();
-    DeleteAllViewables();
-}
 
 #endif // SCENE_DESCRIPTION_H

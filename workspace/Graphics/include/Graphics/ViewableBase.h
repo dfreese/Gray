@@ -29,7 +29,6 @@
 #include <VrMath/Aabb.h>
 #include <Graphics/MaterialBase.h>
 #include <Graphics/Material.h>
-#include <Graphics/TextureMapBase.h>
 #include <Graphics/VisiblePoint.h>
 
 // This is the purely abstract base class for viewable objects.
@@ -50,31 +49,6 @@ public:
     bool FindIntersection (
         const VectorR3& viewPos, const VectorR3& viewDir, double maxDistance,
         double *intersectDistance, VisiblePoint& returnedPoint ) const;
-
-    // Sets front and back texture maps.
-    // Subclasses of ViewablePoint will have more routines.
-    void TextureMap( const TextureMapBase* texture );	// Front & back
-    void TextureMapFront( const TextureMapBase* texture );
-    void TextureMapBack( const TextureMapBase* texture );
-    void TextureMapOuter( const TextureMapBase* texture );
-    void TextureMapInner( const TextureMapBase* texture );
-
-    bool HasFrontTextureMap() const
-    {
-        return (TextureFront!=0);
-    }
-    bool HasBackTextureMap() const
-    {
-        return (TextureBack!=0);
-    }
-    bool HasInnerTextureMap() const
-    {
-        return (TextureFront!=0);
-    }
-    bool HasOuterTextureMap() const
-    {
-        return (TextureBack!=0);
-    }
 
     // CalcBoundingPlanes:
     //   Computes the extents of the viewable object with respect to a
@@ -140,9 +114,6 @@ protected:
         double *intersectDistance, VisiblePoint& returnedPoint ) const = 0;
 
 private:
-    const TextureMapBase* TextureFront;		// Front texture map
-    const TextureMapBase* TextureBack;		// Back Texture map
-
     unsigned detector_id;
     unsigned char src_id;
 
@@ -156,34 +127,6 @@ inline ViewableBase::ViewableBase() :
     FrontMat(&Material::Default),
     BackMat(&Material::Default)
 {
-    TextureMap(0);
-}
-
-inline void ViewableBase::TextureMap(
-    const TextureMapBase* texture )
-{
-    TextureMapFront( texture );
-    TextureMapBack( texture );
-}
-
-inline void ViewableBase::TextureMapFront( const TextureMapBase* texture )
-{
-    TextureFront = texture;
-}
-
-inline void ViewableBase::TextureMapBack( const TextureMapBase* texture )
-{
-    TextureBack = texture;
-}
-
-inline void ViewableBase::TextureMapOuter( const TextureMapBase* texture )
-{
-    TextureMapFront( texture );
-}
-
-inline void ViewableBase::TextureMapInner( const TextureMapBase* texture )
-{
-    TextureMapBack( texture );
 }
 
 inline void ViewableBase::SetMaterial(const MaterialBase* material )
@@ -206,16 +149,10 @@ inline bool ViewableBase::FindIntersection (
     const VectorR3& viewPos, const VectorR3& viewDir, double maxDistance,
     double *intersectDistance, VisiblePoint& returnedPoint ) const
 {
-    bool found;
-    found = FindIntersectionNT(viewPos, viewDir,
-                               maxDistance, intersectDistance, returnedPoint);
-    if ( found ) {
-        returnedPoint.SetObject( this );
-        // Invoke the texture map (if any)
-        const TextureMapBase* texmap = returnedPoint.IsFrontFacing() ? TextureFront : TextureBack;
-        if ( texmap ) {
-            texmap->ApplyTexture( returnedPoint, viewDir );
-        }
+    bool found = FindIntersectionNT(viewPos, viewDir, maxDistance,
+                                    intersectDistance, returnedPoint);
+    if (found) {
+        returnedPoint.SetObject(this);
     }
     return found;
 }
