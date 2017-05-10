@@ -308,20 +308,20 @@ std::string Config::get_isotopes_filename() const {
 }
 
 bool Config::set_hits_var_output_write_flags(const std::string & mask) {
-    return(Interaction::parse_write_flags_mask(hits_var_output_write_flags,
+    return(Output::parse_write_flags_mask(hits_var_output_write_flags,
                                                mask));
 }
 
-Interaction::WriteFlags Config::get_hits_var_output_write_flags() const {
+Output::WriteFlags Config::get_hits_var_output_write_flags() const {
     return(hits_var_output_write_flags);
 }
 
 bool Config::set_singles_var_output_write_flags(const std::string & mask) {
-    return(Interaction::parse_write_flags_mask(singles_var_output_write_flags,
+    return(Output::parse_write_flags_mask(singles_var_output_write_flags,
                                                mask));
 }
 
-Interaction::WriteFlags Config::get_singles_var_output_write_flags() const {
+Output::WriteFlags Config::get_singles_var_output_write_flags() const {
     return(singles_var_output_write_flags);
 }
 
