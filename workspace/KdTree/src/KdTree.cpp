@@ -34,6 +34,7 @@
 #include <stack>
 #include <KdTree/KdTree.h>
 #include <KdTree/DoubleRecurse.h>
+#include <stdexcept>
 
 // Destructor
 KdTree::~KdTree()
@@ -92,7 +93,6 @@ bool KdTree::Traverse(const VectorR3& startPos, const VectorR3& dir)
     std::stack<Kd_TraverseNodeData> traverseStack;
 
 	while ( true ) {
-		
 		if ( ! currentNode->IsLeaf() ) {
 			Stats_NodeTraversed();
 			// Handle non-leaf nodes
@@ -122,7 +122,7 @@ bool KdTree::Traverse(const VectorR3& startPos, const VectorR3& dir)
 				thisStartPt = startPos.z;
 				break;
 			case KD_LEAF:
-				assert (0);		// Included to make gcc compiler happy.
+                throw(std::runtime_error("Found leaf, but it shouldn't be here"));
 			}
 			long nearNodeIdx;
 			long farNodeIdx;
