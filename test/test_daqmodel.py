@@ -6,7 +6,7 @@ import numpy as np
 
 def _run_merge(filename, output_filename, map_filename, proc_filename,
                input_dtype, verbose):
-    cmd = 'daqmodel -f %s -o %s -m %s -p %s' % (
+    cmd = 'gray-daq -f %s -o %s -m %s -p %s' % (
         filename, output_filename, map_filename, proc_filename
     )
     if verbose:
