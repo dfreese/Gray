@@ -15,8 +15,6 @@ using namespace std;
 Config::Config() :
     seed(0),
     seed_set(false),
-    run_viewer_flag(true),
-    run_physics_flag(true),
     format_hits_set(false),
     format_singles_set(false),
     format_hits(Output::FULL_ASCII),
@@ -54,10 +52,6 @@ bool Config::ProcessCommandLine(int argc, char **argv)
         string argument(argv[ix]);
         if (argument == "-h" || argument == "--help") {
             return(false);
-        } else if (argument == "-b") {
-            run_viewer_flag = false;
-        } else if (argument == "-d") {
-            run_physics_flag = false;
         }
     }
 
@@ -119,9 +113,7 @@ bool Config::get_log_singles() {
 }
 
 void Config::usage() {
-    cout << "Gray (-hb) -f [Scene Description] -o [Output Filename]\n"
-    << "  -b : batch mode (don't view the geometry)\n"
-    << "  -d : don't run the physics simulation\n"
+    cout << "Gray (-h) -f [Scene Description] -o [Output Filename]\n"
     << "  -h : print help message\n"
     << "  -i [filename] : set the output for the hits file\n"
     << "  -o [filename] : set the output for the singles file\n"
@@ -219,14 +211,6 @@ void Config::set_format_singles(Output::Format fmt) {
 
 Output::Format Config::get_format_singles() {
     return(format_singles);
-}
-
-bool Config::get_run_viewer() {
-    return(run_viewer_flag);
-}
-
-bool Config::get_run_physics() {
-    return(run_physics_flag);
 }
 
 void Config::add_pipeline_line(const std::string & line) {

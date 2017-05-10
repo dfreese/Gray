@@ -1,12 +1,8 @@
 cmake_minimum_required (VERSION 2.8.12)
 project (Gray)
 
-option(USE_OPENGL "Declares whether or not OpenGL should be used.  If not then
-then the simulation viewer is not built." OFF)
-
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
 
 # Adapted from http://stackoverflow.com/a/7750816/2465202
 set(BIN_DIR "../bin")
@@ -178,3 +174,22 @@ add_executable(gray-daq
     daqmodel/src/daqmodel.cpp
 )
 target_link_libraries(gray-daq Gray)
+
+
+find_package(OpenGL)
+find_package(GLUT)
+
+if (OPENGL_FOUND AND OPENGL_GLU_FOUND AND GLUT_FOUND)
+add_executable(gray-view
+    Viewer/src/gray-view.cpp
+    Viewer/src/GlutRenderer.cpp
+    Viewer/include/Viewer/GlutRenderer.h
+    Viewer/src/Viewer.cpp
+    Viewer/include/Viewer/Viewer.h
+)
+target_include_directories(gray-view PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Viewer/include)
+target_link_libraries(gray-view ${OPENGL_LIBRARIES})
+target_link_libraries(gray-view ${GLUT_LIBRARIES})
+target_link_libraries(gray-view Gray)
+
+endif (OPENGL_FOUND AND OPENGL_GLU_FOUND AND GLUT_FOUND)

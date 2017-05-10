@@ -35,8 +35,6 @@ public:
     Output::Format get_format_hits();
     void set_format_singles(Output::Format fmt);
     Output::Format get_format_singles();
-    bool get_run_viewer();
-    bool get_run_physics();
     bool get_log_hits();
     bool get_log_singles();
     void add_pipeline_line(const std::string & line);
@@ -70,8 +68,6 @@ private:
     std::string filename_singles;
     unsigned long seed;
     bool seed_set;
-    bool run_viewer_flag;
-    bool run_physics_flag;
     bool format_hits_set;
     bool format_singles_set;
     Output::Format format_hits;
