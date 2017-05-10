@@ -123,7 +123,7 @@ public:
                                       double & deposit);
     static void ComptonScatter(Photon &p, double & deposit);
     static void KleinNishinaAngle(double energy, double & theta,
-                                    double & phi);
+                                  double & phi, double & prob_e_theta);
     static double KleinNishinaEnergy(double energy, double theta);
     static bool XrayEscape(Photon &p, const GammaStats & mat_gamma_prop,
                            double & deposit);
@@ -139,8 +139,10 @@ private:
     public:
         KleinNishina();
         double dsigma_max(double energy_mev);
-        double dsigma_over_max(double theta, double energy_mev);
-        static double dsigma(double theta, double energy_mev);
+        double dsigma_over_max(double theta, double energy_mev,
+                               double & prob_e_theta);
+        static double dsigma(double theta, double energy_mev,
+                             double & prob_e_theta);
     private:
         static double find_max(double energy_mev);
         std::vector<double> energy_idx;

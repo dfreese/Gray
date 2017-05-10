@@ -839,13 +839,16 @@ Interaction::KleinNishina::KleinNishina() :
  * https://en.wikipedia.org/wiki/Klein–Nishina_formula
  *
  */
-double Interaction::KleinNishina::dsigma(double theta, double energy_mev)
+double Interaction::KleinNishina::dsigma(double theta, double energy_mev,
+                                         double & prob_e_theta)
 {
     double alpha = energy_mev / ENERGY_511;
     double cs = cos(theta);
     double ss = sin(theta);
-    double h = 1. / (1. + alpha * (1. - cs));
-    double sigma = ss * h * h * (h + 1./ h - ss * ss);
+    prob_e_theta = 1. / (1. + alpha * (1. - cs));
+    double sigma = ss * prob_e_theta * prob_e_theta * (prob_e_theta +
+                                                       (1./ prob_e_theta) -
+                                                       ss * ss);
     return(sigma);
 }
 
@@ -881,9 +884,10 @@ double Interaction::KleinNishina::dsigma_max(double energy_mev)
  * should be accepted.
  */
 double Interaction::KleinNishina::dsigma_over_max(double theta,
-                                                  double energy_mev)
+                                                  double energy_mev,
+                                                  double & prob_e_theta)
 {
-    return(dsigma(theta, energy_mev) / dsigma_max(energy_mev));
+    return(dsigma(theta, energy_mev, prob_e_theta) / dsigma_max(energy_mev));
 }
 
 /*!
@@ -895,7 +899,8 @@ double Interaction::KleinNishina::find_max(double energy_mev)
     // dsigma value is always positive, zero is safe.
     double max_val = 0;
     for (double theta = 0; theta <= M_PI; theta += (M_PI/ 100)) {
-        max_val = std::max(max_val, dsigma(theta, energy_mev));
+        double prob_e_theta;
+        max_val = std::max(max_val, dsigma(theta, energy_mev, prob_e_theta));
     }
     return(max_val);
 }
@@ -974,13 +979,14 @@ Interaction::INTER_TYPE Interaction::InteractionType(
 }
 
 void Interaction::KleinNishinaAngle(double energy, double & theta,
-                                      double & phi)
+                                    double & phi, double & prob_e_theta)
 {
     /* Generate scattering angles - phi and theta */
     // Theta is the compton angle
     do {
         theta = M_PI * Random::Uniform();
-    } while (klein_nishina.dsigma_over_max(theta, energy) < Random::Uniform());
+    } while (klein_nishina.dsigma_over_max(theta, energy, prob_e_theta) <
+             Random::Uniform());
 
     // phi is symmetric around a circle of 360 degrees
     phi = 2 * M_PI * Random::Uniform();
@@ -993,11 +999,11 @@ double Interaction::KleinNishinaEnergy(double energy, double theta)
 
 void Interaction::ComptonScatter(Photon &p, double & deposit)
 {
-    double theta, phi;
-    KleinNishinaAngle(p.energy, theta, phi);
+    double theta, phi, prob_e_theta;
+    KleinNishinaAngle(p.energy, theta, phi, prob_e_theta);
     // After collision the photon loses some energy to the electron
     deposit = p.energy;
-    p.energy = KleinNishinaEnergy(p.energy, theta);
+    p.energy *= prob_e_theta;
     deposit -= p.energy;
 
     // Create rotation axis this is perpendicular to Y axis
