@@ -16,11 +16,6 @@ public:
     virtual void Reset();
     virtual void Decay(int photon_number, double time, int src_id,
                        const VectorR3 & position);
-    static void PositronRange(VectorR3 & p, double positronC,
-                              double positronK1, double positronK2,
-                              double positronMaxRange);
-    static void PositronRange(VectorR3 & p, double positronFWHM,
-                              double positronMaxRange);
     void set_acolinearity(double acolinearity_deg_fwhm);
 
     static const double default_acolinearity;

@@ -16,11 +16,11 @@ public:
                        double gamma_decay_energy_mev);
     virtual void Decay(int photon_number, double time, int src_id,
                        const VectorR3 & position);
-    virtual void Decay(int photon_number, double time, int src_id,
+    void Decay(int photon_number, double time, int src_id,
                        VectorR3 position, double positronC,
                        double positronK1, double positronK2,
                        double positronMaxRange);
-    virtual void Decay(int photon_number, double time, int src_id,
+    void Decay(int photon_number, double time, int src_id,
                        VectorR3 position, double positronFWHM,
                        double positronMaxRange);
     static void PositronRange(VectorR3 & p, double positronC,
