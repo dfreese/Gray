@@ -128,7 +128,7 @@ private:
     // the tree.  Gives an object in a leaf node. Return code is "true" if the
     // returned stop distance is relevant.  Must be overridden in a derived
     // class
-    virtual bool ObjectCallback(long objectNum, double* retStopDistance) = 0;
+    virtual bool ObjectCallback(long object_id, double& retStopDist) = 0;
 
     // Traversal statistics
     long Stats_NumberKdNodesTraversed;

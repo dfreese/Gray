@@ -24,7 +24,7 @@ public:
                           double & hitDist, VisiblePoint& returnedPoint);
 
 protected:
-    virtual bool ObjectCallback(long objectNum, double* retStopDistance);
+    virtual bool ObjectCallback(long objectNum, double & retStopDistance);
     virtual void ExtentFunc(long objectNum, AABB& boundingBox);
     virtual bool ExtentInBoxFunc(long objectNum, const AABB& clippingBox,
                                  AABB& boundingBox);

@@ -33,7 +33,7 @@ bool IntersectKdTree::ExtentInBoxFunc(long objNum, const AABB& aabb,
 
 
 // Call back function for KdTraversal of view ray or reflection ray
-bool IntersectKdTree::ObjectCallback(long objectNum, double* retStopDistance)
+bool IntersectKdTree::ObjectCallback(long objectNum, double & retStopDistance)
 {
     double thisHitDistance;
     bool hitFlag;
@@ -47,7 +47,7 @@ bool IntersectKdTree::ObjectCallback(long objectNum, double* retStopDistance)
     *bestHitPoint = tempPoint;		// The visible point that was hit
     bestObject = objectNum;				// The object that was hit
     bestHitDistance = thisHitDistance;
-    *retStopDistance = bestHitDistance;	// No need to traverse search further than this distance
+    retStopDistance = bestHitDistance;	// No need to traverse search further than this distance
     return true;
 }
 

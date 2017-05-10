@@ -199,7 +199,7 @@ bool KdTree::Traverse(const VectorR3& startPos, const VectorR3& dir)
             Stats_ObjectsInLeaves( i );
             long* objectIdPtr = currentNode->Data.Leaf.ObjectList;
             for ( ; i>0; i-- ) {
-                if (ObjectCallback(*objectIdPtr, &newStopDist))
+                if (ObjectCallback(*objectIdPtr, newStopDist))
                 {
                     stopDistanceActive = true;
                     stopDistance = newStopDist;
