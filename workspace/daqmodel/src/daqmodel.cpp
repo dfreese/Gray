@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <Output/BinaryFormat.h>
+#include <Output/Output.h>
 #include <Physics/Interaction.h>
 #include <Pipeline/singlesstream.h>
 
@@ -88,21 +89,21 @@ int process_file<Interaction>(const std::string & filename_map,
 
     bool binary;
     int version;
-    Interaction::read_header(input, binary, version);
+    Output::read_header(input, binary, version);
 
-    Interaction::WriteFlags flags;
-    Interaction::read_write_flags(flags, input, binary);
+    Output::WriteFlags flags;
+    Output::read_write_flags(flags, input, binary);
 
-    Interaction::write_header(output, binary);
-    Interaction::write_write_flags(flags, output, binary);
+    Output::write_header(output, binary);
+    Output::write_write_flags(flags, output, binary);
 
     Interaction input_event;
-    while (Interaction::read_interaction(input_event, input, flags, binary)) {
+    while (Output::read_interaction(input_event, input, flags, binary)) {
         singles_stream.add_event(input_event);
         if (singles_stream.no_ready() > 100000) {
             const vector<Interaction> & events = singles_stream.get_ready();
             for (const auto & event: events) {
-                Interaction::write_interaction(event, output, flags, binary);
+                Output::write_interaction(event, output, flags, binary);
             }
             singles_stream.clear();
         }
@@ -112,7 +113,7 @@ int process_file<Interaction>(const std::string & filename_map,
     singles_stream.stop();
     const vector<Interaction> & events = singles_stream.get_ready();
     for (const auto & event: events) {
-        Interaction::write_interaction(event, output, flags, binary);
+        Output::write_interaction(event, output, flags, binary);
     }
     singles_stream.clear();
 
