@@ -68,5 +68,6 @@ long IntersectKdTree::SeekIntersection(const VectorR3& pos,
     kdTraverseDir = direction;
     bestHitPoint = &returnedPoint;
     Traverse(pos, direction);
+    hitDist = bestHitDistance;
     return bestObject;
 }
