@@ -140,10 +140,9 @@ int main( int argc, char** argv)
 
         GammaRayTrace::TraceStats stats;
         const size_t interactions_soft_max = 100000;
-        vector<Interaction> interactions;
-        interactions.reserve(interactions_soft_max + 50);
         while (sources.GetTime() < sources.GetEndTime()) {
-            interactions.clear();
+            vector<Interaction> interactions;
+            interactions.reserve(interactions_soft_max + 50);
             GammaRayTrace::TraceSources(
                     sources, intersect_kd_tree, interactions,
                     interactions_soft_max,
