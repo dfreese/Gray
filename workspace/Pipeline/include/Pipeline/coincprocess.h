@@ -89,9 +89,10 @@ public:
     
 
 private:
-
-    void _add_event(const EventT & event) {
-        buffer.push_back({event, {0, 0}});
+    void _add_events(const std::vector<EventT> & events) {
+        for (const auto & event: events) {
+            buffer.push_back({event, {0, 0}});
+        }
         update_buffer_status(false);
     }
 
@@ -195,8 +196,9 @@ private:
                                       ready_func);
         }
 
+        std::vector<EventT> local_ready_events;
         std::for_each(buffer.begin(), ready_iter,
-                      [this](const EventPair & p){
+                      [this, &local_ready_events](const EventPair & p){
                           if (p.second.no_coinc == 2) {
                               no_coinc_pair_events++;
                           } else if (p.second.no_coinc > 2) {
@@ -218,11 +220,12 @@ private:
                                                (p.second.no_delay > 2)) &&
                                               !this->reject_multiples));
                           if (keep_event) {
-                              this->add_ready(p.first);
-                          } else {
-                              this->inc_no_dropped();
+                              local_ready_events.push_back(p.first);
                           }
                       });
+        this->inc_no_dropped(ready_iter - buffer.begin() -
+                             local_ready_events.size());
+        this->add_ready(local_ready_events);
         buffer.erase(buffer.begin(), ready_iter);
     }
 

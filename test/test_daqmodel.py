@@ -132,6 +132,30 @@ def test_merge_different_detectors():
     assert(output[0]['time'] == data[0]['time']), 'Time should be unchanged'
     assert(output[1] == data[1]), 'Second event should be unchanged'
 
+def test_merge_different_detectors_interspersed():
+    data = np.zeros(5, dtype=gray.no_position_dtype)
+    merge_window = 300.0
+
+    times = np.array((0, merge_window / 3.0 * 2.0, merge_window - 1e-6,
+                      merge_window / 3.0 * 5.0 - 1e-6,
+                      merge_window / 3.0 * 2.0 + merge_window))
+    dets = np.array((0, 1, 0, 1, 1))
+    energies = np.array((300.0, 500.0, 250.0, 11.0, 40.0))
+    data['time'] = times
+    data['det'] = dets
+    data['energy'] = energies
+
+    expected = data[np.array((0, 1, 4))]
+    expected['energy'][np.array((0, 1))] += data['energy'][np.array((2, 3))]
+
+    output = _create_and_run_merge(data, ('merge', 'detector', merge_window))
+
+    assert(output.size == expected.size), \
+            'Size not expected for interspersed merge'
+    assert((output == expected).all()), \
+            'Event data not as expected for interspersed merge'
+
+
 def test_deadtime():
     data = np.zeros(7, dtype=gray.no_position_dtype)
     deadtime = 100.0

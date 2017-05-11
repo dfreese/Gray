@@ -27,11 +27,10 @@ public:
     }
 
 private:
-    void _add_event(const EventT & event) {
-        // TODO: fix this so there's not nearly so much copying going on. Dumb.
-        EventT event_copy = event;
-        blur_func(event_copy);
-        this->add_ready(event_copy);
+    void _add_events(const std::vector<EventT> & events) {
+        std::vector<EventT> new_events(events);
+        std::for_each(new_events.begin(), new_events.end(), blur_func);
+        this->add_ready(new_events);
     }
 
     void _reset() {

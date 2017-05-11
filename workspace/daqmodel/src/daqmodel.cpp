@@ -34,19 +34,19 @@ int process_file(const std::string & filename_map,
         return(-2);
     }
 
-    EventT input_event;
-
-    while (input.read(reinterpret_cast<char *>(&input_event),
-                      sizeof(input_event)))
-    {
-        singles_stream.add_event(input_event);
-        if (singles_stream.no_ready() > 100000) {
-            const vector<EventT> & events = singles_stream.get_ready();
-            output.write(reinterpret_cast<const char *>(events.data()),
-                         events.size() * sizeof(EventT));
-            singles_stream.clear();
-        }
-    }
+    vector<EventT> input_events(100000);
+    do {
+        input.read(reinterpret_cast<char *>(input_events.data()),
+                   input_events.size() * sizeof(EventT));
+        size_t no_events = input.gcount() / sizeof(EventT);
+        singles_stream.add_events(vector<EventT>(input_events.begin(),
+                                                 input_events.begin() +
+                                                 no_events));
+        const vector<EventT> & events = singles_stream.get_ready();
+        output.write(reinterpret_cast<const char *>(events.data()),
+                     events.size() * sizeof(EventT));
+        singles_stream.clear();
+    } while(input);
 
     input.close();
     singles_stream.stop();

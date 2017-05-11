@@ -11,6 +11,7 @@
 
 #include <fstream>
 #include <vector>
+#include <unordered_set>
 #include <Pipeline/processor.h>
 
 /*!
@@ -43,48 +44,61 @@ public:
 
 private:
     /*!
-     * Adds a new event into the merge map.  It then updates which events are
+     * Adds a new events into detector id map then updates which events are
      * timed out, and will not be merged with any other event.
      */
-    void _add_event(const EventT & event) {
-        // First update the map and time out.
-        size_t ii = 0;
-        TimeT event_time = get_time_func(event);
-        for (; ii < event_buf.size(); ii++) {
-            EventT & stored_event = event_buf[ii];
-            TimeT stored_event_time = get_time_func(stored_event);
-            if ((event_time - stored_event_time) < time_window) {
-                // We've found an event that is too new, stop looking, and
-                // remember to start here next time.
-                break;
+    void _add_events(const std::vector<EventT> & events) {
+        if (events.empty()) {
+            return;
+        }
+        // Merge any events that are still within the window.  Hold onto others
+        // where there's nothing from that detector currently, or where the
+        // current event is too old.
+        std::vector<EventT> local_ready_events;
+        for (const auto & event: events) {
+            TimeT clear_time = get_time_func(event) - time_window;
+            int event_id = find_id(event);
+            if (id_event_map.count(event_id) == 0) {
+                // Keep the event
+                id_event_map[event_id] = event;
+            } else if (get_time_func(id_event_map[event_id]) <= clear_time) {
+                // Keep the event and push out the old one
+                local_ready_events.push_back(id_event_map[event_id]);
+                id_event_map[event_id] = event;
             } else {
-                this->add_ready(event_buf[ii]);
-            }
-        }
-        event_buf.erase(event_buf.begin(), event_buf.begin() + ii);
-
-        // Now check to see if we should merge the event, and if so merge it,
-        // otherwise, add into the structure.
-        // TODO: replace this with an unordered map, so we don't have to search
-        // all of the non-timed out events.
-        int event_id = find_id(event);
-        bool merged = false;
-        for (size_t ii = 0; ii < event_buf.size(); ii++) {
-            EventT & stored_event = event_buf[ii];
-            int stored_id = find_id(stored_event);
-            if (event_id == stored_id) {
-                merge_func(stored_event, event);
+                // Merge the events together
+                merge_func(id_event_map[event_id], event);
                 this->inc_no_dropped();
-                merged = true;
             }
         }
-        if (!merged) {
-            event_buf.push_back(event);
+
+        // Now clear out any events that are too old from the map
+        TimeT clear_time = get_time_func(events.back()) - time_window;
+        std::unordered_set<int> ids_to_clear;
+        for (const auto & id_e_pair: id_event_map) {
+            if (get_time_func(id_e_pair.second) <= clear_time) {
+                // Keep the event and push out the old one
+                local_ready_events.push_back(id_e_pair.second);
+                ids_to_clear.insert(id_e_pair.first);
+            }
         }
+
+        for (auto det_id: ids_to_clear) {
+            id_event_map.erase(det_id);
+        }
+
+        // Return the events in time sorted fashion, knowing that events can
+        // only have their time go forwards for this type of process, unlike
+        // blurring, which can go forward.
+        std::sort(local_ready_events.begin(), local_ready_events.end(),
+                  [this](const EventT & e0, const EventT & e1){
+                      return(this->get_time_func(e0) < this->get_time_func(e1));
+                  });
+        this->add_ready(local_ready_events);
     }
 
     void _reset() {
-        event_buf.clear();
+        id_event_map.clear();
     }
 
     /*!
@@ -92,9 +106,19 @@ private:
      * valid.
      */
     void _stop() {
-        for (auto & event: event_buf) {
-            this->add_ready(event);
+        std::vector<EventT> local_ready_events;
+        for (const auto & id_e_pair: id_event_map) {
+            local_ready_events.push_back(id_e_pair.second);
         }
+        id_event_map.clear();
+        // Return the events in time sorted fashion, knowing that events can
+        // only have their time go forwards for this type of process, unlike
+        // blurring, which can go forward.
+        std::sort(local_ready_events.begin(), local_ready_events.end(),
+                  [this](const EventT & e0, const EventT & e1){
+                      return(this->get_time_func(e0) < this->get_time_func(e1));
+                  });
+        this->add_ready(local_ready_events);
     }
 
     /*!
@@ -131,6 +155,6 @@ private:
      */
     ModF merge_func;
 
-    std::vector<EventT> event_buf;
+    std::unordered_map<int, EventT> id_event_map;
 };
 #endif /* mergemap_h */

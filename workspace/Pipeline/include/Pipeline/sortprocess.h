@@ -37,12 +37,14 @@ public:
     }
 
 private:
-    void _add_event(const EventT & event) {
+    void _add_events(const std::vector<EventT> & events) {
+        for (const auto & event : events) {
+            event_min_heap.push(event);
+            TimeT event_time = get_time_func(event);
+            max_time = std::max(event_time, max_time);
+        }
 
-        event_min_heap.push(event);
-        TimeT event_time = get_time_func(event);
-        max_time = std::max(event_time, max_time);
-
+        std::vector<EventT> local_events_ready;
         while(!event_min_heap.empty()) {
             const EventT & stored_event = event_min_heap.top();
             TimeT time = get_time_func(stored_event);
@@ -51,10 +53,11 @@ private:
                 // remember to start here next time.
                 break;
             } else {
-                this->add_ready(stored_event);
+                local_events_ready.push_back(stored_event);
                 event_min_heap.pop();
             }
         }
+        this->add_ready(local_events_ready);
     }
 
     void _reset() {
@@ -67,12 +70,14 @@ private:
      *
      */
     void _stop() {
+        std::vector<EventT> local_events_ready;
         while(!event_min_heap.empty()) {
-            this->add_ready(event_min_heap.top());
+            local_events_ready.push_back(event_min_heap.top());
             event_min_heap.pop();
         }
         // TODO: check that initialization of time will be okay
         max_time = TimeT();
+        this->add_ready(local_events_ready);
     }
 
     /*!

@@ -29,21 +29,17 @@ public:
     virtual ~Processor() {};
 
     /*!
-     * Adds a new event into the merge map.  It then updates which events are
-     * timed out, and will not be merged with any other event.
+     * Adds new events into the processor by dumping it to add_events.
      */
     void add_event(const EventT & event) {
-        _add_event(event);
-        count_events++;
+        add_events({event});
     }
 
     /*!
-     * Walks through a vector and putting it into the processor one at a time.
+     * Adds new events into the processor, one by one by default.
      */
     void add_events(const std::vector<EventT> & events) {
-        for (const auto & event: events) {
-            _add_event(event);
-        }
+        _add_events(events);
         count_events += events.size();
     }
 
@@ -122,13 +118,13 @@ protected:
         count_dropped += val;
     }
 
-    void add_ready(const EventT & event) {
-        count_kept++;
-        ready_events.push_back(event);
+    void add_ready(const std::vector<EventT> & events) {
+        count_kept += events.size();
+        ready_events.insert(ready_events.end(), events.begin(), events.end());
     }
 
 private:
-    virtual void _add_event(const EventT & event) = 0;
+    virtual void _add_events(const std::vector<EventT> & events) = 0;
     virtual void _reset() = 0;
     virtual void _stop() = 0;
 

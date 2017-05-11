@@ -44,9 +44,33 @@ private:
     /*!
      *
      */
-    void _add_event(const EventT & event) {
-        // First remove any chunk of events that are timed out at the beginning.
-        TimeT event_time = get_time_func(event);
+    void _add_events(const std::vector<EventT> & events) {
+        if (events.empty()) {
+            return;
+        }
+        for (const auto event: events) {
+            TimeT event_time = get_time_func(event);
+            int event_id = find_id(event);
+            if (timeouts.count(event_id) == 0) {
+                // Keep the event
+                event_buf.push_back(event);
+                timeouts[event_id] = event_time + time_window;
+            } else if (timeouts[event_id] <= event_time) {
+                // Keep the event
+                event_buf.push_back(event);
+                timeouts[event_id] = event_time + time_window;
+            } else if (is_paralyzable) {
+                // Drop and extend the window
+                timeouts[event_id] = event_time + time_window;
+                this->inc_no_dropped();
+            } else {
+                // Just drop
+                this->inc_no_dropped();
+            }
+        }
+
+        // Remove any chunk of events that are timed out at the beginning.
+        TimeT event_time = get_time_func(events.back());
         auto ready_iter = std::find_if(event_buf.begin(), event_buf.end(),
                                        [this, event_time](const EventT & e) {
                                            int det_id = this->find_id(e);
@@ -56,27 +80,9 @@ private:
                                                return(false);
                                            }
                                        });
-        std::for_each(event_buf.begin(), ready_iter, [this](const EventT & e) {
-            this->add_ready(e);});
+        std::vector<EventT> local_ready_events(event_buf.begin(), ready_iter);
         event_buf.erase(event_buf.begin(), ready_iter);
-
-        int event_id = find_id(event);
-        if (timeouts.count(event_id) == 0) {
-            // Keep the event
-            event_buf.push_back(event);
-            timeouts[event_id] = event_time + time_window;
-        } else if (timeouts[event_id] <= event_time) {
-            // Keep the event
-            event_buf.push_back(event);
-            timeouts[event_id] = event_time + time_window;
-        } else if (is_paralyzable) {
-            // Drop and extend the window
-            timeouts[event_id] = event_time + time_window;
-            this->inc_no_dropped();
-        } else {
-            // Just drop
-            this->inc_no_dropped();
-        }
+        this->add_ready(local_ready_events);
     }
 
     void _reset() {
@@ -88,9 +94,7 @@ private:
      * valid.
      */
     void _stop() {
-        for (auto & event: event_buf) {
-            this->add_ready(event);
-        }
+        this->add_ready(event_buf);
     }
 
     /*!
