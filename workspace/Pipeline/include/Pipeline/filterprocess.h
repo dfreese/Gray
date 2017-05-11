@@ -39,7 +39,7 @@ private:
                                                              filt_func));
         std::copy_if(events.cbegin(), events.cend(),
                      local_ready_events.begin(), filt_func);
-        this->inc_no_dropped(local_ready_events.size() - events.size());
+        this->inc_no_dropped(events.size() - local_ready_events.size());
         this->add_ready(local_ready_events);
     }
 
