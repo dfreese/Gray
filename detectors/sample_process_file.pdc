@@ -18,6 +18,8 @@ merge detector 5.0e-9 max
 # Energy gate everything below 0.4MeV
 filter egate_low 0.400
 
+blur time 1e-9
+
 # And then apply a rough coincidence windowing to remove the obvious singles
 # events that might be filtered out later by coincidence sorting.
 coinc window 5e-9

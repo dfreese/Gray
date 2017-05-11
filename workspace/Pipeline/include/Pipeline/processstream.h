@@ -24,8 +24,9 @@ public:
      */
     ProcessStream() {}
 
-    void add_process(Processor<EventT> * process) {
+    void add_process(Processor<EventT> * process, bool print = true) {
         processes.push_back(process);
+        print_info.push_back(print);
     }
 
     size_t no_processes() const {
@@ -105,8 +106,10 @@ public:
         << "kept: " << ps.no_kept() << "\n"
         << "dropped: " << ps.no_dropped() << "\n"
         << "drop per level: ";
-        for (auto & p: ps.processes) {
-            os << " " << p->no_dropped() << ",";
+        for (size_t idx = 0; idx < ps.processes.size(); idx++) {
+            if (ps.print_info[idx]) {
+                os << " " << ps.processes[idx]->no_dropped() << ",";
+            }
         }
         os << "\n";
         return(os);
@@ -116,6 +119,7 @@ private:
 
     std::vector<Processor<EventT> *> processes;
     std::vector<EventT> ready_events;
+    std::vector<bool> print_info;
 
     void cascade_processes() {
         for (size_t pidx = 0; pidx < processes.size() - 1; ++pidx) {

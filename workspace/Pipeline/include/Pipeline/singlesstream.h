@@ -47,7 +47,7 @@ public:
     {
         if (initial_sort_window > 0) {
             add_sort_process("time", initial_sort_window,
-                             std::vector<std::string>());
+                             std::vector<std::string>(), false);
         }
     }
 
@@ -373,7 +373,7 @@ private:
                 }
             } else if (proc_desc.type == "sort") {
                 if (add_sort_process(proc_desc.component, proc_desc.time,
-                                     proc_desc.options) < 0)
+                                     proc_desc.options, true) < 0)
                 {
                     return(-3);
                 }
@@ -571,7 +571,7 @@ private:
             // Sort the stream afterwards, based on the capped blur
             sort_processes.push_back(new SortProcT(max_blur * 2,
                                                    get_time_func));
-            process_stream.add_process(sort_processes.back());
+            process_stream.add_process(sort_processes.back(), false);
             return(0);
         } else {
             std::cerr << "Unknown blur type: " << name << std::endl;
@@ -580,11 +580,12 @@ private:
     }
 
     int add_sort_process(const std::string & name, double value,
-                         const std::vector<std::string> & options)
+                         const std::vector<std::string> & options,
+                         bool user_requested)
     {
         if (name == "time") {
             sort_processes.push_back(new SortProcT(value, get_time_func));
-            process_stream.add_process(sort_processes.back());
+            process_stream.add_process(sort_processes.back(), user_requested);
             return(0);
         } else {
             std::cerr << "Unknown sort type: " << name << std::endl;
