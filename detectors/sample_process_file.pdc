@@ -4,12 +4,15 @@
 # First merge all of the crystals/detectors together.  Put detector to specify
 # the component to match the component name listed in the
 # sample_mapping_file.map
+merge detector 5.0e-9
+# The max merge type is the default, so this is exactly the same as the
+# previous command
 merge detector 5.0e-9 max
 
 # We don't have blocks mapped currently in the sample_mapping_file.map file
 # so we do not enable these.
-# merge block 300e-9 array_max
-# merge block 300e-9 array_eweight bx by bz 8 8 1
+# merge block 300e-9 # max by default
+# merge block 300e-9 anger bx by bz 8 8 1
 # deadtime block 10e-6
 
 # Energy gate everything below 0.4MeV

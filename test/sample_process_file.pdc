@@ -1,9 +1,0 @@
-merge detector 40e-9 basic
-# Comments are indicated by a leading pound sign
-# blank lines are ignored
-
-# merge block 300e-9 array_max
-# merge block 300e-9 array_eweight bx by bz 8 8 1
-# deadtime block 10e-6 nonparalyzable
-# sort time 1e-6
-# coinc window 20e-9

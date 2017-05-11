@@ -412,7 +412,7 @@ def test_merge_array_outside_window():
     data[1]['energy'] = 250.0
 
     output = _create_and_run_merge(data, ('merge', 'block', merge_window,
-                                   'array_eweight bx by bz 8 8 1'))
+                                   'anger bx by bz 8 8 1'))
     assert((output == data).all()), '''return data should be unchanged as it
            is outside the merge window'''
 
@@ -441,7 +441,7 @@ def test_merge_array_different_arrays():
     data[1]['det'] = 64
 
     output = _create_and_run_merge(data, ('merge', 'block', merge_window,
-                                   'array_eweight bx by bz 8 8 1'))
+                                   'anger bx by bz 8 8 1'))
     assert(output.size == 2), 'Events should have been merged to two events'
     assert(output[0]['energy'] == (data[0]['energy'] + data[2]['energy'])), \
            'Energy should be the sum of the input'
@@ -535,7 +535,7 @@ def test_merge_array_weighted_mean_same_col():
                   data[1]['det'] * (data[1]['energy'] / new_energy))
 
     output = _create_and_run_merge(data, ('merge', 'block', merge_window,
-                                   'array_eweight bx by bz 8 8 1'))
+                                   'anger bx by bz 8 8 1'))
     assert(output.size == 1), 'Events should have been merged to one'
     assert(output[0]['energy'] == new_energy), \
            'Energy should be the sum of the input'
@@ -558,7 +558,7 @@ def test_merge_array_weighted_mean_same_row():
                       data[1]['det'] // 8 * (data[1]['energy'] / new_energy))
 
     output = _create_and_run_merge(data, ('merge', 'block', merge_window,
-                                   'array_eweight bx by bz 8 8 1'))
+                                   'anger bx by bz 8 8 1'))
     assert(output.size == 1), 'Events should have been merged to one'
     assert(output[0]['energy'] == new_energy), \
            'Energy should be the sum of the input'
@@ -584,7 +584,7 @@ def test_merge_array_weighted_mean():
     new_det = 8 * new_col + new_row
 
     output = _create_and_run_merge(data, ('merge', 'block', merge_window,
-                                   'array_eweight bx by bz 8 8 1'))
+                                   'anger bx by bz 8 8 1'))
     assert(output.size == 1), 'Events should have been merged to one'
     assert(output[0]['energy'] == new_energy), \
            'Energy should be the sum of the input'

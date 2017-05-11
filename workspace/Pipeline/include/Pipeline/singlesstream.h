@@ -41,7 +41,6 @@ public:
             TimeT initial_sort_window = -1,
             MergeF merge_info = [](EventT & e0, const EventT & e1) {
                 e0.energy += e1.energy;}) :
-        no_array_eweight(0),
         merge_info_func(merge_info),
         get_id_func([](const EventT & e){return (e.det_id);}),
         get_time_func([](const EventT & e){return (e.time);})
@@ -50,15 +49,6 @@ public:
             add_sort_process("time", initial_sort_window,
                              std::vector<std::string>());
         }
-        // Func to merge events in an array, and place the event at the first.
-        merge_types["merge_first"] = [this](EventT & e0, const EventT & e1) {
-            this->merge_info_func(e0, e1);
-        };
-        // Func to merge events, and place the event at the max energy.
-        merge_types["merge_max"] = [this](EventT & e0, const EventT & e1) {
-            e0.det_id = e0.energy > e1.energy ? e0.det_id:e1.det_id;
-            this->merge_info_func(e0, e1);
-        };
     }
 
     ~SinglesStream() {
@@ -219,7 +209,6 @@ private:
     std::vector<SortProcT*> sort_processes;
     std::vector<CoincProcT*> coinc_processes;
     std::vector<DeadtimeT*> deadtime_processes;
-    std::map<std::string, MergeF> merge_types;
 
     static int load_id_maps(const std::string & filename,
                             std::map<std::string, std::vector<int>> & id_maps)
@@ -356,43 +345,14 @@ private:
         return(0);
     }
 
-
     int set_processes(const std::vector<ProcessDescription> & process_descriptions) {
+        // TODO: change ProcessDescription to name and options only
         for (const auto & proc_desc: process_descriptions) {
             if (proc_desc.type == "merge") {
-                if (proc_desc.options.empty()) {
-                    if (add_merge_process("merge_max", proc_desc.component,
-                                          proc_desc.time) < 0)
-                    {
-                        return(-3);
-                    }
-                } else if (proc_desc.options[0] == "first") {
-                    if (add_merge_process("merge_first", proc_desc.component,
-                                          proc_desc.time) < 0)
-                    {
-                        return(-3);
-                    }
-                } else if (proc_desc.options[0] == "max") {
-                    if (add_merge_process("merge_max", proc_desc.component,
-                                          proc_desc.time) < 0)
-                    {
-                        return(-3);
-                    }
-                } else if (proc_desc.options[0] == "array_eweight") {
-                    // Give each eweight process a unique name, so that is can
-                    // have unique settings.
-                    std::stringstream ss;
-                    ss << "merge_array_eweight_" << no_array_eweight++;
-                    if (add_array_eweight_func(proc_desc.options, ss.str()) < 0) {
-                        return(-3);
-                    }
-                    if (add_merge_process(ss.str(), proc_desc.component,
-                                          proc_desc.time) < 0)
-                    {
-                        return(-3);
-                    }
-                } else {
-                    return(-4);
+                if (add_merge_process(proc_desc.component, proc_desc.time,
+                                      proc_desc.options) < 0)
+                {
+                    return(-3);
                 }
             } else if (proc_desc.type == "deadtime") {
                 if (add_deadtime_process(proc_desc.component, proc_desc.time,
@@ -433,19 +393,16 @@ private:
     }
 
 
-    void add_array_eweight_func(const std::vector<std::string> & block_maps,
-                                const std::vector<int> & block_size,
-                                const std::string & merge_name)
+    MergeF make_anger_func(const std::vector<std::string> & block_maps,
+                           const std::vector<int> & block_size)
     {
-        // TODO: make sure these mappings actually exist, and if not create
-        // reasonable defaults or throw and error.
         const std::vector<int> & bx = this->id_maps[block_maps[0]];
         const std::vector<int> & by = this->id_maps[block_maps[1]];
         const std::vector<int> & bz = this->id_maps[block_maps[2]];
         const int no_by = block_size[1];
         const int no_bz = block_size[2];
-        auto merge_array_eweight = [bx, by, bz, no_by, no_bz, this](EventT & e0,
-                                                              const EventT & e1)
+        auto merge_anger = [bx, by, bz, no_by, no_bz, this](EventT & e0,
+                                                            const EventT & e1)
         {
             float energy_result = e0.energy + e1.energy;
             int row0 = bx[e0.det_id];
@@ -470,21 +427,21 @@ private:
             e0.det_id += (row_result * no_by + col_result) * no_bz + lay_result;
             this->merge_info_func(e0, e1);
         };
-        merge_types[merge_name] = merge_array_eweight;
+        return(merge_anger);
     }
 
-    int add_array_eweight_func(const std::vector<std::string> & eweight_opts,
-                               const std::string & merge_name)
+    int make_anger_func(const std::vector<std::string> & anger_opts,
+                        MergeF & merge_func)
     {
-        if (eweight_opts.size() != 7) {
+        if (anger_opts.size() != 7) {
             return(-1);
         }
         std::vector<std::string> block_maps(3, "");
         std::vector<int> block_size(3, 0);
-        // The first one should be "array_eweight"
+        // The first one should be "anger"
         for (size_t idx = 0; idx < 3; idx++) {
-            block_maps[idx] = eweight_opts[idx + 1];
-            std::stringstream ss(eweight_opts[idx + 4]);
+            block_maps[idx] = anger_opts[idx + 1];
+            std::stringstream ss(anger_opts[idx + 4]);
             if ((ss >> block_size[idx]).fail()) {
                 return(-2);
             }
@@ -495,11 +452,9 @@ private:
                 return(-3);
             }
         }
-        add_array_eweight_func(block_maps, block_size, merge_name);
+        merge_func = make_anger_func(block_maps, block_size);
         return(0);
     }
-
-    int no_array_eweight;
 
     /*!
      * merge_info_func handles all of the information besides the assignment of
@@ -515,20 +470,38 @@ private:
 
     TimeF get_time_func;
 
-    int add_merge_process(const std::string & merge_name,
-                           const std::string & map_name,
-                           TimeT merge_time)
+    int add_merge_process(const std::string & map_name, double merge_time,
+                          const std::vector<std::string> & options)
     {
-        if (merge_types.count(merge_name) == 0) {
-            std::cerr << "Unknown process type: " << merge_name << std::endl;
-            return(-1);
-        }
         if (id_maps.count(map_name) == 0) {
             std::cerr << "Unknown id map type: " << map_name << std::endl;
-            return(-2);
+            return(-1);
         }
-        MergeF merge_func = merge_types[merge_name];
+        std::string merge_type = "max";
+        MergeF merge_func;
         const std::vector<int> id_map = id_maps[map_name];
+        if (!options.empty()) {
+            merge_type = options[0];
+        }
+        if (merge_type == "max") {
+            merge_func = [this](EventT & e0, const EventT & e1) {
+                e0.det_id = e0.energy > e1.energy ? e0.det_id:e1.det_id;
+                this->merge_info_func(e0, e1);
+            };
+        } else if (merge_type == "first") {
+            merge_func = [this](EventT & e0, const EventT & e1) {
+                this->merge_info_func(e0, e1);
+            };
+        } else if (merge_type == "anger") {
+            if (make_anger_func(options, merge_func) < 0) {
+                std::cerr << "unable to create anger merge: " << std::endl;
+                return(-2);
+            }
+        } else {
+            std::cerr << "Unknown merge type: " << merge_type << std::endl;
+            return(-1);
+        }
+
         merge_processes.push_back(new MergeProcT(id_map, merge_time,
                                                  get_time_func, get_id_func,
                                                  merge_func));
@@ -664,7 +637,6 @@ private:
         return(0);
     }
 
-
     int add_deadtime_process(const std::string & map_name, double deadtime,
                              const std::vector<std::string> & options)
     {
@@ -676,7 +648,7 @@ private:
             } else if (option == "nonparalyzable") {
                 paralyzable = false;
             } else {
-                std::cerr << "unrecognized coinc option: " << option
+                std::cerr << "unrecognized deadtime option: " << option
                           << std::endl;
                 return(-1);
             }
