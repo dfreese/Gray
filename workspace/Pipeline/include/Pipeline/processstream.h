@@ -23,6 +23,7 @@ public:
      * Basic constructor
      */
     ProcessStream() {}
+    virtual ~ProcessStream() {}
 
     void add_process(Processor<EventT> * process, bool print = true) {
         processes.push_back(process);
@@ -41,7 +42,7 @@ public:
         return(add_events({event}));
     }
 
-    std::vector<EventT> add_events(const std::vector<EventT> & events) {
+    virtual std::vector<EventT> add_events(const std::vector<EventT> & events) {
         std::vector<EventT> output_events(events);
         for (auto proc_ptr: processes) {
             output_events = proc_ptr->add_events(output_events);
@@ -49,7 +50,7 @@ public:
         return(output_events);
     }
 
-    std::vector<EventT> stop() {
+    virtual std::vector<EventT> stop() {
         std::vector<EventT> ret_events;
         for (size_t idx = 0; idx < processes.size(); ++idx) {
             std::vector<EventT> store_events = processes[idx]->stop();
@@ -62,9 +63,9 @@ public:
         return(ret_events);
     }
 
-    void reset() {
+    virtual void reset() {
         for (auto & p: processes) {
-            p.reset();
+            p->reset();
         }
     }
 

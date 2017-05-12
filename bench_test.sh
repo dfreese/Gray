@@ -1,6 +1,6 @@
 #!/bin/sh
 
-gray -b -s 5489 -f detectors/pet_benchmark_fast.dff -i pet_benchmark_fast.dat \
+gray --seed 5489 -f detectors/pet_benchmark_fast.dff -h pet_benchmark_fast.dat \
     -t 0.1
 
 diff -sq pet_benchmark_fast.dat detectors/ref_pet_benchmark_fast.dat

@@ -19,33 +19,34 @@
 template <
 class EventT,
 class TimeT,
-class TimeF = std::function<TimeT(const EventT&)>
+class TimeF = std::function<TimeT(const EventT&)>,
+class TagF = std::function<void(EventT&, long)>
 >
 class CoincProcess : public Processor<EventT> {
 public:
     /*!
      *
      */
-    CoincProcess(TimeT coinc_win, TimeF time_func,
+    CoincProcess(TimeT coinc_win, TimeF time_func, TagF tag_coinc_func,
                  bool reject_multiple_events = false,
                  bool is_paralyzable = true,
-                 bool use_delay = false,
-                 TimeT delay_win_offset = TimeT()) :
+                 TimeT win_offset = TimeT()) :
         coinc_window(coinc_win),
-        delay_offset(delay_win_offset),
+        window_offset(win_offset),
         reject_multiples(reject_multiple_events),
         paralyzable(is_paralyzable),
-        use_delayed_window(use_delay),
-        deltat_func([time_func](const EventT& e0, const EventT& e1){
-            return(time_func(e0) - time_func(e1));}),
+        get_time_func(time_func),
+        tag_coinc_with_id_func(tag_coinc_func),
         no_coinc_pair_events(0),
         no_coinc_multiples_events(0),
         no_coinc_single_events(0),
-        no_delay_pair_events(0),
-        no_delay_multiples_events(0),
-        no_delay_single_events(0)
+        no_coinc_events(0)
     {
 
+    }
+
+    long get_no_coinc_events() const {
+        return(no_coinc_events);
     }
 
     long get_no_coinc_pair_events() const {
@@ -60,39 +61,21 @@ public:
         return(no_coinc_single_events);
     }
 
-    long get_no_delay_pairs() const {
-        return(no_delay_pair_events);
-    }
-
-    long get_no_delay_multiples() const {
-        return(no_delay_multiples_events);
-    }
-
-    long get_no_delay_singles() const {
-        return(no_delay_single_events);
-    }
-
-
     friend std::ostream & operator << (std::ostream & os,
                                        const CoincProcess & cp)
     {
-        os << "events in coinc pair    : " << cp.no_coinc_pair_events << "\n"
+        os << "coinc events            : " << cp.no_coinc_events << "\n"
+           << "events in coinc pair    : " << cp.no_coinc_pair_events << "\n"
            << "events in coinc multiple: " << cp.no_coinc_multiples_events << "\n"
            << "events in coinc single  : " << cp.no_coinc_single_events << "\n";
-        if (cp.use_delayed_window) {
-           os << "events in delay pair    : " << cp.no_delay_pair_events << "\n"
-              << "events in delay multiple: " << cp.no_delay_multiples_events << "\n"
-              << "events in delay single  : " << cp.no_delay_single_events << "\n";
-        }
         return(os);
     }
     
 
 private:
     std::vector<EventT> _add_events(const std::vector<EventT> & events) {
-        for (const auto & event: events) {
-            buffer.push_back({event, {0, 0}});
-        }
+        event_buffer.insert(event_buffer.end(), events.begin(), events.end());
+        ready_buffer.insert(ready_buffer.end(), events.size(), false);
         return(update_buffer_status(false));
     }
 
@@ -100,13 +83,12 @@ private:
      *
      */
     void _reset() {
-        buffer.clear();
+        event_buffer.clear();
+        ready_buffer.clear();
         no_coinc_pair_events = 0;
         no_coinc_multiples_events = 0;
         no_coinc_single_events = 0;
-        no_delay_pair_events = 0;
-        no_delay_multiples_events = 0;
-        no_delay_single_events = 0;
+        no_coinc_events = 0;
     }
 
     /*!
@@ -117,146 +99,92 @@ private:
     }
 
     std::vector<EventT> update_buffer_status(bool stopping) {
-        for (size_t ii = 0; ii < buffer.size(); ii++) {
-            EventPair & ref_event = buffer[ii];
-            if (ref_event.second.no_coinc) {
+        std::vector<EventT> local_ready_events;
+        for (size_t ii = 0; ii < event_buffer.size(); ii++) {
+            if (ready_buffer[ii]) {
                 continue;
             }
-            TimeT coinc_window_end = coinc_window;
+            EventT & ref_event = event_buffer[ii];
+            TimeT window_start = window_offset;
+            TimeT window_end = window_offset + coinc_window;
             std::vector<size_t> in_window;
+            in_window.push_back(ii);
             bool window_timed_out = false;
-            for (size_t jj = ii; jj < buffer.size(); jj++) {
-                EventPair & new_event = buffer[jj];
-                TimeT delta_t = deltat_func(new_event.first, ref_event.first);
-                if (delta_t < coinc_window_end) {
+            for (size_t jj = ii + 1; jj < event_buffer.size(); jj++) {
+                EventT & new_event = event_buffer[jj];
+                TimeT delta_t = (get_time_func(new_event) -
+                                 get_time_func(ref_event));
+                bool inside_end = (delta_t < window_end);
+                bool inside_start = (delta_t < window_start);
+                bool within_window = (inside_end && !inside_start);
+                if (within_window) {
                     in_window.push_back(jj);
                     if (paralyzable) {
-                        coinc_window_end = delta_t + coinc_window;
+                        window_end = delta_t + coinc_window;
                     }
-                } else {
+                }
+                if (!inside_end) {
                     window_timed_out = true;
+                    break;
                 }
             }
             if (window_timed_out || stopping) {
+                bool keep_events = false;
+                if (in_window.size() == 2) {
+                    no_coinc_pair_events += in_window.size();
+                    keep_events = true;
+                } else if (in_window.size() > 2) {
+                    no_coinc_multiples_events += in_window.size();
+                    keep_events = !reject_multiples;
+                } else {
+                    no_coinc_single_events += in_window.size();
+                }
                 for (auto idx: in_window) {
-                    buffer[idx].second.no_coinc = in_window.size();
-                }
-            }
-        }
-        if (use_delayed_window) {
-            for (size_t ii = 0; ii < buffer.size(); ii++) {
-                EventPair & ref_event = buffer[ii];
-                if (ref_event.second.no_delay) {
-                    continue;
-                }
-                TimeT delay_window_start = delay_offset;
-                TimeT delay_window_end = delay_offset + coinc_window;
-                std::vector<size_t> in_window;
-                in_window.push_back(ii);
-                bool window_timed_out = false;
-                for (size_t jj = ii + 1; jj < buffer.size(); jj++) {
-                    EventPair & new_event = buffer[jj];
-                    TimeT delta_t = deltat_func(new_event.first,
-                                                ref_event.first);
-                    bool inside_delay_end = (delta_t < delay_window_end);
-                    bool inside_delay_start = (delta_t < delay_window_start);
-                    bool within_delay_window = (inside_delay_end &&
-                                                !inside_delay_start);
-                    if (within_delay_window) {
-                        in_window.push_back(jj);
-                        if (paralyzable) {
-                            delay_window_end = delta_t + coinc_window;
-                        }
-                    }
-                    if (!inside_delay_end) {
-                        window_timed_out = true;
+                    ready_buffer[idx] = true;
+                    if (keep_events) {
+                        // This is where we could put in any sort of logic to
+                        // handle multiples, such as takeWinnerOfGoods or
+                        // takeAllGoods like Gate does, but that can be handled
+                        // by a post production script by adding a coinc id to
+                        // each of items.
+                        tag_coinc_with_id_func(event_buffer[idx],
+                                               no_coinc_events);
+                        local_ready_events.push_back(event_buffer[idx]);
                     }
                 }
-                if (window_timed_out || stopping) {
-                    for (auto idx: in_window) {
-                        buffer[idx].second.no_delay = in_window.size();
-                    }
+                if (keep_events) {
+                    no_coinc_events++;
+                } else {
+                    this->inc_no_dropped(in_window.size());
                 }
             }
         }
 
-        auto ready_iter = buffer.begin();
-        if (use_delayed_window) {
-            auto ready_func = [](const EventPair & p){
-                return(!p.second.no_coinc || !p.second.no_delay);
-            };
-            ready_iter = std::find_if(buffer.begin(), buffer.end(),
-                                      ready_func);
-        } else {
-            auto ready_func = [](const EventPair & p){
-                return(!p.second.no_coinc);
-            };
-            ready_iter = std::find_if(buffer.begin(), buffer.end(),
-                                      ready_func);
-        }
+        auto ready_iter = std::find_if_not(ready_buffer.begin(),
+                                           ready_buffer.end(),
+                                           [](bool val){return(val);});
+        const size_t no_ready = ready_iter - ready_buffer.begin();
 
-        std::vector<EventT> local_ready_events;
-        std::for_each(buffer.begin(), ready_iter,
-                      [this, &local_ready_events](const EventPair & p){
-                          if (p.second.no_coinc == 2) {
-                              no_coinc_pair_events++;
-                          } else if (p.second.no_coinc > 2) {
-                              no_coinc_multiples_events++;
-                          } else {
-                              no_coinc_single_events++;
-                          }
-                          if (p.second.no_delay == 2) {
-                              no_delay_pair_events++;
-                          } else if (p.second.no_delay > 2) {
-                              no_delay_multiples_events++;
-                          } else {
-                              no_delay_single_events++;
-                          }
-
-                          bool keep_event = ((p.second.no_coinc == 2) ||
-                                             (p.second.no_delay == 2) ||
-                                             (((p.second.no_coinc > 2) ||
-                                               (p.second.no_delay > 2)) &&
-                                              !this->reject_multiples));
-                          if (keep_event) {
-                              local_ready_events.push_back(p.first);
-                          }
-                      });
-        this->inc_no_dropped(ready_iter - buffer.begin() -
-                             local_ready_events.size());
-        buffer.erase(buffer.begin(), ready_iter);
+        ready_buffer.erase(ready_buffer.begin(), ready_iter);
+        event_buffer.erase(event_buffer.begin(),
+                           event_buffer.begin() + no_ready);
         return(local_ready_events);
     }
 
     TimeT coinc_window;
-    TimeT delay_offset;
+    TimeT window_offset;
     bool reject_multiples;
     bool paralyzable;
-    bool use_delayed_window;
 
-    struct EventInfo {
-        int no_coinc;
-        int no_delay;
-    };
-    typedef std::pair<EventT, EventInfo> EventPair;
-    typedef std::vector<EventPair> EventPairVec;
-    typedef typename EventPairVec::iterator EventPairVecIter;
-    typedef typename EventPairVec::const_iterator EventPairVecCIter;
+    std::vector<EventT> event_buffer;
+    std::vector<bool> ready_buffer;
 
-    EventPairVec buffer;
-
-    /*!
-     * A function type that calculates the time difference between two events.
-     * First - Second.
-     */
-    std::function<TimeT(const EventT&, const EventT&)> deltat_func;
+    TimeF get_time_func;
+    TagF tag_coinc_with_id_func;
 
     long no_coinc_pair_events;
     long no_coinc_multiples_events;
     long no_coinc_single_events;
-    long no_delay_pair_events;
-    long no_delay_multiples_events;
-    long no_delay_single_events;
-
+    long no_coinc_events;
 };
 #endif // coincprocess_h

@@ -5,21 +5,22 @@ import tempfile
 import numpy as np
 
 def _run_merge(filename, output_filename, map_filename, proc_filename,
-               input_dtype, verbose):
-    cmd = 'gray-daq -f %s -o %s -m %s -p %s' % (
+               input_dtype, verbose, coinc_filenames=None):
+    cmd = 'gray-daq -f %s -s %s -m %s -p %s' % (
         filename, output_filename, map_filename, proc_filename
     )
     if verbose:
         cmd += ' -v'
     if input_dtype == gray.standard_dtype:
-        cmd += ' -t 0'
+        cmd += ' -t full_binary'
     elif input_dtype == gray.no_position_dtype:
-        cmd += ' -t 1'
+        cmd += ' -t no_pos_binary'
+    if coinc_filenames is not None:
+        for coinc_name in coinc_filenames:
+            cmd += ' -c %s' % coinc_name
     subprocess.call([cmd], shell=True)
 
 def _create_test_process_file(map_osfid, cmd_lines):
-    if not isinstance(cmd_lines, list):
-        cmd_lines = [cmd_lines,]
     with os.fdopen(map_osfid, 'wb') as map_fid:
         for cmd_line in cmd_lines:
             if len(cmd_line) == 3:
@@ -46,6 +47,8 @@ def _create_test_map_file(map_osfid, no_det):
         np.savetxt(map_fid, id_map, '%d')
 
 def _create_and_run_merge(data, cmd_lines, verbose=False):
+    if not isinstance(cmd_lines, list):
+        cmd_lines = [cmd_lines,]
     input_osfid, input_fname = tempfile.mkstemp()
     with os.fdopen(input_osfid, 'wb') as input_fid:
         data.tofile(input_fid)
@@ -57,14 +60,32 @@ def _create_and_run_merge(data, cmd_lines, verbose=False):
     _create_test_process_file(proc_osfid, cmd_lines)
 
     output_osfid, output_fname = tempfile.mkstemp()
+
+    coinc_osfids = []
+    coinc_fnames = []
+    for cmd_line in cmd_lines:
+        if cmd_line[0] == 'coinc':
+            coinc_osfid, coinc_fname = tempfile.mkstemp()
+            coinc_osfids.append(coinc_osfid)
+            coinc_fnames.append(coinc_fname)
+
     _run_merge(input_fname, output_fname, map_fname, proc_fname, data.dtype,
-               verbose)
+               verbose, coinc_fnames)
+
     out = np.fromfile(output_fname, dtype=data.dtype)
+    coinc_outs = []
+    for name in coinc_fnames:
+        coinc_outs.append(np.fromfile(name, dtype=data.dtype))
+        os.remove(name)
+
     os.remove(input_fname)
     os.remove(output_fname)
     os.remove(map_fname)
     os.remove(proc_fname)
-    return out
+    if len(coinc_outs) == 0:
+        return out
+    else:
+        return [out,] + coinc_outs
 
 def test_merge_outside_window():
     data = np.zeros(2, dtype=gray.no_position_dtype)
@@ -266,21 +287,15 @@ def test_coinc():
     data['time'] = times
 
     expected = data[np.array((0, 1, 5, 6))]
-    output = _create_and_run_merge(data, ('coinc', 'window', coinc_win))
+    [singles, output] = _create_and_run_merge(data, ('coinc', 'window', coinc_win))
 
     assert(output.size == expected.size), \
             'Size not expected for nonparalyzable coinc sort'
     assert((output == expected).all()), \
             'Event data not as expected for nonparalyzable coinc sort'
-    alt_out = _create_and_run_merge(data, ('coinc', 'nonparalyzable',
-                                           coinc_win))
-    assert(output.size == alt_out.size), \
-            'nonparalyzable and window for coinc should have same effect'
-    assert((output == alt_out).all()), \
-            'nonparalyzable and window for coinc should have same effect'
 
     expected = data[np.array((5, 6))]
-    output = _create_and_run_merge(data, ('coinc', 'paralyzable', coinc_win))
+    [singles, output] = _create_and_run_merge(data, ('coinc', 'window', coinc_win, 'paralyzable'))
 
     assert(output.size == expected.size), \
             'Size not expected for paralyzable coinc sort'
@@ -288,8 +303,8 @@ def test_coinc():
             'Event data not as expected for paralyzable coinc sort'
 
     expected = data[np.array((0, 1, 2, 5, 6))]
-    output = _create_and_run_merge(data, ('coinc', 'paralyzable', coinc_win,
-                                          'keep_multiples'))
+    [singles, output] = _create_and_run_merge(data, ('coinc', 'window', coinc_win,
+                                          'keep_multiples paralyzable'))
     assert(output.size == expected.size), \
             'Size not expected for paralyzable coinc sort keeping mutiples'
     assert((output == expected).all()), \
@@ -297,24 +312,25 @@ def test_coinc():
             mutiples'''
 
 def test_delayed_window():
-    data = np.zeros(7, dtype=gray.no_position_dtype)
+    data = np.zeros(9, dtype=gray.no_position_dtype)
     coinc_win = 15.0
-    times = np.array((0.0, 10.0, 24.999, 50.0, 65.0, 90.0, 100.0),
+    times = np.array((0.0, 10.0, 24.999, 50.0, 65.0, 90.0, 100.0, 160.0, 161.0),
                      dtype=data.dtype['time'])
     data['time'] = times
 
-    expected = _create_and_run_merge(data, ('coinc', 'window', coinc_win))
-    output = _create_and_run_merge(data, ('coinc', 'window', coinc_win,
-                                          'delay 0.0'))
+    [singles, expected] = _create_and_run_merge(data, [
+        ('coinc', 'window', coinc_win),])
+    [singles, output] = _create_and_run_merge(data, ('coinc', 'delay', coinc_win, '0.0'))
     assert(output.size == expected.size), \
             'Delayed window offset of zero should not change the output'
     assert((output == expected).all()), \
             'Delayed window offset of zero should not change the output'
 
     delay_window = 50.0
-    expected = data[np.array((0, 1, 3, 4, 5, 6))]
-    output = _create_and_run_merge(data, ('coinc', 'window', coinc_win,
-                                          'delay ' + str(delay_window)))
+    expected = data[np.array((0, 3, 1, 4))]
+    [singles, output] = _create_and_run_merge(data, [
+        ('coinc', 'delay', coinc_win, str(delay_window)),
+        ])
 
     assert(output.size == expected.size), \
             'Size not expected for nonparalyzable delayed window'
@@ -322,9 +338,9 @@ def test_delayed_window():
             'Event data not as expected for nonparalyzable delayed window'
 
     delay_window = 50.0
-    expected = data[np.array((0, 1, 3, 4, 5, 6))]
-    output = _create_and_run_merge(data, ('coinc', 'paralyzable', coinc_win,
-                                          'delay ' + str(delay_window)))
+    expected = data[np.array((0, 3, 1, 4))]
+    [singles, output] = _create_and_run_merge(data, [
+        ('coinc', 'delay', coinc_win, str(delay_window) + ' paralyzable'),])
 
     assert(output.size == expected.size), \
             'Size not expected for paralyzable delayed window'
@@ -333,14 +349,13 @@ def test_delayed_window():
 
 
     delay_window = 50.0
-    expected = data[np.array((0, 1, 2, 3, 4, 5, 6))]
-    output = _create_and_run_merge(data, ('coinc', 'paralyzable', coinc_win,
-                                          'keep_multiples delay '
-                                          + str(delay_window)))
+    expected = data[np.array((0, 3, 1, 4, 6, 7, 8))]
+    [singles, output] = _create_and_run_merge(data, [
+        ('coinc', 'delay', coinc_win, str(delay_window) + ' keep_multiples'),
+        ])
 
     assert(output.size == expected.size), \
-            '''Size not expected for paralyzable delayed window keeping
-            multiples'''
+            '''Size not expected for delayed window keeping multiples'''
     assert((output == expected).all()), \
             '''Event data not as expected for paralyzable delayed window
             keeping multiples'''
@@ -353,19 +368,27 @@ def test_delayed_window():
     data['time'] = times
 
     delay_window = 50.0
-    expected = data[np.array((0, 1, 3, 4))]
-    output = _create_and_run_merge(data, ('coinc', 'window', coinc_win,
-                                          'delay ' + str(delay_window)))
+    expected_coinc = data[np.array((3, 4))]
+    expected_delay = data[np.array((0, 1))]
+    [singles, coinc, delays] = _create_and_run_merge(data, [
+        ('coinc', 'window', coinc_win),
+        ('coinc', 'delay', coinc_win, str(delay_window)),
+        ])
 
-    assert(output.size == expected.size), \
+    assert(delays.size == expected_delay.size), \
             'Size not expected for nonparalyzable delayed window'
-    assert((output == expected).all()), \
+    assert((delays == expected_delay).all()), \
             'Event data not as expected for nonparalyzable delayed window'
 
+    assert(coinc.size == expected_coinc.size), \
+            'Size not expected for nonparalyzable coinc window'
+    assert((coinc == expected_coinc).all()), \
+            'Event data not as expected for nonparalyzable coinc window'
+
+
     expected = data[np.array((0, 1, 2, 3, 4))]
-    output = _create_and_run_merge(data, ('coinc', 'window', coinc_win,
-                                          'keep_multiples delay ' +
-                                          str(delay_window)))
+    [singles, output] = _create_and_run_merge(data, [
+        ('coinc', 'delay', coinc_win, str(delay_window) + ' keep_multiples'),])
 
     assert(output.size == expected.size), \
             '''Size not expected for nonparalyzable delayed window keeping
@@ -393,9 +416,10 @@ def test_multiple_merge_egate_coinc():
     expected = data[np.array((0, 1, 5, 6))]
     expected['energy'][1] += energies[2]
 
-    output = _create_and_run_merge(data, [('merge', 'detector', merge_window),
-                                          ('filter', 'egate_low', egate_low),
-                                          ('coinc', 'window', coinc_win)])
+    [singles, output] = _create_and_run_merge(data, [
+        ('merge', 'detector', merge_window),
+        ('filter', 'egate_low', egate_low),
+        ('coinc', 'window', coinc_win)])
 
     assert(output.size == expected.size), \
             'Size not expected for coinc sort'
@@ -590,3 +614,28 @@ def test_merge_array_weighted_mean():
            'Energy should be the sum of the input'
     assert(output[0]['det'] == new_det), \
            'New detector should be a weighted mean of the two'
+
+def test_stats_merge():
+    data = np.zeros(3, dtype=gray.no_position_expanded_dtype)
+    merge_window = 100.0
+
+    time = np.array((0.0, 50.0, 75.0,), dtype=data.dtype['time'])
+    scatter = np.array((1, 3, 2), dtype=data.dtype['scatter'])
+    color = np.array((0, 1, 0), dtype=data.dtype['color'])
+    data['time'] = time
+    data['scatter'] = scatter
+    data['color'] = color
+
+    data_small = gray.collapse_detector_format(data)
+    assert((data == gray.expand_detector_format(data_small)).all())
+
+    expected = data[np.array((0,))]
+    expected[0]['scatter'] = 5
+    output = _create_and_run_merge(data_small, [
+        ('merge', 'detector', merge_window),])
+    output = gray.expand_detector_format(output)
+
+    assert(output.size == expected.size), \
+            'Expected number of events not merged stats merge test'
+    assert((output == expected).all()), \
+           'Number of scatters not calculated correctly'

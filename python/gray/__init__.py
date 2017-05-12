@@ -15,10 +15,9 @@ standard_expanded_dtype = np.dtype([
     ('time', np.float64),
     ('energy', np.float32),
     ('pos', np.float32, (3,)),
-    ('error', np.bool),
     ('interaction', np.int32),
     ('color', np.int32),
-    ('scatter', np.bool),
+    ('scatter', np.int32),
     ('det_mat', np.int32),
     ('src_id', np.int32),
     ('id', np.int32),
@@ -34,10 +33,9 @@ no_position_dtype = np.dtype([
 no_position_expanded_dtype = np.dtype([
     ('time', np.float64),
     ('energy', np.float32),
-    ('error', np.bool),
     ('interaction', np.int32),
     ('color', np.int32),
-    ('scatter', np.bool),
+    ('scatter', np.int32),
     ('det_mat', np.int32),
     ('src_id', np.int32),
     ('id', np.int32),
@@ -147,21 +145,19 @@ def blur_time(data, time_res, copy=False):
     data['time'] += blur
     return data
 
-def create_log_word(error, interation, color, scatter, det_mat, src_id):
-    error = np.asarray(error, dtype=np.int32)
-    interation = np.asarray(interation, dtype=np.int32)
+def create_log_word(interaction, color, scatter, det_mat, src_id):
+    interaction = np.asarray(interaction, dtype=np.int32)
+    color = np.asarray(color, dtype=np.int32)
     scatter = np.asarray(scatter, dtype=np.int32)
     det_mat = np.asarray(det_mat, dtype=np.int32)
     src_id = np.asarray(src_id, dtype=np.int32)
 
-    log = np.zeros(error.size, dtype=np.int32)
-    np.bitwise_or(np.left_shift(np.bitwise_and(error, 0x00000001), 31),
+    log = np.zeros(interaction.shape, dtype=np.int32)
+    np.bitwise_or(np.left_shift(np.bitwise_and(interaction, 0x0000000F), 28),
                   log, out=log)
-    np.bitwise_or(np.left_shift(np.bitwise_and(interation, 0x00000007), 28),
+    np.bitwise_or(np.left_shift(np.bitwise_and(color, 0x0000000F), 24),
                   log, out=log)
-    np.bitwise_or(np.left_shift(np.bitwise_and(color, 0x00000003), 26),
-                  log, out=log)
-    np.bitwise_or(np.left_shift(np.bitwise_and(scatter, 0x00000001), 24),
+    np.bitwise_or(np.left_shift(np.bitwise_and(scatter, 0x000000FF), 20),
                   log, out=log)
     np.bitwise_or(np.left_shift(np.bitwise_and(det_mat, 0x00000FFF), 12),
                   log, out=log)
@@ -171,18 +167,16 @@ def create_log_word(error, interation, color, scatter, det_mat, src_id):
 
 def parse_log_word(log):
     log = np.asarray(log, dtype=np.uint32)
-    error = np.right_shift(
-        np.bitwise_and(log, 0x80000000), 31).astype(np.bool)
     interaction = np.right_shift(
-        np.bitwise_and(log, 0x70000000), 28).astype(np.int32)
+        np.bitwise_and(log, 0xF0000000), 28).astype(np.int32)
     color = np.right_shift(
-        np.bitwise_and(log, 0x0C000000), 26).astype(np.int32)
+        np.bitwise_and(log, 0x0F000000), 24).astype(np.int32)
     scatter = np.right_shift(
-        np.bitwise_and(log, 0x01000000), 24).astype(np.bool)
+        np.bitwise_and(log, 0x00F00000), 20).astype(np.int32)
     det_mat = np.right_shift(
-        np.bitwise_and(log, 0x00FFF000), 12).astype(np.int32)
+        np.bitwise_and(log, 0x000FF000), 12).astype(np.int32)
     src_id = np.bitwise_and(log, 0x00000FFF).astype(np.int32)
-    return error, interaction, color, scatter, det_mat, src_id
+    return interaction, color, scatter, det_mat, src_id
 
 def collapse_detector_format(data):
     new_data = np.zeros(data.shape, dtype=no_position_dtype)
@@ -191,8 +185,8 @@ def collapse_detector_format(data):
     new_data['id'] = data['id']
     new_data['det'] = data['det']
     new_data['log'] = create_log_word(
-        data['error'], data['interaction'], data['color'], data['scatter'],
-        data['det_mat'], data['src_id'])
+        data['interaction'], data['color'], data['scatter'], data['det_mat'],
+        data['src_id'])
     return new_data
 
 def expand_detector_format(data, full=False):
@@ -206,9 +200,8 @@ def expand_detector_format(data, full=False):
         new_data['pos'] = data['pos']
     new_data['id'] = data['id']
     new_data['det'] = data['det']
-    (new_data['error'], new_data['interaction'], new_data['color'],
-     new_data['scatter'], new_data['det_mat'], new_data['src_id']) = \
-        parse_log_word(data['log'])
+    (new_data['interaction'], new_data['color'], new_data['scatter'],
+     new_data['det_mat'], new_data['src_id']) = parse_log_word(data['log'])
     return new_data
 
 def load_detector_output(filename, full=False, expand=False):

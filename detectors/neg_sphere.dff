@@ -56,3 +56,4 @@ end_repeat
 log_positron
 log_errors
 log_nonsensitive
+hits_format full_ascii

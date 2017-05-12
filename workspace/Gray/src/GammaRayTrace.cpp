@@ -7,6 +7,7 @@
 #include <Physics/Interaction.h>
 #include <Physics/Positron.h>
 #include <Physics/Photon.h>
+#include <Physics/Physics.h>
 #include <Sources/Source.h>
 #include <Sources/SourceList.h>
 #include <stack>
@@ -42,7 +43,7 @@ void GammaRayTrace::TracePhoton(
             // material or preceded by a front face.  This will happen if there
             // some sort of setup error in the KdTree.
             if (log_errors){
-                interactions.push_back(Interaction::ErrorEmtpy(photon));
+                interactions.push_back(Physics::ErrorEmtpy(photon));
             }
             stats.error++;
             return;
@@ -58,21 +59,21 @@ void GammaRayTrace::TracePhoton(
         if (intersectNum < 0) {
             stats.no_interaction++;
             if (log_nointeractions) {
-                interactions.push_back(Interaction::NoInteraction(photon,
-                                                                  mat_gamma_prop));
+                interactions.push_back(Physics::NoInteraction(photon,
+                                                              mat_gamma_prop));
             }
             return;
         }
 
         double deposit = 0;
-        Interaction::INTER_TYPE type = Interaction::InteractionType(
+        Physics::INTER_TYPE type = Physics::InteractionType(
                 photon, hitDist, mat_gamma_prop, deposit);
         bool is_sensitive = (photon.det_id >= 0);
         bool log_interact = ((!is_sensitive && log_nonsensitive) ||
                              is_sensitive);
         // test for Photoelectric interaction
         switch (type) {
-            case Interaction::NO_INTERACTION: {
+            case Physics::NO_INTERACTION: {
                 // If not interaction, recursively traverse the in the direction
                 // the photon was travelling
                 if (visPoint.IsFrontFacing()) {
@@ -91,10 +92,10 @@ void GammaRayTrace::TracePhoton(
                 photon.pos = visPoint.GetPosition() + photon.dir * Epsilon;
                 break;
             }
-            case Interaction::PHOTOELECTRIC: {
+            case Physics::PHOTOELECTRIC: {
                 if (log_interact) {
                     interactions.push_back(
-                            Interaction::Photoelectric(photon, mat_gamma_prop));
+                            Physics::Photoelectric(photon, mat_gamma_prop));
                 }
                 stats.photoelectric++;
                 if (is_sensitive) {
@@ -102,10 +103,10 @@ void GammaRayTrace::TracePhoton(
                 }
                 return;
             }
-            case Interaction::XRAY_ESCAPE: {
+            case Physics::XRAY_ESCAPE: {
                 if (log_interact) {
-                    interactions.push_back(Interaction::XrayEscape(photon, deposit,
-                                                                   mat_gamma_prop));
+                    interactions.push_back(Physics::XrayEscape(photon, deposit,
+                                                               mat_gamma_prop));
                 }
                 stats.xray_escape++;
                 if (is_sensitive) {
@@ -113,10 +114,10 @@ void GammaRayTrace::TracePhoton(
                 }
                 break;
             }
-            case Interaction::COMPTON: {
+            case Physics::COMPTON: {
                 if (log_interact) {
-                    interactions.push_back(Interaction::Compton(photon, deposit,
-                                                                mat_gamma_prop));
+                    interactions.push_back(Physics::Compton(photon, deposit,
+                                                            mat_gamma_prop));
                 }
                 stats.compton++;
                 if (is_sensitive) {
@@ -124,10 +125,10 @@ void GammaRayTrace::TracePhoton(
                 }
                 break;
             }
-            case Interaction::RAYLEIGH: {
+            case Physics::RAYLEIGH: {
                 if (log_interact) {
-                    interactions.push_back(Interaction::Rayleigh(photon,
-                                                                 mat_gamma_prop));
+                    interactions.push_back(Physics::Rayleigh(photon,
+                                                             mat_gamma_prop));
                 }
                 stats.rayleigh++;
                 if (is_sensitive) {
@@ -142,7 +143,7 @@ void GammaRayTrace::TracePhoton(
     }
 
     if (log_errors){
-        interactions.push_back(Interaction::ErrorTraceDepth(
+        interactions.push_back(Physics::ErrorTraceDepth(
                 photon, *MatStack.top()));
     }
     stats.error++;
@@ -178,8 +179,7 @@ void GammaRayTrace::TraceSources(SourceList & sources,
             stats.decays++;
             if (log_nuclear_decays) {
                 interactions.push_back(
-                        Interaction::NuclearDecay(*decay,
-                                                  *source->GetMaterial()));
+                        Physics::NuclearDecay(*decay, *source->GetMaterial()));
             }
             while (!decay->IsEmpty()) {
                 Photon & photon = *decay->NextPhoton();

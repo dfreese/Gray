@@ -76,6 +76,8 @@ add_library(Gray
     Output/include/Output/Detector.h
     Output/src/DetectorArray.cpp
     Output/include/Output/DetectorArray.h
+    Output/src/Input.cpp
+    Output/include/Output/Input.h
     Output/src/Output.cpp
     Output/include/Output/Output.h
     Physics/src/Beam.cpp
@@ -98,12 +100,15 @@ add_library(Gray
     Physics/include/Physics/Positron.h
     Physics/src/PositronDecay.cpp
     Physics/include/Physics/PositronDecay.h
+    Physics/src/Physics.cpp
+    Physics/include/Physics/Physics.h
     Pipeline/include/Pipeline/blur.h
     Pipeline/include/Pipeline/blurprocess.h
     Pipeline/include/Pipeline/coincprocess.h
     Pipeline/include/Pipeline/deadtimeprocess.h
     Pipeline/include/Pipeline/filterprocess.h
     Pipeline/include/Pipeline/mergeprocess.h
+    Pipeline/include/Pipeline/paralleloutstream.h
     Pipeline/include/Pipeline/processor.h
     Pipeline/include/Pipeline/processstream.h
     Pipeline/include/Pipeline/singlesstream.h

@@ -12,24 +12,8 @@
 
 using namespace std;
 
-Config::Config() :
-    seed(0),
-    seed_set(false),
-    format_hits_set(false),
-    format_singles_set(false),
-    format_hits(Output::FULL_ASCII),
-    format_singles(Output::FULL_ASCII),
-    log_nuclear_decays(false),
-    log_nonsensitive(false),
-    log_nointeraction(false),
-    log_errors(false),
-    log_all(false),
-    time(0),
-    start_time(0),
-    time_set(false),
-    start_time_set(false)
+Config::Config()
 {
-
 }
 
 bool Config::ProcessCommandLine(int argc, char **argv)
@@ -50,7 +34,7 @@ bool Config::ProcessCommandLine(int argc, char **argv)
     // Arguments not requiring an input
     for (int ix = 1; ix < argc; ix++) {
         string argument(argv[ix]);
-        if (argument == "-h" || argument == "--help") {
+        if (argument == "--help") {
             return(false);
         }
     }
@@ -60,7 +44,7 @@ bool Config::ProcessCommandLine(int argc, char **argv)
         string argument(argv[ix]);
         string following_argument(argv[ix + 1]);
         stringstream follow_arg_ss(following_argument);
-        if (argument == "-s") {
+        if (argument == "--seed") {
             if (!(follow_arg_ss >> seed)) {
                 cerr << "Invalid seed: " << following_argument << endl;
                 return(-1);
@@ -72,10 +56,12 @@ bool Config::ProcessCommandLine(int argc, char **argv)
             filename_pipeline = following_argument;
         } else if (argument == "-m") {
             filename_mapping = following_argument;
-        } else if (argument == "-i") {
+        } else if (argument == "-h") {
             filename_hits = following_argument;
-        } else if (argument == "-o") {
+        } else if (argument == "-s") {
             filename_singles = following_argument;
+        } else if (argument == "-c") {
+            filenames_coinc.push_back(following_argument);
         } else if (argument == "-t") {
             if ((follow_arg_ss >> time).fail()) {
                 cerr << "Invalid time: " << following_argument << endl;
@@ -96,10 +82,6 @@ bool Config::ProcessCommandLine(int argc, char **argv)
         cerr << "Error: input filename not set" << endl;
         return(false);
     }
-    if ((filename_mapping == "") != (filename_pipeline == "")) {
-        cerr << "Error: mapping and pipeline filenames both not set" << endl;
-        return(false);
-    }
 
     return(true);
 }
@@ -112,16 +94,21 @@ bool Config::get_log_singles() {
     return(!(filename_singles == ""));
 }
 
+bool Config::get_log_coinc() {
+    return(!filenames_coinc.empty());
+}
+
 void Config::usage() {
-    cout << "Gray (-h) -f [Scene Description] -o [Output Filename]\n"
-    << "  -h : print help message\n"
-    << "  -i [filename] : set the output for the hits file\n"
-    << "  -o [filename] : set the output for the singles file\n"
-    << "  -s : set the seed for the rand number generator\n"
-    << "  -t : set length of time in for the simulation in seconds\n"
-    << "  --start : set the start time in seconds\n"
-    << "  --mat : set Gray Materials file. default $GRAY_INCLUDE/Gray_Materials.txt\n"
-    << "  --iso : set Gray Isotopes file. default $GRAY_INCLUDE/Gray_Isotopes.txt\n"
+    cout << "Gray -f [Scene Description]\n"
+    << "  --help : print help message\n"
+    << "  -h [filename] : set the output for the hits file\n"
+    << "  -s [filename] : set the output for the singles file\n"
+    << "  -c [filename] : set an output for the coinc files (order matters)\n"
+    << "  -t [time] : set length of time in for the simulation in seconds\n"
+    << "  --seed [seed] : set the seed for the rand number generator\n"
+    << "  --start [time] : set the start time in seconds\n"
+    << "  --mat [filename] : set Gray Materials file. default=$GRAY_INCLUDE/Gray_Materials.txt\n"
+    << "  --iso [filename] : set Gray Isotopes file. default=$GRAY_INCLUDE/Gray_Isotopes.txt\n"
     << endl;
 }
 
@@ -211,6 +198,14 @@ void Config::set_format_singles(Output::Format fmt) {
 
 Output::Format Config::get_format_singles() {
     return(format_singles);
+}
+
+void Config::set_format_coinc(Output::Format fmt) {
+    format_coinc = fmt;
+}
+
+Output::Format Config::get_format_coinc() {
+    return(format_coinc);
 }
 
 void Config::add_pipeline_line(const std::string & line) {
@@ -310,4 +305,26 @@ Output::WriteFlags Config::get_singles_var_output_write_flags() const {
 }
 
 
+bool Config::set_coinc_var_output_write_flags(const std::string & mask) {
+    return(Output::parse_write_flags_mask(coinc_var_output_write_flags,
+                                          mask));
+}
 
+Output::WriteFlags Config::get_coinc_var_output_write_flags() const {
+    return(coinc_var_output_write_flags);
+}
+
+void Config::set_filename_coinc(size_t idx, const std::string & name) {
+    if (idx >= filenames_coinc.size()) {
+        filenames_coinc.resize(idx + 1);
+    }
+    filenames_coinc[idx] = name;
+}
+
+std::string Config::get_filename_coinc(size_t idx) {
+    return(filenames_coinc.at(idx));
+}
+
+size_t Config::get_no_coinc_filenames() {
+    return(filenames_coinc.size());
+}

@@ -15,7 +15,7 @@
 #include <map>
 #include <sstream>
 #include <vector>
-#include <Pipeline/processstream.h>
+#include <Pipeline/paralleloutstream.h>
 #include <Pipeline/blur.h>
 #include <Pipeline/blurprocess.h>
 #include <Pipeline/coincprocess.h>
@@ -108,6 +108,14 @@ public:
         return(set_processes(process_descriptions));
     }
 
+    size_t no_coinc_processes() const {
+        return(process_stream.no_parallel_processes());
+    }
+
+    std::vector<EventT> get_coinc_buffer(size_t idx) {
+        return(process_stream.get_buffer(idx));
+    }
+
     std::vector<EventT> add_event(const EventT & event) {
         return(process_stream.add_event(event));
     }
@@ -119,6 +127,7 @@ public:
     std::vector<EventT> stop() {
         return(process_stream.stop());
     }
+
 
     long no_events() const {
         return(process_stream.no_events());
@@ -182,7 +191,7 @@ private:
     typedef std::function<void(EventT&)> BlurF;
     typedef std::function<TimeT(const EventT&)> TimeF;
 
-    ProcessStream<EventT> process_stream;
+    ParallelOutStream<EventT> process_stream;
     typedef MergeProcess<EventT, TimeT, TimeF, InfoF, MergeF> MergeProcT;
     typedef FilterProcess<EventT, FilterF> FilterProcT;
     typedef BlurProcess<EventT, BlurF> BlurProcT;
@@ -585,43 +594,47 @@ private:
     {
         bool paralyzable = false;
         bool reject_multiples = true;
-        bool enable_delayed_window = false;
-        TimeT delayed_window_offset;
-        for (size_t ii = 0; ii < options.size(); ii++) {
+        TimeT window_offset = 0;
+        bool look_for_offset = false;
+        if (name == "window") {
+        } else if (name == "delay") {
+            look_for_offset = true;
+        } else {
+            std::cerr << "Unknown coinc type: " << name << std::endl;
+            return(-2);
+        }
+        size_t option_start = 0;
+        if (look_for_offset) {
+            option_start = 1;
+            if (options.empty()) {
+                std::cerr << "no delay offset specified: " << std::endl;
+                return(-1);
+            }
+            std::stringstream ss(options[0]);
+            if ((ss >> window_offset).fail()) {
+                std::cerr << "invalid coinc delay offset: " << ss.str()
+                << std::endl;
+                return(-1);
+            }
+
+
+        }
+        for (size_t ii = option_start; ii < options.size(); ii++) {
             const std::string & option = options[ii];
             if (option == "keep_multiples") {
                 reject_multiples = false;
-            } else if (option == "delay") {
-                enable_delayed_window = true;
-                ii++;
-                if (ii == options.size()) {
-                    std::cerr << "coinc delay has no time offset" << std::endl;
-                    return(-1);
-                }
-                std::stringstream ss(options[ii]);
-                if ((ss >> delayed_window_offset).fail()) {
-                    std::cerr << "invalid coinc delay offset: " << ss.str()
-                              << std::endl;
-                    return(-1);
-                }
+            } else if (option == "paralyzable") {
+                paralyzable = true;
             } else {
                 std::cerr << "unrecognized coinc option: " << option
                           << std::endl;
                 return(-1);
             }
         }
-        if ((name == "window") || (name == "nonparalyzable")) {
-            paralyzable = false;
-        } else if (name == "paralyzable") {
-            paralyzable = true;
-        } else {
-            std::cerr << "Unknown coinc type: " << name << std::endl;
-            return(-2);
-        }
+        auto tag_event_func = [](EventT & e, long id) {e.coinc_id = id;};
         coinc_processes.push_back(new CoincProcT(value, get_time_func,
-                reject_multiples, paralyzable, enable_delayed_window,
-                delayed_window_offset));
-        process_stream.add_process(coinc_processes.back());
+                tag_event_func, reject_multiples, paralyzable, window_offset));
+        process_stream.add_parallel_out_process(coinc_processes.back());
         return(0);
     }
 

@@ -9,6 +9,7 @@
 #ifndef Config_h
 #define Config_h
 
+#include <vector>
 #include <string>
 #include <Output/Output.h>
 
@@ -28,6 +29,9 @@ public:
     std::string get_filename_hits();
     void set_filename_singles(const std::string & name);
     std::string get_filename_singles();
+    void set_filename_coinc(size_t idx, const std::string & name);
+    std::string get_filename_coinc(size_t idx);
+    size_t get_no_coinc_filenames();
     void set_seed(unsigned long val);
     unsigned long get_seed();
     bool get_seed_set();
@@ -35,8 +39,11 @@ public:
     Output::Format get_format_hits();
     void set_format_singles(Output::Format fmt);
     Output::Format get_format_singles();
+    void set_format_coinc(Output::Format fmt);
+    Output::Format get_format_coinc();
     bool get_log_hits();
     bool get_log_singles();
+    bool get_log_coinc();
     void add_pipeline_line(const std::string & line);
     std::vector<std::string> get_pipeline_lines();
     void set_log_nuclear_decays(bool val);
@@ -59,6 +66,8 @@ public:
     Output::WriteFlags get_hits_var_output_write_flags() const;
     bool set_singles_var_output_write_flags(const std::string & mask);
     Output::WriteFlags get_singles_var_output_write_flags() const;
+    bool set_coinc_var_output_write_flags(const std::string & mask);
+    Output::WriteFlags get_coinc_var_output_write_flags() const;
 
 private:
     std::string filename_scene;
@@ -66,27 +75,30 @@ private:
     std::string filename_mapping;
     std::string filename_hits;
     std::string filename_singles;
-    unsigned long seed;
-    bool seed_set;
-    bool format_hits_set;
-    bool format_singles_set;
-    Output::Format format_hits;
-    Output::Format format_singles;
-    bool log_nuclear_decays;
-    bool log_nonsensitive;
-    bool log_nointeraction;
-    bool log_errors;
-    bool log_all;
+    std::vector<std::string> filenames_coinc;
+    unsigned long seed = 0;
+    bool seed_set = false;
+    bool format_hits_set = false;
+    bool format_singles_set = false;
+    Output::Format format_hits = Output::VARIABLE_ASCII;
+    Output::Format format_singles = Output::VARIABLE_ASCII;
+    Output::Format format_coinc = Output::VARIABLE_ASCII;
+    bool log_nuclear_decays = false;
+    bool log_nonsensitive = false;
+    bool log_nointeraction = false;
+    bool log_errors = false;
+    bool log_all = false;
     std::vector<std::string> pipeline_config_lines;
-    double time;
-    double start_time;
-    bool time_set;
-    bool start_time_set;
+    double time = 0;
+    double start_time = 0;
+    bool time_set = 0;
+    bool start_time_set = 0;
     std::string gray_include_env;
     std::string materials_filename;
     std::string isotopes_filename;
     Output::WriteFlags hits_var_output_write_flags;
     Output::WriteFlags singles_var_output_write_flags;
+    Output::WriteFlags coinc_var_output_write_flags;
 };
 
 #endif /* Config_h */

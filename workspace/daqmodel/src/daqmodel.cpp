@@ -1,123 +1,27 @@
 #include <fstream>
 #include <iostream>
 #include <Output/BinaryFormat.h>
+#include <Output/Input.h>
 #include <Output/Output.h>
 #include <Physics/Interaction.h>
 #include <Pipeline/singlesstream.h>
+#include <Random/Random.h>
 
 using namespace std;
 
 void usage() {
-    cout << "daqmodel [-vh] -f [filename] -m [map file] -p [process list] ..\n"
-         << "  -o [name] : output filename, default: filename + \".dm\"\n"
-         << "  -t [type] : event type, default: gray binary output 0\n"
+    cout << "gray-daq [-vh] -f [filename] -m [map file] -p [process list] ..\n"
+         << "  -s [name] : singles output filename\n"
+         << "  -c [name] : add coinc output filename (order matters)\n"
+         << "  -t [type] : input format, (i.e \"full_ascii\")\n"
+         << "  --singles_format [type] : default: input type\n"
+         << "  --coinc_format [type] : default: input type\n"
+         << "  --singles_mask [type] : default: input mask\n"
+         << "  --coinc_mask [type] : default: input mask\n"
+         << "  --sort [time] : sort the incoming events, assuming this max out of order time\n"
+         << "  --seed [val] : set the random number generator seed for blur processes\n"
          << endl;
 }
-
-template<class EventT>
-int process_file(const std::string & filename_map,
-                 const std::string & filename_process,
-                 std::ifstream & input,
-                 std::ofstream & output,
-                 bool verbose)
-{
-    SinglesStream<EventT> singles_stream;
-    int no_detectors = singles_stream.load_mappings(filename_map);
-    if (no_detectors < 0) {
-        cerr << "Loading mapping file failed" << endl;
-        return(-2);
-    }
-
-    int proc_load_status = singles_stream.load_processes(filename_process);
-    if (proc_load_status < 0) {
-        cerr << "Loading process file failed" << endl;
-        return(-2);
-    }
-
-    vector<EventT> input_events(100000);
-    do {
-        input_events.resize(input_events.capacity());
-        input.read(reinterpret_cast<char *>(input_events.data()),
-                   input_events.size() * sizeof(EventT));
-        size_t no_events = input.gcount() / sizeof(EventT);
-        input_events.resize(no_events);
-        vector<EventT> events = singles_stream.add_events(input_events);
-        output.write(reinterpret_cast<const char *>(events.data()),
-                     events.size() * sizeof(EventT));
-    } while(input);
-
-    input.close();
-    vector<EventT> events = singles_stream.stop();
-    output.write(reinterpret_cast<const char *>(events.data()),
-                 events.size() * sizeof(EventT));
-
-    output.close();
-
-
-    if (verbose) {
-        cout << "______________\n DAQ Stats\n______________\n"
-             << singles_stream << endl;
-    }
-    return(0);
-}
-
-
-template<>
-int process_file<Interaction>(const std::string & filename_map,
-                              const std::string & filename_process,
-                              std::ifstream & input,
-                              std::ofstream & output,
-                              bool verbose)
-{
-    SinglesStream<Interaction> singles_stream(-1,
-                                              Interaction::merge_interactions);
-    int no_detectors = singles_stream.load_mappings(filename_map);
-    if (no_detectors < 0) {
-        cerr << "Loading mapping file failed" << endl;
-        return(-2);
-    }
-
-    int proc_load_status = singles_stream.load_processes(filename_process);
-    if (proc_load_status < 0) {
-        cerr << "Loading process file failed" << endl;
-        return(-2);
-    }
-
-    bool binary;
-    int version;
-    Output::read_header(input, binary, version);
-
-    Output::WriteFlags flags;
-    Output::read_write_flags(flags, input, binary);
-
-    Output::write_header(output, binary);
-    Output::write_write_flags(flags, output, binary);
-
-    Interaction input_event;
-    // TODO: do more than one at a time.
-    while (Output::read_interaction(input_event, input, flags, binary)) {
-        vector<Interaction> events = singles_stream.add_event(input_event);
-        for (const auto & event: events) {
-            Output::write_interaction(event, output, flags, binary);
-        }
-    }
-
-    input.close();
-    vector<Interaction> events = singles_stream.stop();
-    for (const auto & event: events) {
-        Output::write_interaction(event, output, flags, binary);
-    }
-
-    output.close();
-
-
-    if (verbose) {
-        cout << "______________\n DAQ Stats\n______________\n"
-        << singles_stream << endl;
-    }
-    return(0);
-}
-
 
 int main(int argc, char ** argv) {
     if (argc == 1) {
@@ -128,9 +32,19 @@ int main(int argc, char ** argv) {
     bool verbose = false;
     string filename;
     string filename_output;
+    vector<string> filenames_coinc;
     string filename_map;
     string filename_process;
-    int filetype = 0;
+    string format_str;
+    string singles_format_str;
+    string coinc_format_str;
+    string singles_var_mask_str;
+    string coinc_var_mask_str;
+    // by default indicate to SinglesStream that no initial sorting process
+    // should be applied to the incoming data
+    double initial_sorting_window = -1;
+    bool seed_specified = false;
+    unsigned int seed;
 
     // Arguments not requiring input
     for (int ix = 1; ix < argc; ix++) {
@@ -153,8 +67,11 @@ int main(int argc, char ** argv) {
         if (argument == "-f") {
             filename = following_argument;
         }
-        if (argument == "-o") {
+        if (argument == "-s") {
             filename_output = following_argument;
+        }
+        if (argument == "-c") {
+            filenames_coinc.push_back(following_argument);
         }
         if (argument == "-m") {
             filename_map = following_argument;
@@ -163,19 +80,58 @@ int main(int argc, char ** argv) {
             filename_process = following_argument;
         }
         if (argument == "-t") {
-            if ((follow_arg_ss >> filetype).fail()) {
-                cerr << "Invalid filetype: " << following_argument << endl;
+            format_str = following_argument;
+        }
+        if (argument == "--singles_format") {
+            singles_format_str = following_argument;
+        }
+        if (argument == "--coinc_format") {
+            coinc_format_str = following_argument;
+        }
+        if (argument == "--singles_mask") {
+            singles_var_mask_str = following_argument;
+        }
+        if (argument == "--coinc_mask") {
+            coinc_var_mask_str = following_argument;
+        }
+        if (argument == "--sort") {
+            if ((follow_arg_ss >> initial_sorting_window).fail()) {
+                cerr << "Unable to parse initial sorting time: "
+                     << following_argument << endl;
                 return(1);
             }
         }
+        if (argument == "--seed") {
+            if ((follow_arg_ss >> seed).fail()) {
+                cerr << "Unable to parse seed value: "
+                     << following_argument << endl;
+                return(1);
+            }
+            seed_specified = true;
+        }
+    }
+
+    if (seed_specified) {
+        Random::Seed(seed);
+    } else {
+        Random::Seed();
     }
 
     if (filename.empty()) {
         cerr << "Filename not specified" << endl;
         return(2);
     }
-    if (filename_output == "") {
-        filename_output = filename + ".dm";
+
+    if (format_str.empty()) {
+        cerr << "Input format not specified" << endl;
+        return(2);
+    }
+
+    if (singles_format_str.empty()) {
+        singles_format_str = format_str;
+    }
+    if (coinc_format_str.empty()) {
+        coinc_format_str = format_str;
     }
 
     if (verbose) {
@@ -185,31 +141,133 @@ int main(int argc, char ** argv) {
         cout << "process filename : " << filename_process << endl;
     }
 
-    ifstream input(filename.c_str(), ios::binary);
-    if (!input) {
-        cerr << "Opening input failed" << endl;
+    Output::Format input_format;
+    if (Output::ParseFormat(format_str, input_format) < 0) {
+        cerr << "unable to parse format type: " << format_str << endl;
         return(3);
     }
 
-    ofstream output(filename_output.c_str(), ios::binary);
-    if (!output) {
-        cerr << "Opening output failed" << endl;
+    Output::Format singles_format;
+    if (Output::ParseFormat(singles_format_str, singles_format) < 0) {
+        cerr << "unable to parse format type: " << singles_format_str << endl;
+        return(3);
+    }
+
+    Output::Format coinc_format;
+    if (Output::ParseFormat(coinc_format_str, coinc_format) < 0) {
+        cerr << "unable to parse format type: " << coinc_format_str << endl;
+        return(3);
+    }
+
+    Input input;
+    input.set_format(input_format);
+    // Assume the variable format mask will be picked up from the file header.
+    if (!input.set_logfile(filename)) {
+        cerr << "Opening input failed" << endl;
         return(4);
     }
 
-    int status = 0;
-    if (filetype == 0) {
-        status = process_file<GrayBinaryStandard>(
-                filename_map, filename_process, input, output, verbose);
-    } else if (filetype == 1) {
-        status = process_file<GrayBinaryNoPosition>(
-                filename_map, filename_process, input, output, verbose);
-    } else if (filetype == 2) {
-        status = process_file<Interaction>(filename_map, filename_process,
-                                           input, output, verbose);
+    Output::WriteFlags singles_mask = input.get_write_flags();
+    if (!singles_var_mask_str.empty()) {
+        if (!Output::parse_write_flags_mask(singles_mask, singles_var_mask_str)) {
+            cerr << "unable to parse mask: " << singles_var_mask_str << endl;
+            return(3);
+        }
     }
-    if (status < 0) {
+
+    Output::WriteFlags coinc_mask = input.get_write_flags();
+    if (!coinc_var_mask_str.empty()) {
+        if (!Output::parse_write_flags_mask(coinc_mask, coinc_var_mask_str)) {
+            cerr << "unable to parse mask: " << coinc_var_mask_str << endl;
+            return(3);
+        }
+    }
+
+    Output output;
+    output.SetFormat(singles_format);
+    output.SetVariableOutputMask(singles_mask);
+    if (!output.SetLogfile(filename_output)) {
+        cerr << "Opening output failed" << endl;
         return(5);
+    }
+
+    SinglesStream<Interaction> singles_stream(initial_sorting_window,
+                                              Interaction::basic_merge);
+    int no_detectors = singles_stream.load_mappings(filename_map);
+    if (no_detectors < 0) {
+        cerr << "Loading mapping file failed" << endl;
+        return(2);
+    }
+
+    int proc_load_status = singles_stream.load_processes(filename_process);
+    if (proc_load_status < 0) {
+        cerr << "Loading process file failed" << endl;
+        return(2);
+    }
+
+    bool log_coinc = !filenames_coinc.empty();
+    bool log_singles = !filename_output.empty();
+
+    if (!log_coinc && !log_singles) {
+        cerr << "No output specified" << endl;
+        return(7);
+    }
+
+    std::vector<Output> outputs_coinc(singles_stream.no_coinc_processes());
+    if (log_coinc) {
+        if (singles_stream.no_coinc_processes() != filenames_coinc.size()) {
+            cerr << "Incorrect number of filenames specified for coinc outputs"
+            << endl;
+            return(4);
+        }
+        for (size_t idx = 0; idx < singles_stream.no_coinc_processes(); idx++) {
+            Output & output_coinc = outputs_coinc[idx];
+            output_coinc.SetFormat(coinc_format);
+            output_coinc.SetVariableOutputMask(coinc_mask);
+            output_coinc.SetLogfile(filenames_coinc.at(idx));
+        }
+    }
+
+    Interaction input_event;
+    // TODO: do more than one at a time.
+    while (input.read_interaction(input_event)) {
+        vector<Interaction> singles_events = singles_stream.add_event(input_event);
+        if (log_singles) {
+            for (const auto & event: singles_events) {
+                output.LogInteraction(event);
+            }
+        }
+        for (size_t idx = 0; idx < singles_stream.no_coinc_processes(); idx++) {
+            // We need to make sure that we clear the coinc buffers every
+            // so often (every round here) otherwise, they will build up
+            // data.  A singles_stream.clear(), or a get_coinc_buffer call
+            // to each buffer is required.
+            auto coinc_events = singles_stream.get_coinc_buffer(idx);
+            if (log_coinc) {
+                for (const auto & interact: coinc_events) {
+                    outputs_coinc[idx].LogInteraction(interact);
+                }
+            }
+        }
+    }
+    vector<Interaction> events = singles_stream.stop();
+    if (log_singles) {
+        for (const auto & event: events) {
+            output.LogInteraction(event);
+        }
+    }
+    for (size_t idx = 0; idx < singles_stream.no_coinc_processes(); idx++) {
+        auto coinc_events = singles_stream.get_coinc_buffer(idx);
+        if (log_coinc) {
+            for (const auto & interact: coinc_events) {
+                outputs_coinc[idx].LogInteraction(interact);
+            }
+        }
+    }
+
+    if (verbose) {
+        cout << "______________\n DAQ Stats\n______________\n"
+             << singles_stream << endl;
     }
     return(0);
 }

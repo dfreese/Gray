@@ -3,9 +3,9 @@
 if [ -e neg_sphere.dat ]; then
     rm neg_sphere.dat
 fi
-gray -b -s 5489 -f detectors/neg_sphere.dff -i neg_sphere.dat \
+gray --seed 5489 -f detectors/neg_sphere.dff -h neg_sphere.dat \
     -p detectors/sample_process_file.pdc -m detectors/sample_mapping_file.map \
-    -o neg_sphere_singles.dat
+    -s neg_sphere_singles.dat -c neg_sphere_coinc.dat
 
 diff -sq neg_sphere.dat detectors/ref_neg_sphere.dat
 

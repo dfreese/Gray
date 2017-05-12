@@ -11,6 +11,7 @@
 #include <Output/Output.h>
 #include <Sources/SourceList.h>
 #include <Random/Random.h>
+#include <Physics/Physics.h>
 #include <Pipeline/singlesstream.h>
 
 using namespace std;
@@ -58,8 +59,8 @@ int main( int argc, char** argv)
     
     // Setup the singles processor and load a default or specified mapping file
     SinglesStream<Interaction> singles_stream(
-            5 * scene.GetMaxDistance() * Interaction::inverse_speed_of_light,
-            Interaction::merge_interactions);
+            5 * scene.GetMaxDistance() * Physics::inverse_speed_of_light,
+            Interaction::basic_merge);
 
 
     if (config.get_filename_mapping() == "") {
@@ -90,6 +91,7 @@ int main( int argc, char** argv)
 
     Output output_hits;
     Output output_singles;
+    std::vector<Output> outputs_coinc(singles_stream.no_coinc_processes());
     if (config.get_log_hits()) {
         output_hits.SetFormat(config.get_format_hits());
         output_hits.SetVariableOutputMask(config.get_hits_var_output_write_flags());
@@ -100,6 +102,21 @@ int main( int argc, char** argv)
         output_singles.SetVariableOutputMask(config.get_singles_var_output_write_flags());
         output_singles.SetLogfile(config.get_filename_singles());
     }
+    if (config.get_log_coinc()) {
+        if (singles_stream.no_coinc_processes() !=
+            config.get_no_coinc_filenames())
+        {
+            cerr << "Incorrect number of filenames specified for coinc outputs"
+                 << endl;
+            return(4);
+        }
+        for (size_t idx = 0; idx < singles_stream.no_coinc_processes(); idx++) {
+            Output & output_coinc = outputs_coinc[idx];
+            output_coinc.SetFormat(config.get_format_coinc());
+            output_coinc.SetVariableOutputMask(config.get_coinc_var_output_write_flags());
+            output_coinc.SetLogfile(config.get_filename_coinc(idx));
+        }
+    }
 
     sources.SetSimulationTime(config.get_time());
     sources.SetStartTime(config.get_start_time());
@@ -108,10 +125,10 @@ int main( int argc, char** argv)
     // We only want to send certain interaction types into the singles
     // processor.
     unordered_set<int> singles_valid_interactions({
-        Interaction::COMPTON,
-        Interaction::PHOTOELECTRIC,
-        Interaction::XRAY_ESCAPE,
-        Interaction::RAYLEIGH});
+        Physics::COMPTON,
+        Physics::PHOTOELECTRIC,
+        Physics::XRAY_ESCAPE,
+        Physics::RAYLEIGH});
 
     // TODO: check if time actually increases inside of negative sources
     // more than it should according to this comment below:
@@ -140,7 +157,7 @@ int main( int argc, char** argv)
                 output_hits.LogInteraction(interact);
             }
         }
-        if (config.get_log_singles()) {
+        if (config.get_log_singles() || config.get_log_coinc()) {
             // Partition the interactions into two sets, while preserving
             // the rough time order.  Anything "true", or having a type
             // in the singles_valid_interactions set is put in the front
@@ -152,9 +169,23 @@ int main( int argc, char** argv)
                                 (i.det_id >= 0));
                      });
             interactions.resize(del_pos - interactions.begin());
-            auto output_events = singles_stream.add_events(interactions);
-            for (const auto & interact: output_events) {
-                output_singles.LogInteraction(interact);
+            auto singles_events = singles_stream.add_events(interactions);
+            if (config.get_log_singles()) {
+                for (const auto & interact: singles_events) {
+                    output_singles.LogInteraction(interact);
+                }
+            }
+            for (size_t idx = 0; idx < singles_stream.no_coinc_processes(); idx++) {
+                // We need to make sure that we clear the coinc buffers every
+                // so often (every round here) otherwise, they will build up
+                // data.  A singles_stream.clear(), or a get_coinc_buffer call
+                // to each buffer is required.
+                auto coinc_events = singles_stream.get_coinc_buffer(idx);
+                if (config.get_log_coinc()) {
+                    for (const auto & interact: coinc_events) {
+                        outputs_coinc[idx].LogInteraction(interact);
+                    }
+                }
             }
         }
         for (; current_tick < (sources.GetElapsedTime() / tick_mark);
@@ -164,14 +195,24 @@ int main( int argc, char** argv)
         }
     }
     if (config.get_log_singles()) {
-        auto output_events = singles_stream.stop();
-        for (const auto & interact: output_events) {
+        auto singles_events = singles_stream.stop();
+        for (const auto & interact: singles_events) {
             output_singles.LogInteraction(interact);
+        }
+        for (size_t idx = 0; idx < singles_stream.no_coinc_processes(); idx++) {
+            auto coinc_events = singles_stream.get_coinc_buffer(idx);
+            if (config.get_log_coinc()) {
+                for (const auto & interact: coinc_events) {
+                    outputs_coinc[idx].LogInteraction(interact);
+                }
+            }
         }
     }
     cout << "=] Done." << endl;
     cout << "\n______________\n Stats\n______________\n" << stats << endl;
-    cout << "______________\n DAQ Stats\n______________\n"
-         << singles_stream << endl;
+    if (config.get_log_singles() || config.get_log_coinc()) {
+        cout << "______________\n DAQ Stats\n______________\n"
+             << singles_stream << endl;
+    }
     return(0);
 }

@@ -649,7 +649,7 @@ bool LoadDetector::Load(const std::string & filename,
                 return(false);
             }
             Output::Format hits_format;
-            if (Output::GetFormat(format_identifier, hits_format) < 0) {
+            if (Output::ParseFormat(format_identifier, hits_format) < 0) {
                 print_parse_error(line);
                 cerr << "Invalid format identifier: " << format_identifier
                      << endl;
@@ -665,7 +665,7 @@ bool LoadDetector::Load(const std::string & filename,
                 return(false);
             }
             Output::Format singles_format;
-            if (Output::GetFormat(format_identifier, singles_format) < 0) {
+            if (Output::ParseFormat(format_identifier, singles_format) < 0) {
                 print_parse_error(line);
                 cerr << "Invalid format identifier: " << format_identifier
                 << endl;
