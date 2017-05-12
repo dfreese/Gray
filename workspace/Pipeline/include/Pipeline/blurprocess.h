@@ -27,10 +27,10 @@ public:
     }
 
 private:
-    void _add_events(const std::vector<EventT> & events) {
+    std::vector<EventT> _add_events(const std::vector<EventT> & events) {
         std::vector<EventT> new_events(events);
         std::for_each(new_events.begin(), new_events.end(), blur_func);
-        this->add_ready(new_events);
+        return(new_events);
     }
 
     void _reset() {
@@ -39,7 +39,8 @@ private:
     /*!
      *
      */
-    void _stop() {
+    std::vector<EventT> _stop() {
+        return(std::vector<EventT>());
     }
 
     /*!

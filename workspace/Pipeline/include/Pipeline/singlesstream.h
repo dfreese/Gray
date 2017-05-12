@@ -108,29 +108,16 @@ public:
         return(set_processes(process_descriptions));
     }
 
-    void add_event(const EventT & event) {
-        process_stream.add_event(event);
+    std::vector<EventT> add_event(const EventT & event) {
+        return(process_stream.add_event(event));
     }
 
-    void add_events(const std::vector<EventT> & events) {
-        process_stream.add_events(events);
+    std::vector<EventT> add_events(const std::vector<EventT> & events) {
+        return(process_stream.add_events(events));
     }
 
-
-    long no_ready() const {
-        return(process_stream.no_ready());
-    }
-
-    const std::vector<EventT> & get_ready() const {
-        return(process_stream.get_ready());
-    }
-
-    void clear() {
-        process_stream.clear();
-    }
-
-    void stop() {
-        process_stream.stop();
+    std::vector<EventT> stop() {
+        return(process_stream.stop());
     }
 
     long no_events() const {

@@ -29,24 +29,19 @@ public:
     virtual ~Processor() {};
 
     /*!
-     * Adds new events into the processor by dumping it to add_events.
+     * Adds a new event into the processor by dumping it to add_events.
      */
-    void add_event(const EventT & event) {
-        add_events({event});
+    std::vector<EventT> add_event(const EventT & event) {
+        return(add_events({event}));
     }
 
     /*!
      * Adds new events into the processor, one by one by default.
      */
-    void add_events(const std::vector<EventT> & events) {
-        _add_events(events);
+    std::vector<EventT> add_events(const std::vector<EventT> & events) {
         count_events += events.size();
-    }
-
-    /*!
-     *
-     */
-    const std::vector<EventT> & get_ready() const {
+        auto ready_events = _add_events(events);
+        count_kept += ready_events.size();
         return(ready_events);
     }
 
@@ -58,23 +53,16 @@ public:
         count_kept = 0;
         count_dropped = 0;
         count_events = 0;
-        ready_events.clear();
     }
 
     /*!
      * Simulates the end of the acquisition by saying no further events will be
      * added.
      */
-    void stop() {
-        _stop();
-    }
-
-    /*!
-     * Returns the number of events that have timed out and won't be modified
-     * further.
-     */
-    size_t no_ready() const {
-        return(ready_events.size());
+    std::vector<EventT> stop() {
+        auto ready_events = _stop();
+        count_kept += ready_events.size();
+        return(ready_events);
     }
 
     /*!
@@ -99,13 +87,6 @@ public:
     }
 
     /*!
-     * Removes all of the ready events.
-     */
-    void clear() {
-        ready_events.clear();
-    }
-
-    /*!
      * Clear all of the information currently in the class
      */
 
@@ -118,18 +99,10 @@ protected:
         count_dropped += val;
     }
 
-    void add_ready(const std::vector<EventT> & events) {
-        count_kept += events.size();
-        ready_events.insert(ready_events.end(), events.begin(), events.end());
-    }
-
 private:
-    virtual void _add_events(const std::vector<EventT> & events) = 0;
+    virtual std::vector<EventT> _add_events(const std::vector<EventT> & events) = 0;
+    virtual std::vector<EventT> _stop() = 0;
     virtual void _reset() = 0;
-    virtual void _stop() = 0;
-
-
-    std::vector<EventT> ready_events;
 
 
     /*!

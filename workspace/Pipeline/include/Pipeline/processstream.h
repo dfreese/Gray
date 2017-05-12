@@ -37,46 +37,35 @@ public:
      * Adds a new event into the merge map.  It then updates which events are
      * timed out, and will not be merged with any other event.
      */
-    void add_event(const EventT & event) {
-        // Currently don't do any bounds checking, assuming the user will have
-        // added at least one process.
-        processes[0]->add_event(event);
-        cascade_processes();
+    std::vector<EventT> add_event(const EventT & event) {
+        return(add_events({event}));
     }
 
-    void add_events(const std::vector<EventT> & events) {
-        // Currently don't do any bounds checking, assuming the user will have
-        // added at least one process.
-        processes[0]->add_events(events);
-        cascade_processes();
-    }
-
-    void stop() {
-        for (auto & proc: processes) {
-            proc->stop();
-            // TODO: this is a bit of a hack, instead of appropriately stopping
-            // and handling each layer.
-            cascade_processes();
+    std::vector<EventT> add_events(const std::vector<EventT> & events) {
+        std::vector<EventT> output_events(events);
+        for (auto proc_ptr: processes) {
+            output_events = proc_ptr->add_events(output_events);
         }
+        return(output_events);
     }
 
-    const std::vector<EventT> & get_ready() const {
-        return(ready_events);
-    }
-
-    size_t no_ready() const {
-        return(ready_events.size());
-    }
-
-    void clear() {
-        ready_events.clear();
+    std::vector<EventT> stop() {
+        std::vector<EventT> ret_events;
+        for (size_t idx = 0; idx < processes.size(); ++idx) {
+            std::vector<EventT> store_events = processes[idx]->stop();
+            for (size_t pidx = idx + 1; pidx < processes.size(); ++pidx) {
+                store_events = processes[pidx]->add_events(store_events);
+            }
+            ret_events.insert(ret_events.end(), store_events.begin(),
+                              store_events.end());
+        }
+        return(ret_events);
     }
 
     void reset() {
         for (auto & p: processes) {
             p.reset();
         }
-        ready_events.clear();
     }
 
     long no_events() const {
@@ -116,26 +105,8 @@ public:
     }
 
 private:
-
     std::vector<Processor<EventT> *> processes;
-    std::vector<EventT> ready_events;
     std::vector<bool> print_info;
-
-    void cascade_processes() {
-        for (size_t pidx = 0; pidx < processes.size() - 1; ++pidx) {
-            Processor<EventT> * cur_process = processes[pidx];
-            Processor<EventT> * next_process = processes[pidx + 1];
-            next_process->add_events(cur_process->get_ready());
-            cur_process->clear();
-        }
-
-        Processor<EventT> * last_process = processes.back();
-        const std::vector<EventT> & events = last_process->get_ready();
-        ready_events.insert(ready_events.end(), events.begin(),
-                            events.begin() + last_process->no_ready());
-        last_process->clear();
-    }
-
 };
 
 #endif // singlesproc_h

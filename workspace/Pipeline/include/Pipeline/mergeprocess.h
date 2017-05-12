@@ -47,9 +47,9 @@ private:
      * Adds a new events into detector id map then updates which events are
      * timed out, and will not be merged with any other event.
      */
-    void _add_events(const std::vector<EventT> & events) {
+    std::vector<EventT> _add_events(const std::vector<EventT> & events) {
         if (events.empty()) {
-            return;
+            return(std::vector<EventT>());
         }
         // Merge any events that are still within the window.  Hold onto others
         // where there's nothing from that detector currently, or where the
@@ -94,7 +94,7 @@ private:
                   [this](const EventT & e0, const EventT & e1){
                       return(this->get_time_func(e0) < this->get_time_func(e1));
                   });
-        this->add_ready(local_ready_events);
+        return(local_ready_events);
     }
 
     void _reset() {
@@ -105,7 +105,7 @@ private:
      * Simulates the end of the acquisition by saying all events are now fully
      * valid.
      */
-    void _stop() {
+    std::vector<EventT> _stop() {
         std::vector<EventT> local_ready_events;
         for (const auto & id_e_pair: id_event_map) {
             local_ready_events.push_back(id_e_pair.second);
@@ -118,7 +118,7 @@ private:
                   [this](const EventT & e0, const EventT & e1){
                       return(this->get_time_func(e0) < this->get_time_func(e1));
                   });
-        this->add_ready(local_ready_events);
+        return(local_ready_events);
     }
 
     /*!

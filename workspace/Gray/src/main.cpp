@@ -152,11 +152,10 @@ int main( int argc, char** argv)
                                 (i.det_id >= 0));
                      });
             interactions.resize(del_pos - interactions.begin());
-            singles_stream.add_events(interactions);
-            for (const auto & interact: singles_stream.get_ready()) {
+            auto output_events = singles_stream.add_events(interactions);
+            for (const auto & interact: output_events) {
                 output_singles.LogInteraction(interact);
             }
-            singles_stream.clear();
         }
         for (; current_tick < (sources.GetElapsedTime() / tick_mark);
              current_tick++)
@@ -165,11 +164,10 @@ int main( int argc, char** argv)
         }
     }
     if (config.get_log_singles()) {
-        singles_stream.stop();
-        for (const auto & interact: singles_stream.get_ready()) {
+        auto output_events = singles_stream.stop();
+        for (const auto & interact: output_events) {
             output_singles.LogInteraction(interact);
         }
-        singles_stream.clear();
     }
     cout << "=] Done." << endl;
     cout << "\n______________\n Stats\n______________\n" << stats << endl;

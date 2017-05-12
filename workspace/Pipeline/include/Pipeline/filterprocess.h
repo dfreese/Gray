@@ -33,14 +33,14 @@ private:
      * Adds a new event into the merge map.  It then updates which events are
      * timed out, and will not be merged with any other event.
      */
-    void _add_events(const std::vector<EventT> & events) {
+    std::vector<EventT> _add_events(const std::vector<EventT> & events) {
         std::vector<EventT> local_ready_events(std::count_if(events.cbegin(),
                                                              events.cend(),
                                                              filt_func));
         std::copy_if(events.cbegin(), events.cend(),
                      local_ready_events.begin(), filt_func);
         this->inc_no_dropped(events.size() - local_ready_events.size());
-        this->add_ready(local_ready_events);
+        return(local_ready_events);
     }
 
     void _reset() {
@@ -50,7 +50,8 @@ private:
      * Simulates the end of the acquisition by saying all events are now fully
      * valid.
      */
-    void _stop() {
+    std::vector<EventT> _stop() {
+        return(std::vector<EventT>());
     }
 
     /*!

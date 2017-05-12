@@ -44,9 +44,9 @@ private:
     /*!
      *
      */
-    void _add_events(const std::vector<EventT> & events) {
+    std::vector<EventT> _add_events(const std::vector<EventT> & events) {
         if (events.empty()) {
-            return;
+            return(std::vector<EventT>());
         }
         for (const auto event: events) {
             TimeT event_time = get_time_func(event);
@@ -82,7 +82,7 @@ private:
                                        });
         std::vector<EventT> local_ready_events(event_buf.begin(), ready_iter);
         event_buf.erase(event_buf.begin(), ready_iter);
-        this->add_ready(local_ready_events);
+        return(local_ready_events);
     }
 
     void _reset() {
@@ -93,8 +93,10 @@ private:
      * Simulates the end of the acquisition by saying all events are now fully
      * valid.
      */
-    void _stop() {
-        this->add_ready(event_buf);
+    std::vector<EventT> _stop() {
+        std::vector<EventT> tmp_empty;
+        tmp_empty.swap(event_buf);
+        return(tmp_empty);
     }
 
     /*!

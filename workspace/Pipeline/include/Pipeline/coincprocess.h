@@ -89,11 +89,11 @@ public:
     
 
 private:
-    void _add_events(const std::vector<EventT> & events) {
+    std::vector<EventT> _add_events(const std::vector<EventT> & events) {
         for (const auto & event: events) {
             buffer.push_back({event, {0, 0}});
         }
-        update_buffer_status(false);
+        return(update_buffer_status(false));
     }
 
     /*!
@@ -112,12 +112,11 @@ private:
     /*!
      *
      */
-    void _stop() {
-        update_buffer_status(true);
-        buffer.clear();
+    std::vector<EventT> _stop() {
+        return(update_buffer_status(true));
     }
 
-    void update_buffer_status(bool stopping) {
+    std::vector<EventT> update_buffer_status(bool stopping) {
         for (size_t ii = 0; ii < buffer.size(); ii++) {
             EventPair & ref_event = buffer[ii];
             if (ref_event.second.no_coinc) {
@@ -225,8 +224,8 @@ private:
                       });
         this->inc_no_dropped(ready_iter - buffer.begin() -
                              local_ready_events.size());
-        this->add_ready(local_ready_events);
         buffer.erase(buffer.begin(), ready_iter);
+        return(local_ready_events);
     }
 
     TimeT coinc_window;

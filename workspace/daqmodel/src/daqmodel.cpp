@@ -36,24 +36,20 @@ int process_file(const std::string & filename_map,
 
     vector<EventT> input_events(100000);
     do {
+        input_events.resize(input_events.capacity());
         input.read(reinterpret_cast<char *>(input_events.data()),
                    input_events.size() * sizeof(EventT));
         size_t no_events = input.gcount() / sizeof(EventT);
-        singles_stream.add_events(vector<EventT>(input_events.begin(),
-                                                 input_events.begin() +
-                                                 no_events));
-        const vector<EventT> & events = singles_stream.get_ready();
+        input_events.resize(no_events);
+        vector<EventT> events = singles_stream.add_events(input_events);
         output.write(reinterpret_cast<const char *>(events.data()),
                      events.size() * sizeof(EventT));
-        singles_stream.clear();
     } while(input);
 
     input.close();
-    singles_stream.stop();
-    const vector<EventT> & events = singles_stream.get_ready();
+    vector<EventT> events = singles_stream.stop();
     output.write(reinterpret_cast<const char *>(events.data()),
                  events.size() * sizeof(EventT));
-    singles_stream.clear();
 
     output.close();
 
@@ -98,24 +94,19 @@ int process_file<Interaction>(const std::string & filename_map,
     Output::write_write_flags(flags, output, binary);
 
     Interaction input_event;
+    // TODO: do more than one at a time.
     while (Output::read_interaction(input_event, input, flags, binary)) {
-        singles_stream.add_event(input_event);
-        if (singles_stream.no_ready() > 100000) {
-            const vector<Interaction> & events = singles_stream.get_ready();
-            for (const auto & event: events) {
-                Output::write_interaction(event, output, flags, binary);
-            }
-            singles_stream.clear();
+        vector<Interaction> events = singles_stream.add_event(input_event);
+        for (const auto & event: events) {
+            Output::write_interaction(event, output, flags, binary);
         }
     }
 
     input.close();
-    singles_stream.stop();
-    const vector<Interaction> & events = singles_stream.get_ready();
+    vector<Interaction> events = singles_stream.stop();
     for (const auto & event: events) {
         Output::write_interaction(event, output, flags, binary);
     }
-    singles_stream.clear();
 
     output.close();
 
