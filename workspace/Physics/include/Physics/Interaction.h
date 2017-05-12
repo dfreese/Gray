@@ -40,7 +40,6 @@ public:
     int scatter_rayleigh_phantom;
     int scatter_rayleigh_detector;
     int xray_flouresence;
-    bool sensitive_mat;
 
     static Interaction NoInteraction();
     static Interaction NoInteraction(const Photon & p,

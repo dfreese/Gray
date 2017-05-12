@@ -202,7 +202,6 @@ void Output::write_flags_stats(const WriteFlags & flags, int & no_fields,
     no_fields++; if (flags.scatter_rayleigh_phantom) no_active++;
     no_fields++; if (flags.scatter_rayleigh_detector) no_active++;
     no_fields++; if (flags.xray_flouresence) no_active++;
-    no_fields++; if (flags.sensitive_mat) no_active++;
 }
 
 int Output::event_size(const WriteFlags & flags) {
@@ -235,7 +234,6 @@ int Output::event_size(const WriteFlags & flags) {
     if (flags.xray_flouresence) {
         event_size += sizeof(Interaction::xray_flouresence);
     }
-    if (flags.sensitive_mat) event_size += sizeof(int);
     return(event_size);
 }
 
@@ -300,10 +298,6 @@ bool Output::write_write_flags(const WriteFlags & flags,
         int xray_flouresence = flags.xray_flouresence;
         output.write(reinterpret_cast<char*>(&xray_flouresence),
                      sizeof(xray_flouresence));
-
-        int sensitive_mat = flags.sensitive_mat;
-        output.write(reinterpret_cast<char*>(&sensitive_mat),
-                     sizeof(sensitive_mat));
     } else {
         output << "no_fields " << no_fields << "\n" << "no_active "
         << no_active << "\n";
@@ -325,9 +319,7 @@ bool Output::write_write_flags(const WriteFlags & flags,
         << "scatter_rayleigh_detector "
         << static_cast<int>(flags.scatter_rayleigh_detector) << "\n"
         << "xray_flouresence "
-        << static_cast<int>(flags.xray_flouresence) << "\n"
-        << "sensitive_mat "
-        << static_cast<int>(flags.sensitive_mat) << "\n";
+        << static_cast<int>(flags.xray_flouresence) << "\n";
     }
 
     if (output.fail()) {
@@ -382,8 +374,6 @@ bool Output::read_write_flags(WriteFlags & flags, std::istream & input,
         flags.scatter_rayleigh_detector = static_cast<bool>(read_val);
         input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
         flags.xray_flouresence = static_cast<bool>(read_val);
-        input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
-        flags.sensitive_mat = static_cast<bool>(read_val);
 
         int expected_per_event_size = event_size(flags);
         if (expected_per_event_size != per_event_size) {
@@ -429,8 +419,6 @@ bool Output::read_write_flags(WriteFlags & flags, std::istream & input,
         ss >> value_name;  ss >> flags.scatter_rayleigh_detector;
         getline(input, line); ss.clear(); ss << line;
         ss >> value_name;  ss >> flags.xray_flouresence;
-        getline(input, line); ss.clear(); ss << line;
-        ss >> value_name;  ss >> flags.sensitive_mat;
     }
 
     int no_fields;
@@ -468,8 +456,6 @@ bool Output::parse_write_flags_mask(WriteFlags & flags,
     line_ss >> flags.scatter_rayleigh_phantom;
     line_ss >> flags.scatter_rayleigh_detector;
     line_ss >> flags.xray_flouresence;
-    line_ss >> flags.sensitive_mat;
-
     return(!line_ss.fail());
 }
 
@@ -540,10 +526,6 @@ bool Output::write_interaction(const Interaction & inter,
             output.write(reinterpret_cast<const char*>(&inter.xray_flouresence),
                          sizeof(inter.xray_flouresence));
         }
-        if (flags.sensitive_mat) {
-            int val = inter.sensitive_mat;
-            output.write(reinterpret_cast<const char*>(&val), sizeof(val));
-        }
     } else {
         if (flags.time) {
             output << " " << std::resetiosflags(std::ios::floatfield)
@@ -590,10 +572,6 @@ bool Output::write_interaction(const Interaction & inter,
         }
         if (flags.xray_flouresence) {
             output << " " << std::setw(3) << inter.xray_flouresence;
-        }
-        if (flags.sensitive_mat) {
-            output << " " << std::setw(3)
-            << static_cast<int>(inter.sensitive_mat);
         }
         output << "\n";
     }
@@ -673,10 +651,6 @@ bool Output::read_interaction(Interaction & inter, std::istream & input,
             input.read(reinterpret_cast<char*>(&inter.xray_flouresence),
                        sizeof(inter.xray_flouresence));
         }
-        if (flags.sensitive_mat) {
-            input.read(reinterpret_cast<char*>(&inter.sensitive_mat),
-                       sizeof(inter.sensitive_mat));
-        }
     } else {
         string line;
         getline(input, line);
@@ -728,9 +702,6 @@ bool Output::read_interaction(Interaction & inter, std::istream & input,
         }
         if (flags.xray_flouresence) {
             line_ss >> inter.xray_flouresence;
-        }
-        if (flags.sensitive_mat) {
-            line_ss >> inter.sensitive_mat;
         }
     }
     return(input.good());

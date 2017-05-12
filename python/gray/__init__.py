@@ -63,7 +63,6 @@ interaction_fields = (
     ('scatter_rayleigh_phantom', np.int32),
     ('scatter_rayleigh_detector', np.int32),
     ('xray_flouresence', np.int32),
-    ('sensitive_mat', np.int32),
     )
 
 interaction_all_dtype = np.dtype(list(interaction_fields))

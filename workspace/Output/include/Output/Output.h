@@ -48,7 +48,6 @@ public:
         bool scatter_rayleigh_phantom;
         bool scatter_rayleigh_detector;
         bool xray_flouresence;
-        bool sensitive_mat;
 
         WriteFlags() :
         time(true),
@@ -64,8 +63,7 @@ public:
         scatter_compton_detector(true),
         scatter_rayleigh_phantom(true),
         scatter_rayleigh_detector(true),
-        xray_flouresence(true),
-        sensitive_mat(true)
+        xray_flouresence(true)
         {}
     };
     static void write_flags_stats(const WriteFlags & flags, int & no_fields,
