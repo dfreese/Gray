@@ -103,6 +103,7 @@ add_library(Gray
     Physics/src/Physics.cpp
     Physics/include/Physics/Physics.h
     Pipeline/include/Pipeline/blur.h
+    Pipeline/src/Blur.cpp
     Pipeline/include/Pipeline/blurprocess.h
     Pipeline/include/Pipeline/coincprocess.h
     Pipeline/include/Pipeline/deadtimeprocess.h
@@ -111,7 +112,8 @@ add_library(Gray
     Pipeline/include/Pipeline/paralleloutstream.h
     Pipeline/include/Pipeline/processor.h
     Pipeline/include/Pipeline/processstream.h
-    Pipeline/include/Pipeline/singlesstream.h
+    Pipeline/include/Pipeline/InteractionStream.h
+    Pipeline/src/InteractionStream.cpp
     Pipeline/include/Pipeline/sortprocess.h
     Random/src/Random.cpp
     Random/include/Random/Random.h

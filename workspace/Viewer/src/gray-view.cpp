@@ -8,7 +8,8 @@
 #include <Output/Output.h>
 #include <Sources/SourceList.h>
 #include <Random/Random.h>
-#include <Pipeline/singlesstream.h>
+#include <Physics/Physics.h>
+#include <Pipeline/InteractionStream.h>
 #include <Viewer/Viewer.h>
 
 using namespace std;
@@ -55,10 +56,9 @@ int main(int argc, char ** argv)
 
 
     // Setup the singles processor and load a default or specified mapping file
-    SinglesStream<Interaction> singles_stream(
-            5 * scene.GetMaxDistance() * Interaction::inverse_speed_of_light,
-            Interaction::merge_interactions);
-
+    const double max_req_sort_time = (5 * scene.GetMaxDistance() *
+                                      Physics::inverse_speed_of_light);
+    InteractionStream singles_stream(max_req_sort_time);
 
     if (config.get_filename_mapping() == "") {
         singles_stream.set_mappings(detector_array.default_mapping());

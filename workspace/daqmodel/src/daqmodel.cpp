@@ -4,7 +4,7 @@
 #include <Output/Input.h>
 #include <Output/Output.h>
 #include <Physics/Interaction.h>
-#include <Pipeline/singlesstream.h>
+#include <Pipeline/InteractionStream.h>
 #include <Random/Random.h>
 
 using namespace std;
@@ -191,8 +191,7 @@ int main(int argc, char ** argv) {
         return(5);
     }
 
-    SinglesStream<Interaction> singles_stream(initial_sorting_window,
-                                              Interaction::basic_merge);
+    InteractionStream singles_stream(initial_sorting_window);
     int no_detectors = singles_stream.load_mappings(filename_map);
     if (no_detectors < 0) {
         cerr << "Loading mapping file failed" << endl;
