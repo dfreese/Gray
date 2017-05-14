@@ -29,67 +29,109 @@ void Input::parse_log_word(int log, int & interaction, int & color,
 }
 
 bool Input::read_interaction(Interaction & interact) {
-    if (format == Output::VARIABLE_ASCII) {
-        return(read_variable_ascii(interact, log_file, var_format_write_flags));
-    } else if (format == Output::VARIABLE_BINARY) {
-        return(read_variable_binary(interact, log_file,
-                                    var_format_write_flags));
-    } else if (format == Output::FULL_BINARY) {
-        GrayBinaryStandard b;
-        if (!log_file.read(reinterpret_cast<char*>(&b), sizeof(b))) {
-            return(false);
-        }
-        interact.decay_id = b.i;
-        interact.time = b.time;
-        interact.energy = b.energy;
-        interact.pos.x = b.x;
-        interact.pos.y = b.y;
-        interact.pos.z = b.z;
-        interact.det_id = b.det_id;
-        parse_log_word(b.log, interact.type, interact.color,
-                       interact.scatter_compton_phantom, interact.mat_id,
-                       interact.src_id);
+    std::vector<Interaction> interactions;
+    bool val = read_interactions(interactions, 1);
+    if (val) {
+        interact = interactions.front();
         return(true);
-    } else if (format == Output::NO_POS_BINARY) {
-        GrayBinaryNoPosition b;
-        if (!log_file.read(reinterpret_cast<char*>(&b), sizeof(b))) {
-            return(false);
-        }
-        interact.decay_id = b.i;
-        interact.time = b.time;
-        interact.energy = b.energy;
-        interact.det_id = b.det_id;
-        parse_log_word(b.log, interact.type, interact.color,
-                       interact.scatter_compton_phantom, interact.mat_id,
-                       interact.src_id);
-        return(true);
-    } else if (format == Output::FULL_ASCII) {
-        string line;
-        if (!getline(log_file, line)) {
-            return(false);
-        }
-        stringstream ss(line);
-        bool fail = (ss >> interact.type).fail();
-        fail |= (ss >> interact.decay_id).fail();
-        fail |= (ss >> interact.color).fail();
-        fail |= (ss >> interact.time).fail();
-        fail |= (ss >> interact.energy).fail();
-        fail |= (ss >> interact.pos.x).fail();
-        fail |= (ss >> interact.pos.y).fail();
-        fail |= (ss >> interact.pos.z).fail();
-        fail |= (ss >> interact.src_id).fail();
-        fail |= (ss >> interact.scatter_compton_phantom).fail();
-        fail |= (ss >> interact.mat_id).fail();
-        fail |= (ss >> interact.det_id).fail();
-        return(!fail);
     } else {
-        throw std::runtime_error("Unsupported input format type");
+        return(false);
     }
 }
 
-bool read_interactions(std::vector<Interaction> & interactions) {
-    // TODO: read all of the file formats in chunks
-    throw runtime_error("read_interactions not implemented");
+bool Input::read_interactions(std::vector<Interaction> & interactions,
+                              size_t no_interactions)
+{
+    if (format == Output::VARIABLE_ASCII) {
+        return(read_variables_ascii(interactions, no_interactions, log_file,
+                                    var_format_write_flags));
+    } else if (format == Output::VARIABLE_BINARY) {
+        return(read_variables_binary(interactions, no_interactions, log_file,
+                                     var_format_write_flags));
+    } else if (format == Output::FULL_BINARY) {
+        interactions.clear();
+        interactions.reserve(no_interactions);
+        for (size_t ii = 0; ii < no_interactions; ++ii) {
+            GrayBinaryStandard b;
+            if (!log_file.read(reinterpret_cast<char*>(&b), sizeof(b))) {
+                break;
+            }
+            interactions.emplace_back();
+            Interaction & interact = interactions.back();
+            interact.decay_id = b.i;
+            interact.time = b.time;
+            interact.energy = b.energy;
+            interact.pos.x = b.x;
+            interact.pos.y = b.y;
+            interact.pos.z = b.z;
+            interact.det_id = b.det_id;
+            parse_log_word(b.log, interact.type, interact.color,
+                           interact.scatter_compton_phantom, interact.mat_id,
+                           interact.src_id);
+        }
+        if (interactions.empty()) {
+            return(false);
+        } else {
+            return(true);
+        }
+    } else if (format == Output::NO_POS_BINARY) {
+        interactions.clear();
+        interactions.reserve(no_interactions);
+        for (size_t ii = 0; ii < no_interactions; ++ii) {
+            GrayBinaryNoPosition b;
+            if (!log_file.read(reinterpret_cast<char*>(&b), sizeof(b))) {
+                break;
+            }
+            interactions.emplace_back();
+            Interaction & interact = interactions.back();
+            interact.decay_id = b.i;
+            interact.time = b.time;
+            interact.energy = b.energy;
+            interact.det_id = b.det_id;
+            parse_log_word(b.log, interact.type, interact.color,
+                           interact.scatter_compton_phantom, interact.mat_id,
+                           interact.src_id);
+        }
+        if (interactions.empty()) {
+            return(false);
+        } else {
+            return(true);
+        }
+    } else if (format == Output::FULL_ASCII) {
+        interactions.clear();
+        interactions.reserve(no_interactions);
+        for (size_t ii = 0; ii < no_interactions; ++ii) {
+            string line;
+            if (!getline(log_file, line)) {
+                break;
+            }
+            stringstream ss(line);
+            Interaction interact;
+            ss >> interact.type;
+            ss >> interact.decay_id;
+            ss >> interact.color;
+            ss >> interact.time;
+            ss >> interact.energy;
+            ss >> interact.pos.x;
+            ss >> interact.pos.y;
+            ss >> interact.pos.z;
+            ss >> interact.src_id;
+            ss >> interact.scatter_compton_phantom;
+            ss >> interact.mat_id;
+            ss >> interact.det_id;
+            if (ss.fail()) {
+                break;
+            }
+            interactions.push_back(interact);
+        }
+        if (interactions.empty()) {
+            return(false);
+        } else {
+            return(true);
+        }
+    } else {
+        throw std::runtime_error("Unsupported input format type");
+    }
 }
 
 bool Input::set_logfile(const std::string & name)
@@ -104,132 +146,77 @@ bool Input::set_logfile(const std::string & name)
 
     bool success = true;
     if (format == Output::VARIABLE_ASCII) {
-        success &= read_header(log_file, false, var_format_version);
-        success &= read_write_flags(var_format_write_flags, log_file, false);
+        success &= read_header_ascii(log_file, var_format_version);
+        success &= read_write_flags_ascii(var_format_write_flags, log_file);
     } else if (format == Output::VARIABLE_BINARY) {
-        success &= read_header(log_file, true, var_format_version);
-        success &= read_write_flags(var_format_write_flags, log_file, true);
+        success &= read_header_binary(log_file, var_format_version);
+        success &= read_write_flags_binary(var_format_write_flags, log_file);
     }
-
     return(success);
 }
 
-bool Input::read_header(std::istream & input, bool binary, int & version)
+bool Input::read_header_binary(std::istream & input, int & version)
 {
-    if (binary) {
-        int magic_number;
-        input.read(reinterpret_cast<char *>(&magic_number),
-                   sizeof(magic_number));
-        if (magic_number != Output::header_start_magic_number) {
-            return(false);
-        }
-        input.read(reinterpret_cast<char *>(&version), sizeof(version));
-    } else {
-        string line;
-        getline(input, line);
-        stringstream line_ss(line);
-        line_ss >> line; // dump the "gray_output_version" text
-        if ((line_ss >> version).fail()) {
-            return(false);
-        }
+    vector<int> input_vals(2);
+    if (!input.read(reinterpret_cast<char*>(input_vals.data()),
+                    input_vals.size() * sizeof(int)))
+    {
+        return(false);
     }
-    if (input.fail()) {
+    int magic_number = input_vals[0];
+    if (magic_number != Output::header_start_magic_number) {
+        return(false);
+    }
+    version = input_vals[1];
+    return(true);
+}
+
+bool Input::read_header_ascii(std::istream & input, int & version)
+{
+    string line;
+    getline(input, line);
+    stringstream line_ss(line);
+    line_ss >> line; // dump the "gray_output_version" text
+    line_ss >> version;
+    if (input.fail() || line_ss.fail()) {
         return(false);
     } else {
         return(true);
     }
 }
 
-bool Input::read_write_flags(Output::WriteFlags & flags, std::istream & input,
-                             bool binary)
+
+bool Input::read_write_flags_binary(Output::WriteFlags & flags,
+                                    std::istream & input)
 {
-    int read_no_fields;
-    int read_no_active;
+    vector<int> input_vals(18);
+    if (!input.read(reinterpret_cast<char*>(input_vals.data()),
+                    input_vals.size() * sizeof(int)))
+    {
+        return(false);
+    }
+    int read_no_fields = input_vals[0];
+    int read_no_active = input_vals[1];
+    int per_event_size = input_vals[2];
+    flags.time = static_cast<bool>(input_vals[3]);
+    flags.decay_id = static_cast<bool>(input_vals[4]);
+    flags.color = static_cast<bool>(input_vals[5]);
+    flags.type = static_cast<bool>(input_vals[6]);
+    flags.pos = static_cast<bool>(input_vals[7]);
+    flags.energy = static_cast<bool>(input_vals[8]);
+    flags.det_id = static_cast<bool>(input_vals[9]);
+    flags.src_id = static_cast<bool>(input_vals[10]);
+    flags.mat_id = static_cast<bool>(input_vals[11]);
+    flags.scatter_compton_phantom = static_cast<bool>(input_vals[12]);
+    flags.scatter_compton_detector = static_cast<bool>(input_vals[13]);
+    flags.scatter_rayleigh_phantom = static_cast<bool>(input_vals[14]);
+    flags.scatter_rayleigh_detector = static_cast<bool>(input_vals[15]);
+    flags.xray_flouresence = static_cast<bool>(input_vals[16]);
+    flags.coinc_id = static_cast<bool>(input_vals[17]);
 
-    if (binary) {
-        input.read(reinterpret_cast<char*>(&read_no_fields),
-                   sizeof(read_no_fields));
-        input.read(reinterpret_cast<char*>(&read_no_active),
-                   sizeof(read_no_active));
-
-        int per_event_size;
-        input.read(reinterpret_cast<char*>(&per_event_size),
-                   sizeof(per_event_size));
-
-        int read_val;
-        input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
-        flags.time = static_cast<bool>(read_val);
-        input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
-        flags.decay_id = static_cast<bool>(read_val);
-        input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
-        flags.color = static_cast<bool>(read_val);
-        input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
-        flags.type = static_cast<bool>(read_val);
-        input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
-        flags.pos = static_cast<bool>(read_val);
-        input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
-        flags.energy = static_cast<bool>(read_val);
-        input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
-        flags.det_id = static_cast<bool>(read_val);
-        input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
-        flags.src_id = static_cast<bool>(read_val);
-        input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
-        flags.mat_id = static_cast<bool>(read_val);
-        input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
-        flags.scatter_compton_phantom = static_cast<bool>(read_val);
-        input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
-        flags.scatter_compton_detector = static_cast<bool>(read_val);
-        input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
-        flags.scatter_rayleigh_phantom = static_cast<bool>(read_val);
-        input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
-        flags.scatter_rayleigh_detector = static_cast<bool>(read_val);
-        input.read(reinterpret_cast<char*>(&read_val), sizeof(read_val));
-        flags.xray_flouresence = static_cast<bool>(read_val);
-
-        int expected_per_event_size = Output::event_size(flags);
-        if (expected_per_event_size != per_event_size) {
-            return(false);
-        }
-
-    } else {
-        string line;
-        stringstream ss;
-        string value_name;
-
-        getline(input, line); ss.clear(); ss << line;
-        ss >> value_name;  ss >> read_no_fields;
-
-        getline(input, line); ss.clear(); ss << line;
-        ss >> value_name;  ss >> read_no_active;
-
-        getline(input, line); ss.clear(); ss << line;
-        ss >> value_name;  ss >> flags.time;
-        getline(input, line); ss.clear(); ss << line;
-        ss >> value_name;  ss >> flags.decay_id;
-        getline(input, line); ss.clear(); ss << line;
-        ss >> value_name;  ss >> flags.color;
-        getline(input, line); ss.clear(); ss << line;
-        ss >> value_name;  ss >> flags.type;
-        getline(input, line); ss.clear(); ss << line;
-        ss >> value_name;  ss >> flags.pos;
-        getline(input, line); ss.clear(); ss << line;
-        ss >> value_name;  ss >> flags.energy;
-        getline(input, line); ss.clear(); ss << line;
-        ss >> value_name;  ss >> flags.det_id;
-        getline(input, line); ss.clear(); ss << line;
-        ss >> value_name;  ss >> flags.src_id;
-        getline(input, line); ss.clear(); ss << line;
-        ss >> value_name;  ss >> flags.mat_id;
-        getline(input, line); ss.clear(); ss << line;
-        ss >> value_name;  ss >> flags.scatter_compton_phantom;
-        getline(input, line); ss.clear(); ss << line;
-        ss >> value_name;  ss >> flags.scatter_compton_detector;
-        getline(input, line); ss.clear(); ss << line;
-        ss >> value_name;  ss >> flags.scatter_rayleigh_phantom;
-        getline(input, line); ss.clear(); ss << line;
-        ss >> value_name;  ss >> flags.scatter_rayleigh_detector;
-        getline(input, line); ss.clear(); ss << line;
-        ss >> value_name;  ss >> flags.xray_flouresence;
+    int expected_per_event_size = Output::event_size(flags);
+    if (expected_per_event_size != per_event_size) {
+        return(false);
     }
 
     int no_fields;
@@ -238,141 +225,217 @@ bool Input::read_write_flags(Output::WriteFlags & flags, std::istream & input,
     if ((read_no_fields != no_fields) || (read_no_active != no_active)) {
         return(false);
     }
+    return(true);
+}
 
+bool Input::read_write_flags_ascii(Output::WriteFlags & flags,
+                                   std::istream & input)
+{
+    vector<int> input_vals(17);
+    vector<std::string> input_names(17);
+
+    for (size_t ii = 0; ii < input_vals.size(); ii++) {
+        string line;
+        if (!getline(input, line)) {
+            return(false);
+        }
+        stringstream ss(line);
+        ss >> input_names[ii];
+        ss >> input_vals[ii];
+        if (ss.fail()) {
+            return(false);
+        }
+    }
+    int read_no_fields = input_vals[0];
+    int read_no_active = input_vals[1];
+    flags.time = static_cast<bool>(input_vals[2]);
+    flags.decay_id = static_cast<bool>(input_vals[3]);
+    flags.color = static_cast<bool>(input_vals[4]);
+    flags.type = static_cast<bool>(input_vals[5]);
+    flags.pos = static_cast<bool>(input_vals[6]);
+    flags.energy = static_cast<bool>(input_vals[7]);
+    flags.det_id = static_cast<bool>(input_vals[8]);
+    flags.src_id = static_cast<bool>(input_vals[9]);
+    flags.mat_id = static_cast<bool>(input_vals[10]);
+    flags.scatter_compton_phantom = static_cast<bool>(input_vals[11]);
+    flags.scatter_compton_detector = static_cast<bool>(input_vals[12]);
+    flags.scatter_rayleigh_phantom = static_cast<bool>(input_vals[13]);
+    flags.scatter_rayleigh_detector = static_cast<bool>(input_vals[14]);
+    flags.xray_flouresence = static_cast<bool>(input_vals[15]);
+    flags.coinc_id = static_cast<bool>(input_vals[16]);
+
+    int no_fields;
+    int no_active;
+    Output::write_flags_stats(flags, no_fields, no_active);
+    if ((read_no_fields != no_fields) || (read_no_active != no_active)) {
+        return(false);
+    }
+    return(true);
+}
+
+bool Input::read_variables_binary(std::vector<Interaction> & interactions,
+                                  size_t no_interactions,
+                                  std::istream & input,
+                                  const Output::WriteFlags & flags)
+{
+    size_t event_size = Output::event_size(flags);
+    Output::WriteOffsets offsets = Output::event_offsets(flags);
+    vector<char> read_buf(event_size * no_interactions);
+    input.read(read_buf.data(), read_buf.size());
     if (input.fail()) {
+        if (input.bad()) {
+            return(false);
+        }
+        // Handle the case where we didn't read as much as we requested.
+        size_t no_events = input.gcount() / event_size;
+        // Bail if we were somehow at the end of the file
+        if (no_events == 0) {
+            return(false);
+        }
+        // Or if the bytes we read doesn't match with what's required for
+        // an event.
+        if ((input.gcount() % event_size) != 0) {
+            return(false);
+        }
+        read_buf.resize(input.gcount());
+        interactions.resize(no_events);
+    } else {
+        interactions.resize(no_interactions);
+    }
+
+    char * event_ptr = read_buf.data();
+    for (auto & inter: interactions) {
+        if (flags.time) {
+            inter.time = *reinterpret_cast<double*>(event_ptr + offsets.time);
+        }
+        if (flags.decay_id) {
+            inter.decay_id = *reinterpret_cast<int*>(event_ptr +
+                                                     offsets.decay_id);
+        }
+        if (flags.color) {
+            inter.color = *reinterpret_cast<int*>(event_ptr + offsets.color);
+        }
+        if (flags.type) {
+            inter.type = *reinterpret_cast<int*>(event_ptr + offsets.type);
+        }
+        if (flags.pos) {
+            inter.pos.x = *reinterpret_cast<double*>(event_ptr + offsets.pos);
+            inter.pos.y = *reinterpret_cast<double*>(event_ptr + offsets.pos +
+                                                     sizeof(inter.pos.x));
+            inter.pos.z = *reinterpret_cast<double*>(event_ptr + offsets.pos +
+                                                     sizeof(inter.pos.x) +
+                                                     sizeof(inter.pos.y));
+        }
+        if (flags.energy) {
+            inter.energy = *reinterpret_cast<double*>(event_ptr +
+                                                      offsets.energy);
+        }
+        if (flags.det_id) {
+            inter.det_id = *reinterpret_cast<int*>(event_ptr + offsets.det_id);
+        }
+        if (flags.src_id) {
+            inter.src_id = *reinterpret_cast<int*>(event_ptr + offsets.src_id);
+        }
+        if (flags.mat_id) {
+            inter.mat_id = *reinterpret_cast<int*>(event_ptr + offsets.mat_id);
+        }
+        if (flags.scatter_compton_phantom) {
+            inter.scatter_compton_phantom = *reinterpret_cast<int*>(
+                    event_ptr + offsets.scatter_compton_phantom);
+        }
+        if (flags.scatter_compton_detector) {
+            inter.scatter_compton_detector = *reinterpret_cast<int*>(
+                    event_ptr + offsets.scatter_compton_detector);
+        }
+        if (flags.scatter_rayleigh_phantom) {
+            inter.scatter_rayleigh_phantom = *reinterpret_cast<int*>(
+                    event_ptr + offsets.scatter_rayleigh_phantom);
+        }
+        if (flags.scatter_rayleigh_detector) {
+            inter.scatter_rayleigh_detector = *reinterpret_cast<int*>(
+                    event_ptr + offsets.scatter_rayleigh_detector);
+        }
+        if (flags.xray_flouresence) {
+            inter.xray_flouresence = *reinterpret_cast<int*>(
+                    event_ptr + offsets.xray_flouresence);
+        }
+        if (flags.coinc_id) {
+            inter.coinc_id = *reinterpret_cast<int*>(event_ptr +
+                                                     offsets.coinc_id);
+        }
+        event_ptr += event_size;
+    }
+    return(true);
+}
+
+bool Input::read_variables_ascii(std::vector<Interaction> & interactions,
+                                 size_t no_interactions,
+                                 std::istream & input,
+                                 const Output::WriteFlags & flags)
+{
+    interactions.clear();
+    interactions.reserve(no_interactions);
+    string line;
+    for (size_t ii = 0; (ii < no_interactions) & (!getline(input, line).fail()); ii++) {
+        Interaction inter;
+        stringstream line_ss(line);
+        if (flags.time) {
+            line_ss >> inter.time;
+        }
+        if (flags.decay_id) {
+            line_ss >> inter.decay_id;
+        }
+        if (flags.color) {
+            line_ss >> inter.color;
+        }
+        if (flags.type) {
+            line_ss >> inter.type;
+        }
+        if (flags.pos) {
+            line_ss >> inter.pos.x;
+            line_ss >> inter.pos.y;
+            line_ss >> inter.pos.z;
+        }
+        if (flags.energy) {
+            line_ss >> inter.energy;
+        }
+        if (flags.det_id) {
+            line_ss >> inter.det_id;
+        }
+        if (flags.src_id) {
+            line_ss >> inter.src_id;
+        }
+        if (flags.mat_id) {
+            line_ss >> inter.mat_id;
+        }
+        if (flags.scatter_compton_phantom) {
+            line_ss >> inter.scatter_compton_phantom;
+        }
+        if (flags.scatter_compton_detector) {
+            line_ss >> inter.scatter_compton_detector;
+        }
+        if (flags.scatter_rayleigh_phantom) {
+            line_ss >> inter.scatter_rayleigh_phantom;
+        }
+        if (flags.scatter_rayleigh_detector) {
+            line_ss >> inter.scatter_rayleigh_detector;
+        }
+        if (flags.xray_flouresence) {
+            line_ss >> inter.xray_flouresence;
+        }
+        if (flags.coinc_id) {
+            line_ss >> inter.coinc_id;
+        }
+        if (line_ss.fail()) {
+            break;
+        }
+        interactions.push_back(inter);
+    }
+    if (interactions.empty()) {
         return(false);
     } else {
         return(true);
     }
-}
-
-bool Input::read_variable_binary(Interaction & inter, std::istream & input,
-                                 const Output::WriteFlags & flags)
-{
-    if (flags.time) {
-        input.read(reinterpret_cast<char*>(&inter.time),
-                   sizeof(inter.time));
-    }
-    if (flags.decay_id) {
-        input.read(reinterpret_cast<char*>(&inter.decay_id),
-                   sizeof(inter.decay_id));
-    }
-    if (flags.color) {
-        input.read(reinterpret_cast<char*>(&inter.color),
-                   sizeof(inter.color));
-    }
-    if (flags.type) {
-        input.read(reinterpret_cast<char*>(&inter.type),
-                   sizeof(inter.type));
-    }
-    if (flags.pos) {
-        input.read(reinterpret_cast<char*>(&inter.pos.x),
-                   sizeof(inter.pos.x));
-        input.read(reinterpret_cast<char*>(&inter.pos.y),
-                   sizeof(inter.pos.y));
-        input.read(reinterpret_cast<char*>(&inter.pos.z),
-                   sizeof(inter.pos.z));
-    }
-    if (flags.energy) {
-        input.read(reinterpret_cast<char*>(&inter.energy),
-                   sizeof(inter.energy));
-    }
-    if (flags.det_id) {
-        input.read(reinterpret_cast<char*>(&inter.det_id),
-                   sizeof(inter.det_id));
-    }
-    if (flags.src_id) {
-        input.read(reinterpret_cast<char*>(&inter.src_id),
-                   sizeof(inter.src_id));
-    }
-    if (flags.mat_id) {
-        input.read(reinterpret_cast<char*>(&inter.mat_id),
-                   sizeof(inter.mat_id));
-    }
-    if (flags.scatter_compton_phantom) {
-        input.read(reinterpret_cast<char*>(&inter.scatter_compton_phantom),
-                   sizeof(inter.scatter_compton_phantom));
-    }
-    if (flags.scatter_compton_detector) {
-        input.read(reinterpret_cast<char*>(&inter.scatter_compton_detector),
-                   sizeof(inter.scatter_compton_detector));
-    }
-    if (flags.scatter_rayleigh_phantom) {
-        input.read(reinterpret_cast<char*>(&inter.scatter_rayleigh_phantom),
-                   sizeof(inter.scatter_rayleigh_phantom));
-    }
-    if (flags.scatter_rayleigh_detector) {
-        input.read(reinterpret_cast<char*>(&inter.scatter_rayleigh_detector),
-                   sizeof(inter.scatter_rayleigh_detector));
-    }
-    if (flags.xray_flouresence) {
-        input.read(reinterpret_cast<char*>(&inter.xray_flouresence),
-                   sizeof(inter.xray_flouresence));
-    }
-    if (flags.coinc_id) {
-        input.read(reinterpret_cast<char*>(&inter.coinc_id),
-                   sizeof(inter.coinc_id));
-    }
-    return(input.good());
-}
-
-
-bool Input::read_variable_ascii(Interaction & inter, std::istream & input,
-                                 const Output::WriteFlags & flags)
-{
-    string line;
-    if (!getline(input, line)) {
-        return(false);
-    }
-    stringstream line_ss(line);
-    if (flags.time) {
-        line_ss >> inter.time;
-    }
-    if (flags.decay_id) {
-        line_ss >> inter.decay_id;
-    }
-    if (flags.color) {
-        line_ss >> inter.color;
-    }
-    if (flags.type) {
-        line_ss >> inter.type;
-    }
-    if (flags.pos) {
-        line_ss >> inter.pos.x;
-        line_ss >> inter.pos.y;
-        line_ss >> inter.pos.z;
-    }
-    if (flags.energy) {
-        line_ss >> inter.energy;
-    }
-    if (flags.det_id) {
-        line_ss >> inter.det_id;
-    }
-    if (flags.src_id) {
-        line_ss >> inter.src_id;
-    }
-    if (flags.mat_id) {
-        line_ss >> inter.mat_id;
-    }
-    if (flags.scatter_compton_phantom) {
-        line_ss >> inter.scatter_compton_phantom;
-    }
-    if (flags.scatter_compton_detector) {
-        line_ss >> inter.scatter_compton_detector;
-    }
-    if (flags.scatter_rayleigh_phantom) {
-        line_ss >> inter.scatter_rayleigh_phantom;
-    }
-    if (flags.scatter_rayleigh_detector) {
-        line_ss >> inter.scatter_rayleigh_detector;
-    }
-    if (flags.xray_flouresence) {
-        line_ss >> inter.xray_flouresence;
-    }
-    if (flags.coinc_id) {
-        line_ss >> inter.coinc_id;
-    }
-    return(!line_ss.fail());
 }
 
 void Input::set_variable_mask(const Output::WriteFlags & flags) {

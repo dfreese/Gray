@@ -49,9 +49,28 @@ public:
         bool coinc_id = true;
     };
 
+    struct WriteOffsets {
+        int time = -1;
+        int decay_id = -1;
+        int color = -1;
+        int type = -1;
+        int pos = -1;
+        int energy = -1;
+        int det_id = -1;
+        int src_id = -1;
+        int mat_id = -1;
+        int scatter_compton_phantom = -1;
+        int scatter_compton_detector = -1;
+        int scatter_rayleigh_phantom = -1;
+        int scatter_rayleigh_detector = -1;
+        int xray_flouresence = -1;
+        int coinc_id = -1;
+    };
+
     static void write_flags_stats(const WriteFlags & flags, int & no_fields,
                                   int & no_active);
     static int event_size(const WriteFlags & flags);
+    static WriteOffsets event_offsets(const WriteFlags & flags);
     static bool write_write_flags(const WriteFlags & flags,
                                   std::ostream & output, bool binary);
     static bool parse_write_flags_mask(WriteFlags & flags,

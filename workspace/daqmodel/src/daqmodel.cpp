@@ -227,10 +227,9 @@ int main(int argc, char ** argv) {
         }
     }
 
-    Interaction input_event;
-    // TODO: do more than one at a time.
-    while (input.read_interaction(input_event)) {
-        vector<Interaction> singles_events = singles_stream.add_event(input_event);
+    vector<Interaction> input_events;
+    while (input.read_interactions(input_events, 100000)) {
+        vector<Interaction> singles_events = singles_stream.add_events(input_events);
         if (log_singles) {
             for (const auto & event: singles_events) {
                 output.LogInteraction(event);

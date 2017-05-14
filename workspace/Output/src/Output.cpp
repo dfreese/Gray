@@ -211,6 +211,74 @@ int Output::event_size(const WriteFlags & flags) {
     return(event_size);
 }
 
+Output::WriteOffsets Output::event_offsets(const WriteFlags & flags) {
+    WriteOffsets offsets;
+    int event_size = 0;
+    if (flags.time) {
+        offsets.time = event_size;
+        event_size += sizeof(Interaction::time);
+    }
+    if (flags.decay_id) {
+        offsets.decay_id = event_size;
+        event_size += sizeof(Interaction::decay_id);
+    }
+    if (flags.color) {
+        offsets.color = event_size;
+        event_size += sizeof(Interaction::color);
+    }
+    if (flags.type) {
+        offsets.type = event_size;
+        event_size += sizeof(Interaction::type);
+    }
+    if (flags.pos) {
+        offsets.pos = event_size;
+        event_size += sizeof(Interaction::pos.x);
+        event_size += sizeof(Interaction::pos.y);
+        event_size += sizeof(Interaction::pos.z);
+    }
+    if (flags.energy) {
+        offsets.energy = event_size;
+        event_size += sizeof(Interaction::energy);
+    }
+    if (flags.det_id) {
+        offsets.det_id = event_size;
+        event_size += sizeof(Interaction::det_id);
+    }
+    if (flags.src_id) {
+        offsets.src_id = event_size;
+        event_size += sizeof(Interaction::src_id);
+    }
+    if (flags.mat_id) {
+        offsets.mat_id = event_size;
+        event_size += sizeof(Interaction::mat_id);
+    }
+    if (flags.scatter_compton_phantom) {
+        offsets.scatter_compton_phantom = event_size;
+        event_size += sizeof(Interaction::scatter_compton_phantom);
+    }
+    if (flags.scatter_compton_detector) {
+        offsets.scatter_compton_detector = event_size;
+        event_size += sizeof(Interaction::scatter_compton_detector);
+    }
+    if (flags.scatter_rayleigh_phantom) {
+        offsets.scatter_rayleigh_phantom = event_size;
+        event_size += sizeof(Interaction::scatter_rayleigh_phantom);
+    }
+    if (flags.scatter_rayleigh_detector) {
+        offsets.scatter_rayleigh_detector = event_size;
+        event_size += sizeof(Interaction::scatter_rayleigh_detector);
+    }
+    if (flags.xray_flouresence) {
+        offsets.xray_flouresence = event_size;
+        event_size += sizeof(Interaction::xray_flouresence);
+    }
+    if (flags.coinc_id) {
+        offsets.coinc_id = event_size;
+        event_size += sizeof(Interaction::coinc_id);
+    }
+    return(offsets);
+}
+
 bool Output::write_write_flags(const WriteFlags & flags,
                                std::ostream & output, bool binary)
 {
