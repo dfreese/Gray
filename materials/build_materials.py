@@ -44,7 +44,7 @@ def check_dataset(filename=None, url=None):
 
 eadl_url = 'https://www-nds.iaea.org/epdl97/data/endfb6/eadl/eadl.all'
 epdl_url = 'https://www-nds.iaea.org/epdl97/data/endfb6/epdl97/epdl97.all'
-include_xray_escapes = True
+include_xray_escapes = False
 
 # Looks for the include GRAY_INCLUDE variable first, and if it's not set, use
 # the current directory.
