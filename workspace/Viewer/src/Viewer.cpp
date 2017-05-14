@@ -98,6 +98,20 @@ extern void OpenGLRender() {
     glut.RenderScene(*ActiveScene);
 }
 
+/*
+ * Note on viewer:
+ *
+ * Decided to drop having the viewer work on mac to be able use strictly OpenGL
+ * for the viewer, and make it independent of the kd-tree implementation.  The
+ * current implementation of the OpenGL viewer has a significant number of
+ * problems as it is wildly out of date.  It relies on GLUT and GLU for a
+ * number of its primitive drawing.  Additionally it's entirely based on the
+ * OpenGL fixed pipeline.  All of the viewing would need to be reimplemented
+ * using a more modern version of OpenGL using shaders (vertex/fragment).
+ * While doing this, it would be opportune to switch viewers to something less
+ * crude that GLUT.
+ * -Freese
+ */
 void run_viewer(int argc, char** argv, SceneDescription & FileScene) {
     ActiveScene = &FileScene;
     ActiveScene->RegisterCameraView();
