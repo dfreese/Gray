@@ -1,6 +1,12 @@
 #include <Physics/Positron.h>
+#include <Random/Random.h>
 
 using namespace std;
+
+namespace {
+    const double CONST_FWHM_TO_SIGMA = (1.0)/(2.35482005);
+    const double CONST_MM_TO_CM = (0.1); // 10 mm per cm
+}
 
 Positron::Positron() :
     Isotope(),
@@ -45,11 +51,14 @@ void Positron::Decay(int photon_number, double time, int src_id,
 {
     AddNuclearDecay(&p);
     if (use_positron_dbexp) {
-        p.Decay(photon_number, time, src_id, position, positronC, positronK1,
-                positronK2, positronMaxRange);
+        VectorR3 anni_position = PositronRangeLevin(position, positronC,
+                                                    positronK1, positronK2,
+                                                    positronMaxRange);
+        p.Decay(photon_number, time, src_id, position, anni_position);
     } else if (use_positron_gauss) {
-        p.Decay(photon_number, time, src_id, position, positronFWHM,
-                positronMaxRange);
+        VectorR3 anni_position = PositronRangeGauss(position, positronFWHM,
+                                                    positronMaxRange);
+        p.Decay(photon_number, time, src_id, position, anni_position);
     } else {
         p.Decay(photon_number, time, src_id, position);
     }
@@ -73,4 +82,46 @@ void Positron::SetPositronRange(double fwhm, double max) {
 
 void Positron::set_acolinearity(double acolinearity_deg_fwhm) {
     p.set_acolinearity(acolinearity_deg_fwhm);
+}
+
+VectorR3 Positron::PositronRangeLevin(const VectorR3 & p, double positronC,
+                                      double positronK1, double positronK2,
+                                      double positronMaxRange)
+{
+    // First generate a direction that the photon will be blurred
+    VectorR3 positronDir;
+    Random::UniformSphere(positronDir);
+    double range;
+    // generate cprime which is the scales the dual exponential into a form
+    // that allows it to be monte-carlo generated
+    double cp = (positronC)/(positronC+positronK1/positronK2*(1-positronC));
+    do {
+        if (Random::Uniform() < cp) {
+            range = Random::Exponential(positronK1);
+        } else {
+            range = Random::Exponential(positronK2);
+        }
+
+    } while (range > positronMaxRange); // rejection test positron range
+    range *= CONST_MM_TO_CM;
+
+    positronDir *= range;
+    return(p + positronDir);
+}
+
+VectorR3 Positron::PositronRangeGauss(const VectorR3 & p, double positronFWHM,
+                                      double positronMaxRange)
+{
+    // First generate a direction that the photon will be blurred
+    VectorR3 positronDir;
+    Random::UniformSphere(positronDir);
+    double range = 0.0;
+    // must return cm, sigma expressed in mm
+    do {
+        range = Random::Gaussian() * positronFWHM * CONST_FWHM_TO_SIGMA;
+    } while (range > positronMaxRange); // rejection test positron range
+    range *= CONST_MM_TO_CM;
+    positronDir *= range;
+
+    return(p + positronDir);
 }

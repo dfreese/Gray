@@ -17,29 +17,18 @@ public:
     virtual void Decay(int photon_number, double time, int src_id,
                        const VectorR3 & position);
     void Decay(int photon_number, double time, int src_id,
-                       VectorR3 position, double positronC,
-                       double positronK1, double positronK2,
-                       double positronMaxRange);
-    void Decay(int photon_number, double time, int src_id,
-                       VectorR3 position, double positronFWHM,
-                       double positronMaxRange);
-    static void PositronRange(VectorR3 & p, double positronC,
-                              double positronK1, double positronK2,
-                              double positronMaxRange);
-    static void PositronRange(VectorR3 & p, double positronFWHM,
-                              double positronMaxRange);
+               const VectorR3 & position, const VectorR3 & anni_position);
     void set_acolinearity(double acolinearity_deg_fwhm);
 
     static const double default_acolinearity;
 
-protected:
+private:
     double acolinearity;
     double gamma_decay_energy;
     double positron_emission_prob;
     Photon blue;
     Photon red;
     Photon yellow;
-    bool gamma_position_set;
     bool emit_gamma;
 };
 

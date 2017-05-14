@@ -31,7 +31,11 @@ private:
     double positronK1;
     double positronK2;
     double positronMaxRange;
-
+    static VectorR3 PositronRangeLevin(const VectorR3 & p, double positronC,
+                                       double positronK1, double positronK2,
+                                       double positronMaxRange);
+    static VectorR3 PositronRangeGauss(const VectorR3 & p, double positronFWHM,
+                                       double positronMaxRange);
 };
 
 #endif /* POSITRON_H */
