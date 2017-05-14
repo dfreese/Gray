@@ -30,9 +30,10 @@ void Input::parse_log_word(int log, int & interaction, int & color,
 
 bool Input::read_interaction(Interaction & interact) {
     if (format == Output::VARIABLE_ASCII) {
-        return(read_variable(interact, log_file, var_format_write_flags, false));
+        return(read_variable_ascii(interact, log_file, var_format_write_flags));
     } else if (format == Output::VARIABLE_BINARY) {
-        return(read_variable(interact, log_file, var_format_write_flags, true));
+        return(read_variable_binary(interact, log_file,
+                                    var_format_write_flags));
     } else if (format == Output::FULL_BINARY) {
         GrayBinaryStandard b;
         if (!log_file.read(reinterpret_cast<char*>(&b), sizeof(b))) {
@@ -245,127 +246,133 @@ bool Input::read_write_flags(Output::WriteFlags & flags, std::istream & input,
     }
 }
 
-bool Input::read_variable(Interaction & inter, std::istream & input,
-                          const Output::WriteFlags & flags, bool binary)
+bool Input::read_variable_binary(Interaction & inter, std::istream & input,
+                                 const Output::WriteFlags & flags)
 {
-    if (binary) {
-        if (flags.time) {
-            input.read(reinterpret_cast<char*>(&inter.time),
-                       sizeof(inter.time));
-        }
-        if (flags.decay_id) {
-            input.read(reinterpret_cast<char*>(&inter.decay_id),
-                       sizeof(inter.decay_id));
-        }
-        if (flags.color) {
-            input.read(reinterpret_cast<char*>(&inter.color),
-                       sizeof(inter.color));
-        }
-        if (flags.type) {
-            input.read(reinterpret_cast<char*>(&inter.type),
-                       sizeof(inter.type));
-        }
-        if (flags.pos) {
-            input.read(reinterpret_cast<char*>(&inter.pos.x),
-                       sizeof(inter.pos.x));
-            input.read(reinterpret_cast<char*>(&inter.pos.y),
-                       sizeof(inter.pos.y));
-            input.read(reinterpret_cast<char*>(&inter.pos.z),
-                       sizeof(inter.pos.z));
-        }
-        if (flags.energy) {
-            input.read(reinterpret_cast<char*>(&inter.energy),
-                       sizeof(inter.energy));
-        }
-        if (flags.det_id) {
-            input.read(reinterpret_cast<char*>(&inter.det_id),
-                       sizeof(inter.det_id));
-        }
-        if (flags.src_id) {
-            input.read(reinterpret_cast<char*>(&inter.src_id),
-                       sizeof(inter.src_id));
-        }
-        if (flags.mat_id) {
-            input.read(reinterpret_cast<char*>(&inter.mat_id),
-                       sizeof(inter.mat_id));
-        }
-        if (flags.scatter_compton_phantom) {
-            input.read(reinterpret_cast<char*>(&inter.scatter_compton_phantom),
-                       sizeof(inter.scatter_compton_phantom));
-        }
-        if (flags.scatter_compton_detector) {
-            input.read(reinterpret_cast<char*>(&inter.scatter_compton_detector),
-                       sizeof(inter.scatter_compton_detector));
-        }
-        if (flags.scatter_rayleigh_phantom) {
-            input.read(reinterpret_cast<char*>(&inter.scatter_rayleigh_phantom),
-                       sizeof(inter.scatter_rayleigh_phantom));
-        }
-        if (flags.scatter_rayleigh_detector) {
-            input.read(reinterpret_cast<char*>(&inter.scatter_rayleigh_detector),
-                       sizeof(inter.scatter_rayleigh_detector));
-        }
-        if (flags.xray_flouresence) {
-            input.read(reinterpret_cast<char*>(&inter.xray_flouresence),
-                       sizeof(inter.xray_flouresence));
-        }
-        if (flags.coinc_id) {
-            input.read(reinterpret_cast<char*>(&inter.coinc_id),
-                       sizeof(inter.coinc_id));
-        }
-    } else {
-        string line;
-        getline(input, line);
-        stringstream line_ss(line);
-        if (flags.time) {
-            line_ss >> inter.time;
-        }
-        if (flags.decay_id) {
-            line_ss >> inter.decay_id;
-        }
-        if (flags.color) {
-            line_ss >> inter.color;
-        }
-        if (flags.type) {
-            line_ss >> inter.type;
-        }
-        if (flags.pos) {
-            line_ss >> inter.pos.x;
-            line_ss >> inter.pos.y;
-            line_ss >> inter.pos.z;
-        }
-        if (flags.energy) {
-            line_ss >> inter.energy;
-        }
-        if (flags.det_id) {
-            line_ss >> inter.det_id;
-        }
-        if (flags.src_id) {
-            line_ss >> inter.src_id;
-        }
-        if (flags.mat_id) {
-            line_ss >> inter.mat_id;
-        }
-        if (flags.scatter_compton_phantom) {
-            line_ss >> inter.scatter_compton_phantom;
-        }
-        if (flags.scatter_compton_detector) {
-            line_ss >> inter.scatter_compton_detector;
-        }
-        if (flags.scatter_rayleigh_phantom) {
-            line_ss >> inter.scatter_rayleigh_phantom;
-        }
-        if (flags.scatter_rayleigh_detector) {
-            line_ss >> inter.scatter_rayleigh_detector;
-        }
-        if (flags.xray_flouresence) {
-            line_ss >> inter.xray_flouresence;
-        }
-        if (flags.coinc_id) {
-            line_ss >> inter.coinc_id;
-        }
+    if (flags.time) {
+        input.read(reinterpret_cast<char*>(&inter.time),
+                   sizeof(inter.time));
+    }
+    if (flags.decay_id) {
+        input.read(reinterpret_cast<char*>(&inter.decay_id),
+                   sizeof(inter.decay_id));
+    }
+    if (flags.color) {
+        input.read(reinterpret_cast<char*>(&inter.color),
+                   sizeof(inter.color));
+    }
+    if (flags.type) {
+        input.read(reinterpret_cast<char*>(&inter.type),
+                   sizeof(inter.type));
+    }
+    if (flags.pos) {
+        input.read(reinterpret_cast<char*>(&inter.pos.x),
+                   sizeof(inter.pos.x));
+        input.read(reinterpret_cast<char*>(&inter.pos.y),
+                   sizeof(inter.pos.y));
+        input.read(reinterpret_cast<char*>(&inter.pos.z),
+                   sizeof(inter.pos.z));
+    }
+    if (flags.energy) {
+        input.read(reinterpret_cast<char*>(&inter.energy),
+                   sizeof(inter.energy));
+    }
+    if (flags.det_id) {
+        input.read(reinterpret_cast<char*>(&inter.det_id),
+                   sizeof(inter.det_id));
+    }
+    if (flags.src_id) {
+        input.read(reinterpret_cast<char*>(&inter.src_id),
+                   sizeof(inter.src_id));
+    }
+    if (flags.mat_id) {
+        input.read(reinterpret_cast<char*>(&inter.mat_id),
+                   sizeof(inter.mat_id));
+    }
+    if (flags.scatter_compton_phantom) {
+        input.read(reinterpret_cast<char*>(&inter.scatter_compton_phantom),
+                   sizeof(inter.scatter_compton_phantom));
+    }
+    if (flags.scatter_compton_detector) {
+        input.read(reinterpret_cast<char*>(&inter.scatter_compton_detector),
+                   sizeof(inter.scatter_compton_detector));
+    }
+    if (flags.scatter_rayleigh_phantom) {
+        input.read(reinterpret_cast<char*>(&inter.scatter_rayleigh_phantom),
+                   sizeof(inter.scatter_rayleigh_phantom));
+    }
+    if (flags.scatter_rayleigh_detector) {
+        input.read(reinterpret_cast<char*>(&inter.scatter_rayleigh_detector),
+                   sizeof(inter.scatter_rayleigh_detector));
+    }
+    if (flags.xray_flouresence) {
+        input.read(reinterpret_cast<char*>(&inter.xray_flouresence),
+                   sizeof(inter.xray_flouresence));
+    }
+    if (flags.coinc_id) {
+        input.read(reinterpret_cast<char*>(&inter.coinc_id),
+                   sizeof(inter.coinc_id));
     }
     return(input.good());
+}
+
+
+bool Input::read_variable_ascii(Interaction & inter, std::istream & input,
+                                 const Output::WriteFlags & flags)
+{
+    string line;
+    if (!getline(input, line)) {
+        return(false);
+    }
+    stringstream line_ss(line);
+    if (flags.time) {
+        line_ss >> inter.time;
+    }
+    if (flags.decay_id) {
+        line_ss >> inter.decay_id;
+    }
+    if (flags.color) {
+        line_ss >> inter.color;
+    }
+    if (flags.type) {
+        line_ss >> inter.type;
+    }
+    if (flags.pos) {
+        line_ss >> inter.pos.x;
+        line_ss >> inter.pos.y;
+        line_ss >> inter.pos.z;
+    }
+    if (flags.energy) {
+        line_ss >> inter.energy;
+    }
+    if (flags.det_id) {
+        line_ss >> inter.det_id;
+    }
+    if (flags.src_id) {
+        line_ss >> inter.src_id;
+    }
+    if (flags.mat_id) {
+        line_ss >> inter.mat_id;
+    }
+    if (flags.scatter_compton_phantom) {
+        line_ss >> inter.scatter_compton_phantom;
+    }
+    if (flags.scatter_compton_detector) {
+        line_ss >> inter.scatter_compton_detector;
+    }
+    if (flags.scatter_rayleigh_phantom) {
+        line_ss >> inter.scatter_rayleigh_phantom;
+    }
+    if (flags.scatter_rayleigh_detector) {
+        line_ss >> inter.scatter_rayleigh_detector;
+    }
+    if (flags.xray_flouresence) {
+        line_ss >> inter.xray_flouresence;
+    }
+    if (flags.coinc_id) {
+        line_ss >> inter.coinc_id;
+    }
+    return(!line_ss.fail());
 }
 
 void Input::set_variable_mask(const Output::WriteFlags & flags) {
