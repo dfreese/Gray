@@ -735,6 +735,12 @@ bool LoadDetector::Load(const std::string & filename,
                 cerr << "Unable to parse the variable mask given" << endl;
                 return(false);
             }
+        } else if (command == "coinc_var_mask") {
+            if (!config.set_coinc_var_output_write_flags(args)) {
+                print_parse_error(line);
+                cerr << "Unable to parse the variable mask given" << endl;
+                return(false);
+            }
         } else if (command == "scale_act") {
             double t_actScale = -1.0;
             int scanCode = sscanf(args.c_str(), "%lf", &t_actScale);
