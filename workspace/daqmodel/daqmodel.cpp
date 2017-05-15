@@ -231,9 +231,7 @@ int main(int argc, char ** argv) {
     while (input.read_interactions(input_events, 100000)) {
         vector<Interaction> singles_events = singles_stream.add_events(input_events);
         if (log_singles) {
-            for (const auto & event: singles_events) {
-                output.LogInteraction(event);
-            }
+            output.LogInteractions(singles_events);
         }
         for (size_t idx = 0; idx < singles_stream.no_coinc_processes(); idx++) {
             // We need to make sure that we clear the coinc buffers every
@@ -242,24 +240,18 @@ int main(int argc, char ** argv) {
             // to each buffer is required.
             auto coinc_events = singles_stream.get_coinc_buffer(idx);
             if (log_coinc) {
-                for (const auto & interact: coinc_events) {
-                    outputs_coinc[idx].LogInteraction(interact);
-                }
+                outputs_coinc[idx].LogInteractions(coinc_events);
             }
         }
     }
     vector<Interaction> events = singles_stream.stop();
     if (log_singles) {
-        for (const auto & event: events) {
-            output.LogInteraction(event);
-        }
+        output.LogInteractions(events);
     }
     for (size_t idx = 0; idx < singles_stream.no_coinc_processes(); idx++) {
         auto coinc_events = singles_stream.get_coinc_buffer(idx);
         if (log_coinc) {
-            for (const auto & interact: coinc_events) {
-                outputs_coinc[idx].LogInteraction(interact);
-            }
+            outputs_coinc[idx].LogInteractions(coinc_events);
         }
     }
 

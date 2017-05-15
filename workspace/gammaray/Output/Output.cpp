@@ -28,59 +28,79 @@ void Output::SetFormat(Format format) {
     this->format = format;
 }
 
-void Output::LogInteraction(const Interaction & interact) {
+void Output::LogInteractions(const vector<Interaction> & interactions) {
     if (format == VARIABLE_ASCII) {
-        write_interaction(interact, log_file, var_format_write_flags, false);
-    } else if (format == VARIABLE_BINARY) {
-        write_interaction(interact, log_file, var_format_write_flags, true);
-    } else if (format == FULL_BINARY) {
-        GrayBinaryStandard b;
-        b.i = interact.decay_id;
-        b.time = interact.time;
-        b.energy = interact.energy;
-        b.x = (float) interact.pos.x;
-        b.y = (float) interact.pos.y;
-        b.z = (float) interact.pos.z;
-        b.det_id = interact.det_id;
-        b.log = MakeLogWord(interact.type, interact.color,
-                            interact.scatter_compton_phantom, interact.mat_id,
-                            interact.src_id);
-        log_file.write(reinterpret_cast<char*>(&b), sizeof(b));
-    } else if (format == NO_POS_BINARY) {
-        GrayBinaryNoPosition b;
-        b.i = interact.decay_id;
-        b.time = interact.time;
-        b.energy = interact.energy;
-        b.det_id = interact.det_id;
-        b.log = MakeLogWord(interact.type, interact.color,
-                            interact.scatter_compton_phantom, interact.mat_id,
-                            interact.src_id);
-        log_file.write(reinterpret_cast<char*>(&b), sizeof(b));
-    } else if (format == FULL_ASCII) {
-        char str[256];
-        log_file << " " << interact.type << " ";
-        log_file << interact.decay_id;
-        log_file << " " << interact.color << " ";
-        sprintf(str,"%23.16e ", interact.time);
-        log_file << str;
-        sprintf(str,"%12.6e ", interact.energy);
-        log_file << str;
-        sprintf(str,"%15.8e %15.8e %15.8e %2d ", (float) interact.pos.x,
-                (float) interact.pos.y,
-                (float) interact.pos.z,
-                interact.src_id);
-        log_file << str;
-        if (interact.scatter_compton_phantom) {
-            log_file << " 1 ";
-        } else {
-            log_file << " 0 ";
+        for (const auto & interact: interactions) {
+            write_variable_ascii(interact, log_file, var_format_write_flags);
         }
-        sprintf(str,"%2d ", interact.mat_id);
-        log_file << str;
-        sprintf(str,"%3d ", interact.det_id);
-        log_file << str;
-        log_file << "\n";
+    } else if (format == VARIABLE_BINARY) {
+        for (const auto & interact: interactions) {
+            write_variable_binary(interact, log_file, var_format_write_flags);
+        }
+    } else if (format == FULL_BINARY) {
+        vector<GrayBinaryStandard> events(interactions.size());
+        for (size_t ii = 0; ii < events.size(); ii++) {
+            GrayBinaryStandard & b = events[ii];
+            const Interaction & interact = interactions[ii];
+            b.i = interact.decay_id;
+            b.time = interact.time;
+            b.energy = interact.energy;
+            b.x = (float) interact.pos.x;
+            b.y = (float) interact.pos.y;
+            b.z = (float) interact.pos.z;
+            b.det_id = interact.det_id;
+            b.log = MakeLogWord(interact.type, interact.color,
+                                interact.scatter_compton_phantom, interact.mat_id,
+                                interact.src_id);
+        }
+        log_file.write(reinterpret_cast<char*>(events.data()),
+                       events.size() * sizeof(GrayBinaryStandard));
+    } else if (format == NO_POS_BINARY) {
+        vector<GrayBinaryNoPosition> events(interactions.size());
+        for (size_t ii = 0; ii < events.size(); ii++) {
+            GrayBinaryNoPosition & b = events[ii];
+            const Interaction & interact = interactions[ii];
+            b.i = interact.decay_id;
+            b.time = interact.time;
+            b.energy = interact.energy;
+            b.det_id = interact.det_id;
+            b.log = MakeLogWord(interact.type, interact.color,
+                                interact.scatter_compton_phantom, interact.mat_id,
+                                interact.src_id);
+        }
+        log_file.write(reinterpret_cast<char*>(events.data()),
+                       events.size() * sizeof(GrayBinaryNoPosition));
+    } else if (format == FULL_ASCII) {
+        for (const auto & interact: interactions) {
+            char str[256];
+            log_file << " " << interact.type << " ";
+            log_file << interact.decay_id;
+            log_file << " " << interact.color << " ";
+            sprintf(str,"%23.16e ", interact.time);
+            log_file << str;
+            sprintf(str,"%12.6e ", interact.energy);
+            log_file << str;
+            sprintf(str,"%15.8e %15.8e %15.8e %2d ", (float) interact.pos.x,
+                    (float) interact.pos.y,
+                    (float) interact.pos.z,
+                    interact.src_id);
+            log_file << str;
+            if (interact.scatter_compton_phantom) {
+                log_file << " 1 ";
+            } else {
+                log_file << " 0 ";
+            }
+            sprintf(str,"%2d ", interact.mat_id);
+            log_file << str;
+            sprintf(str,"%3d ", interact.det_id);
+            log_file << str;
+            log_file << "\n";
+        }
     }
+}
+
+void Output::LogInteraction(const Interaction & interact) {
+    LogInteractions({interact});
 }
 
 bool Output::SetLogfile(const std::string & name)
@@ -401,127 +421,134 @@ bool Output::parse_write_flags_mask(WriteFlags & flags,
     return(!line_ss.fail());
 }
 
-bool Output::write_interaction(const Interaction & inter,
-                               std::ostream & output,
-                               const WriteFlags & flags,
-                               bool binary)
+bool Output::write_variable_ascii(const Interaction & inter,
+                                  std::ostream & output,
+                                  const WriteFlags & flags)
 {
-    if (binary) {
-        if (flags.time) {
-            output.write(reinterpret_cast<const char*>(&inter.time),
-                         sizeof(inter.time));
-        }
-        if (flags.decay_id) {
-            output.write(reinterpret_cast<const char*>(&inter.decay_id),
-                         sizeof(inter.decay_id));
-        }
-        if (flags.color) {
-            output.write(reinterpret_cast<const char*>(&inter.color),
-                         sizeof(inter.color));
-        }
-        if (flags.type) {
-            output.write(reinterpret_cast<const char*>(&inter.type),
-                         sizeof(inter.type));
-        }
-        if (flags.pos) {
-            output.write(reinterpret_cast<const char*>(&inter.pos.x),
-                         sizeof(inter.pos.x));
-            output.write(reinterpret_cast<const char*>(&inter.pos.y),
-                         sizeof(inter.pos.y));
-            output.write(reinterpret_cast<const char*>(&inter.pos.z),
-                         sizeof(inter.pos.z));
-        }
-        if (flags.energy) {
-            output.write(reinterpret_cast<const char*>(&inter.energy),
-                         sizeof(inter.energy));
-        }
-        if (flags.det_id) {
-            output.write(reinterpret_cast<const char*>(&inter.det_id),
-                         sizeof(inter.det_id));
-        }
-        if (flags.src_id) {
-            output.write(reinterpret_cast<const char*>(&inter.src_id),
-                         sizeof(inter.src_id));
-        }
-        if (flags.mat_id) {
-            output.write(reinterpret_cast<const char*>(&inter.mat_id),
-                         sizeof(inter.mat_id));
-        }
-        if (flags.scatter_compton_phantom) {
-            output.write(reinterpret_cast<const char*>(&inter.scatter_compton_phantom),
-                         sizeof(inter.scatter_compton_phantom));
-        }
-        if (flags.scatter_compton_detector) {
-            output.write(reinterpret_cast<const char*>(&inter.scatter_compton_detector),
-                         sizeof(inter.scatter_compton_detector));
-        }
-        if (flags.scatter_rayleigh_phantom) {
-            output.write(reinterpret_cast<const char*>(&inter.scatter_rayleigh_phantom),
-                         sizeof(inter.scatter_rayleigh_phantom));
-        }
-        if (flags.scatter_rayleigh_detector) {
-            output.write(reinterpret_cast<const char*>(&inter.scatter_rayleigh_detector),
-                         sizeof(inter.scatter_rayleigh_detector));
-        }
-        if (flags.xray_flouresence) {
-            output.write(reinterpret_cast<const char*>(&inter.xray_flouresence),
-                         sizeof(inter.xray_flouresence));
-        }
-        if (flags.coinc_id) {
-            output.write(reinterpret_cast<const char*>(&inter.coinc_id),
-                         sizeof(inter.coinc_id));
-        }
+    if (flags.time) {
+        output << " " << std::resetiosflags(std::ios::floatfield)
+        << std::scientific << std::setprecision(23) << inter.time;
+    }
+    if (flags.decay_id) {
+        output << " " << std::setw(9) << inter.decay_id;
+    }
+    if (flags.color) {
+        output << " " << std::setw(3) << inter.color;
+    }
+    if (flags.type) {
+        output << " " << std::setw(3) << inter.type;
+    }
+    if (flags.pos) {
+        output << " " << std::resetiosflags(std::ios::floatfield)
+        << std::scientific << std::setprecision(6) << inter.pos.x
+        << " " << inter.pos.y << " " << inter.pos.z;
+    }
+    if (flags.energy) {
+        output << " " << std::resetiosflags(std::ios::floatfield)
+        << std::scientific << std::setprecision(6) << inter.energy;
+    }
+    if (flags.det_id) {
+        output << " " << std::setw(5) << inter.det_id;
+    }
+    if (flags.src_id) {
+        output << " " << std::setw(5) << inter.src_id;
+    }
+    if (flags.mat_id) {
+        output << " " << std::setw(5) << inter.mat_id;
+    }
+    if (flags.scatter_compton_phantom) {
+        output << " " << std::setw(5) << inter.scatter_compton_phantom;
+    }
+    if (flags.scatter_compton_detector) {
+        output << " " << std::setw(5) << inter.scatter_compton_detector;
+    }
+    if (flags.scatter_rayleigh_phantom) {
+        output << " " << std::setw(5) << inter.scatter_rayleigh_phantom;
+    }
+    if (flags.scatter_rayleigh_detector) {
+        output << " " << std::setw(5) << inter.scatter_rayleigh_detector;
+    }
+    if (flags.xray_flouresence) {
+        output << " " << std::setw(3) << inter.xray_flouresence;
+    }
+    if (flags.coinc_id) {
+        output << " " << std::setw(9) << inter.coinc_id;
+    }
+    output << "\n";
+    if (output.fail()) {
+        return(false);
     } else {
-        if (flags.time) {
-            output << " " << std::resetiosflags(std::ios::floatfield)
-            << std::scientific << std::setprecision(23) << inter.time;
-        }
-        if (flags.decay_id) {
-            output << " " << std::setw(9) << inter.decay_id;
-        }
-        if (flags.color) {
-            output << " " << std::setw(3) << inter.color;
-        }
-        if (flags.type) {
-            output << " " << std::setw(3) << inter.type;
-        }
-        if (flags.pos) {
-            output << " " << std::resetiosflags(std::ios::floatfield)
-            << std::scientific << std::setprecision(6) << inter.pos.x
-            << " " << inter.pos.y << " " << inter.pos.z;
-        }
-        if (flags.energy) {
-            output << " " << std::resetiosflags(std::ios::floatfield)
-            << std::scientific << std::setprecision(6) << inter.energy;
-        }
-        if (flags.det_id) {
-            output << " " << std::setw(5) << inter.det_id;
-        }
-        if (flags.src_id) {
-            output << " " << std::setw(5) << inter.src_id;
-        }
-        if (flags.mat_id) {
-            output << " " << std::setw(5) << inter.mat_id;
-        }
-        if (flags.scatter_compton_phantom) {
-            output << " " << std::setw(5) << inter.scatter_compton_phantom;
-        }
-        if (flags.scatter_compton_detector) {
-            output << " " << std::setw(5) << inter.scatter_compton_detector;
-        }
-        if (flags.scatter_rayleigh_phantom) {
-            output << " " << std::setw(5) << inter.scatter_rayleigh_phantom;
-        }
-        if (flags.scatter_rayleigh_detector) {
-            output << " " << std::setw(5) << inter.scatter_rayleigh_detector;
-        }
-        if (flags.xray_flouresence) {
-            output << " " << std::setw(3) << inter.xray_flouresence;
-        }
-        if (flags.coinc_id) {
-            output << " " << std::setw(9) << inter.coinc_id;
-        }
-        output << "\n";
+        return(true);
+    }
+}
+
+bool Output::write_variable_binary(const Interaction & inter,
+                                   std::ostream & output,
+                                   const WriteFlags & flags)
+{
+    if (flags.time) {
+        output.write(reinterpret_cast<const char*>(&inter.time),
+                     sizeof(inter.time));
+    }
+    if (flags.decay_id) {
+        output.write(reinterpret_cast<const char*>(&inter.decay_id),
+                     sizeof(inter.decay_id));
+    }
+    if (flags.color) {
+        output.write(reinterpret_cast<const char*>(&inter.color),
+                     sizeof(inter.color));
+    }
+    if (flags.type) {
+        output.write(reinterpret_cast<const char*>(&inter.type),
+                     sizeof(inter.type));
+    }
+    if (flags.pos) {
+        output.write(reinterpret_cast<const char*>(&inter.pos.x),
+                     sizeof(inter.pos.x));
+        output.write(reinterpret_cast<const char*>(&inter.pos.y),
+                     sizeof(inter.pos.y));
+        output.write(reinterpret_cast<const char*>(&inter.pos.z),
+                     sizeof(inter.pos.z));
+    }
+    if (flags.energy) {
+        output.write(reinterpret_cast<const char*>(&inter.energy),
+                     sizeof(inter.energy));
+    }
+    if (flags.det_id) {
+        output.write(reinterpret_cast<const char*>(&inter.det_id),
+                     sizeof(inter.det_id));
+    }
+    if (flags.src_id) {
+        output.write(reinterpret_cast<const char*>(&inter.src_id),
+                     sizeof(inter.src_id));
+    }
+    if (flags.mat_id) {
+        output.write(reinterpret_cast<const char*>(&inter.mat_id),
+                     sizeof(inter.mat_id));
+    }
+    if (flags.scatter_compton_phantom) {
+        output.write(reinterpret_cast<const char*>(&inter.scatter_compton_phantom),
+                     sizeof(inter.scatter_compton_phantom));
+    }
+    if (flags.scatter_compton_detector) {
+        output.write(reinterpret_cast<const char*>(&inter.scatter_compton_detector),
+                     sizeof(inter.scatter_compton_detector));
+    }
+    if (flags.scatter_rayleigh_phantom) {
+        output.write(reinterpret_cast<const char*>(&inter.scatter_rayleigh_phantom),
+                     sizeof(inter.scatter_rayleigh_phantom));
+    }
+    if (flags.scatter_rayleigh_detector) {
+        output.write(reinterpret_cast<const char*>(&inter.scatter_rayleigh_detector),
+                     sizeof(inter.scatter_rayleigh_detector));
+    }
+    if (flags.xray_flouresence) {
+        output.write(reinterpret_cast<const char*>(&inter.xray_flouresence),
+                     sizeof(inter.xray_flouresence));
+    }
+    if (flags.coinc_id) {
+        output.write(reinterpret_cast<const char*>(&inter.coinc_id),
+                     sizeof(inter.coinc_id));
     }
 
     if (output.fail()) {

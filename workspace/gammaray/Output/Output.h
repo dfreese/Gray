@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <fstream>
 #include <string>
+#include <vector>
 
 class GammaStats;
 class Interaction;
@@ -25,6 +26,7 @@ public:
     bool SetLogfile(const std::string & name);
     void SetFormat(Format format);
     void LogInteraction(const Interaction & interact);
+    void LogInteractions(const std::vector<Interaction> & interactions);
     static int ParseFormat(const std::string & identifier, Format & fmt);
 
     static int header_start_magic_number;
@@ -75,9 +77,12 @@ public:
                                   std::ostream & output, bool binary);
     static bool parse_write_flags_mask(WriteFlags & flags,
                                        const std::string & mask);
-    static bool write_interaction(const Interaction & inter,
-                                  std::ostream & output,
-                                  const WriteFlags & flags, bool binary);
+    static bool write_variable_ascii(const Interaction & inter,
+                                     std::ostream & output,
+                                     const WriteFlags & flags);
+    static bool write_variable_binary(const Interaction & inter,
+                                      std::ostream & output,
+                                      const WriteFlags & flags);
 
     void SetVariableOutputMask(const WriteFlags & flags);
 

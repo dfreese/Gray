@@ -156,9 +156,7 @@ int main( int argc, char** argv)
                 config.get_log_nointeraction(),
                 config.get_log_errors(), stats);
         if (config.get_log_hits()) {
-            for (const auto & interact: interactions) {
-                output_hits.LogInteraction(interact);
-            }
+            output_hits.LogInteractions(interactions);
         }
         if (config.get_log_singles() || config.get_log_coinc()) {
             // Partition the interactions into two sets, while preserving
@@ -174,9 +172,7 @@ int main( int argc, char** argv)
             interactions.resize(del_pos - interactions.begin());
             auto singles_events = singles_stream.add_events(interactions);
             if (config.get_log_singles()) {
-                for (const auto & interact: singles_events) {
-                    output_singles.LogInteraction(interact);
-                }
+                output_singles.LogInteractions(singles_events);
             }
             for (size_t idx = 0; idx < singles_stream.no_coinc_processes(); idx++) {
                 // We need to make sure that we clear the coinc buffers every
@@ -185,9 +181,7 @@ int main( int argc, char** argv)
                 // to each buffer is required.
                 auto coinc_events = singles_stream.get_coinc_buffer(idx);
                 if (config.get_log_coinc()) {
-                    for (const auto & interact: coinc_events) {
-                        outputs_coinc[idx].LogInteraction(interact);
-                    }
+                    outputs_coinc[idx].LogInteractions(coinc_events);
                 }
             }
         }
@@ -197,17 +191,13 @@ int main( int argc, char** argv)
             cout << "=" << flush;
         }
     }
-    if (config.get_log_singles()) {
+    if (config.get_log_singles() || config.get_log_coinc()) {
         auto singles_events = singles_stream.stop();
-        for (const auto & interact: singles_events) {
-            output_singles.LogInteraction(interact);
-        }
+        output_singles.LogInteractions(singles_events);
         for (size_t idx = 0; idx < singles_stream.no_coinc_processes(); idx++) {
             auto coinc_events = singles_stream.get_coinc_buffer(idx);
             if (config.get_log_coinc()) {
-                for (const auto & interact: coinc_events) {
-                    outputs_coinc[idx].LogInteraction(interact);
-                }
+                outputs_coinc[idx].LogInteractions(coinc_events);
             }
         }
     }
