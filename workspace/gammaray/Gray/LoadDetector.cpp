@@ -672,6 +672,22 @@ bool LoadDetector::Load(const std::string & filename,
                 return(false);
             }
             config.set_format_singles(singles_format);
+        } else if (command == "coinc_format") {
+            std::string format_identifier;
+            if ((line_ss >> format_identifier).fail()) {
+                print_parse_error(line);
+                cerr << "Invalid format identifier: " << format_identifier
+                     << endl;
+                return(false);
+            }
+            Output::Format coinc_format;
+            if (Output::ParseFormat(format_identifier, coinc_format) < 0) {
+                print_parse_error(line);
+                cerr << "Invalid format identifier: " << format_identifier
+                     << endl;
+                return(false);
+            }
+            config.set_format_coinc(coinc_format);
         } else if (command == "hits_output") {
             std::string filename;
             if ((line_ss >> filename).fail()) {
