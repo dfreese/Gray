@@ -9,6 +9,7 @@
 #ifndef blur_h
 #define blur_h
 
+#include <algorithm>
 #include <cmath>
 #include <Random/Random.h>
 
