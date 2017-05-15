@@ -152,40 +152,50 @@ bool GammaStats::Load()
                 return(false);
             }
         }
-        xray_emission_cumprob = xray_emission_prob;
-        double cum_sum = 0;
-        for_each(xray_emission_cumprob.begin(), xray_emission_cumprob.end(),
-                 [&cum_sum](double & val){cum_sum += val; val = cum_sum;});
-
-        // Hack to make sure all of the probabilities end up summing to 1.
-        double total = xray_emission_cumprob.back();
-        for_each(xray_emission_prob.begin(), xray_emission_prob.end(),
-                 [&total](double & val){val /= total;});
-        for_each(xray_emission_cumprob.begin(), xray_emission_cumprob.end(),
-                 [&total](double & val){val /= total;});
-        if (!is_sorted(xray_binding_energy.begin(), xray_binding_energy.end()))
-        {
-            cerr << "XRay Escape binding energies were not in acending order"
-                 << endl;
-            return(false);
-        }
-
-        double cur_bind_e = xray_binding_energy.front();
-        for (size_t ii = 0; ii < xray_binding_energy.size(); ii++) {
-            double bind_e = xray_binding_energy[ii];
-            if (cur_bind_e != bind_e) {
-                xray_binding_enery_scale.push_back(xray_emission_cumprob[ii]);
-                unique_xray_binding_energy.push_back(cur_bind_e);
-                cur_bind_e = bind_e;
-            }
-        }
-        xray_binding_enery_scale.push_back(xray_emission_cumprob.back());
-        unique_xray_binding_energy.push_back(xray_binding_energy.back());
+    } else {
+        // If the Xray Escape Energies are not specified in the file, add in
+        // defaults that can be used.  This is equivalent to every file having
+        //
+        // 1
+        //   0.0   0.0   1.0
+        //
+        // At the end of every file
+        xray_binding_energy = vector<double>(1, 0.0);
+        xray_emission_energy = vector<double>(1, 0.0);
+        xray_emission_prob = vector<double>(1, 1.0);
     }
-    if (unique_xray_binding_energy.empty()) {
-        unique_xray_binding_energy.push_back(0);
-        xray_binding_enery_scale.push_back(1);
+
+    xray_emission_cumprob = xray_emission_prob;
+    double cum_sum = 0;
+    for_each(xray_emission_cumprob.begin(), xray_emission_cumprob.end(),
+             [&cum_sum](double & val){cum_sum += val; val = cum_sum;});
+
+    // Hack to make sure all of the probabilities end up summing to 1.
+    double total = xray_emission_cumprob.back();
+    for_each(xray_emission_prob.begin(), xray_emission_prob.end(),
+             [&total](double & val){val /= total;});
+    for_each(xray_emission_cumprob.begin(), xray_emission_cumprob.end(),
+             [&total](double & val){val /= total;});
+    if (!is_sorted(xray_binding_energy.begin(), xray_binding_energy.end()))
+    {
+        cerr << "XRay Escape binding energies were not in acending order"
+        << endl;
+        return(false);
     }
+
+    double cur_bind_e = xray_binding_energy.front();
+    for (size_t ii = 0; ii < xray_binding_energy.size(); ii++) {
+        double bind_e = xray_binding_energy[ii];
+        if (cur_bind_e != bind_e) {
+            xray_binding_enery_scale.push_back(xray_emission_cumprob[ii]);
+            unique_xray_binding_energy.push_back(cur_bind_e);
+            cur_bind_e = bind_e;
+        }
+    }
+    xray_binding_enery_scale.push_back(xray_emission_cumprob.back());
+    unique_xray_binding_energy.push_back(xray_binding_energy.back());
+
+
     return(true);
 }
 
