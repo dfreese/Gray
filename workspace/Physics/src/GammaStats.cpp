@@ -182,6 +182,10 @@ bool GammaStats::Load()
         xray_binding_enery_scale.push_back(xray_emission_cumprob.back());
         unique_xray_binding_energy.push_back(xray_binding_energy.back());
     }
+    if (unique_xray_binding_energy.empty()) {
+        unique_xray_binding_energy.push_back(0);
+        xray_binding_enery_scale.push_back(1);
+    }
     return(true);
 }
 
