@@ -19,7 +19,7 @@ foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${LIB_DIR})
 endforeach(OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES)
 
-add_library(Gray
+add_library(gammaray
     Graphics/src/CameraView.cpp
     Graphics/include/Graphics/CameraView.h
     Graphics/src/DirectLight.cpp
@@ -159,7 +159,7 @@ add_library(Gray
     VrMath/include/VrMath/Quaternion.h
     VrMath/include/VrMath/VrData.h
 )
-target_include_directories(Gray PUBLIC
+target_include_directories(gammaray PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/Graphics/include
     ${CMAKE_CURRENT_SOURCE_DIR}/GraphicsTrees/include
     ${CMAKE_CURRENT_SOURCE_DIR}/Gray/include
@@ -175,12 +175,12 @@ target_include_directories(Gray PUBLIC
 add_executable(gray
     Gray/src/main.cpp
 )
-target_link_libraries(gray Gray)
+target_link_libraries(gray gammaray)
 
 add_executable(gray-daq
     daqmodel/src/daqmodel.cpp
 )
-target_link_libraries(gray-daq Gray)
+target_link_libraries(gray-daq gammaray)
 
 
 find_package(OpenGL)
@@ -197,6 +197,6 @@ add_executable(gray-view
 target_include_directories(gray-view PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Viewer/include)
 target_link_libraries(gray-view ${OPENGL_LIBRARIES})
 target_link_libraries(gray-view ${GLUT_LIBRARIES})
-target_link_libraries(gray-view Gray)
+target_link_libraries(gray-view gammaray)
 
 endif (OPENGL_FOUND AND OPENGL_GLU_FOUND AND GLUT_FOUND)
