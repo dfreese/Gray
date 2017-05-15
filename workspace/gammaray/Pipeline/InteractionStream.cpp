@@ -1,4 +1,6 @@
 #include <Pipeline/InteractionStream.h>
+#include <unordered_set>
+#include <Physics/Physics.h>
 
 /*!
  * If the initial sort window is greater than zero, a sorting process is
@@ -83,10 +85,33 @@ std::vector<InteractionStream::EventT> InteractionStream::get_coinc_buffer(size_
 }
 
 std::vector<InteractionStream::EventT> InteractionStream::add_event(const EventT & event) {
-    return(process_stream.add_event(event));
+    return(add_events({event}));
 }
 
-std::vector<InteractionStream::EventT> InteractionStream::add_events(const std::vector<EventT> & events) {
+namespace {
+struct ValidForSingles {
+    bool operator()(const Interaction & i) {
+        return(singles_valid_interactions.count(i.type) && (i.det_id >= 0));
+    };
+    std::unordered_set<int> singles_valid_interactions = {
+        Physics::COMPTON,
+        Physics::PHOTOELECTRIC,
+        Physics::XRAY_ESCAPE,
+        Physics::RAYLEIGH};
+};
+}
+
+std::vector<InteractionStream::EventT> InteractionStream::add_events(
+        const std::vector<EventT> & events)
+{
+    size_t no_valid = std::count_if(events.begin(), events.end(),
+                                    ValidForSingles());
+    if (no_valid < events.size()) {
+        std::vector<InteractionStream::EventT> valid_events(no_valid);
+        std::copy_if(events.begin(), events.end(), valid_events.begin(),
+                     ValidForSingles());
+        return(process_stream.add_events(valid_events));
+    }
     return(process_stream.add_events(events));
 }
 

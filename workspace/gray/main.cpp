@@ -1,5 +1,4 @@
 #include <iostream>
-#include <unordered_set>
 #include <Graphics/SceneDescription.h>
 #include <GraphicsTrees/IntersectionKdTree.h>
 #include <Gray/GammaMaterial.h>
@@ -125,14 +124,6 @@ int main( int argc, char** argv)
     sources.SetStartTime(config.get_start_time());
     sources.InitSources();
 
-    // We only want to send certain interaction types into the singles
-    // processor.
-    unordered_set<int> singles_valid_interactions({
-        Physics::COMPTON,
-        Physics::PHOTOELECTRIC,
-        Physics::XRAY_ESCAPE,
-        Physics::RAYLEIGH});
-
     // TODO: check if time actually increases inside of negative sources
     // more than it should according to this comment below:
     // FIXME: time should not increase when Inside() of a negative source
@@ -159,17 +150,6 @@ int main( int argc, char** argv)
             output_hits.LogInteractions(interactions);
         }
         if (config.get_log_singles() || config.get_log_coinc()) {
-            // Partition the interactions into two sets, while preserving
-            // the rough time order.  Anything "true", or having a type
-            // in the singles_valid_interactions set is put in the front
-            // and the remainder is removed.
-            auto del_pos = stable_partition(
-                    interactions.begin(), interactions.end(),
-                    [&singles_valid_interactions](const Interaction & i){
-                         return(singles_valid_interactions.count(i.type) &&
-                                (i.det_id >= 0));
-                     });
-            interactions.resize(del_pos - interactions.begin());
             auto singles_events = singles_stream.add_events(interactions);
             if (config.get_log_singles()) {
                 output_singles.LogInteractions(singles_events);
