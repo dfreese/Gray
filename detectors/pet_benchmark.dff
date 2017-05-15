@@ -62,5 +62,5 @@ end_repeat
 mapping_file gate_benchmark.map
 pipeline_file gate_benchmark_process.pdc
 hits_format no_pos_binary
-singles_format no_pos_binary
+coinc_format no_pos_binary
 # save_basic_map bench.map
