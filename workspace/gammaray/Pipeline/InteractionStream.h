@@ -47,7 +47,6 @@ public:
     long no_dropped() const;
     long no_merged() const;
     long no_filtered() const;
-    long no_coinc_dropped() const;
     friend std::ostream & operator << (std::ostream & os,
                                        const InteractionStream & s);
 

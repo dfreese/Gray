@@ -56,7 +56,7 @@ int main( int argc, char** argv)
     }
     cout << "Using Seed: " << Random::GetSeed() << endl;
 
-    
+
     // Setup the singles processor and load a default or specified mapping file
     const double max_req_sort_time = (5 * scene.GetMaxDistance() *
                                       Physics::inverse_speed_of_light);
@@ -85,7 +85,10 @@ int main( int argc, char** argv)
     sources.SetKdTree(intersect_kd_tree);
 
 
-    if (!config.get_log_hits() && !config.get_log_singles()) {
+    if (!config.get_log_hits() &&
+        !config.get_log_singles() &&
+        !config.get_log_coinc())
+    {
         cout << "Warning: No output specified." << endl;
     }
 

@@ -122,14 +122,6 @@ long InteractionStream::no_filtered() const {
     return(filtered);
 }
 
-long InteractionStream::no_coinc_dropped() const {
-    long coinc_dropped = 0;
-    for (auto & proc: coinc_processes) {
-        coinc_dropped += proc->no_dropped();
-    }
-    return(coinc_dropped);
-}
-
 std::ostream & operator << (std::ostream & os, const InteractionStream & s) {
     os << s.process_stream;
     if (s.merge_processes.size()) {
@@ -139,14 +131,12 @@ std::ostream & operator << (std::ostream & os, const InteractionStream & s) {
         os << "filtered: " << s.no_filtered() << "\n";
     }
     if (s.coinc_processes.size()) {
-        os << "coinc windowed: " << s.no_coinc_dropped() << "\n";
         for (auto & proc: s.coinc_processes) {
             os << *proc;
         }
     }
     return(os);
 }
-
 
 int InteractionStream::load_id_maps(const std::string & filename,
                                     std::map<std::string, std::vector<int>> & id_maps)
@@ -600,5 +590,3 @@ int InteractionStream::add_deadtime_process(
     process_stream.add_process(deadtime_processes.back());
     return(0);
 }
-
-
