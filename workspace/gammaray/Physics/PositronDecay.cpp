@@ -13,25 +13,8 @@ const double PositronDecay::default_acolinearity = 0.47;
 
 PositronDecay::PositronDecay() :
     acolinearity(default_acolinearity / 180.0 * M_PI * CONST_FWHM_TO_SIGMA),
-    gamma_decay_energy(-1.0),
+    gamma_decay_energy(0),
     positron_emission_prob(1.0),
-    emit_gamma(false)
-{
-}
-
-PositronDecay::PositronDecay(double acolinearity_deg_fwhm) :
-    acolinearity(acolinearity_deg_fwhm / 180.0 * M_PI * CONST_FWHM_TO_SIGMA),
-    gamma_decay_energy(-1.0),
-    positron_emission_prob(1.0),
-    emit_gamma(false)
-{
-}
-
-PositronDecay::PositronDecay(double acolinearity_deg_fwhm,
-                             double positron_emis_prob) :
-    acolinearity(acolinearity_deg_fwhm / 180.0 * M_PI * CONST_FWHM_TO_SIGMA),
-    gamma_decay_energy(-1.0),
-    positron_emission_prob(positron_emis_prob),
     emit_gamma(false)
 {
 }
@@ -44,6 +27,9 @@ PositronDecay::PositronDecay(double acolinearity_deg_fwhm,
     positron_emission_prob(positron_emis_prob),
     emit_gamma(true)
 {
+    if (gamma_decay_energy_mev <= 0) {
+        emit_gamma = false;
+    }
 }
 
 void PositronDecay::Decay(int photon_number, double time, int src_id,
