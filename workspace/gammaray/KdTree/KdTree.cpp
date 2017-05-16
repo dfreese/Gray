@@ -35,6 +35,7 @@
 #include <KdTree/KdTree.h>
 #include <KdTree/DoubleRecurse.h>
 #include <stdexcept>
+#include <functional>
 
 // Destructor
 KdTree::~KdTree()
@@ -67,7 +68,8 @@ KdTree::~KdTree()
 	}
 }
 
-bool KdTree::Traverse(const VectorR3& startPos, const VectorR3& dir)
+long KdTree::Traverse(const VectorR3& startPos, const VectorR3& dir,
+                      double & stopDistance, CallbackF ObjectCallback) const
 {
     // Set sign of dir components and inverse values of non-zero entries.
     VectorR3 dirInv;
@@ -77,24 +79,23 @@ bool KdTree::Traverse(const VectorR3& startPos, const VectorR3& dir)
                                                sign[0], sign[1], sign[2],
                                                0, DBL_MAX, entryDist, exitDist);
     if (!intersects) {
-        return(false);
+        return(-1);
     }
 	// Main traversal loop
 
 	long currentNodeIndex = RootIndex(); // The current node in the traversal
-    KdTreeNode* currentNode = &TreeNodes.at(currentNodeIndex);
+    const KdTreeNode* currentNode = &TreeNodes.at(currentNodeIndex);
     double minDistance = std::max(0.0, entryDist);
 	double maxDistance = exitDist;
 	bool hitParallel = false;
 	double parallelHitMax = -DBL_MAX;
-	bool stopDistanceActive = false;
-	double stopDistance = 0.0;
+    long stopping_object = -1;
+	stopDistance = DBL_MAX;
 	assert ( minDistance<=maxDistance );
     std::stack<Kd_TraverseNodeData> traverseStack;
 
 	while ( true ) {
 		if ( ! currentNode->IsLeaf() ) {
-			Stats_NodeTraversed();
 			// Handle non-leaf nodes
 			//		These do not contain primitive objects.
             int thisSign;
@@ -188,21 +189,14 @@ bool KdTree::Traverse(const VectorR3& startPos, const VectorR3& dir)
 			}
 			// If we reach here, we are at an empty leaf and can fall through.
 
-		}
-
-		else {
+		} else {
 			// Handle leaf nodes by invoking the callback function
-			Stats_LeafTraversed();
             // Pass the objects back to the user one at a time
-            double newStopDist;
             long i = currentNode->Data.Leaf.NumObjects;
-            Stats_ObjectsInLeaves( i );
             long* objectIdPtr = currentNode->Data.Leaf.ObjectList;
             for ( ; i>0; i-- ) {
-                if (ObjectCallback(*objectIdPtr, newStopDist))
-                {
-                    stopDistanceActive = true;
-                    stopDistance = newStopDist;
+                if (ObjectCallback(*objectIdPtr, startPos, dir, stopDistance)) {
+                    stopping_object = *objectIdPtr;
                 }
                 objectIdPtr++;
             }
@@ -211,17 +205,17 @@ bool KdTree::Traverse(const VectorR3& startPos, const VectorR3& dir)
 
 		// Get to this point if done with a leaf node (possibly empty, possibly not).
 		if (traverseStack.empty()) {
-			return stopDistanceActive;
+			return stopping_object;
 		}
 		else {
 			Kd_TraverseNodeData& topNode = traverseStack.top();
 			minDistance = topNode.GetMinDist();
-			if ( stopDistanceActive && minDistance>stopDistance ) {
-				if ( !hitParallel || minDistance>=parallelHitMax ) {
-					// Exit loop.  Fully done.
-					return true;
-				}
-			}
+            if ((stopping_object >= 0) && (minDistance > stopDistance)) {
+                if ( !hitParallel || minDistance>=parallelHitMax ) {
+                    // Exit loop.  Fully done.
+                    return stopping_object;
+                }
+            }
 			currentNodeIndex = topNode.GetNodeNumber();
 			currentNode = &TreeNodes.at(currentNodeIndex);
 			maxDistance = topNode.GetMaxDist();

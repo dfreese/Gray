@@ -21,19 +21,20 @@ public:
                     double object_cost=8.0,
                     bool use_double_recurse_split=true);
     long SeekIntersection(const VectorR3& pos, const VectorR3& direction,
-                          double & hitDist, VisiblePoint& returnedPoint);
+                          double & hitDist, VisiblePoint& returnedPoint) const;
 
-protected:
-    virtual bool ObjectCallback(long objectNum, double & retStopDistance);
-    virtual void ExtentFunc(long objectNum, AABB& boundingBox);
+private:
+    virtual void ExtentFunc(long objectNum, AABB& boundingBox) const;
     virtual bool ExtentInBoxFunc(long objectNum, const AABB& clippingBox,
-                                 AABB& boundingBox);
+                                 AABB& boundingBox) const;
+
     SceneDescription const * ActiveScene;
-    long bestObject;
-    double bestHitDistance;
-    VectorR3 kdStartPos;
-    VectorR3 kdTraverseDir;
-    VisiblePoint* bestHitPoint;
+
+    static bool intersection_callback(SceneDescription const * scene,
+                                      VisiblePoint * visible_point_return_ptr,
+                                      long objectNum, const VectorR3 & start_pos,
+                                      const VectorR3 & direction,
+                                      double & retStopDistance);
 };
 
 #endif /* IntersectionKdTree_h */

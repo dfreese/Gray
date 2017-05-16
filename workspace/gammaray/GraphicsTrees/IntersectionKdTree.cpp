@@ -7,6 +7,7 @@
 //
 
 #include <GraphicsTrees/IntersectionKdTree.h>
+#include <functional>
 #include <Graphics/SceneDescription.h>
 
 IntersectKdTree::IntersectKdTree(const SceneDescription & scene,
@@ -20,54 +21,45 @@ IntersectKdTree::IntersectKdTree(const SceneDescription & scene,
 }
 
 
-void IntersectKdTree::ExtentFunc(long objNum, AABB& retBox)
+void IntersectKdTree::ExtentFunc(long objNum, AABB& retBox) const
 {
     ActiveScene->GetViewable(objNum).CalcAABB( retBox );
 }
 
 bool IntersectKdTree::ExtentInBoxFunc(long objNum, const AABB& aabb,
-                                      AABB& retBox)
+                                      AABB& retBox) const
 {
     return ActiveScene->GetViewable(objNum).CalcExtentsInBox(aabb, retBox);
 }
 
-
-// Call back function for KdTraversal of view ray or reflection ray
-bool IntersectKdTree::ObjectCallback(long objectNum, double & retStopDistance)
+bool IntersectKdTree::intersection_callback(SceneDescription const * scene,
+                                            VisiblePoint * visible_point_return_ptr,
+                                            long objectNum,
+                                            const VectorR3 & start_pos,
+                                            const VectorR3 & direction,
+                                            double & retStopDistance)
 {
     double thisHitDistance;
-    bool hitFlag;
     VisiblePoint tempPoint;
-    hitFlag = ActiveScene->GetViewable(objectNum).FindIntersection(
-            kdStartPos, kdTraverseDir, bestHitDistance, &thisHitDistance,
-            tempPoint);
+    bool hitFlag = scene->GetViewable(objectNum).FindIntersection(
+            start_pos, direction, retStopDistance, &thisHitDistance, tempPoint);
     if ( !hitFlag ) {
         return false;
     }
-    *bestHitPoint = tempPoint;		// The visible point that was hit
-    bestObject = objectNum;				// The object that was hit
-    bestHitDistance = thisHitDistance;
-    retStopDistance = bestHitDistance;	// No need to traverse search further than this distance
+    *visible_point_return_ptr = tempPoint;
+    // No need to traverse search further than this distance in the future
+    retStopDistance = thisHitDistance;
     return true;
 }
 
-
-
-// SeekIntersectionKd seeks for an intersection with all viewable objects
-// If it finds one, it returns the index of the viewable object,
-//   and sets the value of hitDist and fills in the returnedPoint values.
-// This "Kd" version uses the Kd-Tree
 long IntersectKdTree::SeekIntersection(const VectorR3& pos,
                                        const VectorR3& direction,
                                        double & hitDist,
-                                       VisiblePoint& returnedPoint)
+                                       VisiblePoint& returnedPoint) const
 {
-    bestObject = -1;
-    bestHitDistance = DBL_MAX;
-    kdStartPos = pos;
-    kdTraverseDir = direction;
-    bestHitPoint = &returnedPoint;
-    Traverse(pos, direction);
-    hitDist = bestHitDistance;
-    return bestObject;
+    auto intersect_func = bind(&IntersectKdTree::intersection_callback,
+                               ActiveScene, &returnedPoint, placeholders::_1,
+                               placeholders::_2, placeholders::_3,
+                               placeholders::_4);
+    return(Traverse(pos, direction, hitDist, intersect_func));
 }

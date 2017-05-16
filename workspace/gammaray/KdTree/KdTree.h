@@ -76,8 +76,10 @@ public:
     void Stats_GetAll( long* numNodes, long* numNonEmptyLeaves, long* numObjsInLeaves ) const;
 
 protected:
+    typedef std::function<bool(long, const VectorR3 &, const VectorR3 &, double &)> CallbackF;
     // ****** Tree traversal routines ******
-    bool Traverse(const VectorR3 & startPos, const VectorR3 & dir);
+    long Traverse(const VectorR3 & startPos, const VectorR3 & dir,
+                  double & stopDistance, CallbackF ObjectCallback) const;
 
 public:
     // ****** Tree building routines *******
@@ -128,7 +130,10 @@ private:
     // the tree.  Gives an object in a leaf node. Return code is "true" if the
     // returned stop distance is relevant.  Must be overridden in a derived
     // class
-    virtual bool ObjectCallback(long object_id, double& retStopDist) = 0;
+//    virtual bool ObjectCallback(long object_id,
+//                                const VectorR3 & start_pos,
+//                                const VectorR3 & direction,
+//                                double& retStopDist) = 0;
 
     // Traversal statistics
     long Stats_NumberKdNodesTraversed;
@@ -153,12 +158,12 @@ private:
 
     // ExtentFunc returns bounding box (an AABB) enclosing the object.  It must
     // be overridden by a derived class.
-    virtual void ExtentFunc(long objectNum, AABB& boundingBox ) = 0;
+    virtual void ExtentFunc(long objectNum, AABB& boundingBox ) const = 0;
     // ExtentInBoxFunc returns a AABB that encloses the intersection of the
     // object and the clippingBox.  Returns the "boundingBox" and returns true
     // if the box is non-empty.  this must be overrriden in a derived class.
     virtual bool ExtentInBoxFunc(long objectNum, const AABB& clippingBox,
-                                 AABB& boundingBox) = 0;
+                                 AABB& boundingBox) const = 0;
 
     // Holds extents (and extents in boxes) for each object.
     std::vector<AABB> ObjectAABBs;
