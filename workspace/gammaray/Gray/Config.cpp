@@ -37,6 +37,9 @@ bool Config::ProcessCommandLine(int argc, char **argv)
         if (argument == "--help") {
             return(false);
         }
+        if (argument == "-v") {
+            verbose = true;
+        }
     }
 
     // Arguments requiring an input
@@ -45,42 +48,78 @@ bool Config::ProcessCommandLine(int argc, char **argv)
         string following_argument(argv[ix + 1]);
         stringstream follow_arg_ss(following_argument);
         if (argument == "--seed") {
-            if (!(follow_arg_ss >> seed)) {
+            unsigned int tmp_seed;
+            if (!(follow_arg_ss >> tmp_seed)) {
                 cerr << "Invalid seed: " << following_argument << endl;
                 return(-1);
             }
-            seed_set = true;
+            set_seed(tmp_seed);
         } else if (argument == "-f") {
-            filename_scene = following_argument;
+            set_filename_scene(following_argument);
         } else if (argument == "-p") {
-            filename_process = following_argument;
+            set_filename_process(following_argument);
         } else if (argument == "-m") {
-            filename_mapping = following_argument;
+            set_filename_mapping(following_argument);
         } else if (argument == "-h") {
-            filename_hits = following_argument;
+            set_filename_hits(following_argument);
         } else if (argument == "-s") {
-            filename_singles = following_argument;
+            set_filename_singles(following_argument);
         } else if (argument == "-c") {
-            filenames_coinc.push_back(following_argument);
+            add_filename_coinc(following_argument);
         } else if (argument == "-t") {
-            if ((follow_arg_ss >> time).fail()) {
+            double tmp_time;
+            if ((follow_arg_ss >> tmp_time).fail()) {
                 cerr << "Invalid time: " << following_argument << endl;
-                return(-1);
+                return(false);
             }
-            time_set = true;
+            set_time(tmp_time);
         } else if (argument == "--start") {
-            if ((follow_arg_ss >> start_time).fail()) {
+            double tmp_start_time;
+            if ((follow_arg_ss >> tmp_start_time).fail()) {
                 cerr << "Invalid start time: " << following_argument << endl;
                 return(-1);
             }
-            start_time_set = true;
+            set_start_time(tmp_start_time);
         } else if (argument == "--mat") {
             materials_filename = following_argument;
+        } else if ((argument == "--hits_format") || (argument == "-i")) {
+            if (!set_format_hits(following_argument)) {
+                cerr << "Invalid hits format: " << following_argument << endl;
+                return(false);
+            }
+        } else if (argument == "--singles_format") {
+            if (!set_format_singles(following_argument)) {
+                cerr << "Invalid singles format: " << following_argument << endl;
+                return(false);
+            }
+        } else if (argument == "--coinc_format") {
+            if (!set_format_coinc(following_argument)) {
+                cerr << "Invalid coinc format: " << following_argument << endl;
+                return(false);
+            }
+        } else if (argument == "--hits_mask") {
+            if (!set_hits_var_output_write_flags(following_argument)) {
+                cerr << "Invalid hits mask: " << following_argument << endl;
+                return(false);
+            }
+        } else if (argument == "--singles_mask") {
+            if (!set_singles_var_output_write_flags(following_argument)) {
+                cerr << "Invalid singles mask: " << following_argument << endl;
+                return(false);
+            }
+        } else if (argument == "--coinc_mask") {
+            if (!set_coinc_var_output_write_flags(following_argument)) {
+                cerr << "Invalid coinc mask: " << following_argument << endl;
+                return(false);
+            }
+        } else if (argument == "--sort") {
+            double tmp_sort_time;
+            if ((follow_arg_ss >> tmp_sort_time).fail()) {
+                cerr << "Invalid sort time: " << following_argument << endl;
+                return(-1);
+            }
+            set_sort_time(tmp_sort_time);
         }
-    }
-    if (filename_scene == "") {
-        cerr << "Error: input filename not set" << endl;
-        return(false);
     }
 
     return(true);
@@ -99,16 +138,26 @@ bool Config::get_log_coinc() {
 }
 
 void Config::usage() {
-    cout << "Gray -f [Scene Description]\n"
+    cout << "gray (-v) -f [Scene Description]\n"
     << "  --help : print help message\n"
-    << "  -h [filename] : set the output for the hits file\n"
+    << "  -h [filename] : set the output hits file / input for gray-daq\n"
     << "  -s [filename] : set the output for the singles file\n"
     << "  -c [filename] : set an output for the coinc files (order matters)\n"
+    << "  -p [filename] : set the input process file for daq model\n"
+    << "  -m [filename] : set the input mapping file for daq model\n"
     << "  -t [time] : set length of time in for the simulation in seconds\n"
     << "  --seed [seed] : set the seed for the rand number generator\n"
     << "  --start [time] : set the start time in seconds\n"
     << "  --mat [filename] : set Gray Materials file. default=$GRAY_INCLUDE/Gray_Materials.txt\n"
     << "  --iso [filename] : set Gray Isotopes file. default=$GRAY_INCLUDE/Gray_Isotopes.txt\n"
+    << "  -i or --hits_format [type] : hits output or input format default: var_ascii\n"
+    << "  --singles_format [type] : default: var_ascii or input type\n"
+    << "  --coinc_format [type] : default: var_ascii or input type\n"
+    << "  --hits_mask [type] : default: all on, or input mask\n"
+    << "  --singles_mask [type] : default: all on, or input mask\n"
+    << "  --coinc_mask [type] : default: all on, or input mask\n"
+    << " gray-daq only: \n"
+    << "  --sort [time] : sort the incoming events, assuming this max out of order time\n"
     << endl;
 }
 
@@ -178,7 +227,18 @@ bool Config::get_seed_set() {
     return(seed_set);
 }
 
-void Config::set_format_hits(Output::Format fmt) {
+bool Config::set_format_hits(const std::string & fmt) {
+    if (format_hits_set) {
+        return(true);
+    }
+    if (Output::ParseFormat(fmt, format_hits) < 0) {
+        return(false);
+    }
+    format_hits_set = true;
+    return(true);
+}
+
+void Config::set_format_hits(const Output::Format & fmt) {
     if (!format_hits_set) {
         format_hits = fmt;
         format_hits_set = true;
@@ -189,7 +249,22 @@ Output::Format Config::get_format_hits() {
     return(format_hits);
 }
 
-void Config::set_format_singles(Output::Format fmt) {
+bool Config::get_format_hits_set() {
+    return(format_hits_set);
+}
+
+bool Config::set_format_singles(const std::string & fmt) {
+    if (format_singles_set) {
+        return(true);
+    }
+    if (Output::ParseFormat(fmt, format_singles) < 0) {
+        return(false);
+    }
+    format_singles_set = true;
+    return(true);
+}
+
+void Config::set_format_singles(const Output::Format & fmt) {
     if (!format_singles_set) {
         format_singles = fmt;
         format_singles_set = true;
@@ -200,7 +275,18 @@ Output::Format Config::get_format_singles() {
     return(format_singles);
 }
 
-void Config::set_format_coinc(Output::Format fmt) {
+bool Config::set_format_coinc(const std::string & fmt) {
+    if (format_coinc_set) {
+        return(true);
+    }
+    if (Output::ParseFormat(fmt, format_coinc) < 0) {
+        return(false);
+    }
+    format_coinc_set = true;
+    return(true);
+}
+
+void Config::set_format_coinc(const Output::Format & fmt) {
     if (!format_coinc_set) {
         format_coinc = fmt;
         format_coinc_set = true;
@@ -281,6 +367,18 @@ double Config::get_start_time() const {
     return(start_time);
 }
 
+void Config::set_sort_time(double val) {
+    if (!sort_time_set) {
+        sort_time = val;
+        sort_time_set = true;
+    }
+}
+
+double Config::get_sort_time() const {
+    return(sort_time);
+}
+
+
 std::string Config::get_materials_filename() const {
     return(materials_filename);
 }
@@ -290,8 +388,19 @@ std::string Config::get_isotopes_filename() const {
 }
 
 bool Config::set_hits_var_output_write_flags(const std::string & mask) {
-    return(Output::parse_write_flags_mask(hits_var_output_write_flags,
-                                               mask));
+    if (hits_var_output_write_flags_set) {
+        return(true);
+    } else {
+        return(Output::parse_write_flags_mask(hits_var_output_write_flags,
+                                              mask));
+    }
+}
+
+void Config::set_hits_var_output_write_flags(const Output::WriteFlags & mask) {
+    if (!hits_var_output_write_flags_set) {
+        hits_var_output_write_flags = mask;
+        hits_var_output_write_flags_set = true;
+    }
 }
 
 Output::WriteFlags Config::get_hits_var_output_write_flags() const {
@@ -299,8 +408,19 @@ Output::WriteFlags Config::get_hits_var_output_write_flags() const {
 }
 
 bool Config::set_singles_var_output_write_flags(const std::string & mask) {
-    return(Output::parse_write_flags_mask(singles_var_output_write_flags,
-                                               mask));
+    if (singles_var_output_write_flags_set) {
+        return(true);
+    } else {
+        return(Output::parse_write_flags_mask(singles_var_output_write_flags,
+                                                   mask));
+    }
+}
+
+void Config::set_singles_var_output_write_flags(const Output::WriteFlags & mask) {
+    if (!singles_var_output_write_flags_set) {
+        singles_var_output_write_flags = mask;
+        singles_var_output_write_flags_set = true;
+    }
 }
 
 Output::WriteFlags Config::get_singles_var_output_write_flags() const {
@@ -309,12 +429,27 @@ Output::WriteFlags Config::get_singles_var_output_write_flags() const {
 
 
 bool Config::set_coinc_var_output_write_flags(const std::string & mask) {
-    return(Output::parse_write_flags_mask(coinc_var_output_write_flags,
-                                          mask));
+    if (coinc_var_output_write_flags_set) {
+        return(true);
+    } else {
+        return(Output::parse_write_flags_mask(coinc_var_output_write_flags,
+                                              mask));
+    }
+}
+
+void Config::set_coinc_var_output_write_flags(const Output::WriteFlags & mask) {
+    if (!coinc_var_output_write_flags_set) {
+        coinc_var_output_write_flags = mask;
+        coinc_var_output_write_flags_set = true;
+    }
 }
 
 Output::WriteFlags Config::get_coinc_var_output_write_flags() const {
     return(coinc_var_output_write_flags);
+}
+
+void Config::add_filename_coinc(const std::string & name) {
+    filenames_coinc.push_back(name);
 }
 
 void Config::set_filename_coinc(size_t idx, const std::string & name) {
@@ -324,10 +459,18 @@ void Config::set_filename_coinc(size_t idx, const std::string & name) {
     filenames_coinc[idx] = name;
 }
 
-std::string Config::get_filename_coinc(size_t idx) {
+std::string Config::get_filename_coinc(size_t idx) const {
     return(filenames_coinc.at(idx));
 }
 
-size_t Config::get_no_coinc_filenames() {
+size_t Config::get_no_coinc_filenames() const {
     return(filenames_coinc.size());
+}
+
+const std::vector<std::string> & Config::get_filenames_coinc() const {
+    return(filenames_coinc);
+}
+
+bool Config::get_verbose() const {
+    return(verbose);
 }

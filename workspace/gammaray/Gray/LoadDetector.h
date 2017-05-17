@@ -20,6 +20,7 @@ public:
                      SourceList & sources,
                      Config & config,
                      DetectorArray & detector_array);
+    static bool LoadConfig(const std::string & filename, Config & config);
 private:
     static bool ReadVertexR3(VectorR3 & vert, std::ifstream & curFile);
     static void ProcessDetector(const VectorR3 & detCenter,
@@ -46,6 +47,10 @@ private:
                                double polygonScale,
                                const RigidMapR3 & current_matrix);
     static std::string ScanForSecondField(const std::string & inbuf);
+    static bool HandleConfigCommand(const std::string & command,
+                                    const std::string & args,
+                                    const std::string & file_dir,
+                                    Config & config);
 
 };
 

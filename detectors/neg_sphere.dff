@@ -57,3 +57,10 @@ log_positron
 log_errors
 log_nonsensitive
 hits_format full_ascii
+
+seed 5489
+hits_output neg_sphere.dat
+singles_output neg_sphere_singles.dat
+coinc_output neg_sphere_coinc.dat
+process_file sample_process_file.pdc
+mapping_file sample_mapping_file.map

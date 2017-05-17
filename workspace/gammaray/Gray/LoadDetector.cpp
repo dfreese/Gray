@@ -1,9 +1,10 @@
-
-#include <stdio.h>
-#include <string.h>
-#include <Random/Random.h>
-#include <Gray/Config.h>
 #include <Gray/LoadDetector.h>
+#include <cstdio>
+#include <cstring>
+#include <stack>
+#include <sstream>
+#include <unordered_set>
+#include <Gray/Config.h>
 #include <Gray/GammaMaterial.h>
 #include <Graphics/SceneDescription.h>
 #include <Graphics/TransformViewable.h>
@@ -15,7 +16,6 @@
 #include <Graphics/ViewableTriangle.h>
 #include <Graphics/ViewableCylinder.h>
 #include <Output/DetectorArray.h>
-#include <Output/Output.h>
 #include <Sources/AnnulusCylinderSource.h>
 #include <Sources/AnnulusEllipticCylinderSource.h>
 #include <Sources/BeamPointSource.h>
@@ -28,8 +28,6 @@
 #include <Sources/VoxelSource.h>
 #include <Sources/SourceList.h>
 #include <VrMath/LinearR3.h>
-#include <stack>
-#include <sstream>
 
 void LoadDetector::ApplyTranslation(const VectorR3&t,
                                     RigidMapR3 & current_matrix)
@@ -94,6 +92,145 @@ void LoadDetector::ApplyRotation(const VectorR3& axis, double theta,
     current_matrix = cur;
 
 
+}
+
+bool LoadDetector::LoadConfig(const std::string & filename, Config & config) {
+    ifstream input(filename);
+    if (!input) {
+        cerr << "Unable to open file: " << filename << endl;
+        return(false);
+    }
+
+    std::string file_dir = "";
+    size_t dir_pos = filename.find_last_of('/');
+    if (dir_pos != std::string::npos) {
+        // Include everything, including slash
+        file_dir = filename.substr(0, dir_pos + 1);
+    }
+
+    string line;
+    int line_no = -1;
+    while(getline(input, line)) {
+        line_no++;
+        // Ignore blank lines, including just all whitespace
+        if (line.find_first_not_of(" ") == string::npos) {
+            continue;
+        }
+        line = line.substr(line.find_first_not_of(" "));
+        // Remove leading spaces, and anything after a comment
+        line = line.substr(0, line.find_first_of("#"));
+        // Ignore blank lines again after removing comments
+        if (line.empty()) {
+            continue;
+        }
+
+        stringstream line_ss(line);
+        string command;
+        if ((line_ss >> command).fail()) {
+            cerr << "Unable to parse command \"" << line
+                 << "\" on line " << line_no << " of " << filename << endl;
+            return(false);
+        }
+
+        string args = ScanForSecondField(line);
+        if (!HandleConfigCommand(command, args, file_dir, config)) {
+            cerr << "Unable to parse command \"" << line
+            << "\" on line " << line_no << " of " << filename << endl;
+            return(false);
+        }
+    }
+    return(true);
+}
+
+
+bool LoadDetector::HandleConfigCommand(const std::string & command,
+                                       const std::string & args,
+                                       const std::string & file_dir,
+                                       Config & config)
+{
+    stringstream line_ss(args);
+    if (command == "hits_format") {
+        if (!config.set_format_hits(args)) {
+            cerr << "Invalid format identifier: " << args << endl;
+            return(false);
+        }
+    } else if (command == "singles_format") {
+        if (!config.set_format_singles(args)) {
+            cerr << "Invalid format identifier: " << args << endl;
+            return(false);
+        }
+    } else if (command == "coinc_format") {
+        if (!config.set_format_coinc(args)) {
+            cerr << "Invalid format identifier: " << args
+            << endl;
+            return(false);
+        }
+    } else if (command == "hits_output") {
+        config.set_filename_hits(args);
+    } else if (command == "singles_output") {
+        config.set_filename_singles(args);
+    } else if (command == "coinc_output") {
+        config.add_filename_coinc(args);
+    } else if (command == "process_file") {
+        std::string filename = file_dir + args;
+        config.set_filename_process(filename);
+    }  else if (command == "process") {
+        // Any line prefaced with pipeilne_config will be processed as a
+        // pipeline file.
+        config.add_process_line(args);
+    } else if (command == "mapping_file") {
+        std::string filename = file_dir + args;
+        config.set_filename_mapping(filename);
+    } else if (command == "hits_var_mask") {
+        if (!config.set_hits_var_output_write_flags(args)) {
+            cerr << "Unable to parse the variable mask given" << endl;
+            return(false);
+        }
+    } else if (command == "singles_var_mask") {
+        if (!config.set_singles_var_output_write_flags(args)) {
+            cerr << "Unable to parse the variable mask given" << endl;
+            return(false);
+        }
+    } else if (command == "coinc_var_mask") {
+        if (!config.set_coinc_var_output_write_flags(args)) {
+            cerr << "Unable to parse the variable mask given" << endl;
+            return(false);
+        }
+    } else if (command == "time") {
+        // simulation time in seconds
+        double sim_time;
+        if ((line_ss >> sim_time).fail()) {
+            cerr << "Invalid start time" << args << endl;
+            return(false);
+        }
+        config.set_time(sim_time);
+    } else if (command == "start_time") {
+        // simulation time in seconds
+        double start_time;
+        if ((line_ss >> start_time).fail()) {
+            cerr << "Invalid start time" << args << endl;
+            return(false);
+        }
+        config.set_start_time(start_time);
+    } else if (command == "seed") {
+        unsigned long seed;
+        if ((line_ss >> seed).fail()) {
+            cerr << "Invalid start time" << args << endl;
+            return(false);
+        }
+        config.set_seed(seed);
+    } else if (command == "log_positron") {
+        config.set_log_nuclear_decays(true);
+    } else if (command == "log_nonsensitive") {
+        config.set_log_nonsensitive(true);
+    } else if (command == "log_nointeraction") {
+        config.set_log_nointeraction(true);
+    } else if (command == "log_errors") {
+        config.set_log_errors(true);
+    } else if (command == "log_all") {
+        config.set_log_all(true);
+    }
+    return(true);
 }
 
 bool LoadDetector::Load(const std::string & filename,
@@ -182,6 +319,14 @@ bool LoadDetector::Load(const std::string & filename,
     // Stores the detector id number for sets of polygons.  This will be used if
     // the material is sensitive and if "increment" is called.
     int polygon_det_id = -1;
+
+
+    unordered_set<string> config_commands = {"hits_format", "singles_format",
+        "coinc_format", "hits_output", "singles_output", "coinc_output",
+        "process_file", "process", "mapping_file", "hits_var_mask",
+        "singles_var_mask", "coinc_var_mask", "time", "start_time", "seed",
+        "log_positron", "log_nonsensitive", "log_nointeraction", "log_errors",
+        "log_all"};
 
     while (!file_stack.empty()) {
         string line;
@@ -640,92 +785,6 @@ bool LoadDetector::Load(const std::string & filename,
                     center, radius, axis, actScale*activity);
             cyl->SetMaterial(curMaterial);
             sources.AddSource(cyl);
-        } else if (command == "hits_format") {
-            std::string format_identifier;
-            if ((line_ss >> format_identifier).fail()) {
-                print_parse_error(line);
-                cerr << "Invalid format identifier: " << format_identifier
-                     << endl;
-                return(false);
-            }
-            Output::Format hits_format;
-            if (Output::ParseFormat(format_identifier, hits_format) < 0) {
-                print_parse_error(line);
-                cerr << "Invalid format identifier: " << format_identifier
-                     << endl;
-                return(false);
-            }
-            config.set_format_hits(hits_format);
-        } else if (command == "singles_format") {
-            std::string format_identifier;
-            if ((line_ss >> format_identifier).fail()) {
-                print_parse_error(line);
-                cerr << "Invalid format identifier: " << format_identifier
-                << endl;
-                return(false);
-            }
-            Output::Format singles_format;
-            if (Output::ParseFormat(format_identifier, singles_format) < 0) {
-                print_parse_error(line);
-                cerr << "Invalid format identifier: " << format_identifier
-                << endl;
-                return(false);
-            }
-            config.set_format_singles(singles_format);
-        } else if (command == "coinc_format") {
-            std::string format_identifier;
-            if ((line_ss >> format_identifier).fail()) {
-                print_parse_error(line);
-                cerr << "Invalid format identifier: " << format_identifier
-                     << endl;
-                return(false);
-            }
-            Output::Format coinc_format;
-            if (Output::ParseFormat(format_identifier, coinc_format) < 0) {
-                print_parse_error(line);
-                cerr << "Invalid format identifier: " << format_identifier
-                     << endl;
-                return(false);
-            }
-            config.set_format_coinc(coinc_format);
-        } else if (command == "hits_output") {
-            std::string filename;
-            if ((line_ss >> filename).fail()) {
-                print_parse_error(line);
-                cerr << "Invalid filename: " << filename << endl;
-                return(false);
-            }
-            config.set_filename_hits(filename);
-        } else if (command == "hits_singles") {
-            std::string filename;
-            if ((line_ss >> filename).fail()) {
-                print_parse_error(line);
-                cerr << "Invalid filename: " << filename << endl;
-                return(false);
-            }
-            config.set_filename_singles(filename);
-        } else if (command == "process_file") {
-            std::string filename;
-            if ((line_ss >> filename).fail()) {
-                print_parse_error(line);
-                cerr << "Invalid filename: " << filename << endl;
-                return(false);
-            }
-            filename = file_dir + filename;
-            config.set_filename_process(filename);
-        }  else if (command == "process") {
-            // Any line prefaced with pipeilne_config will be processed as a
-            // pipeline file.
-            config.add_process_line(args);
-        } else if (command == "mapping_file") {
-            std::string filename;
-            if ((line_ss >> filename).fail()) {
-                print_parse_error(line);
-                cerr << "Invalid filename: " << filename << endl;
-                return(false);
-            }
-            filename = file_dir + filename;
-            config.set_filename_mapping(filename);
         } else if (command == "save_detector") {
             char filename[256];
             int scanCode = sscanf(args.c_str(), "%s", filename);
@@ -737,24 +796,6 @@ bool LoadDetector::Load(const std::string & filename,
         } else if (command == "save_basic_map") {
             if ((line_ss >> filename_basic_map).fail()) {
                 print_parse_error(line);
-                return(false);
-            }
-        } else if (command == "hits_var_mask") {
-            if (!config.set_hits_var_output_write_flags(args)) {
-                print_parse_error(line);
-                cerr << "Unable to parse the variable mask given" << endl;
-                return(false);
-            }
-        } else if (command == "singles_var_mask") {
-            if (!config.set_singles_var_output_write_flags(args)) {
-                print_parse_error(line);
-                cerr << "Unable to parse the variable mask given" << endl;
-                return(false);
-            }
-        } else if (command == "coinc_var_mask") {
-            if (!config.set_coinc_var_output_write_flags(args)) {
-                print_parse_error(line);
-                cerr << "Unable to parse the variable mask given" << endl;
                 return(false);
             }
         } else if (command == "scale_act") {
@@ -837,24 +878,6 @@ bool LoadDetector::Load(const std::string & filename,
                  << "\n" << curVectorSource->GetMax() << "\n";
             parse_VectorSource = false;
             curVectorSource = NULL;
-        } else if (command == "time") {
-            // simulation time in seconds
-            double simulationTime = 1.0;
-            int scanCode = sscanf(args.c_str(), "%lf", &simulationTime);
-            if (scanCode != 1) {
-                print_parse_error(line);
-                return(false);
-            }
-            config.set_time(simulationTime);
-        } else if (command == "start_time") {
-            // simulation time in seconds
-            double start_time;
-            if ((line_ss >> start_time).fail()) {
-                print_parse_error(line);
-                cerr << "Invalid start time" << endl;
-                return(false);
-            }
-            config.set_start_time(start_time);
         } else if (command == "v") {
             // Deprecated, and generic defaults added
         } else if (command == "scale") {
@@ -865,24 +888,6 @@ bool LoadDetector::Load(const std::string & filename,
                 return(false);
             }
             polygonScale = t_polygonScale;
-        } else if (command == "seed") {
-            unsigned long seed = 0;
-            int scanCode = sscanf(args.c_str(), "%ld", &seed);
-            if (scanCode != 1) {
-                print_parse_error(line);
-                return(false);
-            }
-            Random::Seed((unsigned long)seed);
-        } else if (command == "log_positron") {
-            config.set_log_nuclear_decays(true);
-        } else if (command == "log_nonsensitive") {
-            config.set_log_nonsensitive(true);
-        } else if (command == "log_nointeraction") {
-            config.set_log_nointeraction(true);
-        } else if (command == "log_errors") {
-            config.set_log_errors(true);
-        } else if (command == "log_all") {
-            config.set_log_all(true);
         } else if (command == "sp_src") {
             // Sphere source
             VectorR3 position;
@@ -1217,6 +1222,18 @@ bool LoadDetector::Load(const std::string & filename,
             } else {
                 ProcessDetector(baseCenter, baseSize, curMaterial, -1,
                                 theScene, MatrixStack.top());
+            }
+        } else if (config_commands.count(command)) {
+            // Handle all of the commands that deal with the config class in
+            // the same function so that it can be called independently.
+            if (!HandleConfigCommand(command, args, file_dir, config)) {
+                print_parse_error(line);
+            }
+            // FIXME: warning doesn't work if include is in repeat.
+            if (file_stack.size() > 1) {
+                cout << "Warning: configuration commands, like \"" << command
+                     << "\" should be in the top level file.\n"
+                     << "They will be ignored by gray-daq otherwise" << endl;
             }
         } else {
             print_parse_error(line);

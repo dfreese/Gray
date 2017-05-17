@@ -26,6 +26,10 @@ int main( int argc, char** argv)
         Config::usage();
         return(1);
     }
+    if (config.get_filename_scene() == "") {
+        cerr << "Error: input filename not set" << endl;
+        return(false);
+    }
     DetectorArray detector_array;
     SceneDescription scene;
     SourceList sources;

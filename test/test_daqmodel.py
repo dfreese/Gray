@@ -6,15 +6,15 @@ import numpy as np
 
 def _run_merge(filename, output_filename, map_filename, proc_filename,
                input_dtype, verbose, coinc_filenames=None):
-    cmd = 'gray-daq -f %s -s %s -m %s -p %s' % (
+    cmd = 'gray-daq -h %s -s %s -m %s -p %s' % (
         filename, output_filename, map_filename, proc_filename
     )
     if verbose:
         cmd += ' -v'
     if input_dtype == gray.standard_dtype:
-        cmd += ' -t full_binary'
+        cmd += ' -i full_binary'
     elif input_dtype == gray.no_position_dtype:
-        cmd += ' -t no_pos_binary'
+        cmd += ' -i no_pos_binary'
     if coinc_filenames is not None:
         for coinc_name in coinc_filenames:
             cmd += ' -c %s' % coinc_name
@@ -46,7 +46,7 @@ def _create_test_map_file(map_osfid, no_det):
         map_fid.write('detector block bx by bz\n')
         np.savetxt(map_fid, id_map, '%d')
 
-def _create_and_run_merge(data, cmd_lines, verbose=False):
+def _create_and_run_merge(data, cmd_lines, verbose=False, clear_files=True):
     if not isinstance(cmd_lines, list):
         cmd_lines = [cmd_lines,]
     input_osfid, input_fname = tempfile.mkstemp()
@@ -78,10 +78,11 @@ def _create_and_run_merge(data, cmd_lines, verbose=False):
         coinc_outs.append(np.fromfile(name, dtype=data.dtype))
         os.remove(name)
 
-    os.remove(input_fname)
-    os.remove(output_fname)
-    os.remove(map_fname)
-    os.remove(proc_fname)
+    if clear_files:
+        os.remove(input_fname)
+        os.remove(output_fname)
+        os.remove(map_fname)
+        os.remove(proc_fname)
     if len(coinc_outs) == 0:
         return out
     else:
