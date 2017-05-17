@@ -146,7 +146,10 @@ Source * SourceList::Decay()
     Source * source = list[s_idx];
     source->Reset();
     VectorR3 decay_pos = source->Decay(decay_number, decay_time);
-    if (Inside(decay_pos)) {
+    // Time advances even if the decay is rejected by the inside negative
+    // source test.  This is by design, as we do not know how much activity a
+    // negative source inherently removes from the positive sources.
+    if (InsideNegative(decay_pos)) {
         return(NULL);
     } else {
         decay_number++;
@@ -154,13 +157,11 @@ Source * SourceList::Decay()
     }
 }
 
-bool SourceList::Inside(const VectorR3 & pos)
+bool SourceList::InsideNegative(const VectorR3 & pos)
 {
     for (int i = 0; i < neg_list.size(); i++) {
         if (neg_list[i]->Inside(pos)) {
-            double ratio = fabs((neg_list[i]->GetActivity()));
-            ratio = ratio > 1.0 ? 1.0 : ratio;
-            ratio = ratio < 0.0 ? 0.0 : ratio;
+            double ratio = -1 * neg_list[i]->GetActivity();
             if (Random::Uniform() < ratio) {
                 return true;
             }

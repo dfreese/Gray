@@ -36,7 +36,7 @@ private:
     std::vector <Source*> neg_list;
     std::vector <Isotope*> isotopes;
     double CalculateTime();
-    bool Inside(const VectorR3 & pos);
+    bool InsideNegative(const VectorR3 & pos);
     int decay_number;
     std::map<std::string, Positron> valid_positrons;
     std::string current_isotope;

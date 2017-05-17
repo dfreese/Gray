@@ -124,10 +124,6 @@ int main( int argc, char** argv)
     sources.SetStartTime(config.get_start_time());
     sources.InitSources();
 
-    // TODO: check if time actually increases inside of negative sources
-    // more than it should according to this comment below:
-    // FIXME: time should not increase when Inside() of a negative source
-
     const long num_chars = 70;
     double tick_mark = sources.GetSimulationTime() / num_chars;
     int current_tick = 0;
