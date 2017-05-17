@@ -18,7 +18,7 @@ const double GammaRayTrace::Epsilon = 1e-10;
 void GammaRayTrace::TracePhoton(
         Photon &photon,
         std::vector<Interaction> & interactions,
-        IntersectKdTree & tree,
+        const IntersectKdTree & tree,
         GammaMaterial const * const default_material,
         GammaMaterial const * const start_material,
         int MaxTraceDepth,
@@ -151,7 +151,7 @@ void GammaRayTrace::TracePhoton(
 }
 
 void GammaRayTrace::TraceSources(SourceList & sources,
-                                 IntersectKdTree & tree,
+                                 const IntersectKdTree & tree,
                                  std::vector<Interaction> & interactions,
                                  size_t soft_max_interactions,
                                  GammaMaterial const * const default_material,

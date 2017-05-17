@@ -32,7 +32,7 @@ public:
     };
 
     static void TraceSources(SourceList & sources,
-                             IntersectKdTree & tree,
+                             const IntersectKdTree & tree,
                              std::vector<Interaction> & interactions,
                              size_t soft_max_interactions,
                              GammaMaterial const * const default_material,
@@ -44,7 +44,7 @@ public:
 private:
     static void TracePhoton(Photon &photon,
                             std::vector<Interaction> & interactions,
-                            IntersectKdTree & tree,
+                            const IntersectKdTree & tree,
                             GammaMaterial const * const default_material,
                             GammaMaterial const * const start_material,
                             int MaxTraceDepth,
