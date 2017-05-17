@@ -136,6 +136,5 @@ add_library(gammaray
     VrMath/PolynomialRC.h
     VrMath/Quaternion.cpp
     VrMath/Quaternion.h
-    VrMath/VrData.h
 )
 target_include_directories(gammaray PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
