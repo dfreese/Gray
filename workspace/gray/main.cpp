@@ -71,11 +71,11 @@ int main( int argc, char** argv)
         return(2);
     }
 
-    if (config.get_filename_pipeline() == "") {
-        singles_stream.set_processes(config.get_pipeline_lines());
-    } else if (singles_stream.load_processes(config.get_filename_pipeline()) < 0)
+    if (config.get_filename_process() == "") {
+        singles_stream.set_processes(config.get_process_lines());
+    } else if (singles_stream.load_processes(config.get_filename_process()) < 0)
     {
-        cerr << "Loading pipeline file \"" << config.get_filename_pipeline()
+        cerr << "Loading pipeline file \"" << config.get_filename_process()
              << "\" failed" << endl;
         return(3);
     }

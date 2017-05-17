@@ -21,8 +21,8 @@ public:
 
     void set_filename_scene(const std::string & name);
     std::string get_filename_scene();
-    void set_filename_pipeline(const std::string & name);
-    std::string get_filename_pipeline();
+    void set_filename_process(const std::string & name);
+    std::string get_filename_process();
     void set_filename_mapping(const std::string & name);
     std::string get_filename_mapping();
     void set_filename_hits(const std::string & name);
@@ -44,8 +44,8 @@ public:
     bool get_log_hits();
     bool get_log_singles();
     bool get_log_coinc();
-    void add_pipeline_line(const std::string & line);
-    std::vector<std::string> get_pipeline_lines();
+    void add_process_line(const std::string & line);
+    std::vector<std::string> get_process_lines();
     void set_log_nuclear_decays(bool val);
     void set_log_nonsensitive(bool val);
     void set_log_nointeraction(bool val);
@@ -71,7 +71,7 @@ public:
 
 private:
     std::string filename_scene;
-    std::string filename_pipeline;
+    std::string filename_process;
     std::string filename_mapping;
     std::string filename_hits;
     std::string filename_singles;
@@ -80,6 +80,7 @@ private:
     bool seed_set = false;
     bool format_hits_set = false;
     bool format_singles_set = false;
+    bool format_coinc_set = false;
     Output::Format format_hits = Output::VARIABLE_ASCII;
     Output::Format format_singles = Output::VARIABLE_ASCII;
     Output::Format format_coinc = Output::VARIABLE_ASCII;
@@ -88,7 +89,7 @@ private:
     bool log_nointeraction = false;
     bool log_errors = false;
     bool log_all = false;
-    std::vector<std::string> pipeline_config_lines;
+    std::vector<std::string> process_lines;
     double time = 0;
     double start_time = 0;
     bool time_set = 0;

@@ -53,7 +53,7 @@ bool Config::ProcessCommandLine(int argc, char **argv)
         } else if (argument == "-f") {
             filename_scene = following_argument;
         } else if (argument == "-p") {
-            filename_pipeline = following_argument;
+            filename_process = following_argument;
         } else if (argument == "-m") {
             filename_mapping = following_argument;
         } else if (argument == "-h") {
@@ -123,14 +123,14 @@ std::string Config::get_filename_scene() {
     return(filename_scene);
 }
 
-void Config::set_filename_pipeline(const std::string & name) {
-    if (filename_pipeline == "") {
-        filename_pipeline = name;
+void Config::set_filename_process(const std::string & name) {
+    if (filename_process == "") {
+        filename_process = name;
     }
 }
 
-std::string Config::get_filename_pipeline() {
-    return(filename_pipeline);
+std::string Config::get_filename_process() {
+    return(filename_process);
 }
 
 void Config::set_filename_mapping(const std::string & name) {
@@ -201,19 +201,22 @@ Output::Format Config::get_format_singles() {
 }
 
 void Config::set_format_coinc(Output::Format fmt) {
-    format_coinc = fmt;
+    if (!format_coinc_set) {
+        format_coinc = fmt;
+        format_coinc_set = true;
+    }
 }
 
 Output::Format Config::get_format_coinc() {
     return(format_coinc);
 }
 
-void Config::add_pipeline_line(const std::string & line) {
-    pipeline_config_lines.push_back(line);
+void Config::add_process_line(const std::string & line) {
+    process_lines.push_back(line);
 }
 
-std::vector<std::string> Config::get_pipeline_lines() {
-    return(pipeline_config_lines);
+std::vector<std::string> Config::get_process_lines() {
+    return(process_lines);
 }
 
 void Config::set_log_nuclear_decays(bool val) {

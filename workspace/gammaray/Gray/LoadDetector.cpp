@@ -704,7 +704,7 @@ bool LoadDetector::Load(const std::string & filename,
                 return(false);
             }
             config.set_filename_singles(filename);
-        } else if (command == "pipeline_file") {
+        } else if (command == "process_file") {
             std::string filename;
             if ((line_ss >> filename).fail()) {
                 print_parse_error(line);
@@ -712,11 +712,11 @@ bool LoadDetector::Load(const std::string & filename,
                 return(false);
             }
             filename = file_dir + filename;
-            config.set_filename_pipeline(filename);
-        }  else if (command == "pipeline_config") {
+            config.set_filename_process(filename);
+        }  else if (command == "process") {
             // Any line prefaced with pipeilne_config will be processed as a
             // pipeline file.
-            config.set_filename_pipeline(args);
+            config.add_process_line(args);
         } else if (command == "mapping_file") {
             std::string filename;
             if ((line_ss >> filename).fail()) {
