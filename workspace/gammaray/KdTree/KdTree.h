@@ -36,23 +36,109 @@
 #include <algorithm>
 #include <vector>
 #include <VrMath/Aabb.h>
-class RayTraceStats;    // Statistics for KdTree traversal
 
-class KdTree;            // kd-tree.
-class KdTreeNode;        // A single node in the kd-tree.
+// *******************************************************************
+// Kd_TraverseNodeData                                                 *
+//        Holds information on a node needing traversal                 *
+// *******************************************************************
 
-class Kd_TraverseNodeData;            // Holds information on a single node needing traversal.
+class Kd_TraverseNodeData {
+public:
+    Kd_TraverseNodeData() {}
+    Kd_TraverseNodeData(long nodeNum, double minDist, double maxDist) :
+    NodeNumber(nodeNum),
+    MinDistance(minDist),
+    MaxDistance(maxDist)
+    {
+    }
+
+    long GetNodeNumber() const {return NodeNumber; }
+    double GetMinDist() const { return MinDistance; }
+    double GetMaxDist() const { return MaxDistance; }
+
+private:
+    long NodeNumber;    // Index of the node
+    double MinDistance; // Minimum distance along ray to search (entry distance)
+    double MaxDistance; // Maximum distance along ray to search (exit distance)
+};
+
+
+// ************************************************************************************
+// KdTreeNode                                                                          *
+// ************************************************************************************
+
+class KdTreeNode {
+public:
+    friend class KdTree;
+
+    bool IsLeaf() const {
+        return (is_leaf);
+    }
+    enum KD_SplittingAxis {
+        KD_SPLIT_X = 0,
+        KD_SPLIT_Y = 1,
+        KD_SPLIT_Z = 2
+    };
+
+    KD_SplittingAxis SplitAxis() const {
+        return NodeType;
+    }
+    bool IsRoot() const {
+        return (ParentIdx == -1);
+    }
+    bool LeftChildEmpty() const {
+        return (Data.Split.LeftChildIdx == -1);
+    }
+    bool RightChildEmpty() const {
+        return (Data.Split.RightChildIdx == -1);
+    }
+    double SplitValue() const {
+        return Data.Split.SplitValue;
+    }
+
+    // Returns pointer to the left child, or Null if the left child is an empty leaf.
+    long LeftChildIndex() const {
+        return Data.Split.LeftChildIdx;
+    }
+
+    // Returns pointer to the right child, or Null if the left child is an empty leaf.
+    long RightChildIndex() const {
+        return Data.Split.RightChildIdx;
+    }
+
+    // Returns point to the parent, or Null if is the root.
+    long ParentIndex() const {
+        return ParentIdx;
+    }
+
+private:
+    bool is_leaf = false;
+    KD_SplittingAxis NodeType;
+
+    // Equals -1 if this is root and there is no parent
+    long ParentIdx;
+
+    struct InternalNodeValues {
+        long LeftChildIdx;  // Equals -1 if left child is empty
+        long RightChildIdx; // Equals -1 if right child is empty
+        double SplitValue;  // Value for the split plane
+    };
+
+    struct LeafNodeValues {
+        std::vector<long> Objects;
+    };
+
+    struct {
+        InternalNodeValues Split;    // The values for an internal node
+        LeafNodeValues Leaf;        // The values for a leaf
+    } Data;
+    
+};
+
 
 // Next classes used only for creating tree
 class ExtentTriple;                // A extent triples: a single max, min, or flat value
 class ExtentTripleArrayInfo;    // Information about array of extent triples.
-
-enum KD_SplittingAxis {
-    KD_SPLIT_X = 0,
-    KD_SPLIT_Y = 1,
-    KD_SPLIT_Z = 2,
-    KD_LEAF = 3
-};
 
 // ************************************************************************************
 // KdTree                                                                              *
@@ -70,12 +156,11 @@ public:
     virtual ~KdTree();
 
     void ResetStats();
-    void Stats_ObjectsInLeaves( long objNum = 1 );
-    void Stats_NodeTraversed();
-    void Stats_LeafTraversed();
-    void Stats_GetAll( long* numNodes, long* numNonEmptyLeaves, long* numObjsInLeaves ) const;
 
 protected:
+    // Callback routines that are used to return information while traversing
+    // the tree.  Gives an object in a leaf node. Return code is "true" if the
+    // returned stop distance is relevant.
     typedef std::function<bool(long, const VectorR3 &, const VectorR3 &, double &)> CallbackF;
     // ****** Tree traversal routines ******
     long Traverse(const VectorR3 & startPos, const VectorR3 & dir,
@@ -126,21 +211,6 @@ private:
 
     AABB BoundingBox;            // An AABB that encloses the entire tree
 
-    // Callback routines that are used to return information while traversing
-    // the tree.  Gives an object in a leaf node. Return code is "true" if the
-    // returned stop distance is relevant.  Must be overridden in a derived
-    // class
-//    virtual bool ObjectCallback(long object_id,
-//                                const VectorR3 & start_pos,
-//                                const VectorR3 & direction,
-//                                double& retStopDist) = 0;
-
-    // Traversal statistics
-    long Stats_NumberKdNodesTraversed;
-    long Stats_NumberKdLeavesTraversed;
-    long Stats_NumberKdObjectsInLeaves;
-
-
     // Following items are used only while building the tree.
     enum SplitAlgorithmType {
         MacDonaldBooth = 0,                    // MacDonald-Booth method
@@ -175,12 +245,15 @@ private:
     void BuildSubTree( long baseIndex, AABB& aabb, double totalObjectCost,
                     ExtentTripleArrayInfo& xExtents, ExtentTripleArrayInfo& yExtents, 
                     ExtentTripleArrayInfo& zExtents, long spaceAvailable );
-    void CalcBestSplit( const AABB& aabb, const VectorR3& deltaAABB, double totalObjectCost, 
-                    const ExtentTripleArrayInfo& xExtents, const ExtentTripleArrayInfo& yExtents, 
-                    const ExtentTripleArrayInfo& zExtents,
-                    KD_SplittingAxis* splitAxisID, double* splitValue, 
-                    long* numTriplesToLeft, long* numObjectsToLeft, long* numObjectsToRight, 
-                    double* costObjectsToLeft, double* costObjectsToRight );
+    bool CalcBestSplit(const AABB& aabb, const VectorR3& deltaAABB,
+                       double totalObjectCost,
+                       const ExtentTripleArrayInfo& xExtents,
+                       const ExtentTripleArrayInfo& yExtents,
+                       const ExtentTripleArrayInfo& zExtents,
+                       KdTreeNode::KD_SplittingAxis * splitAxisID,
+                       double* splitValue, long* numTriplesToLeft,
+                       long* numObjectsToLeft, long* numObjectsToRight,
+                       double* costObjectsToLeft, double* costObjectsToRight);
     bool CalcBestSplit( double totalObjectCost, double costToBeat, 
                         const ExtentTripleArrayInfo& extents, 
                         double minOnAxis, double maxOnAxis, 
@@ -228,91 +301,6 @@ private:
 };
 
 // See the end of this file for the inlined members of KdTree.
-
-
-// ************************************************************************************
-// KdTreeNode                                                                          *
-// ************************************************************************************
-
-class KdTreeNode {
-public:
-    friend class KdTree;
-
-    bool IsLeaf() const { return (NodeType==KD_LEAF); }
-    int SplitAxis() const { assert(NodeType!=KD_LEAF); return (int)NodeType; }
-    bool IsRoot() const { return (ParentIdx == -1); }
-    bool LeftChildEmpty() const { assert(NodeType!=KD_LEAF); return (Data.Split.LeftChildIdx == -1); }
-    bool RightChildEmpty() const { assert(NodeType!=KD_LEAF); return (Data.Split.RightChildIdx == -1); }
-    long GetNumObjects() const { assert (NodeType==KD_LEAF); return Data.Leaf.NumObjects; }
-
-    double SplitValue() const { return Data.Split.SplitValue; }
-
-    // Returns pointer to the left child, or Null if the left child is an empty leaf.
-    long LeftChildIndex() const { return Data.Split.LeftChildIdx; }
-
-    // Returns pointer to the right child, or Null if the left child is an empty leaf.
-    long RightChildIndex() const { return Data.Split.RightChildIdx; }
-
-    // Returns point to the parent, or Null if is the root.
-    long ParentIndex() const { return ParentIdx; }
-
-private:
-    KD_SplittingAxis NodeType;            // The type of node
-
-    long ParentIdx;                // Equals -1 if this is root and there is no parent
-
-    struct InternalNodeValues {
-        long LeftChildIdx;            // Equals -1 if left child is empty
-        long RightChildIdx;            // Equals -1 if right child is empty
-        double SplitValue;            // Value for the split plane
-    };
-
-    struct LeafNodeValues {
-        long* ObjectList;            // Pointer to indices objects stored at the leaf
-        long NumObjects;            // Number of objects in the leaf node
-    };
-
-    union {
-        InternalNodeValues Split;    // The values for an internal node
-        LeafNodeValues Leaf;        // The values for a leaf
-    } Data;
-
-};
-
-// *******************************************************************
-// Kd_TraverseNodeData                                                 *
-//        Holds information on a node needing traversal                 *
-// *******************************************************************
-
-class Kd_TraverseNodeData {
-    friend class KdTree;
-
-public:
-    Kd_TraverseNodeData() {}
-    Kd_TraverseNodeData( long nodeNum, double minDist, double maxDist );
-    void Set( long nodeNum, double minDist, double maxDist  );
-
-    long GetNodeNumber() const { return NodeNumber; }
-    double GetMinDist() const { return MinDistance; }
-    double GetMaxDist() const { return MaxDistance; }
-
-private:
-    long NodeNumber;            // Index of the node
-    double MinDistance;            // Minimum distance along ray to search (entry distance)
-    double MaxDistance;            // Maximum distance along ray to search (exit distance)
-};
-
-inline Kd_TraverseNodeData::Kd_TraverseNodeData( long nodeNum, double minDist, double maxDist )
-{
-    Set ( nodeNum, minDist, maxDist );
-}
-
-inline void Kd_TraverseNodeData::Set( long nodeNum, double minDist, double maxDist  )
-{
-    NodeNumber = nodeNum;
-    MinDistance = minDist;
-    MaxDistance = maxDist;
-}
 
 
 //*********************************************************************
@@ -496,8 +484,6 @@ inline KdTree::KdTree()
     SplitAlgorithm = MacDonaldBooth;
     SetObjectCost ( DefaultObjectCost() );
     SetStoppingCriterion( 1000000, 4.0 );
-
-    ResetStats();
 }
 
 inline KdTree::KdTree(long numObjects)
@@ -506,7 +492,6 @@ inline KdTree::KdTree(long numObjects)
     SetObjectCost ( DefaultObjectCost() );
     SetStoppingCriterion( 1000000, 4.0 );
     BuildTree(numObjects);
-    ResetStats();
 }
 
 // Set a cost function for objects
@@ -534,36 +519,6 @@ inline void KdTree::SetMacdonaldBoothSplitting( bool useModifiedCoefs )
 inline void KdTree::SetDoubleRecurseSplitting( bool useModifiedCoefs )
 {
     SplitAlgorithm = useModifiedCoefs ? DoubleRecurseModifiedCoefs : DoubleRecurseGS;
-}
-
-inline void KdTree::ResetStats() 
-{
-    // Traversal statistics
-    Stats_NumberKdNodesTraversed = 0;
-    Stats_NumberKdLeavesTraversed = 0;
-    Stats_NumberKdObjectsInLeaves = 0;
-}
-
-inline void KdTree::Stats_ObjectsInLeaves( long objNum ) 
-{
-    Stats_NumberKdObjectsInLeaves += objNum;
-}
-
-inline void KdTree::Stats_NodeTraversed( ) 
-{
-    Stats_NumberKdNodesTraversed++;
-}
-
-inline void KdTree::Stats_LeafTraversed( ) 
-{
-    Stats_NumberKdLeavesTraversed++;
-}
-
-inline void KdTree::Stats_GetAll( long* numNodes, long* numNonEmptyLeaves, long* numObjsInLeaves ) const
-{
-    *numNodes = Stats_NumberKdNodesTraversed;
-    *numNonEmptyLeaves = Stats_NumberKdLeavesTraversed;
-    *numObjsInLeaves = Stats_NumberKdObjectsInLeaves;
 }
 
 /*!

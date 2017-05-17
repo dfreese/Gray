@@ -29,43 +29,16 @@
 // Author: Sam Buss based on work by Sam Buss and Alex Kulungowski
 // Contact: sbuss@math.ucsd.edu
 
-#include <assert.h>
-#include <stdio.h>
-#include <stack>
 #include <KdTree/KdTree.h>
-#include <KdTree/DoubleRecurse.h>
-#include <stdexcept>
+#include <cstdio>
+#include <cassert>
 #include <functional>
+#include <stack>
+#include <KdTree/DoubleRecurse.h>
 
 // Destructor
 KdTree::~KdTree()
 {
-	if (TreeNodes.size() == 0) {
-		return;
-	}
-	// Traverse the tree and delete object lists in each non-empty leaf node
-    std::stack<long> IdxStack;
-	long currentNodeIndex = RootIndex();			// The current node in the traversal
-	while ( true ) {
-		KdTreeNode* currentNode = &TreeNodes.at(currentNodeIndex);
-		if ( currentNode->IsLeaf() ){
-			delete[] currentNode->Data.Leaf.ObjectList;
-		}
-		else {
-			if ( !currentNode->LeftChildEmpty() ) {
-				IdxStack.push( currentNode->Data.Split.LeftChildIdx );
-			}
-			if ( !currentNode->RightChildEmpty() ) {
-				currentNodeIndex = currentNode->Data.Split.RightChildIdx;
-				continue;
-			}
-		}
-		if (IdxStack.empty()) {
-			break;
-		}
-		currentNodeIndex = IdxStack.top();
-        IdxStack.pop();
-	}
 }
 
 long KdTree::Traverse(const VectorR3& startPos, const VectorR3& dir,
@@ -91,123 +64,116 @@ long KdTree::Traverse(const VectorR3& startPos, const VectorR3& dir,
 	double parallelHitMax = -DBL_MAX;
     long stopping_object = -1;
 	stopDistance = DBL_MAX;
-	assert ( minDistance<=maxDistance );
     std::stack<Kd_TraverseNodeData> traverseStack;
 
 	while ( true ) {
-		if ( ! currentNode->IsLeaf() ) {
-			// Handle non-leaf nodes
-			//		These do not contain primitive objects.
+		if (currentNode->IsLeaf()) {
+            // Handle leaf nodes by invoking the callback function
+            // Pass the objects back to the user one at a time
+            for (auto object: currentNode->Data.Leaf.Objects) {
+                if (ObjectCallback(object, startPos, dir, stopDistance)) {
+                    stopping_object = object;
+                }
+            }
+		} else {
+            // Handle non-leaf nodes
+            //		These do not contain primitive objects.
             int thisSign;
             double thisDir;
-			double thisDirInv;
-			double thisStartPt;
-			switch ( currentNode->NodeType ) 
-			{
-			case KD_SPLIT_X:
-                thisSign = sign[0];
-                thisDir = dir.x;
-				thisDirInv = dirInv.x;
-				thisStartPt = startPos.x;
-				break;
-			case KD_SPLIT_Y:
-                thisSign = sign[1];
-                thisDir = dir.y;
-				thisDirInv = dirInv.y;
-				thisStartPt = startPos.y;
-				break;
-			case KD_SPLIT_Z:
-                thisSign = sign[2];
-                thisDir = dir.z;
-				thisDirInv = dirInv.z;
-				thisStartPt = startPos.z;
-				break;
-			case KD_LEAF:
-                throw(std::runtime_error("Found leaf, but it shouldn't be here"));
-			}
-			long nearNodeIdx;
-			long farNodeIdx;
-			if (thisDir == 0) {
-				// Handle hitting exactly parallel to the splitting plane
-				double thisSplitVal = currentNode->SplitValue();
-				if ( thisSplitVal<thisStartPt ) {
-					currentNodeIndex = currentNode->RightChildIndex();
-				}
-				else if ( thisSplitVal>thisStartPt ) {
-					currentNodeIndex = currentNode->LeftChildIndex();
-				}
-				else {
-					// Exactly hit the splitting plane (not so good!)
-					long leftIdx = currentNode->LeftChildIndex();
-					long rightIdx = currentNode->RightChildIndex();
-					if ( leftIdx == -1 ) {
-						currentNodeIndex = rightIdx;
-					}
-					else if ( rightIdx == -1 ) {
-						currentNodeIndex = leftIdx;
-					}
-					else {
-						traverseStack.push(Kd_TraverseNodeData(
-                                rightIdx, minDistance, maxDistance));
-						currentNodeIndex = leftIdx;
-						hitParallel = true;
-						UpdateMax(maxDistance,parallelHitMax);
-					}
-				}
-			} else {
-				if (thisSign == 0) {
-					nearNodeIdx = currentNode->LeftChildIndex();
-					farNodeIdx = currentNode->RightChildIndex();
-				} else {
-					nearNodeIdx = currentNode->RightChildIndex();
-					farNodeIdx = currentNode->LeftChildIndex();
-				}
-				double splitDistance = (currentNode->SplitValue()-thisStartPt)*thisDirInv;
-				if ( splitDistance<minDistance ) {
-					// Far node is the new current node
-					currentNodeIndex = farNodeIdx;
-				} else if ( splitDistance>maxDistance ) {
-					// Near node is the new current node
-					currentNodeIndex = nearNodeIdx;
-				} else if ( nearNodeIdx == -1 ) {
-						minDistance = splitDistance;
-						currentNodeIndex = farNodeIdx;
-				} else {
-					// Push the far node -- if it exists
-                    if ( farNodeIdx != -1 ) {
-                        traverseStack.push(Kd_TraverseNodeData(
-                                farNodeIdx, splitDistance, maxDistance));
-					}
-					// Near node is the new current node
-					maxDistance = splitDistance;
-					currentNodeIndex = nearNodeIdx;
-				}
-			}
-			if ( currentNodeIndex != -1 ) {
-                currentNode = &TreeNodes.at(currentNodeIndex);
-				continue;
-			}
-			// If we reach here, we are at an empty leaf and can fall through.
-
-		} else {
-			// Handle leaf nodes by invoking the callback function
-            // Pass the objects back to the user one at a time
-            long i = currentNode->Data.Leaf.NumObjects;
-            long* objectIdPtr = currentNode->Data.Leaf.ObjectList;
-            for ( ; i>0; i-- ) {
-                if (ObjectCallback(*objectIdPtr, startPos, dir, stopDistance)) {
-                    stopping_object = *objectIdPtr;
-                }
-                objectIdPtr++;
+            double thisDirInv;
+            double thisStartPt;
+            switch (currentNode->SplitAxis())
+            {
+                case KdTreeNode::KD_SPLIT_X:
+                    thisSign = sign[0];
+                    thisDir = dir.x;
+                    thisDirInv = dirInv.x;
+                    thisStartPt = startPos.x;
+                    break;
+                case KdTreeNode::KD_SPLIT_Y:
+                    thisSign = sign[1];
+                    thisDir = dir.y;
+                    thisDirInv = dirInv.y;
+                    thisStartPt = startPos.y;
+                    break;
+                case KdTreeNode::KD_SPLIT_Z:
+                    thisSign = sign[2];
+                    thisDir = dir.z;
+                    thisDirInv = dirInv.z;
+                    thisStartPt = startPos.z;
+                    break;
             }
-
+            long nearNodeIdx;
+            long farNodeIdx;
+            if (thisDir == 0) {
+                // Handle hitting exactly parallel to the splitting plane
+                double thisSplitVal = currentNode->SplitValue();
+                if ( thisSplitVal<thisStartPt ) {
+                    currentNodeIndex = currentNode->RightChildIndex();
+                }
+                else if ( thisSplitVal>thisStartPt ) {
+                    currentNodeIndex = currentNode->LeftChildIndex();
+                }
+                else {
+                    // Exactly hit the splitting plane (not so good!)
+                    long leftIdx = currentNode->LeftChildIndex();
+                    long rightIdx = currentNode->RightChildIndex();
+                    if ( leftIdx == -1 ) {
+                        currentNodeIndex = rightIdx;
+                    }
+                    else if ( rightIdx == -1 ) {
+                        currentNodeIndex = leftIdx;
+                    }
+                    else {
+                        traverseStack.push(Kd_TraverseNodeData(rightIdx,
+                                                               minDistance,
+                                                               maxDistance));
+                        currentNodeIndex = leftIdx;
+                        hitParallel = true;
+                        UpdateMax(maxDistance,parallelHitMax);
+                    }
+                }
+            } else {
+                if (thisSign == 0) {
+                    nearNodeIdx = currentNode->LeftChildIndex();
+                    farNodeIdx = currentNode->RightChildIndex();
+                } else {
+                    nearNodeIdx = currentNode->RightChildIndex();
+                    farNodeIdx = currentNode->LeftChildIndex();
+                }
+                double splitDistance = (currentNode->SplitValue() - thisStartPt) * thisDirInv;
+                if ( splitDistance<minDistance ) {
+                    // Far node is the new current node
+                    currentNodeIndex = farNodeIdx;
+                } else if ( splitDistance>maxDistance ) {
+                    // Near node is the new current node
+                    currentNodeIndex = nearNodeIdx;
+                } else if ( nearNodeIdx == -1 ) {
+                    minDistance = splitDistance;
+                    currentNodeIndex = farNodeIdx;
+                } else {
+                    // Push the far node -- if it exists
+                    if ( farNodeIdx != -1 ) {
+                        traverseStack.push(Kd_TraverseNodeData(farNodeIdx,
+                                                               splitDistance,
+                                                               maxDistance));
+                    }
+                    // Near node is the new current node
+                    maxDistance = splitDistance;
+                    currentNodeIndex = nearNodeIdx;
+                }
+            }
+            if ( currentNodeIndex != -1 ) {
+                currentNode = &TreeNodes.at(currentNodeIndex);
+                continue;
+            }
+            // If we reach here, we are at an empty leaf and can fall through.
 		}
 
 		// Get to this point if done with a leaf node (possibly empty, possibly not).
 		if (traverseStack.empty()) {
 			return stopping_object;
-		}
-		else {
+		} else {
 			Kd_TraverseNodeData& topNode = traverseStack.top();
 			minDistance = topNode.GetMinDist();
             if ((stopping_object >= 0) && (minDistance > stopDistance)) {
@@ -253,7 +219,6 @@ void KdTree::BuildTree(long numObjects)
 	}
 
 	// Pick the overall BoundingBox to enclose all the individual bounding boxes.
-	BoundingBox = ObjectAABBs[0];
     for (auto aabb: ObjectAABBs) {
 		BoundingBox.EnlargeToEnclose(aabb);
 	}
@@ -313,7 +278,7 @@ void KdTree::BuildSubTree( long baseIndex, AABB& aabb, double totalObjectCost,
 
 	// Step 1.
 	// Try all three axes to find the best split decision
-	KD_SplittingAxis splitAxisID;	// 0-2 for axis x,y,z OR 3 for no split
+    KdTreeNode::KD_SplittingAxis splitAxisID;
 	ExtentTripleArrayInfo* splitExtentList;	// Will point to the split axis extext list
 	double splitValue;				// Point where the split occurs
 	long numTriplesToLeft;			// Number of triples on left side of split
@@ -321,44 +286,43 @@ void KdTree::BuildSubTree( long baseIndex, AABB& aabb, double totalObjectCost,
 	long numObjectsToRight;			// Number of objects on right side of split
 	double costObjectsToLeft;		// Total cost of objects on the left side of split
 	double costObjectsToRight;		// Total cost of objects on the right side of split
-	CalcBestSplit( aabb, deltaAABB, totalObjectCost, xExtents, yExtents, zExtents,
-					&splitAxisID, &splitValue, 
-					&numTriplesToLeft, &numObjectsToLeft, &numObjectsToRight, 
-					&costObjectsToLeft, &costObjectsToRight );
-	switch ( splitAxisID ) {
-		case KD_LEAF:
-			{
-				// No splitting occurs
-				// Copy object triples into an array
-				KdTreeNode& baseNode = TreeNodes.at(baseIndex);
-				baseNode.NodeType = KD_LEAF;
-				long numInLeaf = xExtents.NumObjects();
-				assert ( yExtents.NumObjects() == numInLeaf && zExtents.NumObjects() == numInLeaf );
-				baseNode.Data.Leaf.NumObjects = numInLeaf;
-				long* objectArray = new long[numInLeaf];	
-				if ( !objectArray ) {
-					MemoryError();
-				}
-				baseNode.Data.Leaf.ObjectList = objectArray;
-				ExtentTriple* triple = xExtents.TripleArray;		// Pick any one of the three axes
-				for ( long i=0; i<numInLeaf; triple++ ) {
-					if ( !( triple->IsMax() ) ) {
-						*(objectArray++) = triple->ObjectID;
-						i++;
-					}
-				}
-			}
-			return;									// Finished: leaf is completely set
-		case KD_SPLIT_X:
-			splitExtentList = &xExtents;
-			break;
-		case KD_SPLIT_Y:
-			splitExtentList = &yExtents;
-			break;
-		case KD_SPLIT_Z:
-			splitExtentList = &zExtents;
-			break;
-	}
+	bool split = CalcBestSplit(aabb, deltaAABB, totalObjectCost, xExtents,
+                               yExtents, zExtents, &splitAxisID, &splitValue,
+                               &numTriplesToLeft, &numObjectsToLeft,
+                               &numObjectsToRight, &costObjectsToLeft,
+                               &costObjectsToRight);
+    if (split) {
+        switch (splitAxisID) {
+            case KdTreeNode::KD_SPLIT_X: {
+                splitExtentList = &xExtents;
+            } break;
+            case KdTreeNode::KD_SPLIT_Y: {
+                splitExtentList = &yExtents;
+            } break;
+            case KdTreeNode::KD_SPLIT_Z: {
+                splitExtentList = &zExtents;
+            } break;
+        }
+
+    } else {
+        // No splitting occurs
+        // Copy object triples into an array
+        KdTreeNode& baseNode = TreeNodes.at(baseIndex);
+        baseNode.is_leaf = true;
+        long numInLeaf = xExtents.NumObjects();
+        assert ( yExtents.NumObjects() == numInLeaf && zExtents.NumObjects() == numInLeaf );
+        baseNode.Data.Leaf.Objects.resize(numInLeaf);
+        // Pick any one of the three axes
+        ExtentTriple* triple = xExtents.TripleArray;
+        for ( long i=0; i<numInLeaf; triple++ ) {
+            if ( !( triple->IsMax() ) ) {
+                baseNode.Data.Leaf.Objects[i] = triple->ObjectID;
+                i++;
+            }
+        }
+        // At a leaf, exit out of subtree build
+        return;
+    }
 
 	// Step 2. Handle splits where one subtree is empty
 	if ( numObjectsToLeft==0 || numObjectsToRight==0 ) {
@@ -506,24 +470,29 @@ void KdTree::BuildSubTree( long baseIndex, AABB& aabb, double totalObjectCost,
 
 }
 
-
-void KdTree::CalcBestSplit( const AABB& aabb, const VectorR3& deltaBox, double totalObjectCost, 
-					const ExtentTripleArrayInfo& xExtents, const ExtentTripleArrayInfo& yExtents, 
-					const ExtentTripleArrayInfo& zExtents,
-					KD_SplittingAxis* splitAxisID, double* splitValue, 
-					long* numTriplesToLeft, long* numObjectsToLeft, long* numObjectsToRight, 
-					double* costObjectsToLeft, double* costObjectsToRight )
+bool KdTree::CalcBestSplit(const AABB& aabb, const VectorR3& deltaBox,
+                           double totalObjectCost,
+                           const ExtentTripleArrayInfo& xExtents,
+                           const ExtentTripleArrayInfo& yExtents,
+                           const ExtentTripleArrayInfo& zExtents,
+                           KdTreeNode::KD_SplittingAxis* splitAxisID,
+                           double* splitValue, long* numTriplesToLeft,
+                           long* numObjectsToLeft, long* numObjectsToRight,
+                           double* costObjectsToLeft,
+                           double* costObjectsToRight)
 {
 	assert( xExtents.NumObjects() == yExtents.NumObjects() );
 	assert( yExtents.NumObjects() == zExtents.NumObjects() );
 
-	*splitAxisID = KD_LEAF;			// Default is no split, unless find a better option.
+    // Default is no split, unless find a better option.
 
-	double surfaceArea = 2.0*(deltaBox.x*deltaBox.y + deltaBox.x*deltaBox.z + deltaBox.y*deltaBox.z);
+	double surfaceArea = 2.0*(deltaBox.x*deltaBox.y + deltaBox.x*deltaBox.z +
+                              deltaBox.y*deltaBox.z);
 	double minImprove = (BoundingBoxSurfaceArea/surfaceArea)*StoppingCostPerRay;
 	double costToBeat = totalObjectCost - minImprove;
 	if ( costToBeat<=1.0+1.0e-7 ) {
-		return;						// There is no way to improve enough to bother.
+        // There is no way to improve enough to bother.
+		return(false);
 	}
 
 	// Try each of the three axes in turn.
@@ -536,7 +505,7 @@ void KdTree::CalcBestSplit( const AABB& aabb, const VectorR3& deltaBox, double t
 						costObjectsToLeft, costObjectsToRight ) )
 	{
 		foundBetter = true;
-		*splitAxisID = KD_SPLIT_X;
+		*splitAxisID = KdTreeNode::KD_SPLIT_X;
 		costToBeat = bestCostSoFar;
 	}
 	if ( CalcBestSplit( totalObjectCost, costToBeat, yExtents, 
@@ -546,7 +515,7 @@ void KdTree::CalcBestSplit( const AABB& aabb, const VectorR3& deltaBox, double t
 						costObjectsToLeft, costObjectsToRight ) )
 	{
 		foundBetter = true;
-		*splitAxisID = KD_SPLIT_Y;
+		*splitAxisID = KdTreeNode::KD_SPLIT_Y;
 		costToBeat = bestCostSoFar;
 	}
 	if ( CalcBestSplit( totalObjectCost, costToBeat, zExtents, 
@@ -556,9 +525,9 @@ void KdTree::CalcBestSplit( const AABB& aabb, const VectorR3& deltaBox, double t
 						costObjectsToLeft, costObjectsToRight ) )
 	{
 		foundBetter = true;
-		*splitAxisID = KD_SPLIT_Z;
+		*splitAxisID = KdTreeNode::KD_SPLIT_Z;
 	}
-
+    return(foundBetter);
 }
 
 // Returns true if a new better split is found on the axis.
@@ -671,8 +640,9 @@ void KdTree::UpdateLeftRightCosts( const ExtentTriple& et, long* numObjectsLeft,
 
 
 // Create the Aabb's for one of the subtrees
-void KdTree::MakeAabbsForSubtree( unsigned char leftRightFlag, const ExtentTripleArrayInfo& theExtents,
-									const AABB& theAabb )
+void KdTree::MakeAabbsForSubtree(unsigned char leftRightFlag,
+                                 const ExtentTripleArrayInfo& theExtents,
+                                 const AABB& theAabb)
 {
 	ExtentTriple* etPtr = theExtents.TripleArray;
 	long i;
