@@ -36,5 +36,5 @@ void Isotope::Reset() {
 }
 
 double Isotope::FractionRemaining(double time) const {
-    return(std::pow(0.5, time / half_life));
+    return(std::pow(2.0, -time / half_life));
 }

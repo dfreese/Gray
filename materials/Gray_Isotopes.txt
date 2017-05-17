@@ -25,3 +25,8 @@ C11       1221.66    0.9975   0         levin_exp  0.501  24.5  1.76  3.0
 # TODO: change In110 and Zr89 to pos range from F18 range
 In110     17676.0    0.61     0.657750  levin_exp  0.519  27.9  2.91  3.0
 Zr89      282280.32  0.227    0.90915   levin_exp  0.519  27.9  2.91  3.0
+# These two variants were added to model the forced half-life in the Gate
+# PET benchmark.  That command fixes the half-life, and does not correctly
+# model the branching ratios
+F18_GATE  6586.2     1.0000   0         levin_exp  0.519  27.9  2.91  3.0
+O15_GATE  122.24     1.0000   0         levin_exp  0.263  33.2  1.0   3.0

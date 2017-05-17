@@ -16,9 +16,9 @@ color 0.05 0.05 0.05  0.05 0.05 0.05  0.0 0.0 0.0  0.0 0.0 0.0  0.1 0.1 0.1 1.05
 m water
 cyl 0.0 0.0 0.0 0.0 0.0 1.0 10 70
 # create two cylindrical sources
-isotope F18
+isotope F18_GATE
 cyl_src 0.0 -2.0 0.0 0.0 0.0 1.0 0.01 68 2.7027
-isotope O15
+isotope O15_GATE
 cyl_src 0.0 2.0 0.0 0.0 0.0 1.0 0.01 68 2.7027
 # set the simulation time to be 5 seconds
 time 240.0
