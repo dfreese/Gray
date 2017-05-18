@@ -43,10 +43,12 @@ public:
     }
 
     virtual std::vector<EventT> add_events(const std::vector<EventT> & events) {
+        count_no_events += events.size();
         std::vector<EventT> output_events(events);
         for (auto proc_ptr: processes) {
             output_events = proc_ptr->add_events(output_events);
         }
+        count_no_kept += output_events.size();
         return(output_events);
     }
 
@@ -60,6 +62,7 @@ public:
             ret_events.insert(ret_events.end(), store_events.begin(),
                               store_events.end());
         }
+        count_no_kept += ret_events.size();
         return(ret_events);
     }
 
@@ -67,18 +70,16 @@ public:
         for (auto & p: processes) {
             p->reset();
         }
+        count_no_kept = 0;
+        count_no_events = 0;
     }
 
     long no_events() const {
-        // Since every event goes through the first process, just return it's
-        // stats.
-        return(processes.front()->no_events());
+        return(count_no_events);
     }
 
     long no_kept() const {
-        // Since every event that is kept goes through the last process,
-        // just return that processes' stats.
-        return(processes.back()->no_kept());
+        return(count_no_kept);
     }
 
     long no_dropped() const {
@@ -108,6 +109,8 @@ public:
 private:
     std::vector<Processor<EventT> *> processes;
     std::vector<bool> print_info;
+    long count_no_events = 0;
+    long count_no_kept = 0;
 };
 
 #endif // singlesproc_h
