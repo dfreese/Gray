@@ -624,11 +624,15 @@ bool LoadDetector::Load(const std::string & filename,
                 print_parse_error(line);
                 return(false);
             }
-            VoxelSource * s = new
-            VoxelSource(position,dims,voxelsize,activity);
+            VoxelSource * s = new VoxelSource(position,dims,voxelsize,activity);
             if (s->Load(string)) {
                 s->SetMaterial(curMaterial);
                 sources.AddSource(s);
+            } else {
+                delete s;
+                print_parse_error(line);
+                cerr << "Unable to load voxelized source: " << string << endl;
+                return(false);
             }
         } else if (command == "increment") {
             VectorR3 StartPos;
@@ -643,7 +647,7 @@ bool LoadDetector::Load(const std::string & filename,
             polygon_det_id = detector_array.AddDetector(StartPos, UnitSize,
                                                         MatrixStack.top(),
                                                         0, 0, 0, 0);
-        } else if (command == "ellipse") {
+        } else if (command == "ellipsoid") {
             VectorR3 center;
             VectorR3 axis1;
             VectorR3 axis2;
@@ -668,7 +672,7 @@ bool LoadDetector::Load(const std::string & filename,
             ve->SetMaterial(curMaterial);
             TransformWithRigid(ve,MatrixStack.top());
             theScene.AddViewable(ve);
-        } else if (command == "ellipse_src") {
+        } else if (command == "ellipsoid_src") {
             VectorR3 center;
             VectorR3 axis1;
             VectorR3 axis2;
