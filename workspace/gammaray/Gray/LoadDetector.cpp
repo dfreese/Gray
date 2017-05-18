@@ -668,7 +668,7 @@ bool LoadDetector::Load(const std::string & filename,
             ve->SetMaterial(curMaterial);
             TransformWithRigid(ve,MatrixStack.top());
             theScene.AddViewable(ve);
-        } else if (command == "sp_ellipse") {
+        } else if (command == "ellipse_src") {
             VectorR3 center;
             VectorR3 axis1;
             VectorR3 axis2;
@@ -715,7 +715,7 @@ bool LoadDetector::Load(const std::string & filename,
             vc->SetMaterial(curMaterial);
             TransformWithRigid(vc,MatrixStack.top());
             theScene.AddViewable(vc);
-        } else if (command == "sp_elliptic_cyl") {
+        } else if (command == "elliptic_cyl_src") {
             VectorR3 center;
             VectorR3 axis;
             double radius1;
@@ -738,7 +738,7 @@ bool LoadDetector::Load(const std::string & filename,
                     center, radius1, radius2, axis, actScale*activity);
             cyl->SetMaterial(curMaterial);
             sources.AddSource(cyl);
-        } else if (command == "sp_annulus_ell") {
+        } else if (command == "annulus_ell_src") {
             VectorR3 center;
             VectorR3 axis;
             double radius1;
@@ -762,7 +762,7 @@ bool LoadDetector::Load(const std::string & filename,
                                                       axis, actScale*activity);
             cyl->SetMaterial(curMaterial);
             sources.AddSource(cyl);
-        } else if (command == "sp_annulus_cyl") {
+        } else if (command == "annulus_cyl_src") {
             VectorR3 center;
             VectorR3 axis;
             double radius;
