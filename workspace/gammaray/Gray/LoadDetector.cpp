@@ -277,6 +277,12 @@ bool LoadDetector::Load(const std::string & filename,
         file_dir = filename.substr(0, dir_pos + 1);
     }
 
+    // Add state variable for polygons, so that it's appropriately handled
+    // during repeats.
+    bool looking_for_polygon_lines = false;
+    int no_polygon_lines_needed = 0;
+    vector<string> polygon_lines;
+
     bool view_pos_set = false;
     VectorR3 viewPos;
     VectorR3 lookAtPos(0, 0, 0);
@@ -1154,19 +1160,9 @@ bool LoadDetector::Load(const std::string & filename,
                      << endl;
                 return(false);
             }
-            // arbitrary triangles must use increment to advance detector ids
-            // detector only is used when material is sensitive
-            if (curMaterial->log_material) {
-                ProcessFaceDFF(numVerts, curMaterial, file_stack.top(),
-                               curVectorSource, parse_VectorSource,
-                               polygon_det_id, theScene, polygonScale,
-                               MatrixStack.top());
-            } else {
-                ProcessFaceDFF(numVerts, curMaterial, file_stack.top(),
-                               curVectorSource, parse_VectorSource, -1,
-                               theScene, polygonScale,
-                               MatrixStack.top());
-            }
+            looking_for_polygon_lines = true;
+            no_polygon_lines_needed = numVerts;
+            polygon_lines.clear();
         } else if (command == "m") {
             // material index
             int matIndex = theScene.GetMaterialIndex(args);
@@ -1238,6 +1234,24 @@ bool LoadDetector::Load(const std::string & filename,
                 cout << "Warning: configuration commands, like \"" << command
                      << "\" should be in the top level file.\n"
                      << "They will be ignored by gray-daq otherwise" << endl;
+            }
+        } else if (looking_for_polygon_lines) {
+            polygon_lines.push_back(line);
+            if (no_polygon_lines_needed == polygon_lines.size()) {
+                looking_for_polygon_lines = false;
+                // arbitrary triangles must use increment to advance detector ids
+                // detector only is used when material is sensitive
+                if (curMaterial->log_material) {
+                    ProcessFaceDFF(no_polygon_lines_needed, curMaterial,
+                                   polygon_lines, curVectorSource,
+                                   parse_VectorSource, polygon_det_id,
+                                   theScene, polygonScale, MatrixStack.top());
+                } else {
+                    ProcessFaceDFF(no_polygon_lines_needed, curMaterial,
+                                   polygon_lines, curVectorSource,
+                                   parse_VectorSource, -1,
+                                   theScene, polygonScale, MatrixStack.top());
+                }
             }
         } else {
             print_parse_error(line);
@@ -1357,7 +1371,7 @@ void LoadDetector::SetCameraViewInfo(CameraView& theView,
 
 bool LoadDetector::ProcessFaceDFF(int numVerts,
                                   const Material* curMaterial,
-                                  std::ifstream & curFile,
+                                  const std::vector<std::string> & lines,
                                   VectorSource *s,
                                   bool parse_VectorSource,
                                   int det_id,
@@ -1366,16 +1380,17 @@ bool LoadDetector::ProcessFaceDFF(int numVerts,
                                   const RigidMapR3 & current_matrix)
 {
     VectorR3 firstVert, prevVert, thisVert;
-    if ( !ReadVertexR3(firstVert, curFile) ) {
+    if ( !ReadVertexR3(firstVert, lines[0]) ) {
         return false;
     }
-    if ( !ReadVertexR3(prevVert, curFile) ) {
+    if ( !ReadVertexR3(prevVert, lines[1]) ) {
         return false;
     }
     for (int i = 2; i < numVerts; i++) {
-        if ( !ReadVertexR3(thisVert, curFile) ) {
+        if ( !ReadVertexR3(thisVert, lines[i]) ) {
             return false;
         }
+        // TODO: check that these actually should be scaled each time
         firstVert *= polygonScale;
         prevVert *= polygonScale;
         thisVert *= polygonScale;
@@ -1405,15 +1420,12 @@ bool LoadDetector::ProcessFaceDFF(int numVerts,
     return true;
 }
 
-bool LoadDetector::ReadVertexR3(VectorR3& vert, std::ifstream & curFile)
-{
-    string line;
-    if (!getline(curFile, line)) {
-        return false;
-    }
-    int scanCode = sscanf(line.c_str(), "%lf %lf %lf",
-                          &vert.x, &vert.y, &vert.z);
-    return (scanCode == 3);
+bool LoadDetector::ReadVertexR3(VectorR3& vert, const std::string & line) {
+    stringstream ss(line);
+    ss >> vert.x;
+    ss >> vert.y;
+    ss >> vert.z;
+    return (ss.good());
 }
 
 std::string LoadDetector::ScanForSecondField(const std::string & inbuf)

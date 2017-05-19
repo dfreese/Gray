@@ -22,7 +22,7 @@ public:
                      DetectorArray & detector_array);
     static bool LoadConfig(const std::string & filename, Config & config);
 private:
-    static bool ReadVertexR3(VectorR3 & vert, std::ifstream & curFile);
+    static bool ReadVertexR3(VectorR3& vert, const std::string & line);
     static void ProcessDetector(const VectorR3 & detCenter,
                                 const VectorR3 & detSize,
                                 const Material * curMaterial,
@@ -40,10 +40,13 @@ private:
     static void ApplyRotation(const VectorR3& axis,
                               double theta,
                               RigidMapR3 & current_matrix);
-    static bool ProcessFaceDFF(int numVerts, const Material* mat,
-                               std::ifstream & curFile, VectorSource * s,
-                               bool parse_VectorSource, int det_id,
-                               SceneDescription & theScene,
+    static bool ProcessFaceDFF(int numVerts,
+                               const Material* curMaterial,
+                               const std::vector<std::string> & lines,
+                               VectorSource *s,
+                               bool parse_VectorSource,
+                               int det_id,
+                               SceneDescription & scene,
                                double polygonScale,
                                const RigidMapR3 & current_matrix);
     static std::string ScanForSecondField(const std::string & inbuf);
