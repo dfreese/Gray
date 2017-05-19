@@ -439,13 +439,14 @@ bool Output::write_variable_ascii(const Interaction & inter,
         output << " " << std::setw(3) << inter.type;
     }
     if (flags.pos) {
-        output << " " << std::resetiosflags(std::ios::floatfield)
-        << std::scientific << std::setprecision(6) << inter.pos.x
-        << " " << inter.pos.y << " " << inter.pos.z;
+        output << resetiosflags(ios::floatfield)
+        << " " << scientific << setw(13) << setprecision(6) << inter.pos.x
+        << " " << scientific << setw(13) << setprecision(6) << inter.pos.y
+        << " " << scientific << setw(13) << setprecision(6) << inter.pos.z;
     }
     if (flags.energy) {
-        output << " " << std::resetiosflags(std::ios::floatfield)
-        << std::scientific << std::setprecision(6) << inter.energy;
+        output << resetiosflags(ios::floatfield)
+        << " " << scientific << setw(12) << setprecision(6) << inter.energy;
     }
     if (flags.det_id) {
         output << " " << std::setw(5) << inter.det_id;
