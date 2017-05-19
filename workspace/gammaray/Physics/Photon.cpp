@@ -54,9 +54,9 @@ void Photon::SetScatterCompton()
 void Photon::SetScatterRayleigh()
 {
     if (det_id == -1) {
-        scatter_compton_phantom++;
+        scatter_rayleigh_phantom++;
     } else {
-        scatter_compton_detector++;
+        scatter_rayleigh_detector++;
     }
 }
 
