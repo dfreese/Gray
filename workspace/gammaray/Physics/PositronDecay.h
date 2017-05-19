@@ -23,10 +23,12 @@ private:
     double acolinearity;
     double gamma_decay_energy;
     double positron_emission_prob;
+    bool emit_gamma;
+    // TODO: evaluate creating these versus having it as a part of the class.
+    // This makes it impossible to parallelize the raytracing of the photons.
     Photon blue;
     Photon red;
     Photon yellow;
-    bool emit_gamma;
 };
 
 #endif

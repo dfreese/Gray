@@ -15,7 +15,6 @@ public:
     virtual void Reset();
     Photon * NextPhoton();
     bool IsEmpty() const;
-    void AddPhoton(Photon * p);
     double GetEnergy() const;
     int GetDecayNumber() const;
     int GetSourceId() const;
@@ -23,12 +22,16 @@ public:
     double GetTime() const;
 
 protected:
-    std::stack<Photon *> daughter;
+    void AddPhoton(Photon * p);
+    
     double energy;
     int decay_number;
     int src_id;
     VectorR3 position;
     double time;
+
+private:
+    std::stack<Photon *> daughter;
 };
 
 #endif /* NUCLEARDECAY_H */

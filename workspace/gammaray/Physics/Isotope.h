@@ -22,10 +22,10 @@ public:
 
 protected:
     void AddNuclearDecay(NuclearDecay * nd);
-    std::stack<NuclearDecay*> daughter;
 
 private:
     double half_life;
+    std::stack<NuclearDecay*> daughter;
 };
 
 #endif /* ISOTOPE_H */

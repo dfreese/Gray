@@ -15,6 +15,8 @@ public:
 
 protected:
     double energy;
+    // TODO: evaluate creating this versus having it as a part of the class.
+    // This makes it impossible to parallelize the raytracing of the photons.
     Photon gamma;
 };
 

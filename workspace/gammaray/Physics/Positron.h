@@ -23,6 +23,8 @@ public:
     void SetPositronRange(double fwhm, double max);
 
 private:
+    // TODO: evaluate creating this versus having it as a part of the class.
+    // This makes it impossible to parallelize the raytracing of the photons.
     PositronDecay p;
     bool use_positron_dbexp;
     bool use_positron_gauss;
