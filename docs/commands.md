@@ -231,8 +231,11 @@ in place of this line.
 
 ### begin_repeat
 
-begin_repeat [n] begin_repeat rotate [n] [degrees] [x] [y] [z] begin_repeat grid
-[nx] [ny] [nz] [x] [y] [z]
+begin_repeat [n]
+
+begin_repeat rotate [n] [degrees] [x] [y] [z]
+
+begin_repeat grid [nx] [ny] [nz] [x] [y] [z]
 
 Equivalent to copy and pasting the section between begin_repeat and end_repeat n
 times.  The rotate option calls "raxis" after each repeat with the specified
