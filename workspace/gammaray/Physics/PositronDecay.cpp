@@ -51,12 +51,12 @@ void PositronDecay::Decay(int photon_number, double time, int src_id,
     this->decay_number = photon_number;
     this->src_id = src_id;
     this->time = time;
-    this->position = position;
+    this->position = anni_position;
 
     if (emit_gamma) {
         // TODO: log the positron annihilation and nuclear decay positions
         // separately
-        yellow.pos = position;
+        yellow.pos = anni_position;
         // TODO: correctly set the time on the gamma decay, based on the
         // lifetime of the intermediate decay state.
         yellow.time = time;
