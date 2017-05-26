@@ -280,7 +280,7 @@ material is sensitive, then this will be made into a detector.
 
 ### array
 
-k [center xyz] [number xyz] [step xyz] [size xyz]
+array [center xyz] [number xyz] [step xyz] [size xyz]
 
 Effectively calls k repeatedly, creating a grid of boxes, oriented to the
 current axes, at the given center.
