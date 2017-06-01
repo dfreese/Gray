@@ -56,7 +56,7 @@ void PositronDecay::Decay(int photon_number, double time, int src_id,
     if (emit_gamma) {
         // TODO: log the positron annihilation and nuclear decay positions
         // separately
-        yellow.pos = anni_position;
+        yellow.pos = position;
         // TODO: correctly set the time on the gamma decay, based on the
         // lifetime of the intermediate decay state.
         yellow.time = time;
@@ -101,4 +101,3 @@ void PositronDecay::Decay(int photon_number, double time, int src_id,
 void PositronDecay::set_acolinearity(double acolinearity_deg_fwhm) {
     acolinearity = acolinearity_deg_fwhm / 180.0 * M_PI * CONST_FWHM_TO_SIGMA;
 }
-
