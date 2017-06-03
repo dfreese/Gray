@@ -2,6 +2,7 @@
 #define LOAD_DETECTOR_H_
 
 #include <string>
+#include <vector>
 
 class Config;
 class CameraView;
