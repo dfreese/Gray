@@ -285,6 +285,7 @@ bool LoadDetector::Load(const std::string & filename,
 
     bool view_pos_set = false;
     VectorR3 viewPos;
+    bool lookat_pos_set = false;
     VectorR3 lookAtPos(0, 0, 0);
     VectorR3 upVector(0, 1, 0);
     double fovy = 35 * M_PI / 180.0; // Field of view angle (in radians)
@@ -1113,6 +1114,7 @@ bool LoadDetector::Load(const std::string & filename,
                 print_parse_error(line);
                 return(false);
             }
+            lookat_pos_set = true;
         } else if (command == "up") {
             int scanCode = sscanf(args.c_str(), "%lf %lf %lf",
                                   &(upVector.x), &(upVector.y), &(upVector.z));
@@ -1272,13 +1274,21 @@ bool LoadDetector::Load(const std::string & filename,
         delete curVectorSource;
         return(false);
     }
+    if (!lookat_pos_set) {
+        AABB extents = theScene.GetExtents();
+        lookAtPos.x = (extents.GetMaxX() + extents.GetMinX()) / 2.0;
+        lookAtPos.y = (extents.GetMaxY() + extents.GetMinY()) / 2.0;
+        lookAtPos.z = (extents.GetMaxZ() + extents.GetMinZ()) / 2.0;
+    }
     if (!view_pos_set) {
         AABB extents = theScene.GetExtents();
-        viewPos.z = (2.5 * (extents.GetMaxZ() - extents.GetMinZ()) +
-                     0.5 * (extents.GetMaxZ() + extents.GetMinZ()));
+        double maxdim = max(extents.GetMaxX() - extents.GetMinX(),
+                            extents.GetMaxY() - extents.GetMinY());
+        viewPos = lookAtPos;
+        viewPos.z += lookAtPos.z + 1.2 * (0.5 *  maxdim / atan(fovy * 0.5 ));
     }
     if (theScene.NumLights() == 0) {
-        theScene.SetGlobalAmbientLight(1.0, 1.0, 1.0);
+        theScene.SetGlobalAmbientLight(3.5, 3.5, 3.5);
     }
     SetCameraViewInfo(theScene.GetCameraView(),
                       viewPos, lookAtPos, upVector, fovy,
