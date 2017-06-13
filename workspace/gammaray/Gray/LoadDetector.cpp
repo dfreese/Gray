@@ -631,7 +631,8 @@ bool LoadDetector::Load(const std::string & filename,
                 print_parse_error(line);
                 return(false);
             }
-            VoxelSource * s = new VoxelSource(position,dims,voxelsize,activity);
+            VoxelSource * s = new VoxelSource(position, dims, voxelsize,
+                                              actScale * activity);
             if (s->Load(string)) {
                 s->SetMaterial(curMaterial);
                 sources.AddSource(s);
