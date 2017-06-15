@@ -9,10 +9,8 @@ namespace {
     const double CONST_FWHM_TO_SIGMA = (1.0)/(2.35482005);
 }
 
-const double PositronDecay::default_acolinearity = 0.47;
-
 PositronDecay::PositronDecay() :
-    acolinearity(default_acolinearity / 180.0 * M_PI * CONST_FWHM_TO_SIGMA),
+    acolinearity(0),
     gamma_decay_energy(0),
     positron_emission_prob(1.0),
     emit_gamma(false)
@@ -96,8 +94,4 @@ void PositronDecay::Decay(int photon_number, double time, int src_id,
         AddPhoton(&blue);
         AddPhoton(&red);
     }
-}
-
-void PositronDecay::set_acolinearity(double acolinearity_deg_fwhm) {
-    acolinearity = acolinearity_deg_fwhm / 180.0 * M_PI * CONST_FWHM_TO_SIGMA;
 }

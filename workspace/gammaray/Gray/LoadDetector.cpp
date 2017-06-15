@@ -859,14 +859,6 @@ bool LoadDetector::Load(const std::string & filename,
                                                       actScale*activity);
             s->SetMaterial(curMaterial);
             sources.AddSource(s);
-        } else if (command == "acolinearity") {
-            double acon = -1.0;
-            int scanCode = sscanf(args.c_str(), "%lf", &acon);
-            if (scanCode != 1) {
-                print_parse_error(line);
-                return(false);
-            }
-            sources.SetAcolinearity(acon);
         } else if (command == "start_vecsrc") {
             double activity = -1.0;
             int scanCode = sscanf(args.c_str(), "%lf", &activity);

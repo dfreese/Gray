@@ -3,8 +3,9 @@
 # change in the future.  In this file, blank lines, and anything after a pound
 # sign is ignored.  The first material is used as the default.
 
-# There are five required fields:
+# There are six required fields:
 #   - The name of the isotope
+#   - Acolinearity in degrees FWHM.
 #   - The half-life in seconds.  Zero indicates no half-life decay.
 #   - The probability of emitting a positron after a nuclear decay.  Negative
 #     probabilities and those greater than 1 are corrected to 1.
@@ -16,17 +17,16 @@
 #   - none, no parameters required
 #   - gauss, fwhm in mm and max range in mm required
 #   - levin_exp, decay 1 prob (c), decay 1 length (k1), decay 2 length, max mm
-
-BackBack  0          1.0      0         none
-F18       6584.04    0.9686   0         levin_exp  0.519  27.9  2.91  3.0
-O15       122.46     0.99885  0         levin_exp  0.263  33.2  1.0   3.0
-N13       598.02     0.99818  0         levin_exp  0.433  25.4  1.44  3.0
-C11       1221.66    0.9975   0         levin_exp  0.501  24.5  1.76  3.0
+BackBack  0.47  0          1.0      0         none
+F18       0.47  6584.04    0.9686   0         levin_exp  0.519  27.9  2.91  3.0
+O15       0.47  122.46     0.99885  0         levin_exp  0.263  33.2  1.0   3.0
+N13       0.47  598.02     0.99818  0         levin_exp  0.433  25.4  1.44  3.0
+C11       0.47  1221.66    0.9975   0         levin_exp  0.501  24.5  1.76  3.0
 # TODO: change In110 and Zr89 to pos range from F18 range
-In110     17676.0    0.61     0.657750  levin_exp  0.519  27.9  2.91  3.0
-Zr89      282280.32  0.227    0.90915   levin_exp  0.519  27.9  2.91  3.0
+In110     0.47  17676.0    0.61     0.65775  levin_exp  0.519  27.9  2.91  3.0
+Zr89      0.47  282280.32  0.227    0.90915   levin_exp  0.519  27.9  2.91  3.0
 # These two variants were added to model the forced half-life in the Gate
 # PET benchmark.  That command fixes the half-life, and does not correctly
 # model the branching ratios
-F18_GATE  6586.2     1.0000   0         levin_exp  0.519  27.9  2.91  3.0
-O15_GATE  122.24     1.0000   0         levin_exp  0.263  33.2  1.0   3.0
+F18_GATE  0.47  6586.2     1.0000   0         levin_exp  0.519  27.9  2.91  3.0
+O15_GATE  0.47  122.24     1.0000   0         levin_exp  0.263  33.2  1.0   3.0

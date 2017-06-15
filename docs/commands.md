@@ -186,12 +186,6 @@ disable_half_life
 Has no options.  No isotopes experience decay in activity over time, regardless
 of their settings
 
-### acolinearity
-
-acolinearity [fwhm in degrees (default: 0.47)]
-
-Sets the acolinearity for all sources following in the file.  Is overwritten by
-subsequent calls.
 
 ## Movement and Orientation
 

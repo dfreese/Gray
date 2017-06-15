@@ -80,10 +80,6 @@ void Positron::SetPositronRange(double fwhm, double max) {
     positronMaxRange = max;
 }
 
-void Positron::set_acolinearity(double acolinearity_deg_fwhm) {
-    p.set_acolinearity(acolinearity_deg_fwhm);
-}
-
 VectorR3 Positron::PositronRangeLevin(const VectorR3 & p, double positronC,
                                       double positronK1, double positronK2,
                                       double positronMaxRange)

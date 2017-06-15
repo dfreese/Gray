@@ -15,7 +15,6 @@ public:
                        const VectorR3 & position);
     void Decay(int photon_number, double time, int src_id,
                const VectorR3 & position, const VectorR3 & anni_position);
-    void set_acolinearity(double acolinearity_deg_fwhm);
 
     static const double default_acolinearity;
 

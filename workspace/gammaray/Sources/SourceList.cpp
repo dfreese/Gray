@@ -16,7 +16,6 @@ using namespace std;
 
 SourceList::SourceList() :
     decay_number(0),
-    acolinearity(PositronDecay::default_acolinearity),
     simulate_isotope_half_life(true),
     start_time(0)
 {
@@ -50,7 +49,6 @@ void SourceList::AddSource(Source * s)
     } else {
         if (valid_positrons.count(current_isotope) > 0) {
             Positron * pos = new Positron(valid_positrons[current_isotope]);
-            pos->set_acolinearity(acolinearity);
             isotope = static_cast<Isotope *>(pos);
         } else {
             string error = "Isotope named " + current_isotope
@@ -181,15 +179,6 @@ bool SourceList::SetCurIsotope(const std::string & iso)
 
 }
 
-void SourceList::SetAcolinearity(double acolinearity_deg_fwhm)
-{
-    if (acolinearity_deg_fwhm < 0) {
-        acolinearity = PositronDecay::default_acolinearity;
-    } else {
-        acolinearity = acolinearity_deg_fwhm;
-    }
-}
-
 void SourceList::SetSimulationTime(double time)
 {
     simulation_time = time;
@@ -229,6 +218,7 @@ bool SourceList::LoadIsotopes(const std::string &filename) {
             continue;
         }
         string isotope_name;
+        double acolinearity;
         double half_life;
         double pos_emission_prob;
         double gamma_emission_energy;
@@ -237,6 +227,7 @@ bool SourceList::LoadIsotopes(const std::string &filename) {
         stringstream line_ss(line);
         bool fail = false;
         fail |= (line_ss >> isotope_name).fail();
+        fail |= (line_ss >> acolinearity).fail();
         fail |= (line_ss >> half_life).fail();
         fail |= (line_ss >> pos_emission_prob).fail();
         fail |= (line_ss >> gamma_emission_energy).fail();

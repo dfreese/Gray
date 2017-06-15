@@ -16,9 +16,6 @@ public:
     virtual void Reset();
     virtual void Decay(int photon_number, double time, int src_id,
                        const VectorR3 & position);
-    void set_acolinearity(double acolinearity_deg_fwhm);
-
-    static const double default_acolinearity;
     void SetPositronRange(double c, double k1, double k2, double max);
     void SetPositronRange(double fwhm, double max);
 
