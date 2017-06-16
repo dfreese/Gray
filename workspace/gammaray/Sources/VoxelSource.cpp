@@ -126,5 +126,6 @@ bool VoxelSource::Inside(const VectorR3 & pos) const
     if (isotope == NULL) {
         return false;
     }
+    // TODO: allow for positioning inside of voxelized sources
     return false;
 }

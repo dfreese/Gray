@@ -29,7 +29,6 @@ VectorSource::VectorSource(const double act, const VectorR3& boxMin,
 
 VectorR3 VectorSource::Decay(int photon_number, double time)
 {
-
     if (isotope == NULL) {
         return(VectorR3(0, 0, 0));
     }
@@ -43,46 +42,10 @@ VectorR3 VectorSource::Decay(int photon_number, double time)
         pos.x = aabb.GetBoxMin().x + Random::Uniform()*delta.x;
         pos.y = aabb.GetBoxMin().y + Random::Uniform()*delta.y;
         pos.z = aabb.GetBoxMin().z + Random::Uniform()*delta.z;
-    } while (RejectionTest(pos));
+    } while (!Inside(pos));
 
     isotope->Decay(photon_number, time, source_num, pos);
-    // no positron range for vector sources
-//    isotope->SetPosition(pos);
     return(pos);
-}
-
-bool VectorSource::RejectionTest(const VectorR3 &pos)
-{
-
-    VectorR3 dir;
-    Random::UniformSphere(dir);
-
-    double hitDist;
-    VisiblePoint visPoint;
-    long intersectNum = kd_tree->SeekIntersection(pos, dir, hitDist, visPoint);
-
-    if ( intersectNum<0 ) {
-        return true;
-    } else {
-
-        // get the triangle that generated the hit
-        const ViewableTriangle * t = (const ViewableTriangle*)&(visPoint.GetObject());
-
-        // if the triangle is not a source find a new source
-
-        if (t->GetSrcId() == 0) {
-            return true;
-        }
-        if (visPoint.IsFrontFacing()) {
-            return true;
-        }
-        if (visPoint.IsBackFacing()) {
-            return false;
-        }
-        cout << "ERROR: material has no face\n";
-        exit(1);
-        return true;
-    }
 }
 
 void VectorSource::SetMin(const VectorR3 &vert)
@@ -113,10 +76,32 @@ void VectorSource::SetMax(const VectorR3 &vert)
 
 bool VectorSource::Inside(const VectorR3 & pos) const
 {
-    // TODO: Fix const Inside Reference (because of rejection test)
     if (isotope == NULL) {
         return false;
     }
-    return false;
-    //return !(RejectionTest(isotope->GetPosition()));
+    VectorR3 dir;
+    Random::UniformSphere(dir);
+
+    double hitDist;
+    VisiblePoint visPoint;
+    long intersectNum = kd_tree->SeekIntersection(pos, dir, hitDist, visPoint);
+
+    if (intersectNum < 0) {
+        return false;
+    }
+
+    // TODO: define a kd-tree per sources to determine if it's inside.
+    // get the triangle that generated the hit
+    const ViewableTriangle & tri = dynamic_cast<const ViewableTriangle&>(visPoint.GetObject());
+    // if the triangle is not a source find a new source
+    if (tri.GetSrcId() == 0) {
+        return false;
+    }
+    if (visPoint.IsFrontFacing()) {
+        return false;
+    }
+    if (visPoint.IsBackFacing()) {
+        return true;
+    }
+    throw(runtime_error("Material has no face"));
 }

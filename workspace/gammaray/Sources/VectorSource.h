@@ -31,7 +31,6 @@ public:
 
 private:
     AABB aabb;
-    bool RejectionTest(const VectorR3 &pos);
     IntersectKdTree * kd_tree;
 };
 
