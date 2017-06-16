@@ -1,3 +1,4 @@
+#include <ctime>
 #include <iostream>
 #include <Graphics/SceneDescription.h>
 #include <GraphicsTrees/IntersectionKdTree.h>
@@ -17,6 +18,7 @@ using namespace std;
 
 int main( int argc, char** argv)
 {
+    clock_t start_time = clock();
     if (argc == 1) {
         Config::usage();
         return(0);
@@ -132,6 +134,8 @@ int main( int argc, char** argv)
     sources.SetStartTime(config.get_start_time());
     sources.InitSources();
 
+    clock_t setup_time = clock();
+
     const long num_chars = 70;
     double tick_mark = sources.GetSimulationTime() / num_chars;
     int current_tick = 0;
@@ -191,5 +195,14 @@ int main( int argc, char** argv)
         cout << "______________\n DAQ Stats\n______________\n"
              << singles_stream << endl;
     }
+
+    clock_t end_time = clock();
+    double setup_time_sec =  double(setup_time - start_time) / CLOCKS_PER_SEC;
+    double run_time_sec =  double(end_time - setup_time) / CLOCKS_PER_SEC;
+    double full_time_sec =  double(end_time - start_time) / CLOCKS_PER_SEC;
+    cout << "CPU Time (s):"
+         << "  setup = " << setup_time_sec << ", "
+         << "run = " << run_time_sec << ", "
+         << "total = " << full_time_sec << endl;
     return(0);
 }
