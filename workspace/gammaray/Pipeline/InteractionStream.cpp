@@ -339,19 +339,20 @@ int InteractionStream::set_processes(
     return(0);
 }
 
-
 InteractionStream::MergeF InteractionStream::make_anger_func(
         const std::vector<std::string> & block_maps,
-        const std::vector<int> & block_size)
+        const std::vector<int> & block_size,
+        const std::vector<int> & reverse_map)
 {
     const std::vector<int> & bx = this->id_maps[block_maps[0]];
     const std::vector<int> & by = this->id_maps[block_maps[1]];
     const std::vector<int> & bz = this->id_maps[block_maps[2]];
     const int no_by = block_size[1];
     const int no_bz = block_size[2];
+
     auto merge_info = this->merge_info_func;
-    auto merge_anger = [bx, by, bz, no_by, no_bz, merge_info](EventT & e0,
-                                                        const EventT & e1)
+    auto merge_anger = [bx, by, bz, no_by, no_bz, merge_info, reverse_map](
+            EventT & e0, const EventT & e1)
     {
         float energy_result = e0.energy + e1.energy;
         int row0 = bx[e0.det_id];
@@ -370,10 +371,8 @@ InteractionStream::MergeF InteractionStream::make_anger_func(
                 static_cast<float>(lay0) * (e0.energy / energy_result) +
                 static_cast<float>(lay1) * (e1.energy / energy_result));
 
-        // TODO: lookup the resulting det_id, rather than assume it's all
-        // linear like this.
-        e0.det_id -= (row0 * no_by + col0) * no_bz + lay0;
-        e0.det_id += (row_result * no_by + col_result) * no_bz + lay_result;
+        int rev_idx = (row_result * no_by + col_result) * no_bz + lay_result;
+        e0.det_id = reverse_map[rev_idx];
         merge_info(e0, e1);
     };
     return(merge_anger);
@@ -402,7 +401,31 @@ int InteractionStream::make_anger_func(
             return(-3);
         }
     }
-    merge_func = make_anger_func(block_maps, block_size);
+    const std::vector<int> & bx = this->id_maps[block_maps[0]];
+    const std::vector<int> & by = this->id_maps[block_maps[1]];
+    const std::vector<int> & bz = this->id_maps[block_maps[2]];
+    const int no_bx = block_size[0];
+    const int no_by = block_size[1];
+    const int no_bz = block_size[2];
+    const int total = no_bx * no_by * no_bz;
+
+    std::vector<int> rev_map(total, -1);
+    for (int idx = 0; idx < total; idx++) {
+        int rev_map_index = (bx[idx] * no_by + by[idx]) * no_bz + bz[idx];
+        if ((rev_map_index < 0) || (rev_map_index >= total)) {
+            std::cerr << "Block index mapping is not consistent with block size at detector "
+                      << idx << std::endl;
+            return(-4);
+        }
+        if (rev_map[rev_map_index] != -1) {
+            std::cerr << "Duplicate mapping found for anger merge block index on detector "
+                      << idx << std::endl;
+            return(-5);
+        }
+        rev_map[rev_map_index] = idx;
+    }
+
+    merge_func = make_anger_func(block_maps, block_size, rev_map);
     return(0);
 }
 

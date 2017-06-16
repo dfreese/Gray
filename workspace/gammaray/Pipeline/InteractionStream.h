@@ -96,7 +96,8 @@ private:
     int set_processes(const std::vector<ProcessDescription> & process_descriptions);
 
     MergeF make_anger_func(const std::vector<std::string> & block_maps,
-                           const std::vector<int> & block_size);
+                           const std::vector<int> & block_size,
+                           const std::vector<int> & reverse_map);
 
     int make_anger_func(const std::vector<std::string> & anger_opts,
                         MergeF & merge_func);
