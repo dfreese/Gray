@@ -18,6 +18,7 @@ public:
     virtual void Reset();
     NuclearDecay * NextNuclearDecay();
     bool IsEmpty() const;
+    double GetHalfLife() const;
     double FractionRemaining(double time) const;
 
 protected:

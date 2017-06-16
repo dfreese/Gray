@@ -193,6 +193,22 @@ void SourceList::SetStartTime(double val)
     start_time = val;
 }
 
+double SourceList::ExpectedDecays(double start_time, double sim_time) {
+    double total = 0;
+    for (Source * source: list) {
+        double activity = source->GetActivity();
+        double half_life = source->GetIsotope()->GetHalfLife();
+        double source_decays = (pow(0.5, start_time / half_life) -
+                                pow(0.5, (start_time + sim_time) / half_life)) *
+                               (half_life / log(2.0)) * activity;
+        if (!simulate_isotope_half_life) {
+            source_decays = sim_time * activity;
+        }
+        total += source_decays;
+    }
+    return (total);
+}
+
 void SourceList::InitSources() {
     for (size_t sidx = 0; sidx < list.size(); sidx++) {
         AddNextDecay(sidx, start_time);
