@@ -349,7 +349,8 @@ InteractionStream::MergeF InteractionStream::make_anger_func(
     const std::vector<int> & bz = this->id_maps[block_maps[2]];
     const int no_by = block_size[1];
     const int no_bz = block_size[2];
-    auto merge_anger = [bx, by, bz, no_by, no_bz, this](EventT & e0,
+    auto merge_info = this->merge_info_func;
+    auto merge_anger = [bx, by, bz, no_by, no_bz, merge_info](EventT & e0,
                                                         const EventT & e1)
     {
         float energy_result = e0.energy + e1.energy;
@@ -373,7 +374,7 @@ InteractionStream::MergeF InteractionStream::make_anger_func(
         // linear like this.
         e0.det_id -= (row0 * no_by + col0) * no_bz + lay0;
         e0.det_id += (row_result * no_by + col_result) * no_bz + lay_result;
-        this->merge_info_func(e0, e1);
+        merge_info(e0, e1);
     };
     return(merge_anger);
 }
@@ -421,13 +422,15 @@ int InteractionStream::add_merge_process(
         merge_type = options[0];
     }
     if (merge_type == "max") {
-        merge_func = [this](EventT & e0, const EventT & e1) {
+        auto merge_info = this->merge_info_func;
+        merge_func = [merge_info](EventT & e0, const EventT & e1) {
             e0.det_id = e0.energy > e1.energy ? e0.det_id:e1.det_id;
-            this->merge_info_func(e0, e1);
+            merge_info(e0, e1);
         };
     } else if (merge_type == "first") {
-        merge_func = [this](EventT & e0, const EventT & e1) {
-            this->merge_info_func(e0, e1);
+        auto merge_info = this->merge_info_func;
+        merge_func = [merge_info](EventT & e0, const EventT & e1) {
+            merge_info(e0, e1);
         };
     } else if (merge_type == "anger") {
         if (make_anger_func(options, merge_func) < 0) {
