@@ -31,8 +31,15 @@ public:
     bool LoadIsotopes(const std::string & filename);
 
 private:
-    double ExpectedDecays(double start_time, double sim_time);
-    double ExpectedPhotons(double start_time, double sim_time);
+    double ExpectedDecays(double start_time, double sim_time) const;
+    double ExpectedPhotons(double start_time, double sim_time) const;
+    void CalculateEqualPhotonTimeSplits(
+        double start_time, double full_sim_time, int n,
+        std::vector<double> & split_start,
+        std::vector<double> & split_length) const;
+    double SearchSplitTime(double start_time, double full_sim_time,
+                           double split_start, double no_photons,
+                           double tol) const;
     std::vector <Source*> list;
     std::vector <Source*> neg_list;
     std::vector <Isotope*> isotopes;

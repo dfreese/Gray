@@ -193,7 +193,7 @@ void SourceList::SetStartTime(double val)
     start_time = val;
 }
 
-double SourceList::ExpectedDecays(double start_time, double sim_time) {
+double SourceList::ExpectedDecays(double start_time, double sim_time) const {
     double total = 0;
     for (Source * source: list) {
         double activity = source->GetActivity();
@@ -209,7 +209,7 @@ double SourceList::ExpectedDecays(double start_time, double sim_time) {
     return (total);
 }
 
-double SourceList::ExpectedPhotons(double start_time, double sim_time) {
+double SourceList::ExpectedPhotons(double start_time, double sim_time) const {
     double total = 0;
     for (Source * source: list) {
         double activity = source->GetActivity();
@@ -223,6 +223,53 @@ double SourceList::ExpectedPhotons(double start_time, double sim_time) {
         total += source_decays * source->GetIsotope()->ExpectedNoPhotons();
     }
     return (total);
+}
+
+double SourceList::SearchSplitTime(double start_time, double full_sim_time,
+                                   double split_start, double no_photons,
+                                   double tol) const
+{
+    double end_time = start_time + full_sim_time;
+    // Initialize to the end of the simulation
+    double split_time = end_time - start_time;
+    double alpha = 0.5;
+    double split_no_photons;
+    do {
+        split_no_photons = ExpectedPhotons(split_start, split_time);
+        split_time *= 1.0 + alpha * ((no_photons / split_no_photons) - 1.0);
+        // Numerical safety check
+        if ((split_time <= 0) || (split_time > full_sim_time)) {
+            break;
+        }
+    } while ((abs(split_no_photons - no_photons) / no_photons) > tol);
+    // Make sure we don't overrun the end of the simulation, this should not
+    // happen, but tolerances can add up.
+    if (split_start + split_time > end_time) {
+        split_time = end_time - split_start;
+    }
+    // Always return something sensible
+    if (split_time < 0) {
+        split_time = 0;
+    }
+    return(split_time);
+}
+
+void SourceList::CalculateEqualPhotonTimeSplits(
+    double start_time, double full_sim_time, int n,
+    std::vector<double> & split_start, std::vector<double> & split_length) const
+{
+    split_start = std::vector<double>(n, start_time);
+    split_length = std::vector<double>(n, full_sim_time / n);
+    double total_photons = ExpectedPhotons(start_time, full_sim_time);
+    double split_exp_photons = total_photons / n;
+    for (int idx = 0; idx < n; idx++) {
+        split_length[idx] = SearchSplitTime(start_time, full_sim_time,
+                                            split_start[idx], split_exp_photons,
+                                            1.0e-11);
+        if ((idx + 1) < n) {
+            split_start[idx + 1] = split_start[idx] + split_length[idx];
+        }
+    }
 }
 
 void SourceList::InitSources() {
