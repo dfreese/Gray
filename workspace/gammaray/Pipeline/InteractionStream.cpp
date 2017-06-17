@@ -388,7 +388,7 @@ struct InteractionStream::AngerLogicFunctor {
     const int no_by;
     const int no_bz;
     const std::vector<int> reverse_map;
-    MergeF merge_info;
+    const MergeF merge_info;
 };
 
 int InteractionStream::make_anger_func(
