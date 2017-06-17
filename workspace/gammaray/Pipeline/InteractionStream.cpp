@@ -382,7 +382,8 @@ int InteractionStream::make_anger_func(
         const std::vector<std::string> & anger_opts,
         MergeF & merge_func)
 {
-    if (anger_opts.size() != 7) {
+    if (anger_opts.size() != 4) {
+        std::cerr << "Error: anger merge requires 3 block mapping names" << std::endl;
         return(-1);
     }
     std::vector<std::string> block_maps(3, "");
@@ -390,10 +391,6 @@ int InteractionStream::make_anger_func(
     // The first one should be "anger"
     for (size_t idx = 0; idx < 3; idx++) {
         block_maps[idx] = anger_opts[idx + 1];
-        std::stringstream ss(anger_opts[idx + 4]);
-        if ((ss >> block_size[idx]).fail()) {
-            return(-2);
-        }
     }
     for (const auto & bm: block_maps) {
         if (!this->id_maps.count(bm)) {
@@ -404,6 +401,9 @@ int InteractionStream::make_anger_func(
     const std::vector<int> & bx = this->id_maps[block_maps[0]];
     const std::vector<int> & by = this->id_maps[block_maps[1]];
     const std::vector<int> & bz = this->id_maps[block_maps[2]];
+    block_size[0] = *std::max_element(bx.begin(), bx.end()) + 1;
+    block_size[1] = *std::max_element(by.begin(), by.end()) + 1;
+    block_size[2] = *std::max_element(bz.begin(), bz.end()) + 1;
     const int no_bx = block_size[0];
     const int no_by = block_size[1];
     const int no_bz = block_size[2];
@@ -415,11 +415,15 @@ int InteractionStream::make_anger_func(
         if ((rev_map_index < 0) || (rev_map_index >= total)) {
             std::cerr << "Block index mapping is not consistent with block size at detector "
                       << idx << std::endl;
+            std::cerr << "Assuming block size of (x,y,z) = (" << no_bx << ","
+                      << no_by << "," << no_bz << ")" << std::endl;
             return(-4);
         }
         if (rev_map[rev_map_index] != -1) {
             std::cerr << "Duplicate mapping found for anger merge block index on detector "
                       << idx << std::endl;
+            std::cerr << "Assuming block size of (x,y,z) = (" << no_bx << ","
+                      << no_by << "," << no_bz << ")" << std::endl;
             return(-5);
         }
         rev_map[rev_map_index] = idx;

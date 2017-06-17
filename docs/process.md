@@ -24,12 +24,12 @@ Merge two, or more events that occur within the same window.  How the events are
 merged is dictated by the merge type.  Currenlty allowed types are "max", which
 is default, "first", and "anger".  First merges the events into the interaction
 that occurs first in time.  Max merges the events into the one with maximum
-energy.  Anger requires six more options.  [component name x] [name y] [name z]
-[array size x] [sy] [sz].  These dictate the size of the array and how each of
-the crystals maps to it's location within the array.  This currently requires
-that the x, y, and z components are specified in the mapping file using C index
-order for [X] [Y] [Z], otherwise the positioning will fail.  Currently, only
-energy, statistics, and detector id are effected from the merging process
+energy.  Anger requires three more options: [component name x] [name y] [name z]
+that refer to the mapping file.  These tell gray the 3D coordinates of the
+detector within the block of detectors.  The size of the block/array is inferred
+from the maximum of (x,y,z) and gray expects the array to be completely filled.
+No gaps can be left.  Currently, only energy, statistics, and detector id are
+affected from the merging process.
 
 
 ### Deadtime
