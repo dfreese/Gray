@@ -15,8 +15,8 @@ public:
                        const VectorR3 & position);
     void Decay(int photon_number, double time, int src_id,
                const VectorR3 & position, const VectorR3 & anni_position);
-
-    static const double default_acolinearity;
+    bool EmitsGamma() const;
+    double PositronEmissionProb() const;
 
 private:
     double acolinearity;

@@ -42,3 +42,7 @@ double Isotope::GetHalfLife() const {
 double Isotope::FractionRemaining(double time) const {
     return(std::pow(2.0, -time / half_life));
 }
+
+double Isotope::ExpectedNoPhotons() const {
+    return (_ExpectedNoPhotons());
+}

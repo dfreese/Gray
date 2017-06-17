@@ -20,6 +20,7 @@ public:
     bool IsEmpty() const;
     double GetHalfLife() const;
     double FractionRemaining(double time) const;
+    double ExpectedNoPhotons() const;
 
 protected:
     void AddNuclearDecay(NuclearDecay * nd);
@@ -27,6 +28,7 @@ protected:
 private:
     double half_life;
     std::stack<NuclearDecay*> daughter;
+    virtual double _ExpectedNoPhotons() const = 0;
 };
 
 #endif /* ISOTOPE_H */

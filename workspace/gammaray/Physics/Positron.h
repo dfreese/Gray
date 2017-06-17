@@ -35,6 +35,7 @@ private:
                                        double positronMaxRange);
     static VectorR3 PositronRangeGauss(const VectorR3 & p, double positronFWHM,
                                        double positronMaxRange);
+    virtual double _ExpectedNoPhotons() const;
 };
 
 #endif /* POSITRON_H */

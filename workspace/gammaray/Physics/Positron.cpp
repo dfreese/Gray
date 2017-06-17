@@ -121,3 +121,11 @@ VectorR3 Positron::PositronRangeGauss(const VectorR3 & p, double positronFWHM,
 
     return(p + positronDir);
 }
+
+double Positron::_ExpectedNoPhotons() const {
+    double expected = 2.0 * p.PositronEmissionProb();
+    if (p.EmitsGamma()) {
+        expected += 1.0;
+    }
+    return(expected);
+}

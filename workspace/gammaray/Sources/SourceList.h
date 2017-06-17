@@ -32,6 +32,7 @@ public:
 
 private:
     double ExpectedDecays(double start_time, double sim_time);
+    double ExpectedPhotons(double start_time, double sim_time);
     std::vector <Source*> list;
     std::vector <Source*> neg_list;
     std::vector <Isotope*> isotopes;

@@ -95,3 +95,12 @@ void PositronDecay::Decay(int photon_number, double time, int src_id,
         AddPhoton(&red);
     }
 }
+
+bool PositronDecay::EmitsGamma() const {
+    return(emit_gamma);
+}
+
+
+double PositronDecay::PositronEmissionProb() const {
+    return(positron_emission_prob);
+}

@@ -14,6 +14,7 @@ public:
     virtual void Reset();
 
 private:
+    virtual double _ExpectedNoPhotons() const;
     VectorR3 beam_axis;
     double beam_angle;
     BeamDecay beam;

@@ -28,3 +28,7 @@ void Beam::Reset()
     beam.Reset();
     Isotope::Reset();
 }
+
+double Beam::_ExpectedNoPhotons() const {
+    return(2.0);
+}
