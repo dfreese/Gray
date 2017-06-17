@@ -530,6 +530,7 @@ int InteractionStream::add_blur_process(
             if ((ss >> ref_energy).fail()) {
                 std::cerr << "invalid reference energy: " << options[1]
                 << std::endl;
+                return(-1);
             }
             auto eblur = [value, ref_energy](EventT & e) {
                 Blur::blur_energy_invsqrt(e, value, ref_energy);
