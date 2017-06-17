@@ -72,7 +72,9 @@ private:
     std::vector<SortProcT*> sort_processes;
     std::vector<CoincProcT*> coinc_processes;
     std::vector<DeadtimeT*> deadtime_processes;
-    struct AngerLogicFunctor;
+    struct MergeFirstFunctor;
+    struct MergeMaxFunctor;
+    struct MergeAngerLogicFunctor;
 
     static int load_id_maps(const std::string & filename,
                             std::map<std::string, std::vector<int>> & id_maps);
