@@ -339,21 +339,26 @@ int InteractionStream::set_processes(
     return(0);
 }
 
-InteractionStream::MergeF InteractionStream::make_anger_func(
-        const std::vector<std::string> & block_maps,
-        const std::vector<int> & block_size,
-        const std::vector<int> & reverse_map)
-{
-    const std::vector<int> & bx = this->id_maps[block_maps[0]];
-    const std::vector<int> & by = this->id_maps[block_maps[1]];
-    const std::vector<int> & bz = this->id_maps[block_maps[2]];
-    const int no_by = block_size[1];
-    const int no_bz = block_size[2];
-
-    auto merge_info = this->merge_info_func;
-    auto merge_anger = [bx, by, bz, no_by, no_bz, merge_info, reverse_map](
-            EventT & e0, const EventT & e1)
+struct InteractionStream::AngerLogicFunctor {
+    AngerLogicFunctor(const std::vector<int> & bx_map,
+                      const std::vector<int> & by_map,
+                      const std::vector<int> & bz_map,
+                      int nx, int ny, int nz,
+                      const std::vector<int> & rev_map,
+                      MergeF merge_info_func) :
+        bx(bx_map),
+        by(by_map),
+        bz(bz_map),
+        no_bx(nx),
+        no_by(ny),
+        no_bz(nz),
+        reverse_map(rev_map),
+        merge_info(merge_info_func)
     {
+
+    }
+
+    void operator() (EventT & e0, const EventT & e1) {
         float energy_result = e0.energy + e1.energy;
         int row0 = bx[e0.det_id];
         int row1 = bx[e1.det_id];
@@ -374,9 +379,17 @@ InteractionStream::MergeF InteractionStream::make_anger_func(
         int rev_idx = (row_result * no_by + col_result) * no_bz + lay_result;
         e0.det_id = reverse_map[rev_idx];
         merge_info(e0, e1);
-    };
-    return(merge_anger);
-}
+    }
+
+    const std::vector<int> bx;
+    const std::vector<int> by;
+    const std::vector<int> bz;
+    const int no_bx;
+    const int no_by;
+    const int no_bz;
+    const std::vector<int> reverse_map;
+    MergeF merge_info;
+};
 
 int InteractionStream::make_anger_func(
         const std::vector<std::string> & anger_opts,
@@ -429,7 +442,8 @@ int InteractionStream::make_anger_func(
         rev_map[rev_map_index] = idx;
     }
 
-    merge_func = make_anger_func(block_maps, block_size, rev_map);
+    merge_func = AngerLogicFunctor(bx, by, bz, no_bx, no_by, no_bz, rev_map,
+                                   this->merge_info_func);
     return(0);
 }
 
