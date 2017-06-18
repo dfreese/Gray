@@ -5,6 +5,7 @@ A ray-tracing based Monte-Carlo simulation for PET
 * CMake 2.8.12 or later
 * OpenGL, GLU, and GLUT (Optional for viewing)
 * Python 2.5 or later to generate the materials files from XCOM
+* MPI (Optional for parallel computing operations)
 
 ## Building
 How to install Gray:
@@ -54,6 +55,7 @@ How to install Gray:
     options to run that program.
     ```
     gray
-    gray-view
     gray-daq
+    gray-mpi
+    gray-view
     ```

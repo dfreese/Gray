@@ -14,6 +14,7 @@ public:
     static bool SeedSet();
     static void Seed();
     static unsigned long GetSeed();
+    static void RankReseed(int rank);
     static double Uniform();
     static double Gaussian();
     static double Exponential(const double lambda);

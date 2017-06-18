@@ -27,7 +27,9 @@ public:
     void SetFormat(Format format);
     void LogInteraction(const Interaction & interact);
     void LogInteractions(const std::vector<Interaction> & interactions);
+    void Close();
     static int ParseFormat(const std::string & identifier, Format & fmt);
+    static void DisableHeader();
 
     static int header_start_magic_number;
     static int output_version_number;
@@ -93,6 +95,7 @@ private:
     std::ofstream log_file;
     Format format;
     WriteFlags var_format_write_flags;
+    static bool write_header_flag;
 };
 
 #endif /*OUTPUT_H_*/

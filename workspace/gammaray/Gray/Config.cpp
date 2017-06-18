@@ -9,6 +9,7 @@
 #include <Gray/Config.h>
 #include <sstream>
 #include <iostream>
+#include <Gray/Mpi.h>
 
 using namespace std;
 
@@ -21,6 +22,7 @@ bool Config::ProcessCommandLine(int argc, char **argv, bool fail_without_scene)
     if (argc == 1) {
         return(false);
     }
+    Mpi::Init(argc, argv);
 
     char * include_cstr = getenv ("GRAY_INCLUDE");
     if (include_cstr) {

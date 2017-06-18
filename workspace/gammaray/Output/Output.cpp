@@ -5,12 +5,22 @@
 
 using namespace std;
 
+bool Output::write_header_flag = true;
+
+void Output::DisableHeader() {
+    write_header_flag = false;
+}
+
 Output::Output()
 {
 }
 
 Output::~Output()
 {
+    log_file.close();
+}
+
+void Output::Close() {
     log_file.close();
 }
 
@@ -113,12 +123,14 @@ bool Output::SetLogfile(const std::string & name)
         return false;
     }
 
-    if (format == VARIABLE_ASCII) {
-        write_header(log_file, false);
-        write_write_flags(var_format_write_flags, log_file, false);
-    } else if (format == VARIABLE_BINARY) {
-        write_header(log_file, true);
-        write_write_flags(var_format_write_flags, log_file, true);
+    if (write_header_flag) {
+        if (format == VARIABLE_ASCII) {
+            write_header(log_file, false);
+            write_write_flags(var_format_write_flags, log_file, false);
+        } else if (format == VARIABLE_BINARY) {
+            write_header(log_file, true);
+            write_write_flags(var_format_write_flags, log_file, true);
+        }
     }
 
     return(true);

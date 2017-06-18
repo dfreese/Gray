@@ -54,6 +54,15 @@ bool Random::SeedSet() {
     return(seed_set);
 }
 
+void Random::RankReseed(int rank) {
+    std::uniform_int_distribution<unsigned int> dist;
+    if (rank > 0) {
+        generator.discard(rank);
+        unsigned long new_seed = dist(generator);
+        Seed(new_seed);
+    }
+}
+
 void Random::UniformSphere(VectorR3 & p)
 {
     double cost = 2.0 * Random::Uniform() - 1.0;

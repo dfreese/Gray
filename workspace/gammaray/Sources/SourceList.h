@@ -29,6 +29,7 @@ public:
     void SetStartTime(double val);
     void InitSources();
     bool LoadIsotopes(const std::string & filename);
+    void AdjustTimeForSplit(int idx, int n);
 
 private:
     double ExpectedDecays(double start_time, double sim_time) const;

@@ -234,14 +234,17 @@ double SourceList::SearchSplitTime(double start_time, double full_sim_time,
     double split_time = end_time - start_time;
     double alpha = 0.5;
     double split_no_photons;
-    do {
+    for (int idx = 0; idx < 20; idx++) {
         split_no_photons = ExpectedPhotons(split_start, split_time);
         split_time *= 1.0 + alpha * ((no_photons / split_no_photons) - 1.0);
         // Numerical safety check
         if ((split_time <= 0) || (split_time > full_sim_time)) {
             break;
         }
-    } while ((abs(split_no_photons - no_photons) / no_photons) > tol);
+        if ((abs(split_no_photons - no_photons) / no_photons) < tol) {
+            break;
+        }
+    }
     // Make sure we don't overrun the end of the simulation, this should not
     // happen, but tolerances can add up.
     if (split_start + split_time > end_time) {
@@ -270,6 +273,14 @@ void SourceList::CalculateEqualPhotonTimeSplits(
             split_start[idx + 1] = split_start[idx] + split_length[idx];
         }
     }
+}
+
+void SourceList::AdjustTimeForSplit(int idx, int n) {
+    std::vector<double> split_starts, split_times;
+    CalculateEqualPhotonTimeSplits(start_time, simulation_time, n,
+                                   split_starts, split_times);
+    SetStartTime(split_starts[idx]);
+    SetSimulationTime(split_times[idx]);
 }
 
 void SourceList::InitSources() {

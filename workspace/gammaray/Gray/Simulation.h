@@ -24,7 +24,7 @@ public:
                        Output & output_hits, Output & output_singles,
                        std::vector<Output> & outputs_coinc,
                        InteractionStream & singles_stream,
-                       GammaMaterial* default_material, bool print_prog_bar);
+                       GammaMaterial* default_material);
 };
 
 #endif // SIMULATION_H_

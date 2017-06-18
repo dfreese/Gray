@@ -17,7 +17,7 @@
 
 using namespace std;
 
-int main( int argc, char** argv)
+int gray(int argc, char ** argv)
 {
     clock_t start_time = clock();
     if (argc == 1) {
@@ -101,8 +101,7 @@ int main( int argc, char** argv)
     clock_t setup_time = clock();
     Simulation::RunSim(config, sources, intersect_kd_tree, output_hits,
                        output_singles, outputs_coinc, singles_stream,
-                       dynamic_cast<GammaMaterial*>(&scene.GetMaterial(0)),
-                       true);
+                       dynamic_cast<GammaMaterial*>(&scene.GetMaterial(0)));
 
     clock_t end_time = clock();
     double setup_time_sec =  double(setup_time - start_time) / CLOCKS_PER_SEC;
