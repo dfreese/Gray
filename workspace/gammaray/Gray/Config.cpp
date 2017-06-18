@@ -16,7 +16,7 @@ Config::Config()
 {
 }
 
-bool Config::ProcessCommandLine(int argc, char **argv)
+bool Config::ProcessCommandLine(int argc, char **argv, bool fail_without_scene)
 {
     if (argc == 1) {
         return(false);
@@ -116,25 +116,34 @@ bool Config::ProcessCommandLine(int argc, char **argv)
             double tmp_sort_time;
             if ((follow_arg_ss >> tmp_sort_time).fail()) {
                 cerr << "Invalid sort time: " << following_argument << endl;
-                return(-1);
+                return(false);
             }
             set_sort_time(tmp_sort_time);
         }
     }
 
+    if (fail_without_scene && get_filename_scene().empty()) {
+        cerr << "Error: input filename not set" << endl;
+        return(false);
+    }
+
     return(true);
 }
 
-bool Config::get_log_hits() {
+bool Config::get_log_hits() const {
     return(!(filename_hits == ""));
 }
 
-bool Config::get_log_singles() {
+bool Config::get_log_singles() const {
     return(!(filename_singles == ""));
 }
 
-bool Config::get_log_coinc() {
+bool Config::get_log_coinc() const {
     return(!filenames_coinc.empty());
+}
+
+bool Config::get_log_any() const {
+    return(get_log_hits() || get_log_singles() || get_log_coinc());
 }
 
 void Config::usage() {
@@ -168,7 +177,7 @@ void Config::set_filename_scene(const std::string & name) {
     }
 }
 
-std::string Config::get_filename_scene() {
+std::string Config::get_filename_scene() const {
     return(filename_scene);
 }
 
@@ -178,7 +187,7 @@ void Config::set_filename_process(const std::string & name) {
     }
 }
 
-std::string Config::get_filename_process() {
+std::string Config::get_filename_process() const {
     return(filename_process);
 }
 
@@ -188,7 +197,7 @@ void Config::set_filename_mapping(const std::string & name) {
     }
 }
 
-std::string Config::get_filename_mapping() {
+std::string Config::get_filename_mapping() const {
     return(filename_mapping);
 }
 
@@ -198,7 +207,7 @@ void Config::set_filename_hits(const std::string & name) {
     }
 }
 
-std::string Config::get_filename_hits() {
+std::string Config::get_filename_hits() const {
     return(filename_hits);
 }
 
@@ -208,7 +217,7 @@ void Config::set_filename_singles(const std::string & name) {
     }
 }
 
-std::string Config::get_filename_singles() {
+std::string Config::get_filename_singles() const {
     return(filename_singles);
 }
 
@@ -219,11 +228,11 @@ void Config::set_seed(unsigned long val) {
     }
 }
 
-unsigned long Config::get_seed() {
+unsigned long Config::get_seed() const {
     return(seed);
 }
 
-bool Config::get_seed_set() {
+bool Config::get_seed_set() const {
     return(seed_set);
 }
 
@@ -245,11 +254,11 @@ void Config::set_format_hits(const Output::Format & fmt) {
     }
 }
 
-Output::Format Config::get_format_hits() {
+Output::Format Config::get_format_hits() const {
     return(format_hits);
 }
 
-bool Config::get_format_hits_set() {
+bool Config::get_format_hits_set() const {
     return(format_hits_set);
 }
 
@@ -271,7 +280,7 @@ void Config::set_format_singles(const Output::Format & fmt) {
     }
 }
 
-Output::Format Config::get_format_singles() {
+Output::Format Config::get_format_singles() const {
     return(format_singles);
 }
 
@@ -293,7 +302,7 @@ void Config::set_format_coinc(const Output::Format & fmt) {
     }
 }
 
-Output::Format Config::get_format_coinc() {
+Output::Format Config::get_format_coinc() const {
     return(format_coinc);
 }
 
@@ -301,7 +310,7 @@ void Config::add_process_line(const std::string & line) {
     process_lines.push_back(line);
 }
 
-std::vector<std::string> Config::get_process_lines() {
+std::vector<std::string> Config::get_process_lines() const {
     return(process_lines);
 }
 
@@ -325,23 +334,23 @@ void Config::set_log_all(bool val) {
     log_all = val;
 }
 
-bool Config::get_log_nuclear_decays() {
+bool Config::get_log_nuclear_decays() const {
     return(log_nuclear_decays || log_all);
 }
 
-bool Config::get_log_nonsensitive() {
+bool Config::get_log_nonsensitive() const {
     return(log_nonsensitive || log_all);
 }
 
-bool Config::get_log_nointeraction() {
+bool Config::get_log_nointeraction() const {
     return(log_nointeraction || log_all);
 }
 
-bool Config::get_log_errors() {
+bool Config::get_log_errors() const {
     return(log_errors || log_all);
 }
 
-bool Config::get_log_all() {
+bool Config::get_log_all() const {
     return(log_all);
 }
 

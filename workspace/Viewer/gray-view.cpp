@@ -1,25 +1,26 @@
 #include <iostream>
 #include <Graphics/SceneDescription.h>
 #include <GraphicsTrees/IntersectionKdTree.h>
+#include <Gray/Config.h>
 #include <Gray/LoadMaterials.h>
 #include <Gray/LoadDetector.h>
-#include <Gray/Config.h>
+#include <Gray/Simulation.h>
 #include <Output/DetectorArray.h>
-#include <Output/Output.h>
 #include <Sources/SourceList.h>
-#include <Random/Random.h>
-#include <Physics/Physics.h>
-#include <Pipeline/InteractionStream.h>
 #include <Viewer.h>
 
 using namespace std;
 
 int main(int argc, char ** argv)
 {
-    Config config;
-    if (!config.ProcessCommandLine(argc,argv)) {
+    if (argc == 1) {
         Config::usage();
-        return(-1);
+        return(0);
+    }
+    Config config;
+    if (!config.ProcessCommandLine(argc, argv, true)) {
+        Config::usage();
+        return(1);
     }
     DetectorArray detector_array;
     SceneDescription scene;
@@ -35,47 +36,17 @@ int main(int argc, char ** argv)
                                          config.get_materials_filename()))
     {
         cerr << "Unable to load materials file: \""
-             << config.get_materials_filename() << "\"\n"
-             << "Check GRAY_INCLUDE env variable or specify name with --mat"
-             << endl;
+        << config.get_materials_filename() << "\"\n"
+        << "Check GRAY_INCLUDE env variable or specify name with --mat"
+        << endl;
         return(1);
     }
     if (!LoadDetector::Load(config.get_filename_scene(), scene, sources,
                             config, detector_array))
     {
         cerr << "Loading file \"" << config.get_filename_scene()
-             << "\" failed" << endl;
-        return(1);
-    }
-    if (config.get_seed_set()) {
-        Random::Seed(config.get_seed());
-    } else {
-        Random::Seed();
-    }
-    cout << "Using Seed: " << Random::GetSeed() << endl;
-
-
-    // Setup the singles processor and load a default or specified mapping file
-    const double max_req_sort_time = (5 * scene.GetMaxDistance() *
-                                      Physics::inverse_speed_of_light);
-    InteractionStream singles_stream(max_req_sort_time);
-
-    if (config.get_filename_mapping() == "") {
-        singles_stream.set_mappings(detector_array.default_mapping());
-    } else if (singles_stream.load_mappings(config.get_filename_mapping()) < 0)
-    {
-        cerr << "Loading mapping file \"" << config.get_filename_mapping()
         << "\" failed" << endl;
-        return(2);
-    }
-
-    if (config.get_filename_process() == "") {
-        singles_stream.set_processes(config.get_process_lines());
-    } else if (singles_stream.load_processes(config.get_filename_process()) < 0)
-    {
-        cerr << "Loading pipeline file \"" << config.get_filename_process()
-             << "\" failed" << endl;
-        return(3);
+        return(1);
     }
 
     IntersectKdTree intersect_kd_tree(scene);

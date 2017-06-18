@@ -46,6 +46,8 @@ add_library(gammaray
     Gray/LoadDetector.h
     Gray/LoadMaterials.cpp
     Gray/LoadMaterials.h
+    Gray/Simulation.cpp
+    Gray/Simulation.h
     KdTree/DoubleRecurse.cpp
     KdTree/DoubleRecurse.h
     KdTree/KdTree.h

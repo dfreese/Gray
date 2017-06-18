@@ -7,6 +7,7 @@
 #include <Gray/LoadMaterials.h>
 #include <Gray/LoadDetector.h>
 #include <Gray/Config.h>
+#include <Gray/Simulation.h>
 #include <Output/DetectorArray.h>
 #include <Output/Output.h>
 #include <Sources/SourceList.h>
@@ -24,13 +25,9 @@ int main( int argc, char** argv)
         return(0);
     }
     Config config;
-    if (!config.ProcessCommandLine(argc,argv)) {
+    if (!config.ProcessCommandLine(argc, argv, true)) {
         Config::usage();
         return(1);
-    }
-    if (config.get_filename_scene() == "") {
-        cerr << "Error: input filename not set" << endl;
-        return(false);
     }
     DetectorArray detector_array;
     SceneDescription scene;
@@ -58,13 +55,7 @@ int main( int argc, char** argv)
              << "\" failed" << endl;
         return(1);
     }
-    if (config.get_seed_set()) {
-        Random::Seed(config.get_seed());
-    } else {
-        Random::Seed();
-    }
-    cout << "Using Seed: " << Random::GetSeed() << endl;
-
+    Simulation::SetupSeed(config);
 
     // Setup the singles processor and load a default or specified mapping file
     const double max_req_sort_time = (5 * scene.GetMaxDistance() *
@@ -91,110 +82,27 @@ int main( int argc, char** argv)
     }
 
     IntersectKdTree intersect_kd_tree(scene);
-    sources.SetKdTree(intersect_kd_tree);
 
 
-    if (!config.get_log_hits() &&
-        !config.get_log_singles() &&
-        !config.get_log_coinc())
-    {
+    if (!config.get_log_any()) {
         cout << "Warning: No output specified." << endl;
     }
 
     Output output_hits;
     Output output_singles;
     std::vector<Output> outputs_coinc(singles_stream.no_coinc_processes());
-    if (config.get_log_hits()) {
-        output_hits.SetFormat(config.get_format_hits());
-        output_hits.SetVariableOutputMask(config.get_hits_var_output_write_flags());
-        output_hits.SetLogfile(config.get_filename_hits());
+    int setup_status = Simulation::SetupOutput(config, output_hits,
+                                               output_singles, outputs_coinc);
+    if (setup_status < 0) {
+        return(4);
     }
-    if (config.get_log_singles()) {
-        output_singles.SetFormat(config.get_format_singles());
-        output_singles.SetVariableOutputMask(config.get_singles_var_output_write_flags());
-        output_singles.SetLogfile(config.get_filename_singles());
-    }
-    if (config.get_log_coinc()) {
-        if (singles_stream.no_coinc_processes() !=
-            config.get_no_coinc_filenames())
-        {
-            cerr << "Incorrect number of filenames specified for coinc outputs"
-                 << endl;
-            return(4);
-        }
-        for (size_t idx = 0; idx < singles_stream.no_coinc_processes(); idx++) {
-            Output & output_coinc = outputs_coinc[idx];
-            output_coinc.SetFormat(config.get_format_coinc());
-            output_coinc.SetVariableOutputMask(config.get_coinc_var_output_write_flags());
-            output_coinc.SetLogfile(config.get_filename_coinc(idx));
-        }
-    }
-
-    sources.SetSimulationTime(config.get_time());
-    sources.SetStartTime(config.get_start_time());
-    sources.InitSources();
+    Simulation::SetupSources(config, sources, intersect_kd_tree);
 
     clock_t setup_time = clock();
-
-    const long num_chars = 70;
-    double tick_mark = sources.GetSimulationTime() / num_chars;
-    int current_tick = 0;
-    cout << "[" << flush;
-
-    GammaRayTrace::TraceStats stats;
-    const size_t interactions_soft_max = 100000;
-    while (sources.GetTime() < sources.GetEndTime()) {
-        vector<Interaction> interactions;
-        interactions.reserve(interactions_soft_max + 50);
-        GammaRayTrace::TraceSources(
-                sources, intersect_kd_tree, interactions,
-                interactions_soft_max,
-                dynamic_cast<GammaMaterial*>(&scene.GetMaterial(0)),
-                config.get_log_nuclear_decays(),
-                config.get_log_nonsensitive(),
-                config.get_log_nointeraction(),
-                config.get_log_errors(), stats);
-        if (config.get_log_hits()) {
-            output_hits.LogInteractions(interactions);
-        }
-        if (config.get_log_singles() || config.get_log_coinc()) {
-            auto singles_events = singles_stream.add_events(interactions);
-            if (config.get_log_singles()) {
-                output_singles.LogInteractions(singles_events);
-            }
-            for (size_t idx = 0; idx < singles_stream.no_coinc_processes(); idx++) {
-                // We need to make sure that we clear the coinc buffers every
-                // so often (every round here) otherwise, they will build up
-                // data.  A singles_stream.clear(), or a get_coinc_buffer call
-                // to each buffer is required.
-                auto coinc_events = singles_stream.get_coinc_buffer(idx);
-                if (config.get_log_coinc()) {
-                    outputs_coinc[idx].LogInteractions(coinc_events);
-                }
-            }
-        }
-        for (; current_tick < (sources.GetElapsedTime() / tick_mark);
-             current_tick++)
-        {
-            cout << "=" << flush;
-        }
-    }
-    if (config.get_log_singles() || config.get_log_coinc()) {
-        auto singles_events = singles_stream.stop();
-        output_singles.LogInteractions(singles_events);
-        for (size_t idx = 0; idx < singles_stream.no_coinc_processes(); idx++) {
-            auto coinc_events = singles_stream.get_coinc_buffer(idx);
-            if (config.get_log_coinc()) {
-                outputs_coinc[idx].LogInteractions(coinc_events);
-            }
-        }
-    }
-    cout << "=] Done." << endl;
-    cout << "\n______________\n Stats\n______________\n" << stats << endl;
-    if (config.get_log_singles() || config.get_log_coinc()) {
-        cout << "______________\n DAQ Stats\n______________\n"
-             << singles_stream << endl;
-    }
+    Simulation::RunSim(config, sources, intersect_kd_tree, output_hits,
+                       output_singles, outputs_coinc, singles_stream,
+                       dynamic_cast<GammaMaterial*>(&scene.GetMaterial(0)),
+                       true);
 
     clock_t end_time = clock();
     double setup_time_sec =  double(setup_time - start_time) / CLOCKS_PER_SEC;
