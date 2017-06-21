@@ -82,6 +82,8 @@ bool Config::ProcessCommandLine(int argc, char **argv, bool fail_without_scene)
             set_start_time(tmp_start_time);
         } else if (argument == "--mat") {
             materials_filename = following_argument;
+        } else if (argument == "--iso") {
+            isotopes_filename = following_argument;
         } else if ((argument == "--hits_format") || (argument == "-i")) {
             if (!set_format_hits(following_argument)) {
                 cerr << "Invalid hits format: " << following_argument << endl;
