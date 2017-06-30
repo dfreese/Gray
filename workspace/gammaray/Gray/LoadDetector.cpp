@@ -922,9 +922,11 @@ bool LoadDetector::Load(const std::string & filename,
                 print_parse_error(line);
                 return(false);
             }
-            //TODO: FIX RECTANGULAR SOURCE ROTATION!
+            RigidMapR3 rect_source_map = MatrixStack.top();
+            rect_source_map.ApplyTranslationRight(baseCenter);
             MatrixStack.top().Transform(&baseCenter);
             RectSource * s = new RectSource(baseCenter, baseSize,
+                                            rect_source_map,
                                             actScale*activity);
             s->SetMaterial(curMaterial);
             sources.AddSource(s);
