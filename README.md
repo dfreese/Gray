@@ -42,6 +42,10 @@ How to install Gray:
     cd materials
     python build_materials.py
     ```
+    Note that mac users may run into an issue with the default python
+    implementation using an outdated version of the openssl library.  The most
+    best approach for this problem is to install a current version of python using
+    [Homebrew](https://brew.sh/).
 
 5. Setup directory
     run the following from the main directory to tell Gray where to find the materials files

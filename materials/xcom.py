@@ -1,7 +1,7 @@
 import urllib
 import re
 
-_NIST_XCOM_FORM = 'http://physics.nist.gov/cgi-bin/Xcom/data.pl'
+_NIST_XCOM_FORM = 'https://physics.nist.gov/cgi-bin/Xcom/data.pl'
 
 def compound(formula, energies_mev=None, standard_grid=False, window_min=0.001,
              window_max=100000, return_energies=False, return_scatter=True,
@@ -65,12 +65,8 @@ def compound(formula, energies_mev=None, standard_grid=False, window_min=0.001,
         return_energies = True
 
     postdata = urllib.urlencode(postdict)
-    try:
-        xcom_url = urllib.urlopen(_NIST_XCOM_FORM, postdata)
-    except:
-        raise RuntimeError('Unable to retreive xcom data')
-
-    xcom_data = xcom_url.readlines()
+    xcom_url = urllib.urlopen(_NIST_XCOM_FORM, postdata)
+    xcom_data = xcom_url.read().splitlines()
 
     energies = []
     coherent_scatter = []
