@@ -13,6 +13,15 @@ class SourceList;
 
 class GammaRayTrace {
 public:
+
+    GammaRayTrace(SourceList & source_list,
+                  const IntersectKdTree & kd_tree,
+                  GammaMaterial const * const default_world_material,
+                  bool log_nuclear_decays_inter,
+                  bool log_nonsensitive_inter,
+                  bool log_nointeractions_inter,
+                  bool log_errors_inter);
+
     struct TraceStats {
         long events = 0;
         long decays = 0;
@@ -31,28 +40,26 @@ public:
                                           const TraceStats& s);
     };
 
-    static void TraceSources(SourceList & sources,
-                             const IntersectKdTree & tree,
-                             std::vector<Interaction> & interactions,
-                             size_t soft_max_interactions,
-                             GammaMaterial const * const default_material,
-                             bool log_nuclear_decays,
-                             bool log_nonsensitive,
-                             bool log_nointeractions,
-                             bool log_errors,
-                             TraceStats & stats);
+
+    const TraceStats & statistics() const;
+    void TraceSources(std::vector<Interaction> & interactions,
+                      size_t soft_max_interactions);
+
 private:
-    static void TracePhoton(Photon &photon,
-                            std::vector<Interaction> & interactions,
-                            const IntersectKdTree & tree,
-                            GammaMaterial const * const default_material,
-                            GammaMaterial const * const start_material,
-                            int MaxTraceDepth,
-                            bool log_nonsensitive,
-                            bool log_nointeractions,
-                            bool log_errors,
-                            TraceStats & stats);
+    void TracePhoton(Photon &photon,
+                     std::vector<Interaction> & interactions,
+                     GammaMaterial const * const start_material);
     static const double Epsilon;
+
+    SourceList & sources;
+    const IntersectKdTree & tree;
+    GammaMaterial const * const default_material;
+    bool log_nuclear_decays;
+    bool log_nonsensitive;
+    bool log_nointeractions;
+    bool log_errors;
+    TraceStats stats;
+    int max_trace_depth;
 };
 
 #endif /*GAMMARAYTRACE_H*/

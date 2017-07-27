@@ -74,19 +74,20 @@ void Simulation::RunSim(const Config & config, SourceList & sources,
     const long num_chars = 70;
     double tick_mark = sources.GetSimulationTime() / num_chars;
     int current_tick = 0;
+
+    GammaRayTrace ray_tracer(sources, intersect_kd_tree, default_material,
+                             config.get_log_nuclear_decays(),
+                             config.get_log_nonsensitive(),
+                             config.get_log_nointeraction(),
+                             config.get_log_errors());
+
     if (print_prog_bar) cout << "[" << flush;
 
-    GammaRayTrace::TraceStats stats;
     const size_t interactions_soft_max = 100000;
     while (sources.GetTime() < sources.GetEndTime()) {
         vector<Interaction> interactions;
         interactions.reserve(interactions_soft_max + 50);
-        GammaRayTrace::TraceSources(sources, intersect_kd_tree, interactions,
-                                    interactions_soft_max, default_material,
-                                    config.get_log_nuclear_decays(),
-                                    config.get_log_nonsensitive(),
-                                    config.get_log_nointeraction(),
-                                    config.get_log_errors(), stats);
+        ray_tracer.TraceSources(interactions, interactions_soft_max);
         if (config.get_log_hits()) {
             output_hits.LogInteractions(interactions);
         }
@@ -126,7 +127,8 @@ void Simulation::RunSim(const Config & config, SourceList & sources,
         }
     }
     if (print_prog_bar) cout << "=] Done." << endl;
-    cout << "\n______________\n Stats\n______________\n" << stats << endl;
+    cout << "\n______________\n Stats\n______________\n"
+         << ray_tracer.statistics() << endl;
     if (config.get_log_singles() || config.get_log_coinc()) {
         cout << "______________\n DAQ Stats\n______________\n"
         << singles_stream << endl;
