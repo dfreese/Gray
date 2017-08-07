@@ -42,7 +42,7 @@ VectorR3 AnnulusCylinderSource::Decay(int photon_number, double time)
     }
 
     VectorR3 positron;
-    double phi = M_2_PI * Random::Uniform();
+    double phi = 2 * M_PI * Random::Uniform();
     positron.x = radius*cos(phi);
     positron.y = radius*sin(phi);
     positron.z = length*(0.5 - Random::Uniform());
