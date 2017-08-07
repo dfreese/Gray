@@ -21,12 +21,14 @@ void Simulation::SetupSeed(const Config & config) {
 }
 
 void Simulation::SetupSources(const Config & config, SourceList & sources,
-                              IntersectKdTree & intersect_kd_tree)
+                              IntersectKdTree & intersect_kd_tree,
+                              GammaMaterial const * const default_material)
 {
     sources.SetKdTree(intersect_kd_tree);
     sources.SetSimulationTime(config.get_time());
     sources.SetStartTime(config.get_start_time());
     Mpi::AdjustSimTime(sources);
+    sources.BuildMaterialStacks(intersect_kd_tree, default_material);
     sources.InitSources();
 }
 
@@ -75,7 +77,7 @@ void Simulation::RunSim(const Config & config, SourceList & sources,
     double tick_mark = sources.GetSimulationTime() / num_chars;
     int current_tick = 0;
 
-    GammaRayTrace ray_tracer(sources, intersect_kd_tree, default_material,
+    GammaRayTrace ray_tracer(sources, intersect_kd_tree,
                              config.get_log_nuclear_decays(),
                              config.get_log_nonsensitive(),
                              config.get_log_nointeraction(),

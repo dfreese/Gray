@@ -10,6 +10,7 @@ class Source;
 class Isotope;
 class VectorR3;
 class IntersectKdTree;
+class GammaMaterial;
 
 class SourceList
 {
@@ -30,6 +31,8 @@ public:
     void InitSources();
     bool LoadIsotopes(const std::string & filename);
     void AdjustTimeForSplit(int idx, int n);
+    void BuildMaterialStacks(const IntersectKdTree & tree,
+                             GammaMaterial const * default_material);
 
 private:
     double ExpectedDecays(double start_time, double sim_time) const;

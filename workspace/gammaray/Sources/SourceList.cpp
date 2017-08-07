@@ -6,6 +6,9 @@
 #include <Sources/Source.h>
 #include <Sources/BeamPointSource.h>
 #include <Sources/VectorSource.h>
+#include <Graphics/VisiblePoint.h>
+#include <GraphicsTrees/IntersectionKdTree.h>
+#include <Gray/GammaMaterial.h>
 #include <VrMath/LinearR3.h>
 #include <exception>
 #include <limits>
@@ -286,6 +289,56 @@ void SourceList::AdjustTimeForSplit(int idx, int n) {
 void SourceList::InitSources() {
     for (size_t sidx = 0; sidx < list.size(); sidx++) {
         AddNextDecay(sidx, start_time);
+    }
+}
+
+void SourceList::BuildMaterialStacks(const IntersectKdTree & tree,
+                                     GammaMaterial const * default_material)
+{
+    VectorR3 dir;
+    dir.SetUnitX();
+
+    for (int src_idx = 0; src_idx < list.size(); src_idx++) {
+        Source * source = list[src_idx];
+        stack<GammaMaterial const *> materials;
+        stack<bool> front_face;
+        VisiblePoint point;
+        point.SetPosition(source->GetPosition());
+
+        double hit_dist = DBL_MAX;
+        long obj_num = tree.SeekIntersection(point.GetPosition() + dir * 1e-10,
+                                             dir, hit_dist, point);
+
+        while (obj_num >= 0) {
+            materials.push(dynamic_cast<GammaMaterial const *>(&point.GetMaterial()));
+            if (point.IsFrontFacing()) {
+                front_face.push(true);
+            } else {
+                front_face.push(false);
+            }
+            hit_dist = DBL_MAX;
+            obj_num = tree.SeekIntersection(point.GetPosition() + dir * 1e-10,
+                                            dir, hit_dist, point);
+        }
+
+        stack<GammaMaterial const *> true_materials;
+        true_materials.push(default_material);
+        while (!materials.empty()) {
+            bool is_front_face = front_face.top();
+            GammaMaterial const * material = materials.top();
+            front_face.pop();
+            materials.pop();
+
+            if (!is_front_face) {
+                true_materials.push(material);
+            } else {
+                true_materials.pop();
+                if (true_materials.size() < 1) {
+                    throw runtime_error("Error in determining source materials: potential object overlap error");
+                }
+            }
+        }
+        source->SetMaterialStack(true_materials);
     }
 }
 

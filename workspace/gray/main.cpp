@@ -96,12 +96,14 @@ int gray(int argc, char ** argv)
     if (setup_status < 0) {
         return(4);
     }
-    Simulation::SetupSources(config, sources, intersect_kd_tree);
+    GammaMaterial * default_material = dynamic_cast<GammaMaterial*>(&scene.GetMaterial(0));
+    Simulation::SetupSources(config, sources, intersect_kd_tree,
+                             default_material);
 
     clock_t setup_time = clock();
     Simulation::RunSim(config, sources, intersect_kd_tree, output_hits,
                        output_singles, outputs_coinc, singles_stream,
-                       dynamic_cast<GammaMaterial*>(&scene.GetMaterial(0)));
+                       default_material);
 
     clock_t end_time = clock();
     double setup_time_sec =  double(setup_time - start_time) / CLOCKS_PER_SEC;

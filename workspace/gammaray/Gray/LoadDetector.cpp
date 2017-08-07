@@ -642,7 +642,6 @@ bool LoadDetector::Load(const std::string & filename,
             VoxelSource * s = new VoxelSource(position, dims, voxelsize,
                                               actScale * activity);
             if (s->Load(string)) {
-                s->SetMaterial(curMaterial);
                 sources.AddSource(s);
             } else {
                 delete s;
@@ -710,7 +709,6 @@ bool LoadDetector::Load(const std::string & filename,
             EllipsoidSource *ve = new EllipsoidSource(
                     center, axis1, axis2, radius1, radius2, radius3,
                     actScale*activity);
-            ve->SetMaterial(curMaterial);
             sources.AddSource(ve);
         } else if (command == "elliptic_cyl") {
             VectorR3 center;
@@ -756,7 +754,6 @@ bool LoadDetector::Load(const std::string & filename,
             axis *= height;
             EllipticCylinderSource * cyl = new EllipticCylinderSource(
                     center, radius1, radius2, axis, actScale*activity);
-            cyl->SetMaterial(curMaterial);
             sources.AddSource(cyl);
         } else if (command == "annulus_ell_src") {
             VectorR3 center;
@@ -780,7 +777,6 @@ bool LoadDetector::Load(const std::string & filename,
             AnnulusEllipticCylinderSource * cyl =
                     new AnnulusEllipticCylinderSource(center, radius1, radius2,
                                                       axis, actScale*activity);
-            cyl->SetMaterial(curMaterial);
             sources.AddSource(cyl);
         } else if (command == "annulus_cyl_src") {
             VectorR3 center;
@@ -803,7 +799,6 @@ bool LoadDetector::Load(const std::string & filename,
             axis *= height;
             AnnulusCylinderSource * cyl = new AnnulusCylinderSource(
                     center, radius, axis, actScale*activity);
-            cyl->SetMaterial(curMaterial);
             sources.AddSource(cyl);
         } else if (command == "save_detector") {
             char filename[256];
@@ -865,7 +860,6 @@ bool LoadDetector::Load(const std::string & filename,
             MatrixStack.top().Transform3x3(&axis);
             BeamPointSource * s = new BeamPointSource(position, axis, angle,
                                                       actScale*activity);
-            s->SetMaterial(curMaterial);
             sources.AddSource(s);
         } else if (command == "start_vecsrc") {
             double activity = -1.0;
@@ -876,7 +870,6 @@ bool LoadDetector::Load(const std::string & filename,
             }
             cout << "Starting Vector Source\n";
             curVectorSource = new VectorSource(actScale*activity);
-            curVectorSource->SetMaterial(curMaterial);
             parse_VectorSource = true;
         } else if (command == "end_vecsrc") {
             char string[256];
@@ -916,7 +909,6 @@ bool LoadDetector::Load(const std::string & filename,
             MatrixStack.top().Transform(&position);
             SphereSource * s = new SphereSource(position, radius,
                                                 actScale*activity);
-            s->SetMaterial(curMaterial);
             sources.AddSource(s);
         } else if (command == "rect_src") {
             // rectangular source
@@ -936,7 +928,6 @@ bool LoadDetector::Load(const std::string & filename,
             RectSource * s = new RectSource(baseCenter, baseSize,
                                             rect_source_map,
                                             actScale*activity);
-            s->SetMaterial(curMaterial);
             sources.AddSource(s);
         } else if (command == "array") {
             // repeat detector in 3d
@@ -1036,7 +1027,6 @@ bool LoadDetector::Load(const std::string & filename,
             axis *= height;
             CylinderSource * cyl = new CylinderSource(center, radius, axis,
                                                       actScale*activity);
-            cyl->SetMaterial(curMaterial);
             sources.AddSource(cyl);
         } else if (command == "l") {
             // light

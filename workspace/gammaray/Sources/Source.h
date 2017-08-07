@@ -9,6 +9,7 @@
 #include <math.h>
 #include <limits.h>
 #include <vector>
+#include <stack>
 
 #include <VrMath/MathMisc.h>
 #include <VrMath/LinearR3.h>
@@ -23,7 +24,6 @@ public:
     Source() :
         isotope(NULL),
         activity(0),
-        material(NULL),
         negative(false),
         source_num(0),
         position(0, 0, 0)
@@ -33,7 +33,6 @@ public:
     Source(const VectorR3 & pos, double act) :
         isotope(NULL),
         activity(act),
-        material(NULL),
         negative(false),
         source_num(0),
         position(pos)
@@ -55,13 +54,13 @@ public:
         isotope = i;
     }
 
-    void SetMaterial(GammaMaterial * mat) {
-        material = mat;
-    }
-
     void SetPosition(const VectorR3 & pos)
     {
         position = pos;
+    }
+
+    VectorR3 GetPosition() const {
+        return (position);
     }
 
     void SetSourceNum(int i)
@@ -69,12 +68,12 @@ public:
         source_num = i;
     }
 
-    GammaMaterial * GetMaterial() {
-        return material;
+    void SetMaterialStack(std::stack<GammaMaterial const *> material_stack) {
+        this->material_stack = material_stack;
     }
 
-    GammaMaterial * const GetMaterial() const {
-        return material;
+    const std::stack<GammaMaterial const *> & GetMaterialStack() const {
+        return(material_stack);
     }
 
     bool isNegative() const {
@@ -99,10 +98,12 @@ public:
 protected:
     Isotope * isotope;
     double activity;
-    GammaMaterial * material;
     bool negative;
     int source_num;
     VectorR3 position;
+
+private:
+    std::stack<GammaMaterial const *> material_stack;
 };
 
 #endif // SOURCE_H

@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <ostream>
+#include <stack>
 
 class GammaMaterial;
 class Interaction;
@@ -16,7 +17,6 @@ public:
 
     GammaRayTrace(SourceList & source_list,
                   const IntersectKdTree & kd_tree,
-                  GammaMaterial const * const default_world_material,
                   bool log_nuclear_decays_inter,
                   bool log_nonsensitive_inter,
                   bool log_nointeractions_inter,
@@ -48,12 +48,11 @@ public:
 private:
     void TracePhoton(Photon &photon,
                      std::vector<Interaction> & interactions,
-                     GammaMaterial const * const start_material);
+                     std::stack<GammaMaterial const *> MatStack);
     static const double Epsilon;
 
     SourceList & sources;
     const IntersectKdTree & tree;
-    GammaMaterial const * const default_material;
     bool log_nuclear_decays;
     bool log_nonsensitive;
     bool log_nointeractions;

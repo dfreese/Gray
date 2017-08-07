@@ -14,7 +14,8 @@ class Simulation {
 public:
     static void SetupSeed(const Config & config);
     static void SetupSources(const Config & config, SourceList & sources,
-                             IntersectKdTree & intersect_kd_tree);
+                             IntersectKdTree & intersect_kd_tree,
+                             GammaMaterial const * const default_material);
     static int SetupOutput(const Config & config, Output & output_hits,
                            Output & output_singles,
                            std::vector<Output> & outputs_coinc);

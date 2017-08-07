@@ -17,14 +17,12 @@ const double GammaRayTrace::Epsilon = 1e-10;
 
 GammaRayTrace::GammaRayTrace(SourceList & source_list,
                              const IntersectKdTree & kd_tree,
-                             GammaMaterial const * const default_world_material,
                              bool log_nuclear_decays_inter,
                              bool log_nonsensitive_inter,
                              bool log_nointeractions_inter,
                              bool log_errors_inter) :
     sources(source_list),
     tree(kd_tree),
-    default_material(default_world_material),
     log_nuclear_decays(log_nuclear_decays_inter),
     log_nonsensitive(log_nonsensitive_inter),
     log_nointeractions(log_nointeractions_inter),
@@ -37,16 +35,8 @@ GammaRayTrace::GammaRayTrace(SourceList & source_list,
 void GammaRayTrace::TracePhoton(
         Photon &photon,
         std::vector<Interaction> & interactions,
-        GammaMaterial const * const start_material)
+        std::stack<GammaMaterial const *> MatStack)
 {
-    std::stack<GammaMaterial const *> MatStack;
-    // We don't get the material information from the visible point as we are
-    // exiting a material.  This may be problem with the scene setup, but we
-    // need to have the default material to enter into once we've exited a
-    // material.
-    MatStack.push(default_material);
-    // Add the material that the photon started in.
-    MatStack.push(start_material);
     for (int trace_depth = 0; trace_depth < max_trace_depth; trace_depth++) {
         if (MatStack.empty()) {
             // Should always have the default material at the bottom of the
@@ -193,12 +183,12 @@ void GammaRayTrace::TraceSources(std::vector<Interaction> & interactions,
             stats.decays++;
             if (log_nuclear_decays) {
                 interactions.push_back(
-                        Physics::NuclearDecay(*decay, *source->GetMaterial()));
+                        Physics::NuclearDecay(*decay, *source->GetMaterialStack().top()));
             }
             while (!decay->IsEmpty()) {
                 Photon & photon = *decay->NextPhoton();
                 stats.photons++;
-                TracePhoton(photon, interactions, source->GetMaterial());
+                TracePhoton(photon, interactions, source->GetMaterialStack());
             }
         }
 
