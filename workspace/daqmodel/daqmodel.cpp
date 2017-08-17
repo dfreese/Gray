@@ -83,10 +83,23 @@ int main(int argc, char ** argv) {
         return(2);
     }
 
-    int proc_load_status = singles_stream.load_processes(config.get_filename_process());
-    if (proc_load_status < 0) {
-        cerr << "Loading process file failed" << endl;
-        return(2);
+    if (config.get_filename_process().empty()) {
+        vector<string> proc_lines = config.get_process_lines();
+        if (proc_lines.empty()) {
+            cerr << "No process steps specified" << endl;
+            return(3);
+        }
+        int proc_load_status = singles_stream.set_processes(proc_lines);
+        if (proc_load_status < 0) {
+            cerr << "Loading process lines failed" << endl;
+            return(2);
+        }
+    } else {
+        int proc_load_status = singles_stream.load_processes(config.get_filename_process());
+        if (proc_load_status < 0) {
+            cerr << "Loading process file failed" << endl;
+            return(2);
+        }
     }
 
     if (!config.get_log_coinc() && !config.get_log_singles()) {
