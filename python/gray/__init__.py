@@ -233,3 +233,47 @@ def load_variable_binary(filename):
         cur_dtype = create_variable_dtype(read_mask)
         events = np.fromfile(fid, dtype=cur_dtype)
     return events
+
+def load_mapping_file(filename):
+    '''
+    Load a mapping file used for the gray daq process model into a numpy array
+    with a custom dtype to reflect the mapping names.
+
+    Parameters
+    ----------
+    filename : str,
+        The file containing the mapping information
+
+    Returns
+    -------
+    data : ndarray, dtype custom
+        returns the mapping information contained within the file.  The array
+        dtype is created based on the column headers and all values are int.
+
+    '''
+    with open(filename, 'r') as fid:
+        # Read the column names from the first row
+        col_names = fid.readline().splitlines()[0].split()
+        # Generate a new dtype to represent the mapping file
+        map_dtype = np.dtype([(n, int) for n in col_names])
+        # and load in the remainder of the rows as the data
+        mapping = np.loadtxt(fid, dtype=map_dtype)
+    return mapping
+
+def save_mapping_file(filename, mapping):
+    '''
+    Write a mapping file used for the gray daq process model from a numpy array
+    with a custom dtype to reflect the mapping names.
+
+    Parameters
+    ----------
+    filename : str,
+        The filename to which to write the mapping file.
+    mapping : ndarray, dtype custom
+        The mapping information to be written within the file.  Each name in
+        the dtype is used as a column header.  Assumes all types are integers.
+
+    '''
+    with open(filename, 'w') as fid:
+        print >>fid, ' '.join(mapping.dtype.names)
+        np.savetxt(fid, mapping, fmt='%d')
