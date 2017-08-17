@@ -569,6 +569,14 @@ bool LoadDetector::Load(const std::string & filename,
                     return(false);
                 }
 
+                if ((repeats_xyz.x <= 0) || (repeats_xyz.y <= 0) ||
+                    (repeats_xyz.z <= 0))
+                {
+                    print_parse_error(line);
+                    cerr << "Number of steps must be 1 or greater\n" << endl;
+                    return(false);
+                }
+
                 repeat_info_stack.push(RepeatInfo());
                 repeat_info_stack.top().type = RepeatInfo::grid;
                 repeat_info_stack.top().no_repeats = (repeats_xyz.x *
