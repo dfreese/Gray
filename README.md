@@ -2,6 +2,7 @@
 A ray-tracing based Monte-Carlo simulation for PET
 
 ## Dependencies
+* 64bit Operating System
 * CMake 2.8.12 or later
 * OpenGL, GLU, and GLUT (Optional for viewing)
 * Python 2.5 or later to generate the materials files from XCOM
