@@ -281,9 +281,10 @@ current axes, at the given center.
 
 ### p
 
-p [order] [x] [y] [z] (repeat this line order times)
+p [order]
+[x] [y] [z] (repeat this line [order] times)
 
-Specifies a polygon of generic order.  Each vertex of the polygon must then best
+Specifies a polygon of generic order.  Each vertex of the polygon must then be
 specified in the following lines.  The outer face of the polygon is specified by
 the right hand rule, starting with the first vertex.  Vertices must then be
 specified in a circular order around the edge of the polygon.

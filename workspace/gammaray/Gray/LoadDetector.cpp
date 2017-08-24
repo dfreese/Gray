@@ -1399,13 +1399,13 @@ bool LoadDetector::ProcessFaceDFF(int numVerts,
     if ( !ReadVertexR3(prevVert, lines[1]) ) {
         return false;
     }
+    firstVert *= polygonScale;
+    prevVert *= polygonScale;
     for (int i = 2; i < numVerts; i++) {
         if ( !ReadVertexR3(thisVert, lines[i]) ) {
             return false;
         }
-        // TODO: check that these actually should be scaled each time
-        firstVert *= polygonScale;
-        prevVert *= polygonScale;
+
         thisVert *= polygonScale;
 
         ViewableTriangle* vt = new ViewableTriangle();
@@ -1438,7 +1438,7 @@ bool LoadDetector::ReadVertexR3(VectorR3& vert, const std::string & line) {
     ss >> vert.x;
     ss >> vert.y;
     ss >> vert.z;
-    return (ss.good());
+    return (!ss.fail());
 }
 
 std::string LoadDetector::ScanForSecondField(const std::string & inbuf)
