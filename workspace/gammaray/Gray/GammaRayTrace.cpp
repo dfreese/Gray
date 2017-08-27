@@ -95,6 +95,16 @@ void GammaRayTrace::TracePhoton(
                     MatStack.push(dynamic_cast<GammaMaterial const * const>(
                             &visPoint.GetMaterial()));
                 } else if (visPoint.IsBackFacing()) {
+                    // Check to make sure we are exiting the material we think
+                    // we are currently in.
+                    if (&visPoint.GetMaterial() != MatStack.top()) {
+                        if (log_errors){
+                            interactions.push_back(
+                                    Physics::ErrorTraceDepth(photon, mat_gamma_prop));
+                        }
+                        stats.error++;
+                        return;
+                    }
                     photon.det_id = -1;
                     MatStack.pop();
                 } else {
