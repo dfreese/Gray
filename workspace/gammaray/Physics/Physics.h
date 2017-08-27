@@ -52,10 +52,9 @@ public:
     static double KleinNishinaEnergy(double energy, double theta);
     static bool XrayEscape(Photon &p, const GammaStats & mat_gamma_prop,
                            double & deposit);
+    static void RayleighScatter(Photon &p);
     static const double speed_of_light_cmpers;
     static const double inverse_speed_of_light;
-    static void RayleighScatter(Photon &p);
-    static double RandomExponentialDistance(double mu);
 
 private:
     // A class for static initialization of the dsigma_max values as a function

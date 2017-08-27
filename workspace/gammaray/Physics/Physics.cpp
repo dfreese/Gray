@@ -270,17 +270,7 @@ double Physics::KleinNishina::find_max(double energy_mev)
 Physics::KleinNishina Physics::klein_nishina;
 
 const double Physics::speed_of_light_cmpers = 29979245800.0;
-const double Physics::inverse_speed_of_light = (1.0 /
-                                                    speed_of_light_cmpers);
-
-double Physics::RandomExponentialDistance(double mu) {
-    double r = Random::Uniform();
-    if (r > 0.0) {
-        return(- log(r) / mu);
-    } else {
-        return(DBL_MAX);
-    }
-}
+const double Physics::inverse_speed_of_light = (1.0 / speed_of_light_cmpers);
 
 /*!
  * Takes an energy (MeV) and uses that to calculate if there was an interaction
@@ -305,7 +295,7 @@ Physics::INTER_TYPE Physics::InteractionType(
 
     // TODO: add back in rayleigh scattering once the distribution is fixed
     // double rand_dist = RandomExponentialDistance(pe + compton + rayleigh);
-    double rand_dist = RandomExponentialDistance(pe + compton);
+    double rand_dist = Random::Exponential(pe + compton);
     if (dist > rand_dist) {
         dist = rand_dist;
     }
