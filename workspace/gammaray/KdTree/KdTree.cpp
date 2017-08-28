@@ -33,7 +33,8 @@
 #include <cstdio>
 #include <cassert>
 #include <functional>
-#include <stack>
+#include <array>
+#include <sstream>
 #include <KdTree/DoubleRecurse.h>
 
 // Destructor
@@ -57,14 +58,27 @@ long KdTree::Traverse(const VectorR3& startPos, const VectorR3& dir,
 	// Main traversal loop
 
 	long currentNodeIndex = RootIndex(); // The current node in the traversal
-    const KdTreeNode* currentNode = &TreeNodes.at(currentNodeIndex);
+    const KdTreeNode* currentNode = &TreeNodes[currentNodeIndex];
     double minDistance = std::max(0.0, entryDist);
 	double maxDistance = exitDist;
 	bool hitParallel = false;
 	double parallelHitMax = -DBL_MAX;
     long stopping_object = -1;
 	stopDistance = DBL_MAX;
-    std::stack<Kd_TraverseNodeData> traverseStack;
+
+    // Use array as a stack.  Don't use std::stack, as that would put objects
+    // on the heap, and would be dynamically allocated.
+    // as we could gain quite a bit by not actually allocating all of this
+    // memory.  14 was the maximum required for the pet_benchmark, and the
+    // average is probably closer to 1.  This is a 30% speedup from std::stack.
+    // Bounds checking is done during the tree construction since the stack
+    // can't outgrow the size of any one leaf.
+    //
+    // TODO: look at stealing something like LLVMs SmallVector which could do
+    // the same thing but deal with a much smaller fixed amount of space.
+    // http://llvm.org/doxygen/classllvm_1_1SmallVector.html
+    static std::array<Kd_TraverseNodeData, traverse_stack_size> traverse_stack;
+    int stack_size = 0;
 
 	while ( true ) {
 		if (currentNode->IsLeaf()) {
@@ -125,9 +139,11 @@ long KdTree::Traverse(const VectorR3& startPos, const VectorR3& dir,
                         currentNodeIndex = leftIdx;
                     }
                     else {
-                        traverseStack.push(Kd_TraverseNodeData(rightIdx,
-                                                               minDistance,
-                                                               maxDistance));
+                        // Advance the current stack size after updating the
+                        // last element.
+                        traverse_stack[stack_size++] = {rightIdx,
+                            minDistance,
+                            maxDistance};
                         currentNodeIndex = leftIdx;
                         hitParallel = true;
                         UpdateMax(maxDistance,parallelHitMax);
@@ -154,9 +170,11 @@ long KdTree::Traverse(const VectorR3& startPos, const VectorR3& dir,
                 } else {
                     // Push the far node -- if it exists
                     if ( farNodeIdx != -1 ) {
-                        traverseStack.push(Kd_TraverseNodeData(farNodeIdx,
-                                                               splitDistance,
-                                                               maxDistance));
+                        // Advance the current stack size after updating the
+                        // last element.
+                        traverse_stack[stack_size++] = {farNodeIdx,
+                            splitDistance,
+                            maxDistance};
                     }
                     // Near node is the new current node
                     maxDistance = splitDistance;
@@ -164,17 +182,17 @@ long KdTree::Traverse(const VectorR3& startPos, const VectorR3& dir,
                 }
             }
             if ( currentNodeIndex != -1 ) {
-                currentNode = &TreeNodes.at(currentNodeIndex);
+                currentNode = &TreeNodes[currentNodeIndex];
                 continue;
             }
             // If we reach here, we are at an empty leaf and can fall through.
 		}
 
 		// Get to this point if done with a leaf node (possibly empty, possibly not).
-		if (traverseStack.empty()) {
+		if (stack_size == 0) {
 			return stopping_object;
 		} else {
-			Kd_TraverseNodeData& topNode = traverseStack.top();
+            Kd_TraverseNodeData& topNode = traverse_stack[--stack_size];
 			minDistance = topNode.GetMinDist();
             if ((stopping_object >= 0) && (minDistance > stopDistance)) {
                 if ( !hitParallel || minDistance>=parallelHitMax ) {
@@ -183,9 +201,8 @@ long KdTree::Traverse(const VectorR3& startPos, const VectorR3& dir,
                 }
             }
 			currentNodeIndex = topNode.GetNodeNumber();
-			currentNode = &TreeNodes.at(currentNodeIndex);
+			currentNode = &TreeNodes[currentNodeIndex];
 			maxDistance = topNode.GetMaxDist();
-            traverseStack.pop();
 		}
 
 	}
@@ -253,10 +270,22 @@ void KdTree::BuildTree(long numObjects)
 		
 	// Recursively build the entire tree!
     long root_index = NextIndex();
-	KdTreeNode& RootNode = TreeNodes.at(root_index);
+    KdTreeNode& RootNode = TreeNodes.at(root_index);
 	RootNode.ParentIdx = -1;				// No parent, it is the root node
 	BuildSubTree ( RootIndex(), BoundingBox, TotalObjectCosts, XextentList, YextentList, ZextentList, spaceAvailable );
 
+    for (auto node: TreeNodes) {
+        if (node.IsLeaf()) {
+            if (node.Data.Leaf.Objects.size() > traverse_stack_size) {
+                std::stringstream ss;
+                ss << "A KdTree Leaf node has "
+                   << node.Data.Leaf.Objects.size() << " objects, but "
+                   << traverse_stack_size << " is the max that can be handled."
+                   << "  The Traverse stack could overflow otherwise.";
+                throw std::runtime_error(ss.str());
+            }
+        }
+    }
     // Could clear ObjectAABBs if memory was wanted.
 	delete[] ET_Lists;
 	delete[] LeftRightStatus;

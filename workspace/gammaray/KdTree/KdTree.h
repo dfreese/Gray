@@ -204,6 +204,10 @@ public:
     double TotalObjectCosts;    // Total cost of all objects in the tree
 
 private:
+    // Defines the maximum the array used to mimic a stack in the Traverse
+    // function can be.  This limits the maximum leaf size, but if a leaf has
+    // 30 objects, then something went very wrong constructing the tree.
+    static constexpr int traverse_stack_size = 30;
 
     std::vector<KdTreeNode> TreeNodes;
     long RootIndex() const { return 0; }    // Index for the first entry in the array.
