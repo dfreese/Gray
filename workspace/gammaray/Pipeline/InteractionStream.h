@@ -102,13 +102,6 @@ private:
                         MergeF & merge_func);
 
     /*!
-     * merge_info_func handles all of the information besides the assignment of
-     * the detector id when two events are merged together.  This can be
-     * specifed, or will be the sum of the energies as a default.
-     */
-    MergeF merge_info_func;
-
-    /*!
      * Returns the detector id for the event.  This is then mapped to a.
      */
     InfoF get_id_func;

@@ -9,7 +9,6 @@
  * are added.
  */
 InteractionStream::InteractionStream(TimeT initial_sort_window) :
-    merge_info_func(Interaction::basic_merge),
     get_id_func([](const EventT & e){return (e.det_id);}),
     get_time_func([](const EventT & e){return (e.time);})
 {
@@ -340,28 +339,16 @@ int InteractionStream::set_processes(
 }
 
 struct InteractionStream::MergeFirstFunctor {
-    MergeFirstFunctor(MergeF merge_info_func) :
-        merge_info(merge_info_func)
-    {
-    }
-
     void operator() (EventT & e0, const EventT & e1) {
-        merge_info(e0, e1);
+        Interaction::basic_merge(e0, e1);
     }
-    const MergeF merge_info;
 };
 
 struct InteractionStream::MergeMaxFunctor {
-    MergeMaxFunctor(MergeF merge_info_func) :
-        merge_info(merge_info_func)
-    {
-    }
-
     void operator() (EventT & e0, const EventT & e1) {
         e0.det_id = e0.energy > e1.energy ? e0.det_id:e1.det_id;
-        merge_info(e0, e1);
+        Interaction::basic_merge(e0, e1);
     }
-    const MergeF merge_info;
 };
 
 struct InteractionStream::MergeAngerLogicFunctor {
@@ -369,16 +356,14 @@ struct InteractionStream::MergeAngerLogicFunctor {
                            const std::vector<int> & by_map,
                            const std::vector<int> & bz_map,
                            int nx, int ny, int nz,
-                           const std::vector<int> & rev_map,
-                           MergeF merge_info_func) :
+                           const std::vector<int> & rev_map) :
         bx(bx_map),
         by(by_map),
         bz(bz_map),
         no_bx(nx),
         no_by(ny),
         no_bz(nz),
-        reverse_map(rev_map),
-        merge_info(merge_info_func)
+        reverse_map(rev_map)
     {
 
     }
@@ -403,7 +388,7 @@ struct InteractionStream::MergeAngerLogicFunctor {
 
         int rev_idx = (row_result * no_by + col_result) * no_bz + lay_result;
         e0.det_id = reverse_map[rev_idx];
-        merge_info(e0, e1);
+        Interaction::basic_merge(e0, e1);
     }
 
     const std::vector<int> bx;
@@ -413,7 +398,6 @@ struct InteractionStream::MergeAngerLogicFunctor {
     const int no_by;
     const int no_bz;
     const std::vector<int> reverse_map;
-    const MergeF merge_info;
 };
 
 int InteractionStream::make_anger_func(
@@ -468,7 +452,7 @@ int InteractionStream::make_anger_func(
     }
 
     merge_func = MergeAngerLogicFunctor(bx, by, bz, no_bx, no_by, no_bz,
-                                        rev_map, this->merge_info_func);
+                                        rev_map);
     return(0);
 }
 
@@ -488,10 +472,9 @@ int InteractionStream::add_merge_process(
         merge_type = options[0];
     }
     if (merge_type == "max") {
-        merge_func = MergeMaxFunctor(this->merge_info_func);
+        merge_func = MergeMaxFunctor();
     } else if (merge_type == "first") {
-        auto merge_info = this->merge_info_func;
-        merge_func = MergeFirstFunctor(this->merge_info_func);
+        merge_func = MergeFirstFunctor();
     } else if (merge_type == "anger") {
         if (make_anger_func(options, merge_func) < 0) {
             std::cerr << "unable to create anger merge: " << std::endl;
