@@ -255,7 +255,7 @@ def test_energy_blur():
             'At least one energy should change with blurring (statistically)'
 
 def test_energy_blur_std():
-    data = np.zeros(10000, dtype=gray.no_position_dtype)
+    data = np.zeros(100000, dtype=gray.no_position_dtype)
     ref_energy = 0.511
     eres = 0.13
     data['energy'][:] = ref_energy
@@ -302,12 +302,11 @@ def test_time_blur():
             'The blur should be capped to 3 FWHM in either direction'
 
 def test_time_blur_std():
-    data = np.zeros(10000, dtype=gray.no_position_dtype)
+    data = np.zeros(100000, dtype=gray.no_position_dtype)
     tres_sigma = 2.0
     tres = tres_sigma * _sigma_to_fwhm
     output = _create_and_run_merge(data, ('blur', 'time', tres))
     std_out = output['time'].std()
-    np.save('time_test.npy', output['time'])
     assert(np.abs(tres_sigma - std_out) / tres_sigma < 1e-2)
 
 def test_coinc():
