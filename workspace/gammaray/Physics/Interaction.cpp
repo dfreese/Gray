@@ -13,10 +13,7 @@ using namespace std;
  * accurate, we need to keep a record of all the hits that have been merged in
  * and then recreate the stats based on this record.
  */
-void Interaction::basic_merge(Interaction & i0, const Interaction & i1) {
-    // As always, merge the energies
-    i0.energy += i1.energy;
-
+void Interaction::MergeStats(Interaction & i0, const Interaction & i1) {
     if (i0.merged_hits.empty()) {
         // The event has not been through a merge process, so create an info
         // struct for its decay/color pair, and add in the info

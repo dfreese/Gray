@@ -340,14 +340,16 @@ int InteractionStream::set_processes(
 
 struct InteractionStream::MergeFirstFunctor {
     void operator() (EventT & e0, const EventT & e1) {
-        Interaction::basic_merge(e0, e1);
+        Interaction::MergeStats(e0, e1);
+        e0.energy = e0.energy + e1.energy;
     }
 };
 
 struct InteractionStream::MergeMaxFunctor {
     void operator() (EventT & e0, const EventT & e1) {
         e0.det_id = e0.energy > e1.energy ? e0.det_id:e1.det_id;
-        Interaction::basic_merge(e0, e1);
+        Interaction::MergeStats(e0, e1);
+        e0.energy = e0.energy + e1.energy;
     }
 };
 
@@ -387,8 +389,9 @@ struct InteractionStream::MergeAngerLogicFunctor {
                 static_cast<float>(lay1) * (e1.energy / energy_result));
 
         int rev_idx = (row_result * no_by + col_result) * no_bz + lay_result;
+        Interaction::MergeStats(e0, e1);
+        e0.energy = energy_result;
         e0.det_id = reverse_map[rev_idx];
-        Interaction::basic_merge(e0, e1);
     }
 
     const std::vector<int> bx;

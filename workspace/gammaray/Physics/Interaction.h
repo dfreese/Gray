@@ -7,7 +7,7 @@
 class Interaction {
 public:
     Interaction() {};
-    static void basic_merge(Interaction & i0, const Interaction & i1);
+    static void MergeStats(Interaction & i0, const Interaction & i1);
 
     int type = 0;
     int decay_id = 0;
