@@ -29,11 +29,13 @@ public:
      */
     CoincProcess(TimeT coinc_win, TimeF time_func, TagF tag_coinc_func,
                  bool reject_multiple_events = false,
+                 bool combinatorial_pair_multiples = false,
                  bool is_paralyzable = true,
                  TimeT win_offset = TimeT()) :
         coinc_window(coinc_win),
         window_offset(win_offset),
         reject_multiples(reject_multiple_events),
+        combinatorial_pair_all_multiples(combinatorial_pair_multiples),
         paralyzable(is_paralyzable),
         get_time_func(time_func),
         tag_coinc_with_id_func(tag_coinc_func),
@@ -139,17 +141,28 @@ private:
                 } else {
                     no_coinc_single_events += in_window.size();
                 }
-                for (auto idx: in_window) {
-                    ready_buffer[idx] = true;
+                for (size_t idx = 0; idx < in_window.size(); idx++) {
+                    ready_buffer[in_window[idx]] = true;
                     if (keep_events) {
-                        // This is where we could put in any sort of logic to
-                        // handle multiples, such as takeWinnerOfGoods or
-                        // takeAllGoods like Gate does, but that can be handled
-                        // by a post production script by adding a coinc id to
-                        // each of items.
-                        tag_coinc_with_id_func(event_buffer[idx],
+                        tag_coinc_with_id_func(event_buffer[in_window[idx]],
                                                no_coinc_events);
-                        local_ready_events.push_back(event_buffer[idx]);
+                        // combinatorial_pair_all_multiples mimics Gate's
+                        // takeAllGoods.  We intentionally keep the coinc event
+                        // id the same for right now, that might be something
+                        // to change later. combinatorial_pair_all_multiples is
+                        // not the default currently.  The default is to write
+                        // out all of the events, and let the user sort out what
+                        // to do with them.  Sometimes it is easier to be able
+                        // make the assumption that coincidences are all pairs
+                        // of events.
+                        if (combinatorial_pair_all_multiples) {
+                            for (size_t jdx = idx+1; jdx < in_window.size(); jdx++) {
+                                local_ready_events.push_back(event_buffer[in_window[idx]]);
+                                local_ready_events.push_back(event_buffer[in_window[jdx]]);
+                            }
+                        } else {
+                            local_ready_events.push_back(event_buffer[in_window[idx]]);
+                        }
                     }
                 }
                 if (keep_events) {
@@ -174,6 +187,7 @@ private:
     TimeT coinc_window;
     TimeT window_offset;
     bool reject_multiples;
+    bool combinatorial_pair_all_multiples;
     bool paralyzable;
 
     std::vector<EventT> event_buffer;

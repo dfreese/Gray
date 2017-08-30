@@ -604,6 +604,7 @@ int InteractionStream::add_coinc_process(const std::string & name, double value,
 {
     bool paralyzable = false;
     bool reject_multiples = true;
+    bool combinatorial_pair_all_multiples = false;
     TimeT window_offset = 0;
     bool look_for_offset = false;
     if (name == "window") {
@@ -635,6 +636,8 @@ int InteractionStream::add_coinc_process(const std::string & name, double value,
             reject_multiples = false;
         } else if (option == "paralyzable") {
             paralyzable = true;
+        } else if (option == "pair_all") {
+            combinatorial_pair_all_multiples = true;
         } else {
             std::cerr << "unrecognized coinc option: " << option
             << std::endl;
@@ -644,6 +647,7 @@ int InteractionStream::add_coinc_process(const std::string & name, double value,
     auto tag_event_func = [](EventT & e, long id) {e.coinc_id = id;};
     coinc_processes.push_back(new CoincProcT(value, get_time_func,
                                              tag_event_func, reject_multiples,
+                                             combinatorial_pair_all_multiples,
                                              paralyzable, window_offset));
     process_stream.add_parallel_out_process(coinc_processes.back());
     return(0);
