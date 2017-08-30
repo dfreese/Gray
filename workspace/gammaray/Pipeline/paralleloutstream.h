@@ -23,10 +23,7 @@
 template <class EventT>
 class ParallelOutStream : public ProcessStream<EventT> {
 public:
-    /*!
-     * Basic constructor
-     */
-    ParallelOutStream() {}
+    ~ParallelOutStream() final = default;
 
     void add_parallel_out_process(Processor<EventT> * process) {
         proc_pair.push_back({process, std::vector<EventT>()});
@@ -36,7 +33,8 @@ public:
         return(proc_pair.size());
     }
 
-    std::vector<EventT> add_events(const std::vector<EventT> & events) {
+    std::vector<EventT> add_events(const std::vector<EventT> & events) override
+    {
         auto result = ProcessStream<EventT>::add_events(events);
         for (auto & pp: proc_pair) {
             std::vector<EventT> parallel_result = pp.first->add_events(result);
@@ -46,7 +44,7 @@ public:
         return(result);
     }
 
-    std::vector<EventT> stop() {
+    std::vector<EventT> stop() override {
         auto result = ProcessStream<EventT>::stop();
         for (auto & pp: proc_pair) {
             // First add the events to the process, like normal
@@ -61,7 +59,7 @@ public:
         return(result);
     }
 
-    void reset() {
+    void reset() override {
         for (auto pp: proc_pair) {
             pp.first->reset();
         }

@@ -19,11 +19,7 @@
 template <class EventT>
 class ProcessStream {
 public:
-    /*!
-     * Basic constructor
-     */
-    ProcessStream() {}
-    virtual ~ProcessStream() {}
+    virtual ~ProcessStream() = default;
 
     void add_process(Processor<EventT> * process, bool print = true) {
         processes.push_back(process);
