@@ -29,13 +29,11 @@ public:
      */
     CoincProcess(TimeT coinc_win, TimeF time_func, TagF tag_coinc_func,
                  bool reject_multiple_events = false,
-                 bool combinatorial_pair_multiples = false,
                  bool is_paralyzable = true,
                  TimeT win_offset = TimeT()) :
         coinc_window(coinc_win),
         window_offset(win_offset),
         reject_multiples(reject_multiple_events),
-        combinatorial_pair_all_multiples(combinatorial_pair_multiples),
         paralyzable(is_paralyzable),
         get_time_func(time_func),
         tag_coinc_with_id_func(tag_coinc_func),
@@ -75,123 +73,149 @@ public:
     
 
 private:
-    std::vector<EventT> _add_events(const std::vector<EventT> & events) {
-        event_buffer.insert(event_buffer.end(), events.begin(), events.end());
-        ready_buffer.insert(ready_buffer.end(), events.size(), false);
-        return(update_buffer_status(false));
-    }
-
     /*!
      *
      */
     void _reset() {
-        event_buffer.clear();
-        ready_buffer.clear();
         no_coinc_pair_events = 0;
         no_coinc_multiples_events = 0;
         no_coinc_single_events = 0;
         no_coinc_events = 0;
     }
 
-    /*!
-     *
-     */
-    std::vector<EventT> _stop() {
-        return(update_buffer_status(true));
-    }
+    typedef typename std::vector<EventT>::iterator event_iter;
 
-    std::vector<EventT> update_buffer_status(bool stopping) {
-        std::vector<EventT> local_ready_events;
-        for (size_t ii = 0; ii < event_buffer.size(); ii++) {
-            if (ready_buffer[ii]) {
+    event_iter _process_events(event_iter begin, event_iter end) final {
+        return(process_events_optional_stop(begin, end, false));
+    };
+
+    void _stop(event_iter begin, event_iter end) final {
+        process_events_optional_stop(begin, end, true);
+    };
+
+
+    event_iter process_events_optional_stop(event_iter begin, event_iter end,
+                                            bool stopping)
+    {
+        // coinc_id == -1 means event hasn't been touched.  coinc_id == -2
+        // indicateds a rejected event.  Zero or higher means it has been
+        // accepted.  coinc_id can be overwritten by other coinc processes,
+        // so this has to be redone for all.
+        for (auto iter = begin; iter != end; ++iter) {
+            (*iter).coinc_id = -1;
+        }
+        // We hold onto cur_iter as a way of pointing to where we'd pickup next
+        // time.  This will be end if all of the events are timedout or stopping
+        // is true.  Otherwise, the next call to this function should use
+        // cur_iter as begin.
+        event_iter cur_iter = begin;
+        for (;cur_iter != end; ++cur_iter) {
+            EventT & current_event = *cur_iter;
+            if (current_event.dropped || (current_event.coinc_id != -1)) {
                 continue;
             }
-            EventT & ref_event = event_buffer[ii];
-            TimeT window_start = window_offset;
+
+            // Find an iterator pointing to the first event at or after the
+            // start of the window.
+            const TimeT window_start = window_offset;
+            // We require the window iterator to start after cur_iter.  If we
+            // were not dealing with delayed windows, then we could assume that
+            // the window and the current iterator formed one contiguous block
+            // but that's not the case here.
+            event_iter window_start_iter = cur_iter + 1;
+            for (; window_start_iter != end; window_start_iter++) {
+                EventT & window_start_event = *window_start_iter;
+                if (window_start_event.dropped ||
+                    (window_start_event.coinc_id != -1))
+                {
+                    continue;
+                }
+                TimeT delta_t = (get_time_func(window_start_event) -
+                                 get_time_func(current_event));
+                if (delta_t >= window_start) {
+                    break;
+                }
+            }
+
+            // Look for the end of the window.  We start by looking at
+            // window_start_iter.  window_start_iter and window_end_iter can
+            // be the same.  This indicates there are no events in the window
+            // for current_event.
+            //
+            // We leave window_end non_const as a paralyzable window can extend
+            // this outward.
             TimeT window_end = window_offset + coinc_window;
-            std::vector<size_t> in_window;
-            in_window.push_back(ii);
-            bool window_timed_out = false;
-            for (size_t jj = ii + 1; jj < event_buffer.size(); jj++) {
-                EventT & new_event = event_buffer[jj];
-                TimeT delta_t = (get_time_func(new_event) -
-                                 get_time_func(ref_event));
-                bool inside_end = (delta_t < window_end);
-                bool inside_start = (delta_t < window_start);
-                bool within_window = (inside_end && !inside_start);
-                if (within_window) {
-                    in_window.push_back(jj);
+            event_iter window_end_iter = window_start_iter;
+            for (; window_end_iter != end; window_end_iter++) {
+                EventT & window_end_event = *window_end_iter;
+                if (window_end_event.dropped ||
+                    (window_end_event.coinc_id != -1))
+                {
+                    continue;
+                }
+                TimeT delta_t = (get_time_func(window_end_event) -
+                                 get_time_func(current_event));
+                if (delta_t >= window_end) {
+                    break;
+                } else {
                     if (paralyzable) {
                         window_end = delta_t + coinc_window;
                     }
                 }
-                if (!inside_end) {
-                    window_timed_out = true;
-                    break;
+            }
+
+            if ((window_end_iter == end) && (!stopping)) {
+                break;
+            }
+
+            // Find the number of non-dropped events pointed to by the window.
+            int no_events = 1;
+            for (auto iter = window_start_iter; iter != window_end_iter; ++iter)  {
+                EventT & event = *iter;
+                if (!event.dropped) {
+                    no_events++;
                 }
             }
-            if (window_timed_out || stopping) {
-                bool keep_events = false;
-                if (in_window.size() == 2) {
-                    no_coinc_pair_events += in_window.size();
-                    keep_events = true;
-                } else if (in_window.size() > 2) {
-                    no_coinc_multiples_events += in_window.size();
-                    keep_events = !reject_multiples;
-                } else {
-                    no_coinc_single_events += in_window.size();
-                }
-                for (size_t idx = 0; idx < in_window.size(); idx++) {
-                    ready_buffer[in_window[idx]] = true;
-                    if (keep_events) {
-                        tag_coinc_with_id_func(event_buffer[in_window[idx]],
-                                               no_coinc_events);
-                        // combinatorial_pair_all_multiples mimics Gate's
-                        // takeAllGoods.  We intentionally keep the coinc event
-                        // id the same for right now, that might be something
-                        // to change later. combinatorial_pair_all_multiples is
-                        // not the default currently.  The default is to write
-                        // out all of the events, and let the user sort out what
-                        // to do with them.  Sometimes it is easier to be able
-                        // make the assumption that coincidences are all pairs
-                        // of events.
-                        if (combinatorial_pair_all_multiples) {
-                            for (size_t jdx = idx+1; jdx < in_window.size(); jdx++) {
-                                local_ready_events.push_back(event_buffer[in_window[idx]]);
-                                local_ready_events.push_back(event_buffer[in_window[jdx]]);
-                            }
-                        } else {
-                            local_ready_events.push_back(event_buffer[in_window[idx]]);
-                        }
-                    }
+
+            // Sort out the singles, doubles, and multiples.
+            bool keep_events = false;
+            if (no_events == 2) {
+                no_coinc_pair_events += no_events;
+                keep_events = true;
+            } else if (no_events > 2) {
+                no_coinc_multiples_events += no_events;
+                keep_events = !reject_multiples;
+            } else {
+                no_coinc_single_events += no_events;
+            }
+            for (auto iter = window_start_iter; iter != window_end_iter; ++iter)  {
+                EventT & event = *iter;
+                if (event.dropped) {
+                    continue;
                 }
                 if (keep_events) {
-                    no_coinc_events++;
+                    tag_coinc_with_id_func(event, no_coinc_events);
                 } else {
-                    this->inc_no_dropped(in_window.size());
+                    tag_coinc_with_id_func(event, -2);
                 }
             }
+            if (keep_events) {
+                tag_coinc_with_id_func(current_event, no_coinc_events);
+                no_coinc_events++;
+            } else {
+                tag_coinc_with_id_func(current_event, -2);
+                this->inc_no_dropped(no_events);
+            }
         }
+        return (cur_iter);
+    };
 
-        auto ready_iter = std::find_if_not(ready_buffer.begin(),
-                                           ready_buffer.end(),
-                                           [](bool val){return(val);});
-        const size_t no_ready = ready_iter - ready_buffer.begin();
-
-        ready_buffer.erase(ready_buffer.begin(), ready_iter);
-        event_buffer.erase(event_buffer.begin(),
-                           event_buffer.begin() + no_ready);
-        return(local_ready_events);
-    }
 
     TimeT coinc_window;
     TimeT window_offset;
     bool reject_multiples;
-    bool combinatorial_pair_all_multiples;
     bool paralyzable;
 
-    std::vector<EventT> event_buffer;
-    std::vector<bool> ready_buffer;
 
     TimeF get_time_func;
     TagF tag_coinc_with_id_func;

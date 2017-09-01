@@ -23,7 +23,8 @@ public:
     int scatter_rayleigh_phantom = 0;
     int scatter_rayleigh_detector = 0;
     int xray_flouresence = 0;
-    int coinc_id = 0;
+    int coinc_id = -1;
+    bool dropped = false;
 
     struct MergedEventsInfo {
         int scatter_compton_phantom = 0;

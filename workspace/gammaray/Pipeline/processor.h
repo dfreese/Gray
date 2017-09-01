@@ -10,6 +10,7 @@
 #define processor_h
 
 #include <vector>
+#include <algorithm>
 
 /*!
  * Creates a base class processing a stream of events of a user specified type.
@@ -28,21 +29,28 @@ public:
 
     virtual ~Processor() {};
 
-    /*!
-     * Adds a new event into the processor by dumping it to add_events.
-     */
-    std::vector<EventT> add_event(const EventT & event) {
-        return(add_events({event}));
+    typedef typename std::vector<EventT>::iterator event_iter;
+
+    event_iter process_events(event_iter begin, event_iter end) {
+        const long start_count_dropped = count_dropped;
+        auto ready_events = _process_events(begin, end);
+
+        auto kept_func = [](const EventT & event) {return (!event.dropped);};
+        const long kept = std::count_if(begin, ready_events, kept_func);
+        count_kept += kept;
+        count_events += kept + (count_dropped - start_count_dropped);
+        return(ready_events);
     }
 
-    /*!
-     * Adds new events into the processor, one by one by default.
-     */
-    std::vector<EventT> add_events(const std::vector<EventT> & events) {
-        count_events += events.size();
-        auto ready_events = _add_events(events);
-        count_kept += ready_events.size();
-        return(ready_events);
+    void stop(event_iter begin, event_iter end) {
+        const long start_count_dropped = count_dropped;
+
+        _stop(begin, end);
+
+        auto kept_func = [](const EventT & event) {return (!event.dropped);};
+        const long kept = std::count_if(begin, end, kept_func);
+        count_kept += kept;
+        count_events += kept + (count_dropped - start_count_dropped);
     }
 
     /*!
@@ -53,16 +61,6 @@ public:
         count_kept = 0;
         count_dropped = 0;
         count_events = 0;
-    }
-
-    /*!
-     * Simulates the end of the acquisition by saying no further events will be
-     * added.
-     */
-    std::vector<EventT> stop() {
-        auto ready_events = _stop();
-        count_kept += ready_events.size();
-        return(ready_events);
     }
 
     /*!
@@ -86,10 +84,6 @@ public:
         return(count_kept);
     }
 
-    /*!
-     * Clear all of the information currently in the class
-     */
-
 protected:
     void inc_no_dropped() {
         count_dropped++;
@@ -100,8 +94,8 @@ protected:
     }
 
 private:
-    virtual std::vector<EventT> _add_events(const std::vector<EventT> & events) = 0;
-    virtual std::vector<EventT> _stop() = 0;
+    virtual event_iter _process_events(event_iter begin, event_iter end) = 0;
+    virtual void _stop(event_iter begin, event_iter end) = 0;
     virtual void _reset() = 0;
 
 

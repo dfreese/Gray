@@ -39,98 +39,34 @@ bool Input::read_interaction(Interaction & interact) {
     }
 }
 
+/*!
+ * returns true if any events could be read.  false if no events could be read.
+ * Guarantees no iterators are invalidated if false is returned.
+ */
 bool Input::read_interactions(std::vector<Interaction> & interactions,
                               size_t no_interactions)
 {
-    if (format == Output::VARIABLE_ASCII) {
-        return(read_variables_ascii(interactions, no_interactions, log_file,
-                                    var_format_write_flags));
-    } else if (format == Output::VARIABLE_BINARY) {
-        return(read_variables_binary(interactions, no_interactions, log_file,
-                                     var_format_write_flags));
-    } else if (format == Output::FULL_BINARY) {
-        interactions.clear();
-        interactions.reserve(no_interactions);
-        for (size_t ii = 0; ii < no_interactions; ++ii) {
-            GrayBinaryStandard b;
-            if (!log_file.read(reinterpret_cast<char*>(&b), sizeof(b))) {
-                break;
-            }
-            interactions.emplace_back();
-            Interaction & interact = interactions.back();
-            interact.decay_id = b.i;
-            interact.time = b.time;
-            interact.energy = b.energy;
-            interact.pos.x = b.x;
-            interact.pos.y = b.y;
-            interact.pos.z = b.z;
-            interact.det_id = b.det_id;
-            parse_log_word(b.log, interact.type, interact.color,
-                           interact.scatter_compton_phantom, interact.mat_id,
-                           interact.src_id);
-        }
-        if (interactions.empty()) {
-            return(false);
-        } else {
-            return(true);
-        }
-    } else if (format == Output::NO_POS_BINARY) {
-        interactions.clear();
-        interactions.reserve(no_interactions);
-        for (size_t ii = 0; ii < no_interactions; ++ii) {
-            GrayBinaryNoPosition b;
-            if (!log_file.read(reinterpret_cast<char*>(&b), sizeof(b))) {
-                break;
-            }
-            interactions.emplace_back();
-            Interaction & interact = interactions.back();
-            interact.decay_id = b.i;
-            interact.time = b.time;
-            interact.energy = b.energy;
-            interact.det_id = b.det_id;
-            parse_log_word(b.log, interact.type, interact.color,
-                           interact.scatter_compton_phantom, interact.mat_id,
-                           interact.src_id);
-        }
-        if (interactions.empty()) {
-            return(false);
-        } else {
-            return(true);
-        }
-    } else if (format == Output::FULL_ASCII) {
-        interactions.clear();
-        interactions.reserve(no_interactions);
-        for (size_t ii = 0; ii < no_interactions; ++ii) {
-            string line;
-            if (!getline(log_file, line)) {
-                break;
-            }
-            stringstream ss(line);
-            Interaction interact;
-            ss >> interact.type;
-            ss >> interact.decay_id;
-            ss >> interact.color;
-            ss >> interact.time;
-            ss >> interact.energy;
-            ss >> interact.pos.x;
-            ss >> interact.pos.y;
-            ss >> interact.pos.z;
-            ss >> interact.src_id;
-            ss >> interact.scatter_compton_phantom;
-            ss >> interact.mat_id;
-            ss >> interact.det_id;
-            if (ss.fail()) {
-                break;
-            }
-            interactions.push_back(interact);
-        }
-        if (interactions.empty()) {
-            return(false);
-        } else {
-            return(true);
-        }
-    } else {
-        throw std::runtime_error("Unsupported input format type");
+    switch (format) {
+        case Output::VARIABLE_ASCII:
+            return(read_variables_ascii(interactions, no_interactions, log_file,
+                                        var_format_write_flags));
+            break;
+        case Output::VARIABLE_BINARY:
+            return(read_variables_binary(interactions, no_interactions,
+                                         log_file, var_format_write_flags));
+            break;
+        case Output::FULL_BINARY:
+            return (read_full_binary(interactions, no_interactions, log_file));
+            break;
+        case Output::NO_POS_BINARY:
+            return (read_no_pos_binary(interactions, no_interactions, log_file));
+            break;
+        case Output::FULL_ASCII:
+            return (read_full_ascii(interactions, no_interactions, log_file));
+            break;
+        default:
+            throw std::runtime_error("Unsupported input format type");
+            break;
     }
 }
 
@@ -282,6 +218,7 @@ bool Input::read_variables_binary(std::vector<Interaction> & interactions,
     Output::WriteOffsets offsets = Output::event_offsets(flags);
     vector<char> read_buf(event_size * no_interactions);
     input.read(read_buf.data(), read_buf.size());
+    size_t no_events = no_interactions;
     if (input.fail()) {
         if (input.bad()) {
             return(false);
@@ -298,13 +235,14 @@ bool Input::read_variables_binary(std::vector<Interaction> & interactions,
             return(false);
         }
         read_buf.resize(input.gcount());
-        interactions.resize(no_events);
-    } else {
-        interactions.resize(no_interactions);
     }
+    interactions.reserve(interactions.size() + no_events);
 
-    char * event_ptr = read_buf.data();
-    for (auto & inter: interactions) {
+
+    for (size_t offset = 0; offset < read_buf.size(); offset += event_size) {
+        char * event_ptr = &read_buf[offset];
+        interactions.emplace_back();
+        Interaction & inter = interactions.back();
         if (flags.time) {
             inter.time = *reinterpret_cast<double*>(event_ptr + offsets.time);
         }
@@ -363,7 +301,6 @@ bool Input::read_variables_binary(std::vector<Interaction> & interactions,
             inter.coinc_id = *reinterpret_cast<int*>(event_ptr +
                                                      offsets.coinc_id);
         }
-        event_ptr += event_size;
     }
     return(true);
 }
@@ -373,8 +310,7 @@ bool Input::read_variables_ascii(std::vector<Interaction> & interactions,
                                  std::istream & input,
                                  const Output::WriteFlags & flags)
 {
-    interactions.clear();
-    interactions.reserve(no_interactions);
+    interactions.reserve(interactions.size() + no_interactions);
     string line;
     for (size_t ii = 0; (ii < no_interactions) & (!getline(input, line).fail()); ii++) {
         Interaction inter;
@@ -436,6 +372,127 @@ bool Input::read_variables_ascii(std::vector<Interaction> & interactions,
     } else {
         return(true);
     }
+}
+
+bool Input::read_no_pos_binary(std::vector<Interaction> & interactions,
+                               size_t no_interactions, std::istream & input)
+{
+    constexpr size_t event_size = sizeof(GrayBinaryNoPosition);
+    vector<GrayBinaryNoPosition> read_buf(no_interactions);
+    input.read(reinterpret_cast<char *>(read_buf.data()), read_buf.size() * event_size);
+    size_t no_events = no_interactions;
+    if (input.fail()) {
+        if (input.bad()) {
+            return(false);
+        }
+        // Handle the case where we didn't read as much as we requested.
+        size_t no_events = input.gcount() / event_size;
+        // Bail if we were somehow at the end of the file
+        if (no_events == 0) {
+            return(false);
+        }
+        // Or if the bytes we read doesn't match with what's required for
+        // an event.
+        if ((input.gcount() % event_size) != 0) {
+            return(false);
+        }
+        read_buf.resize(no_events);
+    }
+    interactions.reserve(interactions.size() + no_events);
+
+
+    for (auto & b: read_buf) {
+        interactions.emplace_back();
+        Interaction & interact = interactions.back();
+        interact.decay_id = b.i;
+        interact.time = b.time;
+        interact.energy = b.energy;
+        interact.det_id = b.det_id;
+        parse_log_word(b.log, interact.type, interact.color,
+                       interact.scatter_compton_phantom, interact.mat_id,
+                       interact.src_id);
+    }
+    return(true);
+}
+
+bool Input::read_full_binary(std::vector<Interaction> & interactions,
+                             size_t no_interactions, std::istream & input)
+{
+    constexpr size_t event_size = sizeof(GrayBinaryStandard);
+    vector<GrayBinaryStandard> read_buf(no_interactions);
+    input.read(reinterpret_cast<char *>(read_buf.data()), read_buf.size() * event_size);
+    size_t no_events = no_interactions;
+    if (input.fail()) {
+        if (input.bad()) {
+            return(false);
+        }
+        // Handle the case where we didn't read as much as we requested.
+        size_t no_events = input.gcount() / event_size;
+        // Bail if we were somehow at the end of the file
+        if (no_events == 0) {
+            return(false);
+        }
+        // Or if the bytes we read doesn't match with what's required for
+        // an event.
+        if ((input.gcount() % event_size) != 0) {
+            return(false);
+        }
+        read_buf.resize(no_events);
+    }
+    interactions.reserve(interactions.size() + no_events);
+
+
+    for (auto & b: read_buf) {
+        interactions.emplace_back();
+        Interaction & interact = interactions.back();
+        interact.decay_id = b.i;
+        interact.time = b.time;
+        interact.energy = b.energy;
+        interact.pos.x = b.x;
+        interact.pos.y = b.y;
+        interact.pos.z = b.z;
+        interact.det_id = b.det_id;
+        parse_log_word(b.log, interact.type, interact.color,
+                       interact.scatter_compton_phantom, interact.mat_id,
+                       interact.src_id);
+    }
+    return(true);
+}
+
+bool Input::read_full_ascii(std::vector<Interaction> & interactions,
+                            size_t no_interactions, std::istream & input)
+{
+    std::vector<Interaction> read_buf(no_interactions);
+    size_t no_events = 0;
+    for (; no_events < no_interactions; ++no_events) {
+        string line;
+        if (!getline(input, line)) {
+            break;
+        }
+        stringstream ss(line);
+        Interaction & interact = read_buf[no_events];
+        ss >> interact.type;
+        ss >> interact.decay_id;
+        ss >> interact.color;
+        ss >> interact.time;
+        ss >> interact.energy;
+        ss >> interact.pos.x;
+        ss >> interact.pos.y;
+        ss >> interact.pos.z;
+        ss >> interact.src_id;
+        ss >> interact.scatter_compton_phantom;
+        ss >> interact.mat_id;
+        ss >> interact.det_id;
+        if (ss.fail()) {
+            break;
+        }
+    }
+    if (no_events == 0) {
+        return(false);
+    }
+
+    interactions.insert(interactions.end(), read_buf.begin(), read_buf.end());
+    return(true);
 }
 
 void Input::set_variable_mask(const Output::WriteFlags & flags) {

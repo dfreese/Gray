@@ -29,6 +29,8 @@ Interaction Physics::NoInteraction(const Photon & p,
     hit.scatter_rayleigh_phantom = p.scatter_rayleigh_phantom;
     hit.scatter_rayleigh_detector = p.scatter_rayleigh_detector;
     hit.xray_flouresence = p.xray_flouresence;
+    // Don't process this in the DAQ
+    hit.dropped = true;
     return(hit);
 }
 
@@ -50,6 +52,8 @@ Interaction Physics::Photoelectric(const Photon & p,
     hit.scatter_rayleigh_phantom = p.scatter_rayleigh_phantom;
     hit.scatter_rayleigh_detector = p.scatter_rayleigh_detector;
     hit.xray_flouresence = p.xray_flouresence;
+    // Process this in the DAQ
+    hit.dropped = false;
     return(hit);
 }
 
@@ -71,6 +75,8 @@ Interaction Physics::XrayEscape(const Photon & p, double deposit,
     hit.scatter_rayleigh_phantom = p.scatter_rayleigh_phantom;
     hit.scatter_rayleigh_detector = p.scatter_rayleigh_detector;
     hit.xray_flouresence = p.xray_flouresence;
+    // Process this in the DAQ
+    hit.dropped = false;
     return(hit);
 }
 
@@ -92,6 +98,8 @@ Interaction Physics::Compton(const Photon & p, double deposit,
     hit.scatter_rayleigh_phantom = p.scatter_rayleigh_phantom;
     hit.scatter_rayleigh_detector = p.scatter_rayleigh_detector;
     hit.xray_flouresence = p.xray_flouresence;
+    // Process this in the DAQ
+    hit.dropped = false;
     return(hit);
 }
 
@@ -113,6 +121,8 @@ Interaction Physics::Rayleigh(const Photon & p,
     hit.scatter_rayleigh_phantom = p.scatter_rayleigh_phantom;
     hit.scatter_rayleigh_detector = p.scatter_rayleigh_detector;
     hit.xray_flouresence = p.xray_flouresence;
+    // Process this in the DAQ
+    hit.dropped = false;
     return(hit);
 }
 
@@ -134,6 +144,8 @@ Interaction Physics::NuclearDecay(const class NuclearDecay &p,
     hit.scatter_rayleigh_phantom = 0;
     hit.scatter_rayleigh_detector = 0;
     hit.xray_flouresence = 0;
+    // Don't process this in the DAQ
+    hit.dropped = true;
     return(hit);
 }
 
@@ -156,6 +168,8 @@ Interaction Physics::ErrorTraceDepth(const Photon & p,
     hit.scatter_rayleigh_phantom = p.scatter_rayleigh_phantom;
     hit.scatter_rayleigh_detector = p.scatter_rayleigh_detector;
     hit.xray_flouresence = p.xray_flouresence;
+    // Don't process this in the DAQ
+    hit.dropped = true;
     return(hit);
 }
 
@@ -176,6 +190,8 @@ Interaction Physics::ErrorEmtpy(const Photon & p)
     hit.scatter_rayleigh_phantom = p.scatter_rayleigh_phantom;
     hit.scatter_rayleigh_detector = p.scatter_rayleigh_detector;
     hit.xray_flouresence = p.xray_flouresence;
+    // Don't process this in the DAQ
+    hit.dropped = true;
     return(hit);
 }
 

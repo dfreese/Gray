@@ -1,6 +1,7 @@
 #include <Output/Output.h>
 #include <iomanip>
 #include <sstream>
+#include <map>
 #include <Physics/Interaction.h>
 
 using namespace std;
@@ -36,6 +37,70 @@ int Output::MakeLogWord(int interaction, int color, int scatter, int det_mat,
 
 void Output::SetFormat(Format format) {
     this->format = format;
+}
+
+void Output::LogHits(const vector<Interaction>::const_iterator & begin,
+                     const vector<Interaction>::const_iterator & end)
+{
+    for (auto iter = begin; iter != end; ++iter) {
+        LogInteraction(*iter);
+    }
+}
+
+void Output::LogSingles(const vector<Interaction>::const_iterator & begin,
+                        const vector<Interaction>::const_iterator & end)
+{
+    for (auto iter = begin; iter != end; ++iter) {
+        const auto & interact = *iter;
+        if (!interact.dropped) {
+            LogInteraction(interact);
+        }
+    }
+}
+
+void Output::LogCoinc(const vector<Interaction>::const_iterator & begin,
+                      const vector<Interaction>::const_iterator & end,
+                      bool pair_all)
+{
+
+    multimap<int, vector<Interaction>::const_iterator> ids;
+    for (auto iter = begin; iter != end; ++iter) {
+        const auto & interact = *iter;
+        if (interact.coinc_id >= 0) {
+            ids.insert(ids.end(), {interact.coinc_id, iter});
+        }
+    }
+
+    for (auto iter = ids.begin(); iter != ids.end(); /* use iter_back to adv*/)
+    {
+        auto iter_back = iter;
+        for (; iter_back != ids.end(); ++iter_back)
+        {
+            if ((*iter).first != (*iter_back).first) {
+                break;
+            }
+        }
+        if (pair_all) {
+            for (auto key_iter0 = iter; key_iter0 != iter_back; key_iter0++) {
+                for (auto key_iter1 = iter; key_iter1 != iter_back; key_iter1++) {
+                    const Interaction & inter0 = *(*key_iter0).second;
+                    const Interaction & inter1 = *(*key_iter1).second;
+                    if (inter0.det_id < inter1.det_id) {
+                        LogInteraction(inter0);
+                        LogInteraction(inter1);
+                    } else {
+                        LogInteraction(inter1);
+                        LogInteraction(inter0);
+                    }
+                }
+            }
+        } else {
+            for (auto key_iter = iter; key_iter != iter_back; key_iter++) {
+                LogInteraction(*(*key_iter).second);
+            }
+        }
+        iter = iter_back;
+    }
 }
 
 void Output::LogInteractions(const vector<Interaction> & interactions) {
@@ -110,7 +175,67 @@ void Output::LogInteractions(const vector<Interaction> & interactions) {
 }
 
 void Output::LogInteraction(const Interaction & interact) {
-    LogInteractions({interact});
+    switch (format) {
+        case VARIABLE_ASCII: {
+            write_variable_ascii(interact, log_file, var_format_write_flags);
+        } break;
+        case VARIABLE_BINARY: {
+            write_variable_binary(interact, log_file, var_format_write_flags);
+        } break;
+        case FULL_BINARY: {
+            GrayBinaryStandard b;
+            b.i = interact.decay_id;
+            b.time = interact.time;
+            b.energy = interact.energy;
+            b.x = (float) interact.pos.x;
+            b.y = (float) interact.pos.y;
+            b.z = (float) interact.pos.z;
+            b.det_id = interact.det_id;
+            b.log = MakeLogWord(interact.type, interact.color,
+                                interact.scatter_compton_phantom, interact.mat_id,
+                                interact.src_id);
+            log_file.write(reinterpret_cast<char*>(&b), sizeof(b));
+        } break;
+        case NO_POS_BINARY: {
+            GrayBinaryNoPosition b;
+            b.i = interact.decay_id;
+            b.time = interact.time;
+            b.energy = interact.energy;
+            b.det_id = interact.det_id;
+            b.log = MakeLogWord(interact.type, interact.color,
+                                interact.scatter_compton_phantom, interact.mat_id,
+                                interact.src_id);
+            log_file.write(reinterpret_cast<char*>(&b), sizeof(b));
+        } break;
+        case FULL_ASCII: {
+            char str[256];
+            log_file << " " << interact.type << " ";
+            log_file << interact.decay_id;
+            log_file << " " << interact.color << " ";
+            sprintf(str,"%23.16e ", interact.time);
+            log_file << str;
+            sprintf(str,"%12.6e ", interact.energy);
+            log_file << str;
+            sprintf(str,"%15.8e %15.8e %15.8e %2d ", (float) interact.pos.x,
+                    (float) interact.pos.y,
+                    (float) interact.pos.z,
+                    interact.src_id);
+            log_file << str;
+            if (interact.scatter_compton_phantom) {
+                log_file << " 1 ";
+            } else {
+                log_file << " 0 ";
+            }
+            sprintf(str,"%2d ", interact.mat_id);
+            log_file << str;
+            sprintf(str,"%3d ", interact.det_id);
+            log_file << str;
+            log_file << "\n";
+        } break;
+        default: {
+
+        } break;
+    }
 }
 
 bool Output::SetLogfile(const std::string & name)

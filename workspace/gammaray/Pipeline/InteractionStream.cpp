@@ -1,6 +1,4 @@
 #include <Pipeline/InteractionStream.h>
-#include <unordered_set>
-#include <Physics/Physics.h>
 
 /*!
  * If the initial sort window is greater than zero, a sorting process is
@@ -75,59 +73,38 @@ int InteractionStream::load_processes(const std::string & filename) {
     return(set_processes(process_descriptions));
 }
 
+size_t InteractionStream::no_processes() const {
+    return(processes.size());
+}
+
 size_t InteractionStream::no_coinc_processes() const {
-    return(process_stream.no_parallel_processes());
-}
-
-std::vector<InteractionStream::EventT> InteractionStream::get_coinc_buffer(size_t idx) {
-    return(process_stream.get_buffer(idx));
-}
-
-std::vector<InteractionStream::EventT> InteractionStream::add_event(const EventT & event) {
-    return(add_events({event}));
-}
-
-namespace {
-struct ValidForSingles {
-    bool operator()(const Interaction & i) {
-        return(singles_valid_interactions.count(i.type) && (i.det_id >= 0));
-    };
-    std::unordered_set<int> singles_valid_interactions = {
-        Physics::COMPTON,
-        Physics::PHOTOELECTRIC,
-        Physics::XRAY_ESCAPE,
-        Physics::RAYLEIGH};
-};
-}
-
-std::vector<InteractionStream::EventT> InteractionStream::add_events(
-        const std::vector<EventT> & events)
-{
-    size_t no_valid = std::count_if(events.begin(), events.end(),
-                                    ValidForSingles());
-    if (no_valid < events.size()) {
-        std::vector<InteractionStream::EventT> valid_events(no_valid);
-        std::copy_if(events.begin(), events.end(), valid_events.begin(),
-                     ValidForSingles());
-        return(process_stream.add_events(valid_events));
-    }
-    return(process_stream.add_events(events));
-}
-
-std::vector<InteractionStream::EventT> InteractionStream::stop() {
-    return(process_stream.stop());
+    return(coinc_processes.size());
 }
 
 long InteractionStream::no_events() const {
-    return(process_stream.no_events());
+    if (!processes.empty()) {
+        return (processes.front()->no_events());
+    } else if (!coinc_processes.empty()) {
+        return (coinc_processes.front()->no_events());
+    } else {
+        return (0);
+    }
 }
 
 long InteractionStream::no_kept() const {
-    return(process_stream.no_kept());
+    if (!processes.empty()) {
+        return (processes.back()->no_kept());
+    } else {
+        return (0);
+    }
 }
 
 long InteractionStream::no_dropped() const {
-    return(process_stream.no_dropped());
+    long dropped = 0;
+    for (auto proc: processes) {
+        dropped += proc->no_dropped();
+    }
+    return(dropped);
 }
 
 long InteractionStream::no_merged() const {
@@ -146,15 +123,35 @@ long InteractionStream::no_filtered() const {
     return(filtered);
 }
 
+long InteractionStream::no_deadtimed() const {
+    long count = 0;
+    for (auto & proc: deadtime_processes) {
+        count += proc->no_dropped();
+    }
+    return(count);
+}
+
 std::ostream & operator << (std::ostream & os, const InteractionStream & s) {
-    os << s.process_stream;
-    if (s.merge_processes.size()) {
+    os << "events: " << s.no_events() << "\n"
+       << "kept: " << s.no_kept() << "\n"
+       << "dropped: " << s.no_dropped() << "\n"
+       << "drop per level: ";
+    for (size_t idx = 0; idx < s.processes.size(); idx++) {
+        if (s.print_info[idx]) {
+            os << " " << s.processes[idx]->no_dropped() << ",";
+        }
+    }
+    os << "\n";
+    if (!s.merge_processes.empty()) {
         os << "merged: " << s.no_merged() << "\n";
     }
-    if (s.filter_processes.size()) {
+    if (!s.filter_processes.empty()) {
         os << "filtered: " << s.no_filtered() << "\n";
     }
-    if (s.coinc_processes.size()) {
+    if (!s.deadtime_processes.empty()) {
+        os << "deadtimed: " << s.no_deadtimed() << "\n";
+    }
+    if (!s.coinc_processes.empty()) {
         for (auto & proc: s.coinc_processes) {
             os << *proc;
         }
@@ -338,6 +335,12 @@ int InteractionStream::set_processes(
     return(0);
 }
 
+void InteractionStream::add_process(ProcT * process, bool proc_print_info) {
+    processes.push_back(process);
+    print_info.push_back(proc_print_info);
+    process_ready_distance.push_back(0);
+}
+
 struct InteractionStream::MergeFirstFunctor {
     void operator() (EventT & e0, const EventT & e1) {
         Interaction::MergeStats(e0, e1);
@@ -495,7 +498,8 @@ int InteractionStream::add_merge_process(
     merge_processes.push_back(new MergeProcT(id_map, merge_time,
                                              get_time_func, get_id_func,
                                              merge_func));
-    process_stream.add_process(merge_processes.back());
+
+    add_process(merge_processes.back(), true);
     return(0);
 }
 
@@ -516,7 +520,7 @@ int InteractionStream::add_filter_process(const std::string & filter_name,
         return(-1);
     }
     filter_processes.push_back(new FilterProcT(filt_func));
-    process_stream.add_process(filter_processes.back());
+    add_process(filter_processes.back(), true);
     return(0);
 }
 
@@ -531,7 +535,7 @@ int InteractionStream::add_blur_process(
                 Blur::blur_energy(e, value);
             };
             blur_processes.push_back(new BlurProcT(eblur));
-            process_stream.add_process(blur_processes.back());
+            add_process(blur_processes.back(), true);
             return(0);
         } else if (options[0] == "at") {
             double ref_energy;
@@ -545,7 +549,7 @@ int InteractionStream::add_blur_process(
                 Blur::blur_energy_invsqrt(e, value, ref_energy);
             };
             blur_processes.push_back(new BlurProcT(eblur));
-            process_stream.add_process(blur_processes.back());
+            add_process(blur_processes.back(), true);
             return(0);
         } else {
             std::cerr << "unrecognized blur option: " << options[0]
@@ -560,12 +564,12 @@ int InteractionStream::add_blur_process(
             Blur::blur_time_capped(e, value, max_blur);
         };
         blur_processes.push_back(new BlurProcT(tblur));
-        process_stream.add_process(blur_processes.back());
+        add_process(blur_processes.back(), true);
 
         // Sort the stream afterwards, based on the capped blur
         sort_processes.push_back(new SortProcT(max_blur * 2,
                                                get_time_func));
-        process_stream.add_process(sort_processes.back(), false);
+        add_process(sort_processes.back(), false);
         return(0);
     } else {
         std::cerr << "Unknown blur type: " << name << std::endl;
@@ -581,7 +585,7 @@ int InteractionStream::add_sort_process(
 {
     if (name == "time") {
         sort_processes.push_back(new SortProcT(value, get_time_func));
-        process_stream.add_process(sort_processes.back(), user_requested);
+        add_process(sort_processes.back(), user_requested);
         return(0);
     } else {
         std::cerr << "Unknown sort type: " << name << std::endl;
@@ -594,7 +598,6 @@ int InteractionStream::add_coinc_process(const std::string & name, double value,
 {
     bool paralyzable = false;
     bool reject_multiples = true;
-    bool combinatorial_pair_all_multiples = false;
     TimeT window_offset = 0;
     bool look_for_offset = false;
     if (name == "window") {
@@ -626,8 +629,6 @@ int InteractionStream::add_coinc_process(const std::string & name, double value,
             reject_multiples = false;
         } else if (option == "paralyzable") {
             paralyzable = true;
-        } else if (option == "pair_all") {
-            combinatorial_pair_all_multiples = true;
         } else {
             std::cerr << "unrecognized coinc option: " << option
             << std::endl;
@@ -637,9 +638,7 @@ int InteractionStream::add_coinc_process(const std::string & name, double value,
     auto tag_event_func = [](EventT & e, long id) {e.coinc_id = id;};
     coinc_processes.push_back(new CoincProcT(value, get_time_func,
                                              tag_event_func, reject_multiples,
-                                             combinatorial_pair_all_multiples,
                                              paralyzable, window_offset));
-    process_stream.add_parallel_out_process(coinc_processes.back());
     return(0);
 }
 
@@ -670,6 +669,133 @@ int InteractionStream::add_deadtime_process(
     deadtime_processes.push_back(new DeadtimeT(id_map, deadtime,
                                                get_time_func, get_id_func,
                                                paralyzable));
-    process_stream.add_process(deadtime_processes.back());
+    add_process(deadtime_processes.back(), true);
     return(0);
+}
+
+std::vector<Interaction>::iterator InteractionStream::begin() {
+    return(input_events.begin());
+}
+
+std::vector<Interaction>::iterator InteractionStream::end() {
+    return(input_events.end());
+}
+
+std::vector<Interaction>::iterator InteractionStream::hits_begin() {
+    if (hits_stopped) {
+        if (process_ready_distance.empty()) {
+            return(begin());
+        } else {
+            return(begin() + process_ready_distance.front());
+        }
+    } else {
+        return(begin());
+    }
+}
+
+std::vector<Interaction>::iterator InteractionStream::hits_end() {
+    if (hits_stopped) {
+        return(end());
+    } else {
+        if (process_ready_distance.empty()) {
+            return(begin());
+        } else {
+            return(begin() + process_ready_distance.front());
+        }
+    }
+}
+
+std::vector<Interaction>::iterator InteractionStream::singles_begin() {
+    if (singles_stopped) {
+        return(singles_ready);
+    } else {
+        return(begin());
+    }
+}
+
+std::vector<Interaction>::iterator InteractionStream::singles_end() {
+    if (singles_stopped) {
+        return(end());
+    } else {
+        return(singles_ready);
+    }
+}
+
+
+std::vector<Interaction>::iterator InteractionStream::coinc_begin() {
+    return(begin());
+}
+
+std::vector<Interaction>::iterator InteractionStream::coinc_end() {
+
+    if (coinc_stopped) {
+        return(end());
+    } else {
+        return(coinc_ready);
+    }
+}
+
+/*!
+ * Only run the first process, which is always a sorting process in gray.  This
+ * should not be called if initial_sort_window was not specified.
+ */
+void InteractionStream::process_hits() {
+    singles_stopped = false;
+    singles_ready = input_events.end();
+    if (!processes.empty()) {
+        const auto begin = input_events.begin() + process_ready_distance.front();
+        singles_ready = processes.front()->process_events(begin, singles_ready);
+        process_ready_distance.front() = std::distance(input_events.begin(), singles_ready);
+    }
+    min_coinc_ready_dist = std::distance(input_events.begin(), singles_ready);
+}
+
+void InteractionStream::process_singles() {
+    singles_stopped = false;
+    // We might have left some singles that we processed in the buffer from
+    // previously, so start where we left off.
+    singles_ready = input_events.end();
+    for (size_t ii = 0; ii < processes.size(); ii++) {
+        const auto begin = input_events.begin() + process_ready_distance[ii];
+        singles_ready = processes[ii]->process_events(begin, singles_ready);
+        process_ready_distance[ii] = std::distance(input_events.begin(), singles_ready);
+    }
+    min_coinc_ready_dist = std::distance(input_events.begin(), singles_ready);
+}
+
+void InteractionStream::process_coinc(size_t idx) {
+    coinc_stopped = false;
+    coinc_ready = coinc_processes[idx]->process_events(input_events.begin(),
+                                                       singles_ready);
+    min_coinc_ready_dist = std::min(min_coinc_ready_dist,
+                                    std::distance(input_events.begin(), coinc_ready));
+}
+
+void InteractionStream::stop_hits() {
+    hits_stopped = true;
+    if (!processes.empty()) {
+        processes.front()->stop(begin() + process_ready_distance.front(), end());
+    }
+}
+
+
+void InteractionStream::stop_singles() {
+    singles_stopped = true;
+    for (size_t ii = 0; ii < process_ready_distance.size(); ii++) {
+        processes[ii]->stop(begin() + process_ready_distance[ii], end());
+    }
+}
+
+void InteractionStream::stop_coinc(size_t idx) {
+    coinc_stopped = true;
+    coinc_processes[idx]->stop(begin(), end());
+}
+
+void InteractionStream::clear_complete() {
+    auto singles_dist = std::distance(input_events.begin(), singles_ready);
+    input_events.erase(begin(), begin() + min_coinc_ready_dist);
+    for (auto & dist: process_ready_distance) {
+        dist -= min_coinc_ready_dist;
+    }
+    singles_ready = input_events.begin() + (singles_dist - min_coinc_ready_dist);
 }

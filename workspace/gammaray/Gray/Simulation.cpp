@@ -86,44 +86,59 @@ void Simulation::RunSim(const Config & config, SourceList & sources,
     if (print_prog_bar) cout << "[" << flush;
 
     const size_t interactions_soft_max = 100000;
+    singles_stream.get_buffer().reserve(interactions_soft_max + 50);
     while (sources.GetTime() < sources.GetEndTime()) {
-        vector<Interaction> interactions;
-        interactions.reserve(interactions_soft_max + 50);
-        ray_tracer.TraceSources(interactions, interactions_soft_max);
+        ray_tracer.TraceSources(singles_stream.get_buffer(), interactions_soft_max);
+        singles_stream.process_hits();
         if (config.get_log_hits()) {
-            output_hits.LogInteractions(interactions);
+            output_hits.LogHits(singles_stream.hits_begin(), singles_stream.hits_end());
         }
+
+        singles_stream.process_singles();
         if (config.get_log_singles() || config.get_log_coinc()) {
-            auto singles_events = singles_stream.add_events(interactions);
             if (config.get_log_singles()) {
-                output_singles.LogInteractions(singles_events);
+                output_singles.LogSingles(singles_stream.singles_begin(),
+                                          singles_stream.singles_end());
             }
+
             for (size_t idx = 0; idx < singles_stream.no_coinc_processes(); idx++) {
-                // We need to make sure that we clear the coinc buffers every
-                // so often (every round here) otherwise, they will build up
-                // data.  A singles_stream.clear(), or a get_coinc_buffer call
-                // to each buffer is required.
-                auto coinc_events = singles_stream.get_coinc_buffer(idx);
+                singles_stream.process_coinc(idx);
                 if (config.get_log_coinc()) {
-                    outputs_coinc[idx].LogInteractions(coinc_events);
+                    outputs_coinc[idx].LogCoinc(singles_stream.coinc_begin(),
+                                                singles_stream.coinc_end(),
+                                                true);
                 }
             }
         }
+
+        singles_stream.clear_complete();
+
         for (; current_tick < (sources.GetElapsedTime() / tick_mark);
              current_tick++)
         {
             if (print_prog_bar) cout << "=" << flush;
         }
     }
-    output_hits.Close();
+
+    singles_stream.stop_hits();
+    if (config.get_log_hits()) {
+        output_hits.LogHits(singles_stream.hits_begin(), singles_stream.hits_end());
+        output_hits.Close();
+    }
+
+    singles_stream.stop_singles();
     if (config.get_log_singles() || config.get_log_coinc()) {
-        auto singles_events = singles_stream.stop();
-        output_singles.LogInteractions(singles_events);
-        output_singles.Close();
+        if (config.get_log_singles()) {
+            output_singles.LogSingles(singles_stream.singles_begin(),
+                                      singles_stream.singles_end());
+            output_singles.Close();
+        }
+
         for (size_t idx = 0; idx < singles_stream.no_coinc_processes(); idx++) {
-            auto coinc_events = singles_stream.get_coinc_buffer(idx);
+            singles_stream.stop_coinc(idx);
             if (config.get_log_coinc()) {
-                outputs_coinc[idx].LogInteractions(coinc_events);
+                outputs_coinc[idx].LogCoinc(singles_stream.coinc_begin(),
+                                            singles_stream.coinc_end(), true);
                 outputs_coinc[idx].Close();
             }
         }

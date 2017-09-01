@@ -12,6 +12,7 @@
 #include <fstream>
 #include <vector>
 #include <unordered_set>
+#include <algorithm>
 #include <Pipeline/processor.h>
 
 /*!
@@ -43,82 +44,46 @@ public:
     }
 
 private:
-    /*!
-     * Adds a new events into detector id map then updates which events are
-     * timed out, and will not be merged with any other event.
-     */
-    std::vector<EventT> _add_events(const std::vector<EventT> & events) {
-        if (events.empty()) {
-            return(std::vector<EventT>());
-        }
-        // Merge any events that are still within the window.  Hold onto others
-        // where there's nothing from that detector currently, or where the
-        // current event is too old.
-        std::vector<EventT> local_ready_events;
-        for (const auto & event: events) {
-            TimeT clear_time = get_time_func(event) - time_window;
-            int event_id = find_id(event);
-            if (id_event_map.count(event_id) == 0) {
-                // Keep the event
-                id_event_map[event_id] = event;
-            } else if (get_time_func(id_event_map[event_id]) <= clear_time) {
-                // Keep the event and push out the old one
-                local_ready_events.push_back(id_event_map[event_id]);
-                id_event_map[event_id] = event;
-            } else {
-                // Merge the events together
-                merge_func(id_event_map[event_id], event);
-                this->inc_no_dropped();
+    typedef typename std::vector<EventT>::iterator event_iter;
+
+    event_iter _process_events(event_iter begin, event_iter end) final {
+        auto cur_iter = begin;
+        for (; cur_iter != end; cur_iter++) {
+            EventT & cur_event = *cur_iter;
+            if (cur_event.dropped) {
+                continue;
+            }
+            const int current_event_id = find_id(cur_event);
+            // Check to see where this event times out
+            const TimeT window = get_time_func(cur_event) + time_window;
+            auto next_iter = cur_iter + 1;
+            for (; next_iter != end; next_iter++) {
+                EventT & next_event = *next_iter;
+                if (next_event.dropped) {
+                    continue;
+                }
+                if (get_time_func(next_event) >= window) {
+                    break;
+                }
+                if (current_event_id == find_id(next_event)) {
+                    merge_func(cur_event, next_event);
+                    next_event.dropped = true;
+                    this->inc_no_dropped();
+                }
+            }
+            if (next_iter == end) {
+                return (cur_iter);
             }
         }
+        // shouldn't happen
+        return (cur_iter);
+    };
 
-        // Now clear out any events that are too old from the map
-        TimeT clear_time = get_time_func(events.back()) - time_window;
-        std::unordered_set<int> ids_to_clear;
-        for (const auto & id_e_pair: id_event_map) {
-            if (get_time_func(id_e_pair.second) <= clear_time) {
-                // Keep the event and push out the old one
-                local_ready_events.push_back(id_e_pair.second);
-                ids_to_clear.insert(id_e_pair.first);
-            }
-        }
+    void _stop(event_iter begin, event_iter end) final {
+        _process_events(begin, end);
+    };
 
-        for (auto det_id: ids_to_clear) {
-            id_event_map.erase(det_id);
-        }
-
-        // Return the events in time sorted fashion, knowing that events can
-        // only have their time go forwards for this type of process, unlike
-        // blurring, which can go forward.
-        std::sort(local_ready_events.begin(), local_ready_events.end(),
-                  [this](const EventT & e0, const EventT & e1){
-                      return(this->get_time_func(e0) < this->get_time_func(e1));
-                  });
-        return(local_ready_events);
-    }
-
-    void _reset() {
-        id_event_map.clear();
-    }
-
-    /*!
-     * Simulates the end of the acquisition by saying all events are now fully
-     * valid.
-     */
-    std::vector<EventT> _stop() {
-        std::vector<EventT> local_ready_events;
-        for (const auto & id_e_pair: id_event_map) {
-            local_ready_events.push_back(id_e_pair.second);
-        }
-        id_event_map.clear();
-        // Return the events in time sorted fashion, knowing that events can
-        // only have their time go forwards for this type of process, unlike
-        // blurring, which can go forward.
-        std::sort(local_ready_events.begin(), local_ready_events.end(),
-                  [this](const EventT & e0, const EventT & e1){
-                      return(this->get_time_func(e0) < this->get_time_func(e1));
-                  });
-        return(local_ready_events);
+    void _reset() final {
     }
 
     /*!
@@ -143,7 +108,7 @@ private:
     InfoF get_id_func;
 
     /*!
-     * A function type that calculates the time difference between two events.
+     * A function type that returns the time of an event.
      * First - Second.
      */
     TimeF get_time_func;
@@ -154,7 +119,5 @@ private:
      * if the pair could form a valid coincidence.
      */
     ModF merge_func;
-
-    std::unordered_map<int, EventT> id_event_map;
 };
 #endif /* mergemap_h */

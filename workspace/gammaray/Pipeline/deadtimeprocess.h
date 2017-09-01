@@ -41,62 +41,49 @@ public:
     }
 
 private:
-    /*!
-     *
-     */
-    std::vector<EventT> _add_events(const std::vector<EventT> & events) {
-        if (events.empty()) {
-            return(std::vector<EventT>());
-        }
-        for (const auto event: events) {
-            TimeT event_time = get_time_func(event);
-            int event_id = find_id(event);
-            if (timeouts.count(event_id) == 0) {
-                // Keep the event
-                event_buf.push_back(event);
-                timeouts[event_id] = event_time + time_window;
-            } else if (timeouts[event_id] <= event_time) {
-                // Keep the event
-                event_buf.push_back(event);
-                timeouts[event_id] = event_time + time_window;
-            } else if (is_paralyzable) {
-                // Drop and extend the window
-                timeouts[event_id] = event_time + time_window;
-                this->inc_no_dropped();
-            } else {
-                // Just drop
-                this->inc_no_dropped();
+
+    typedef typename std::vector<EventT>::iterator event_iter;
+
+    event_iter _process_events(event_iter begin, event_iter end) final {
+        auto current_event = begin;
+        for (; current_event != end; current_event++) {
+            if ((*current_event).dropped) {
+                continue;
+            }
+            const int current_event_id = find_id(*current_event);
+            // Check to see where this event times out
+            TimeT window = get_time_func(*current_event) + time_window;
+            auto next_event = current_event + 1;
+            for (; next_event != end; next_event++) {
+                if ((*next_event).dropped) {
+                    continue;
+                }
+
+                const TimeT next_time = get_time_func(*next_event);
+                if (next_time >= window) {
+                    break;
+                }
+                if (current_event_id == find_id(*next_event)) {
+                    (*next_event).dropped = true;
+                    this->inc_no_dropped();
+                    if (is_paralyzable) {
+                        window = next_time + time_window;
+                    }
+                }
+            }
+            if (next_event == end) {
+                return (current_event);
             }
         }
+        // Should never hit here.
+        return (current_event);
+    };
 
-        // Remove any chunk of events that are timed out at the beginning.
-        TimeT event_time = get_time_func(events.back());
-        auto ready_iter = std::find_if(event_buf.begin(), event_buf.end(),
-                                       [this, event_time](const EventT & e) {
-                                           int det_id = this->find_id(e);
-                                           if (event_time < timeouts[det_id]) {
-                                               return(true);
-                                           } else {
-                                               return(false);
-                                           }
-                                       });
-        std::vector<EventT> local_ready_events(event_buf.begin(), ready_iter);
-        event_buf.erase(event_buf.begin(), ready_iter);
-        return(local_ready_events);
-    }
+    void _stop(event_iter begin, event_iter end) final {
+        _process_events(begin, end);
+    };
 
-    void _reset() {
-        event_buf.clear();
-    }
-
-    /*!
-     * Simulates the end of the acquisition by saying all events are now fully
-     * valid.
-     */
-    std::vector<EventT> _stop() {
-        std::vector<EventT> tmp_empty;
-        tmp_empty.swap(event_buf);
-        return(tmp_empty);
+    void _reset() final {
     }
 
     /*!
@@ -122,13 +109,10 @@ private:
     InfoF get_id_func;
 
     /*!
-     *
+     * A function type that returns the time of an event.
      */
     TimeF get_time_func;
 
     bool is_paralyzable;
-
-    std::vector<EventT> event_buf;
-    std::unordered_map<int, TimeT> timeouts;
 };
 #endif // deadtimeprocess_h

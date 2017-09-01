@@ -125,6 +125,17 @@ def test_merge_inside_window():
     assert((output == comments).all()), \
          'comment in the options should have been ignored'
 
+def test_merge_across_read_boundary():
+    read_interval = 100000 # gray-daq reads this many events at a time.
+    data = np.zeros(2 * read_interval, dtype=gray.no_position_dtype)
+    merge_window = 10.0
+
+    data['time'] = np.arange(0, data.size * (merge_window / 2), (merge_window / 2))
+
+    output = _create_and_run_merge(data, ('merge', 'detector', merge_window))
+    assert(output.size == data.size / 2), \
+        'Half of events should have been merged'
+
 def test_merge_inside_window_basic_flag():
     data = np.zeros(2, dtype=gray.no_position_dtype)
     merge_window = 300.0
@@ -188,10 +199,12 @@ def test_deadtime():
     times = np.array((0.0, 50.0, 75.0, 174.99, 300.0, 399.999, 400.0),
                         dtype=data.dtype['time'])
     data['time'] = times
+
     expected = data[np.array((0, 3, 4, 6))]
     output = _create_and_run_merge(data, ('deadtime', 'detector', deadtime))
     check = _create_and_run_merge(data, ('deadtime', 'detector', deadtime,
                                          'nonparalyzable'))
+
 
     assert(output.size == expected.size), \
             'Expected number of events not cut for nonparalyzable deadtime'
@@ -303,10 +316,17 @@ def test_time_blur():
 
 def test_time_blur_std():
     data = np.zeros(100000, dtype=gray.no_position_dtype)
+
     tres_sigma = 2.0
+
+    # Make sure the data is sorted and stays sorted by putting it more than
+    # 3 sigma apart.  Sort expects a partially, or mostly sorted input, so we
+    # can't give it a bunch of zeros without taking a lot of time.
+    data['time'] = np.arange(0, data.size * 4 * tres_sigma, 4 * tres_sigma)
+
     tres = tres_sigma * _sigma_to_fwhm
     output = _create_and_run_merge(data, ('blur', 'time', tres))
-    std_out = output['time'].std()
+    std_out = (output['time'] - data['time']).std()
     assert(np.abs(tres_sigma - std_out) / tres_sigma < 1e-2)
 
 def test_coinc():

@@ -92,9 +92,7 @@ add_library(gammaray
     Pipeline/deadtimeprocess.h
     Pipeline/filterprocess.h
     Pipeline/mergeprocess.h
-    Pipeline/paralleloutstream.h
     Pipeline/processor.h
-    Pipeline/processstream.h
     Pipeline/InteractionStream.h
     Pipeline/InteractionStream.cpp
     Pipeline/sortprocess.h

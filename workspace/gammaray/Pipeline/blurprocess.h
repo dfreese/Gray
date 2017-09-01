@@ -27,20 +27,23 @@ public:
     }
 
 private:
-    std::vector<EventT> _add_events(const std::vector<EventT> & events) {
-        std::vector<EventT> new_events(events);
-        std::for_each(new_events.begin(), new_events.end(), blur_func);
-        return(new_events);
-    }
+    typedef typename std::vector<EventT>::iterator event_iter;
+
+    event_iter _process_events(event_iter begin, event_iter end) final {
+        for (auto iter = begin; iter != end; ++iter) {
+            EventT & event = *iter;
+            if (!event.dropped) {
+                blur_func(event);
+            }
+        }
+        return (end);
+    };
+
+    void _stop(event_iter begin, event_iter end) final {
+        _process_events(begin, end);
+    };
 
     void _reset() {
-    }
-
-    /*!
-     *
-     */
-    std::vector<EventT> _stop() {
-        return(std::vector<EventT>());
     }
 
     /*!

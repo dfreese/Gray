@@ -10,8 +10,8 @@
 #define sortprocess_h
 
 #include <Pipeline/processor.h>
-#include <queue>
 #include <vector>
+#include <algorithm>
 
 /*!
  *
@@ -23,77 +23,72 @@ class TimeF = std::function<TimeT(const EventT&)>
 >
 class SortProcess : public Processor<EventT> {
 public:
-    typedef std::function<bool(const EventT&, const EventT&)> EventTimeGreaterThanT;
     /*!
      *
      */
     SortProcess(TimeT max_time_to_wait, TimeF time_func) :
         max_wait_time(max_time_to_wait),
-        get_time_func(time_func),
-        event_min_heap([time_func](const EventT& e0, const EventT& e1) {
-            return(time_func(e0) > time_func(e1));})
+        get_time_func(time_func)
     {
 
     }
 
 private:
-    std::vector<EventT> _add_events(const std::vector<EventT> & events) {
-        for (const auto & event : events) {
-            event_min_heap.push(event);
-            TimeT event_time = get_time_func(event);
-            max_time = std::max(event_time, max_time);
+    typedef typename std::vector<EventT>::iterator event_iter;
+
+
+    /*!
+     * Taken from my answer here:
+     * https://codereview.stackexchange.com/a/160363/135154
+     * 
+     * Since we know that our sorting is done on mostly sorted data, insertion
+     * sort will be faster, and is stable so it's not swapping elements around.
+     */
+    template<class I, class C = std::less<typename std::iterator_traits<I>::value_type>>
+    void insertion_sort(I begin, I end, C comp = C()) {
+        for (auto i = begin; i != end; ++i) {
+            auto index = std::upper_bound(begin, i, *i, comp);
+            std::rotate(index, i, i + 1);
+        }
+    }
+
+    event_iter _process_events(event_iter begin, event_iter end) final {
+        // The timeout detection in this function requires a non-empty container
+        // so if we're given an empty range, bail right away.
+        if (begin == end) {
+            return(end);
         }
 
-        std::vector<EventT> local_events_ready;
-        while(!event_min_heap.empty()) {
-            const EventT & stored_event = event_min_heap.top();
-            TimeT time = get_time_func(stored_event);
-            if ((max_time - time) < max_wait_time) {
-                // We've found an event that is too new, stop looking, and
-                // remember to start here next time.
+        auto time_func = this->get_time_func;
+        auto time_cmp = [time_func](const EventT& e0, const EventT& e1) {
+            return(time_func(e0) < time_func(e1));
+        };
+        insertion_sort(begin, end, time_cmp);
+
+        // work back from the end to figure out where we've timed out, so what
+        // we will consider sorted.
+        auto timed_out = end - 1;
+        const TimeT out_time = get_time_func(*timed_out) - max_wait_time;
+        for (; timed_out != begin; --timed_out) {
+            if (get_time_func(*timed_out) <= out_time) {
                 break;
-            } else {
-                local_events_ready.push_back(stored_event);
-                event_min_heap.pop();
             }
         }
-        return(local_events_ready);
-    }
+        return (timed_out);
+    };
+
+    void _stop(event_iter begin, event_iter end) final {
+        _process_events(begin, end);
+    };
 
     void _reset() {
-        while(!event_min_heap.empty()) {
-            event_min_heap.pop();
-        }
-    }
-
-    /*!
-     *
-     */
-    std::vector<EventT> _stop() {
-        std::vector<EventT> local_events_ready;
-        while(!event_min_heap.empty()) {
-            local_events_ready.push_back(event_min_heap.top());
-            event_min_heap.pop();
-        }
-        // TODO: check that initialization of time will be okay
-        max_time = TimeT();
-        return(local_events_ready);
-    }
-
-    /*!
-     *
-     */
-    void _clear() {
     }
 
     TimeT max_wait_time;
-    TimeT max_time;
 
     /*!
-     * A function type that calculates the time difference between two events.
-     * First - Second.
+     * A function type that returns the time of an event.
      */
     TimeF get_time_func;
-    std::priority_queue<EventT, std::vector<EventT>, EventTimeGreaterThanT> event_min_heap;
 };
 #endif // sortprocess_h

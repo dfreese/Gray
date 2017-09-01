@@ -26,7 +26,7 @@ public:
     Output::WriteFlags get_write_flags() const;
 
 private:
-    void parse_log_word(int log, int & interaction, int & color,
+    static void parse_log_word(int log, int & interaction, int & color,
                         int & scatter, int & det_mat, int & src_id);
     static bool read_header_binary(std::istream & input, int & version);
     static bool read_header_ascii(std::istream & input, int & version);
@@ -42,6 +42,13 @@ private:
                                      size_t no_interactions,
                                      std::istream & input,
                                      const Output::WriteFlags & flags);
+    static bool read_no_pos_binary(std::vector<Interaction> & interactions,
+                                   size_t no_interactions,
+                                   std::istream & input);
+    static bool read_full_binary(std::vector<Interaction> & interactions,
+                                 size_t no_interactions, std::istream & input);
+    static bool read_full_ascii(std::vector<Interaction> & interactions,
+                                size_t no_interactions, std::istream & input);
     std::ifstream log_file;
     Output::Format format;
     Output::WriteFlags var_format_write_flags;

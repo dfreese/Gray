@@ -28,6 +28,14 @@ public:
     void LogInteraction(const Interaction & interact);
     void LogInteractions(const std::vector<Interaction> & interactions);
     void Close();
+    void LogHits(const std::vector<Interaction>::const_iterator & begin,
+                 const std::vector<Interaction>::const_iterator & end);
+    void LogSingles(const std::vector<Interaction>::const_iterator & begin,
+                    const std::vector<Interaction>::const_iterator & end);
+    void LogCoinc(const std::vector<Interaction>::const_iterator & begin,
+                  const std::vector<Interaction>::const_iterator & end,
+                  bool pair_all);
+
     static int ParseFormat(const std::string & identifier, Format & fmt);
     static void DisableHeader();
 

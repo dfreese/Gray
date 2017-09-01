@@ -16,7 +16,7 @@
 #include <sstream>
 #include <vector>
 #include <Physics/Interaction.h>
-#include <Pipeline/paralleloutstream.h>
+#include <Pipeline/processor.h>
 #include <Pipeline/blur.h>
 #include <Pipeline/blurprocess.h>
 #include <Pipeline/coincprocess.h>
@@ -37,18 +37,39 @@ public:
     int load_mappings(const std::string & filename);
     int set_processes(const std::vector<std::string> & lines);
     int load_processes(const std::string & filename);
+    size_t no_processes() const;
     size_t no_coinc_processes() const;
-    std::vector<EventT> get_coinc_buffer(size_t idx);
-    std::vector<EventT> add_event(const EventT & event);
-    std::vector<EventT> add_events(const std::vector<EventT> & events);
-    std::vector<EventT> stop();
     long no_events() const;
     long no_kept() const;
     long no_dropped() const;
     long no_merged() const;
     long no_filtered() const;
+    long no_deadtimed() const;
     friend std::ostream & operator << (std::ostream & os,
                                        const InteractionStream & s);
+
+    std::vector<Interaction> & get_buffer() {
+        return (input_events);
+    }
+
+    std::vector<Interaction>::iterator hits_begin();
+    std::vector<Interaction>::iterator hits_end();
+    std::vector<Interaction>::iterator singles_begin();
+    std::vector<Interaction>::iterator singles_end();
+    std::vector<Interaction>::iterator coinc_begin();
+    std::vector<Interaction>::iterator coinc_end();
+
+
+    void process_hits();
+    void process_singles();
+    void process_coinc(size_t idx);
+
+    void stop_hits();
+    void stop_singles();
+    void stop_coinc(size_t idx);
+
+    void clear_complete();
+
 
 private:
     typedef std::function<TimeT(const EventT&, const EventT&)> TimeDiffF;
@@ -58,7 +79,7 @@ private:
     typedef std::function<TimeT(const EventT&)> TimeF;
     typedef std::function<void(EventT&, const EventT&)> MergeF;
 
-    ParallelOutStream<EventT> process_stream;
+    typedef Processor<EventT> ProcT;
     typedef MergeProcess<EventT, TimeT, TimeF, InfoF, MergeF> MergeProcT;
     typedef FilterProcess<EventT, FilterF> FilterProcT;
     typedef BlurProcess<EventT, BlurF> BlurProcT;
@@ -66,12 +87,18 @@ private:
     typedef CoincProcess<EventT, TimeT, TimeF> CoincProcT;
     typedef DeadtimeProcess<EventT, TimeT, TimeF> DeadtimeT;
     std::map<std::string, std::vector<int>> id_maps;
+
+    std::vector<ProcT*> processes;
     std::vector<MergeProcT*> merge_processes;
     std::vector<FilterProcT*> filter_processes;
     std::vector<BlurProcT*> blur_processes;
     std::vector<SortProcT*> sort_processes;
     std::vector<CoincProcT*> coinc_processes;
     std::vector<DeadtimeT*> deadtime_processes;
+
+    //! Tells if a given process in processes should be printed
+    std::vector<bool> print_info;
+
     struct MergeFirstFunctor;
     struct MergeMaxFunctor;
     struct MergeAngerLogicFunctor;
@@ -97,6 +124,8 @@ private:
             std::vector<ProcessDescription> & process_descriptions);
 
     int set_processes(const std::vector<ProcessDescription> & process_descriptions);
+
+    void add_process(ProcT * process, bool proc_print_info);
 
     int make_anger_func(const std::vector<std::string> & anger_opts,
                         MergeF & merge_func);
@@ -125,6 +154,17 @@ private:
 
     int add_deadtime_process(const std::string & map_name, double deadtime,
                              const std::vector<std::string> & options);
+
+    std::vector<Interaction> input_events;
+    std::vector<std::vector<Interaction>::difference_type> process_ready_distance;
+    std::vector<Interaction>::iterator singles_ready;
+    std::vector<Interaction>::difference_type min_coinc_ready_dist;
+    std::vector<Interaction>::iterator coinc_ready;
+    bool hits_stopped = false;
+    bool singles_stopped = false;
+    bool coinc_stopped = false;
+    std::vector<Interaction>::iterator begin();
+    std::vector<Interaction>::iterator end();
 };
 
 #endif // interactionstream_h
