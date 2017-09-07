@@ -349,6 +349,8 @@ struct InteractionStream::MergeMaxFunctor {
     void operator() (EventT & e0, const EventT & e1) {
         e0.det_id = e0.energy > e1.energy ? e0.det_id:e1.det_id;
         Interaction::MergeStats(e0, e1);
+        e0.decay_id = e0.energy > e1.energy ? e0.decay_id:e1.decay_id;
+        e0.color = e0.energy > e1.energy ? e0.color:e1.color;
         e0.energy = e0.energy + e1.energy;
     }
 };
@@ -390,6 +392,8 @@ struct InteractionStream::MergeAngerLogicFunctor {
 
         int rev_idx = (row_result * no_by + col_result) * no_bz + lay_result;
         Interaction::MergeStats(e0, e1);
+        e0.decay_id = e0.energy > e1.energy ? e0.decay_id:e1.decay_id;
+        e0.color = e0.energy > e1.energy ? e0.color:e1.color;
         e0.energy = energy_result;
         e0.det_id = reverse_map[rev_idx];
     }
