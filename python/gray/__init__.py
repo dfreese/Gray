@@ -73,6 +73,22 @@ def create_variable_dtype(write_mask):
             vals.append(field)
     return np.dtype(vals)
 
+def variable_field_mask(data):
+    '''
+    Goes through every field in interaction_fields, and checks if it exists in
+    in the data array that was passed.
+    '''
+    return [f in data.dtype.descr for f in interaction_all_dtype.descr]
+
+def write_variable_binary(filename, data):
+    with open(filename, 'wb') as fid:
+        fields = np.array(variable_field_mask(data), dtype=np.int32)
+        # Magic number, version number, no_fields, no_active, event size
+        np.array((65531, 1, fields.size, fields.sum(), data.dtype.itemsize,),
+                  dtype=np.int32).tofile(fid)
+        fields.tofile(fid)
+        data.tofile(fid)
+
 SIGMA_TO_FWHM = 2.0 * np.sqrt(2.0 * np.log(2.0))
 FWHM_TO_SIGMA = 1.0 / SIGMA_TO_FWHM
 
