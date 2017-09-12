@@ -352,7 +352,8 @@ def test_coinc():
     assert((output == expected).all()), \
             'Event data not as expected for paralyzable coinc sort'
 
-    expected = data[np.array((0, 1, 2, 5, 6))]
+    # pair all of the first three together.
+    expected = data[np.array((0, 1, 0, 2, 1, 2, 5, 6))]
     [singles, output] = _create_and_run_merge(data, ('coinc', 'window', coinc_win,
                                           'keep_multiples paralyzable'))
     assert(output.size == expected.size), \
@@ -409,7 +410,6 @@ def test_delayed_window():
     assert((output == expected).all()), \
             '''Event data not as expected for paralyzable delayed window
             keeping multiples'''
-
 
 
     data = np.zeros(5, dtype=gray.no_position_dtype)

@@ -82,10 +82,12 @@ void Output::LogCoinc(const vector<Interaction>::const_iterator & begin,
         }
         if (pair_all) {
             for (auto key_iter0 = iter; key_iter0 != iter_back; key_iter0++) {
-                for (auto key_iter1 = iter; key_iter1 != iter_back; key_iter1++) {
+                for (auto key_iter1 = std::next(key_iter0);
+                     key_iter1 != iter_back; key_iter1++)
+                {
                     const Interaction & inter0 = *(*key_iter0).second;
                     const Interaction & inter1 = *(*key_iter1).second;
-                    if (inter0.det_id < inter1.det_id) {
+                    if (inter0.det_id <= inter1.det_id) {
                         LogInteraction(inter0);
                         LogInteraction(inter1);
                     } else {
