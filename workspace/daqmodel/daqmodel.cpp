@@ -161,7 +161,7 @@ int main(int argc, char ** argv) {
         singles_stream.stop_coinc(idx);
         if (config.get_log_coinc()) {
             outputs_coinc[idx].LogCoinc(singles_stream.coinc_begin(),
-                                        singles_stream.coinc_end(), false);
+                                        singles_stream.coinc_end(), true);
         }
     }
 

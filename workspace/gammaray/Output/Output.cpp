@@ -73,7 +73,7 @@ void Output::LogCoinc(const vector<Interaction>::const_iterator & begin,
 
     for (auto iter = ids.begin(); iter != ids.end(); /* use iter_back to adv*/)
     {
-        auto iter_back = iter;
+        auto iter_back = std::next(iter);
         for (; iter_back != ids.end(); ++iter_back)
         {
             if ((*iter).first != (*iter_back).first) {

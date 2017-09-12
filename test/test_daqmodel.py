@@ -400,7 +400,7 @@ def test_delayed_window():
 
 
     delay_window = 50.0
-    expected = data[np.array((0, 3, 1, 4, 6, 7, 8))]
+    expected = data[np.array((0, 3, 1, 4, 6, 7, 6, 8, 7, 8))]
     [singles, output] = _create_and_run_merge(data, [
         ('coinc', 'delay', coinc_win, str(delay_window) + ' keep_multiples'),
         ])
@@ -436,7 +436,7 @@ def test_delayed_window():
             'Event data not as expected for nonparalyzable coinc window'
 
 
-    expected = data[np.array((0, 1, 2, 3, 4))]
+    expected = data[np.array((0, 1, 2, 3, 2, 4, 3, 4))]
     [singles, output] = _create_and_run_merge(data, [
         ('coinc', 'delay', coinc_win, str(delay_window) + ' keep_multiples'),])
 
