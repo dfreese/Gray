@@ -21,7 +21,7 @@ def _run_merge(filename, output_filename, map_filename, proc_filename,
     if coinc_filenames is not None:
         for coinc_name in coinc_filenames:
             cmd += ' -c %s' % coinc_name
-    subprocess.call([cmd], shell=True)
+    assert(subprocess.call([cmd], shell=True) == 0)
 
 def _create_test_process_file(map_osfid, cmd_lines):
     with os.fdopen(map_osfid, 'wb') as map_fid:
@@ -648,22 +648,63 @@ def test_merge_array_weighted_mean():
     data[1]['energy'] = 250.0
     data[1]['det'] = 24 + 5
 
+    array_size = 64
+    column_size = 8
     new_energy = data[0]['energy'] + data[1]['energy']
+    det0_local = data[0]['det'] % array_size
+    det1_local = data[1]['det'] % array_size
     # We've chosen crystals in the same row, so they should be a straight
     # linear combination
-    new_col = int(data[0]['det'] // 8 * (data[0]['energy'] / new_energy) +
-                  data[1]['det'] // 8 * (data[1]['energy'] / new_energy))
-    new_row = int(data[0]['det'] % 8 * (data[0]['energy'] / new_energy) +
-                  data[1]['det'] % 8 * (data[1]['energy'] / new_energy))
-    new_det = 8 * new_col + new_row
+    new_col = int(det0_local // column_size * (data[0]['energy'] / new_energy) +
+                  det1_local // column_size * (data[1]['energy'] / new_energy))
+    new_row = int(det0_local % column_size * (data[0]['energy'] / new_energy) +
+                  det1_local % column_size * (data[1]['energy'] / new_energy))
+    new_det = ((data['det'][0] // array_size) * array_size +
+               column_size * new_col + new_row)
 
     output = _create_and_run_merge(data, ('merge', 'block', merge_window,
                                    'anger bx by bz'))
+
     assert(output.size == 1), 'Events should have been merged to one'
     assert(output[0]['energy'] == new_energy), \
            'Energy should be the sum of the input'
     assert(output[0]['det'] == new_det), \
            'New detector should be a weighted mean of the two'
+
+
+def test_merge_array_weighted_mean_next_array():
+    data = np.zeros(2, dtype=gray.no_position_dtype)
+    merge_window = 300.0
+
+    data[0]['energy'] = 300.0
+    data[1]['time'] = merge_window - 1e-6
+    data[1]['energy'] = 250.0
+    data[1]['det'] = 24 + 5
+
+    array_size = 64
+    column_size = 8
+    data['det'] += array_size
+    new_energy = data[0]['energy'] + data[1]['energy']
+    det0_local = data[0]['det'] % array_size
+    det1_local = data[1]['det'] % array_size
+    # We've chosen crystals in the same row, so they should be a straight
+    # linear combination
+    new_col = int(det0_local // column_size * (data[0]['energy'] / new_energy) +
+                  det1_local // column_size * (data[1]['energy'] / new_energy))
+    new_row = int(det0_local % column_size * (data[0]['energy'] / new_energy) +
+                  det1_local % column_size * (data[1]['energy'] / new_energy))
+    new_det = ((data['det'][0] // array_size) * array_size +
+               column_size * new_col + new_row)
+
+    output = _create_and_run_merge(data, ('merge', 'block', merge_window,
+                                   'anger bx by bz'))
+
+    assert(output.size == 1), 'Events should have been merged to one'
+    assert(output[0]['energy'] == new_energy), \
+           'Energy should be the sum of the input'
+    assert(output[0]['det'] == new_det), \
+           'New detector should be a weighted mean of the two'
+
 
 def test_stats_merge():
     data = np.zeros(3, dtype=gray.no_position_expanded_dtype)
