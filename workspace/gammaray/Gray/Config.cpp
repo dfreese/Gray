@@ -39,6 +39,9 @@ bool Config::ProcessCommandLine(int argc, char **argv, bool fail_without_scene)
         if (argument == "--help") {
             return(false);
         }
+        if (argument == "--test_overlap") {
+            run_overlap_test = true;
+        }
         if (argument == "-v") {
             verbose = true;
         }
@@ -169,6 +172,7 @@ void Config::usage() {
     << "  --hits_mask [type] : default: all on, or input mask\n"
     << "  --singles_mask [type] : default: all on, or input mask\n"
     << "  --coinc_mask [type] : default: all on, or input mask\n"
+    << "  --test_overlap : run overlap testing for the input geometry\n"
     << " gray-daq only: \n"
     << "  --sort [time] : sort the incoming events, assuming this max out of order time\n"
     << endl;
@@ -486,4 +490,8 @@ const std::vector<std::string> & Config::get_filenames_coinc() const {
 
 bool Config::get_verbose() const {
     return(verbose);
+}
+
+bool Config::get_run_overlap_test() const {
+    return (run_overlap_test);
 }

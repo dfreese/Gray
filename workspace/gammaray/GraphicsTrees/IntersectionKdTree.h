@@ -22,6 +22,7 @@ public:
                     bool use_double_recurse_split=true);
     long SeekIntersection(const VectorR3& pos, const VectorR3& direction,
                           double & hitDist, VisiblePoint& returnedPoint) const;
+    bool TestOverlap() const;
 
 private:
     virtual void ExtentFunc(long objectNum, AABB& boundingBox) const;
@@ -35,6 +36,7 @@ private:
                                       long objectNum, const VectorR3 & start_pos,
                                       const VectorR3 & direction,
                                       double & retStopDistance);
+    bool TestOverlapSingle(VectorR3 & start, const VectorR3 & dir) const;
 };
 
 #endif /* IntersectionKdTree_h */

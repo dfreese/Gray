@@ -81,6 +81,7 @@ public:
     void set_coinc_var_output_write_flags(const Output::WriteFlags & mask);
     Output::WriteFlags get_coinc_var_output_write_flags() const;
     bool get_verbose() const;
+    bool get_run_overlap_test() const;
 
 private:
     std::string filename_scene;
@@ -119,6 +120,7 @@ private:
     bool singles_var_output_write_flags_set = false;
     bool coinc_var_output_write_flags_set = false;
     bool verbose = false;
+    bool run_overlap_test = false;
 };
 
 #endif /* Config_h */

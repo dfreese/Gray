@@ -83,6 +83,16 @@ int gray(int argc, char ** argv)
 
     IntersectKdTree intersect_kd_tree(scene);
 
+    if (config.get_run_overlap_test()) {
+        cout << "testing for overlapping geometries" << endl;
+        if (intersect_kd_tree.TestOverlap()) {
+            cerr << "overlap test failed" << endl;
+            return (4);
+        } else {
+            cout << "overlap test passed" << endl;
+            return (0);
+        }
+    }
 
     if (!config.get_log_any()) {
         cout << "Warning: No output specified." << endl;

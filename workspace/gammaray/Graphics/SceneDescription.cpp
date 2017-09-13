@@ -112,7 +112,7 @@ void SceneDescription::DeleteAllViewables()
     }
 }
 
-AABB SceneDescription::GetExtents() {
+AABB SceneDescription::GetExtents() const {
     AABB scene_aabb;
     for (size_t idx = 0; idx < NumViewables(); idx++) {
         AABB aabb;
@@ -122,7 +122,7 @@ AABB SceneDescription::GetExtents() {
     return(scene_aabb);
 }
 
-double SceneDescription::GetMaxDistance() {
+double SceneDescription::GetMaxDistance() const {
     AABB extents = GetExtents();
     return((extents.GetBoxMax() - extents.GetBoxMin()).Norm());
 }

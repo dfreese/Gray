@@ -140,8 +140,8 @@ public:
         }
     }
 
-    AABB GetExtents();
-    double GetMaxDistance();
+    AABB GetExtents() const;
+    double GetMaxDistance() const;
 
     void DeleteAllLights();
     void DeleteAllMaterials();
