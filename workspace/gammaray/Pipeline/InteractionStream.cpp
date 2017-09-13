@@ -359,11 +359,13 @@ struct InteractionStream::MergeMaxFunctor {
 };
 
 struct InteractionStream::MergeAngerLogicFunctor {
-    MergeAngerLogicFunctor(const std::vector<int> & bx_map,
+    MergeAngerLogicFunctor(const std::vector<int> & base_map,
+                           const std::vector<int> & bx_map,
                            const std::vector<int> & by_map,
                            const std::vector<int> & bz_map,
                            int nx, int ny, int nz,
                            const std::vector<int> & rev_map) :
+        base(base_map),
         bx(bx_map),
         by(by_map),
         bz(bz_map),
@@ -377,12 +379,15 @@ struct InteractionStream::MergeAngerLogicFunctor {
 
     void operator() (EventT & e0, const EventT & e1) {
         float energy_result = e0.energy + e1.energy;
-        int row0 = bx[e0.det_id];
-        int row1 = bx[e1.det_id];
-        int col0 = by[e0.det_id];
-        int col1 = by[e1.det_id];
-        int lay0 = bz[e0.det_id];
-        int lay1 = bz[e1.det_id];
+        // Base is inherently the same for both detectors inherently by being
+        // matched in merge.
+        const int blk = base[e0.det_id];
+        const int row0 = bx[e0.det_id];
+        const int row1 = bx[e1.det_id];
+        const int col0 = by[e0.det_id];
+        const int col1 = by[e1.det_id];
+        const int lay0 = bz[e0.det_id];
+        const int lay1 = bz[e1.det_id];
         int row_result = static_cast<int>(
                 static_cast<float>(row0) * (e0.energy / energy_result) +
                 static_cast<float>(row1) * (e1.energy / energy_result));
@@ -393,7 +398,7 @@ struct InteractionStream::MergeAngerLogicFunctor {
                 static_cast<float>(lay0) * (e0.energy / energy_result) +
                 static_cast<float>(lay1) * (e1.energy / energy_result));
 
-        int rev_idx = (row_result * no_by + col_result) * no_bz + lay_result;
+        int rev_idx = ((blk * no_bx + row_result) * no_by + col_result) * no_bz + lay_result;
         Interaction::MergeStats(e0, e1);
         e0.decay_id = e0.energy > e1.energy ? e0.decay_id:e1.decay_id;
         e0.color = e0.energy > e1.energy ? e0.color:e1.color;
@@ -401,6 +406,7 @@ struct InteractionStream::MergeAngerLogicFunctor {
         e0.det_id = reverse_map[rev_idx];
     }
 
+    const std::vector<int> base;
     const std::vector<int> bx;
     const std::vector<int> by;
     const std::vector<int> bz;
@@ -411,6 +417,7 @@ struct InteractionStream::MergeAngerLogicFunctor {
 };
 
 int InteractionStream::make_anger_func(
+        const std::string & map_name,
         const std::vector<std::string> & anger_opts,
         MergeF & merge_func)
 {
@@ -419,7 +426,6 @@ int InteractionStream::make_anger_func(
         return(-1);
     }
     std::vector<std::string> block_maps(3, "");
-    std::vector<int> block_size(3, 0);
     // The first one should be "anger"
     for (size_t idx = 0; idx < 3; idx++) {
         block_maps[idx] = anger_opts[idx + 1];
@@ -430,20 +436,18 @@ int InteractionStream::make_anger_func(
             return(-3);
         }
     }
+    const std::vector<int> & base = this->id_maps[map_name];
     const std::vector<int> & bx = this->id_maps[block_maps[0]];
     const std::vector<int> & by = this->id_maps[block_maps[1]];
     const std::vector<int> & bz = this->id_maps[block_maps[2]];
-    block_size[0] = *std::max_element(bx.begin(), bx.end()) + 1;
-    block_size[1] = *std::max_element(by.begin(), by.end()) + 1;
-    block_size[2] = *std::max_element(bz.begin(), bz.end()) + 1;
-    const int no_bx = block_size[0];
-    const int no_by = block_size[1];
-    const int no_bz = block_size[2];
-    const int total = no_bx * no_by * no_bz;
+    const int no_bx = *std::max_element(bx.begin(), bx.end()) + 1;
+    const int no_by = *std::max_element(by.begin(), by.end()) + 1;
+    const int no_bz = *std::max_element(bz.begin(), bz.end()) + 1;
+    const int total = static_cast<int>(base.size());
 
     std::vector<int> rev_map(total, -1);
     for (int idx = 0; idx < total; idx++) {
-        int rev_map_index = (bx[idx] * no_by + by[idx]) * no_bz + bz[idx];
+        int rev_map_index = ((base[idx] * no_bx + bx[idx]) * no_by + by[idx]) * no_bz + bz[idx];
         if ((rev_map_index < 0) || (rev_map_index >= total)) {
             std::cerr << "Block index mapping is not consistent with block size at detector "
                       << idx << std::endl;
@@ -461,7 +465,9 @@ int InteractionStream::make_anger_func(
         rev_map[rev_map_index] = idx;
     }
 
-    merge_func = MergeAngerLogicFunctor(bx, by, bz, no_bx, no_by, no_bz,
+    assert(std::count(rev_map.begin(), rev_map.end(), -1) == 0);
+
+    merge_func = MergeAngerLogicFunctor(base, bx, by, bz, no_bx, no_by, no_bz,
                                         rev_map);
     return(0);
 }
@@ -486,7 +492,7 @@ int InteractionStream::add_merge_process(
     } else if (merge_type == "first") {
         merge_func = MergeFirstFunctor();
     } else if (merge_type == "anger") {
-        if (make_anger_func(options, merge_func) < 0) {
+        if (make_anger_func(map_name, options, merge_func) < 0) {
             std::cerr << "unable to create anger merge: " << std::endl;
             return(-2);
         }

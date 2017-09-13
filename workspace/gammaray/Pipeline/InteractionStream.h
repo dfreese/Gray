@@ -127,7 +127,8 @@ private:
 
     void add_process(ProcT * process, bool proc_print_info);
 
-    int make_anger_func(const std::vector<std::string> & anger_opts,
+    int make_anger_func(const std::string & map_name,
+                        const std::vector<std::string> & anger_opts,
                         MergeF & merge_func);
 
     /*!
