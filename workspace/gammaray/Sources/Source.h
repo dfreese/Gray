@@ -86,9 +86,6 @@ public:
     }
 
     void Reset() {
-        if (isotope == NULL) {
-            return;
-        }
         isotope->Reset();
     }
 

@@ -37,10 +37,6 @@ VectorR3 AnnulusCylinderSource::Decay(int photon_number, double time)
     //FIXME: Sources are not rotating -- FIXED 01-13-2020 AVDB
     //FIXME: Inside is not rotating -- BUG PDO
 
-    if (isotope == NULL) {
-        return(VectorR3(0, 0, 0));
-    }
-
     VectorR3 positron;
     double phi = 2 * M_PI * Random::Uniform();
     positron.x = radius*cos(phi);
@@ -67,11 +63,6 @@ void AnnulusCylinderSource::SetAxis(VectorR3 L)
 
 bool AnnulusCylinderSource::Inside(const VectorR3 & pos) const
 {
-
-    if (isotope == NULL) {
-        return false;
-    }
-
     VectorR3 dist;
     dist = pos;
     dist -= position;

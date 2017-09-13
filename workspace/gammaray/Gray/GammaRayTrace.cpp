@@ -172,12 +172,6 @@ void GammaRayTrace::TraceSources(std::vector<Interaction> & interactions,
             continue;
         }
         Isotope * isotope = source->GetIsotope();
-        if (isotope == NULL) {
-            cerr << "Empty Decay: ERROR\n";
-            stats.error++;
-            continue;
-        }
-
         while(!isotope->IsEmpty()) {
             NuclearDecay * decay = isotope->NextNuclearDecay();
             stats.decays++;

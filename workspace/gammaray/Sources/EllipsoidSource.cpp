@@ -39,10 +39,6 @@ VectorR3 EllipsoidSource::Decay(int photon_number, double time)
     //FIXME: Sources are not rotating -- FIXED 01-13-2020 AVDB
     //FIXME: Inside is not rotating -- BUG PDO
 
-    if (isotope == NULL) {
-        return(VectorR3(0,0,0));
-    }
-
     VectorR3 p;
     double r1sq = radius1*radius1;
     double r2sq = radius2*radius2;
@@ -80,10 +76,6 @@ bool EllipsoidSource::Inside(const VectorR3 & pos) const
 {
 
     //FIXME: Ellipsoids DO NOT ROTATE
-
-    if (isotope == NULL) {
-        return false;
-    }
 
     VectorR3 dist;
     dist = pos;

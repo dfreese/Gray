@@ -52,10 +52,6 @@ size_t VoxelSource::search(double e, size_t b_idx, size_t s_idx)
 
 VectorR3 VoxelSource::Decay(int photon_number, double time)
 {
-    if (isotope == NULL) {
-        return(VectorR3(0, 0, 0));
-    }
-
     VectorR3 pos;
     // Random is uniformly distributed between 0 and 1
     // prob.size is number of voxels.
@@ -123,9 +119,6 @@ bool VoxelSource::Load(const char * filename)
 
 bool VoxelSource::Inside(const VectorR3 & pos) const
 {
-    if (isotope == NULL) {
-        return false;
-    }
     // TODO: allow for positioning inside of voxelized sources
     return false;
 }

@@ -29,10 +29,6 @@ CylinderSource::CylinderSource(const VectorR3 &p, double rad, VectorR3 L, double
 
 VectorR3 CylinderSource::Decay(int photon_number, double time)
 {
-    if (isotope == NULL) {
-        return(VectorR3(0,0,0));
-    }
-
     VectorR3 positron;
     do {
         positron.x = (1.0 - 2.0*Random::Uniform())*radius;
@@ -61,11 +57,6 @@ void CylinderSource::SetAxis(VectorR3 L)
 
 bool CylinderSource::Inside(const VectorR3 & pos) const
 {
-
-    if (isotope == NULL) {
-        return false;
-    }
-
     VectorR3 dist;
     dist = pos;
     dist -= position;

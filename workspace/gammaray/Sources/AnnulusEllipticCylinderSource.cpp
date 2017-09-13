@@ -249,9 +249,6 @@ VectorR3 AnnulusEllipticCylinderSource::Decay(int photon_number, double time)
     //FIXME: Sources are not rotating -- FIXED 01-13-2020 AVDB
     //FIXME: Inside is not rotating -- BUG PDO
 
-    if (isotope == NULL) {
-        return(VectorR3(0,0,0));
-    }
     double C = circ[circ.size()-1];
     double C_uniform = C * Random::Uniform();
     double phi = InverseEllipticE(C_uniform);
@@ -285,9 +282,6 @@ void AnnulusEllipticCylinderSource::SetAxis(VectorR3 &L)
 
 bool AnnulusEllipticCylinderSource::Inside(const VectorR3 & pos) const
 {
-    if (isotope == NULL) {
-        return false;
-    }
     // Annulus has no width
     return false;
 }

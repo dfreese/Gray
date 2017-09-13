@@ -20,10 +20,6 @@ void BeamPointSource::SetIsotope(Isotope * i)
 
 VectorR3 BeamPointSource::Decay(int photon_number, double time)
 {
-    if (isotope == NULL) {
-        return(VectorR3(0,0,0));
-    }
-
     dynamic_cast<Beam*>(isotope)->SetBeam(beam_axis, beam_angle);
     isotope->Decay(photon_number, time, source_num, position);
     return(position);

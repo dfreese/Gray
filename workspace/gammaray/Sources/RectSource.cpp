@@ -20,9 +20,6 @@ RectSource::RectSource(const VectorR3 &p, const VectorR3 &sz,
 
 VectorR3 RectSource::Decay(int photon_number, double time)
 {
-    if (isotope == NULL) {
-        return(VectorR3(0,0,0));
-    }
     VectorR3 pos;
     pos.x = (0.5 - Random::Uniform());
     pos.y = (0.5 - Random::Uniform());
@@ -39,10 +36,6 @@ void RectSource::SetSize(const VectorR3 &sz)
 
 bool RectSource::Inside(const VectorR3 & pos) const
 {
-    if (isotope == NULL) {
-        return false;
-    }
-    
     VectorR3 dist;
     inv_map.Transform(pos, &dist);
 
@@ -51,6 +44,5 @@ bool RectSource::Inside(const VectorR3 & pos) const
     {
         return false;
     }
-
     return true;
 }

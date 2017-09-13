@@ -29,10 +29,6 @@ VectorSource::VectorSource(const double act, const VectorR3& boxMin,
 
 VectorR3 VectorSource::Decay(int photon_number, double time)
 {
-    if (isotope == NULL) {
-        return(VectorR3(0, 0, 0));
-    }
-
     VectorR3 pos;
 
     VectorR3 delta = aabb.GetBoxMax();
@@ -76,9 +72,6 @@ void VectorSource::SetMax(const VectorR3 &vert)
 
 bool VectorSource::Inside(const VectorR3 & pos) const
 {
-    if (isotope == NULL) {
-        return false;
-    }
     VectorR3 dir;
     Random::UniformSphere(dir);
 

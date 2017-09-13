@@ -35,10 +35,6 @@ VectorR3 EllipticCylinderSource::Decay(int photon_number, double time)
 
     //FIXME: Sources are not rotating -- FIXED 01-13-2020 AVDB
     //FIXME: Inside is not rotating -- BUG PDO
-
-    if (isotope == NULL) {
-        return(VectorR3(0,0,0));
-    }
     double r1sq = radius1*radius1;
     double r2sq = radius2*radius2;
 
@@ -71,11 +67,6 @@ void EllipticCylinderSource::SetAxis(VectorR3 &L)
 
 bool EllipticCylinderSource::Inside(const VectorR3 & pos) const
 {
-
-    if (isotope == NULL) {
-        return false;
-    }
-
     double r1sq = radius1*radius1;
     double r2sq = radius2*radius2;
 
