@@ -104,6 +104,9 @@ private:
     struct MergeAngerLogicFunctor;
     struct FilterEnergyGateLowFunctor;
     struct FilterEnergyGateHighFunctor;
+    struct BlurEnergyFunctor;
+    struct BlurEnergyReferencedFunctor;
+    struct BlurTimeFunctor;
 
     static int load_id_maps(const std::string & filename,
                             std::map<std::string, std::vector<int>> & id_maps);

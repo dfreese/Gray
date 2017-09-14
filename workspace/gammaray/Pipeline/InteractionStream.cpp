@@ -443,7 +443,7 @@ struct InteractionStream::FilterEnergyGateLowFunctor {
         return(val);
     }
 
-    double value;
+    const double value;
 };
 
 
@@ -461,8 +461,56 @@ struct InteractionStream::FilterEnergyGateHighFunctor {
         return(val);
     }
 
-    double value;
+    const double value;
 };
+
+
+struct InteractionStream::BlurEnergyFunctor {
+    BlurEnergyFunctor(double fwhm_percent) :
+        value(fwhm_percent)
+    {
+    }
+
+    void operator() (EventT & event) {
+        Blur::blur_energy(event, value);
+    }
+
+    const double value;
+};
+
+
+struct InteractionStream::BlurEnergyReferencedFunctor {
+    BlurEnergyReferencedFunctor(double fwhm_percent, double ref_energy) :
+        value(fwhm_percent),
+        ref(ref_energy)
+    {
+    }
+
+    void operator() (EventT & event) {
+        Blur::blur_energy_invsqrt(event, value, ref);
+    }
+
+    const double value;
+    const double ref;
+};
+
+
+
+struct InteractionStream::BlurTimeFunctor {
+    BlurTimeFunctor(double fwhm_time, double max_blur) :
+        value(fwhm_time),
+        max(max_blur)
+    {
+    }
+
+    void operator() (EventT & event) {
+        Blur::blur_time_capped(event, value, max);
+    }
+
+    const double value;
+    const double max;
+};
+
 
 
 int InteractionStream::make_anger_func(
@@ -513,8 +561,6 @@ int InteractionStream::make_anger_func(
         }
         rev_map[rev_map_index] = idx;
     }
-
-    assert(std::count(rev_map.begin(), rev_map.end(), -1) == 0);
 
     merge_func = MergeAngerLogicFunctor(base, bx, by, bz, no_bx, no_by, no_bz,
                                         rev_map);
@@ -582,9 +628,7 @@ int InteractionStream::add_blur_process(
 {
     if (name == "energy") {
         if (options.empty()) {
-            auto eblur = [value](EventT & e) {
-                Blur::blur_energy(e, value);
-            };
+            auto eblur = BlurEnergyFunctor(value);
             blur_processes.push_back(new BlurProcT(eblur));
             add_process(blur_processes.back(), true);
             return(0);
@@ -596,9 +640,7 @@ int InteractionStream::add_blur_process(
                 << std::endl;
                 return(-1);
             }
-            auto eblur = [value, ref_energy](EventT & e) {
-                Blur::blur_energy_invsqrt(e, value, ref_energy);
-            };
+            auto eblur = BlurEnergyReferencedFunctor(value, ref_energy);
             blur_processes.push_back(new BlurProcT(eblur));
             add_process(blur_processes.back(), true);
             return(0);
@@ -610,10 +652,8 @@ int InteractionStream::add_blur_process(
     } else if (name == "time") {
         // Allow the value to be 3 FWHM on either side of the current event
         // TODO: allow this to be set by options.
-        TimeT max_blur = 3 * value;
-        BlurF tblur = [value, max_blur](EventT & e) {
-            Blur::blur_time_capped(e, value, max_blur);
-        };
+        const TimeT max_blur = 3 * value;
+        auto tblur = BlurTimeFunctor(value, max_blur);
         blur_processes.push_back(new BlurProcT(tblur));
         add_process(blur_processes.back(), true);
 

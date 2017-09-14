@@ -318,13 +318,13 @@ def test_time_blur_std():
     data = np.zeros(100000, dtype=gray.no_position_dtype)
 
     tres_sigma = 2.0
+    tres = tres_sigma * _sigma_to_fwhm
 
     # Make sure the data is sorted and stays sorted by putting it more than
-    # 3 sigma apart.  Sort expects a partially, or mostly sorted input, so we
+    # 3 fwhm apart.  Sort expects a partially, or mostly sorted input, so we
     # can't give it a bunch of zeros without taking a lot of time.
-    data['time'] = np.arange(0, data.size * 4 * tres_sigma, 4 * tres_sigma)
+    data['time'] = np.arange(0, data.size * 4 * tres, 4 * tres)
 
-    tres = tres_sigma * _sigma_to_fwhm
     output = _create_and_run_merge(data, ('blur', 'time', tres))
     std_out = (output['time'] - data['time']).std()
     assert(np.abs(tres_sigma - std_out) / tres_sigma < 1e-2)
