@@ -52,8 +52,8 @@ Interaction Physics::Photoelectric(const Photon & p,
     hit.scatter_rayleigh_phantom = p.scatter_rayleigh_phantom;
     hit.scatter_rayleigh_detector = p.scatter_rayleigh_detector;
     hit.xray_flouresence = p.xray_flouresence;
-    // Process this in the DAQ
-    hit.dropped = false;
+    // Process this in the DAQ if it was a sensitive interaction
+    hit.dropped = !mat_gamma_prop.log_material;
     return(hit);
 }
 
@@ -75,8 +75,8 @@ Interaction Physics::XrayEscape(const Photon & p, double deposit,
     hit.scatter_rayleigh_phantom = p.scatter_rayleigh_phantom;
     hit.scatter_rayleigh_detector = p.scatter_rayleigh_detector;
     hit.xray_flouresence = p.xray_flouresence;
-    // Process this in the DAQ
-    hit.dropped = false;
+    // Process this in the DAQ if it was a sensitive interaction
+    hit.dropped = !mat_gamma_prop.log_material;
     return(hit);
 }
 
@@ -98,8 +98,8 @@ Interaction Physics::Compton(const Photon & p, double deposit,
     hit.scatter_rayleigh_phantom = p.scatter_rayleigh_phantom;
     hit.scatter_rayleigh_detector = p.scatter_rayleigh_detector;
     hit.xray_flouresence = p.xray_flouresence;
-    // Process this in the DAQ
-    hit.dropped = false;
+    // Process this in the DAQ if it was a sensitive interaction
+    hit.dropped = !mat_gamma_prop.log_material;
     return(hit);
 }
 
@@ -121,8 +121,8 @@ Interaction Physics::Rayleigh(const Photon & p,
     hit.scatter_rayleigh_phantom = p.scatter_rayleigh_phantom;
     hit.scatter_rayleigh_detector = p.scatter_rayleigh_detector;
     hit.xray_flouresence = p.xray_flouresence;
-    // Process this in the DAQ
-    hit.dropped = false;
+    // Process this in the DAQ if it was a sensitive interaction
+    hit.dropped = !mat_gamma_prop.log_material;
     return(hit);
 }
 
