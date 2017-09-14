@@ -77,7 +77,7 @@ private:
     typedef std::function<bool(EventT&)> FilterF;
     typedef std::function<void(EventT&)> BlurF;
     typedef std::function<TimeT(const EventT&)> TimeF;
-    typedef std::function<void(EventT&, const EventT&)> MergeF;
+    typedef std::function<void(EventT&, EventT&)> MergeF;
 
     typedef Processor<EventT> ProcT;
     typedef MergeProcess<EventT, TimeT, TimeF, InfoF, MergeF> MergeProcT;

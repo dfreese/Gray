@@ -23,7 +23,7 @@ class EventT,
 class TimeT,
 class TimeF = std::function<TimeT(const EventT&)>,
 class InfoF = std::function<int(const EventT&)>,
-class ModF = std::function<void(EventT&, const EventT&)>
+class ModF = std::function<void(EventT&, EventT&)>
 >
 
 class MergeProcess : public Processor<EventT> {
@@ -67,7 +67,6 @@ private:
                 }
                 if (current_event_id == find_id(next_event)) {
                     merge_func(cur_event, next_event);
-                    next_event.dropped = true;
                     this->inc_no_dropped();
                 }
             }
