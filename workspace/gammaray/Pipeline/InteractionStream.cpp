@@ -351,12 +351,15 @@ struct InteractionStream::MergeFirstFunctor {
 
 struct InteractionStream::MergeMaxFunctor {
     void operator() (EventT & e0, EventT & e1) {
-        e0.det_id = e0.energy > e1.energy ? e0.det_id:e1.det_id;
-        Interaction::MergeStats(e0, e1);
-        e0.decay_id = e0.energy > e1.energy ? e0.decay_id:e1.decay_id;
-        e0.color = e0.energy > e1.energy ? e0.color:e1.color;
-        e0.energy = e0.energy + e1.energy;
-        e1.dropped = true;
+        if (e0.energy < e1.energy) {
+            Interaction::MergeStats(e1, e0);
+            e1.energy = e0.energy + e1.energy;
+            e0.dropped = true;
+        } else {
+            Interaction::MergeStats(e0, e1);
+            e0.energy = e0.energy + e1.energy;
+            e1.dropped = true;
+        }
     }
 };
 
@@ -380,7 +383,7 @@ struct InteractionStream::MergeAngerLogicFunctor {
     }
 
     void operator() (EventT & e0, EventT & e1) {
-        float energy_result = e0.energy + e1.energy;
+        const float energy_result = e0.energy + e1.energy;
         // Base is inherently the same for both detectors inherently by being
         // matched in merge.
         const int blk = base[e0.det_id];
@@ -390,23 +393,29 @@ struct InteractionStream::MergeAngerLogicFunctor {
         const int col1 = by[e1.det_id];
         const int lay0 = bz[e0.det_id];
         const int lay1 = bz[e1.det_id];
-        int row_result = static_cast<int>(
+        const int row_result = static_cast<int>(
                 static_cast<float>(row0) * (e0.energy / energy_result) +
                 static_cast<float>(row1) * (e1.energy / energy_result));
-        int col_result = static_cast<int>(
+        const int col_result = static_cast<int>(
                 static_cast<float>(col0) * (e0.energy / energy_result) +
                 static_cast<float>(col1) * (e1.energy / energy_result));
-        int lay_result = static_cast<int>(
+        const int lay_result = static_cast<int>(
                 static_cast<float>(lay0) * (e0.energy / energy_result) +
                 static_cast<float>(lay1) * (e1.energy / energy_result));
 
-        int rev_idx = ((blk * no_bx + row_result) * no_by + col_result) * no_bz + lay_result;
-        Interaction::MergeStats(e0, e1);
-        e0.decay_id = e0.energy > e1.energy ? e0.decay_id:e1.decay_id;
-        e0.color = e0.energy > e1.energy ? e0.color:e1.color;
-        e0.energy = energy_result;
-        e0.det_id = reverse_map[rev_idx];
-        e1.dropped = true;
+        const int rev_idx = ((blk * no_bx + row_result) * no_by + col_result) * no_bz + lay_result;
+        const int id_result = reverse_map[rev_idx];
+        if (e0.energy < e1.energy) {
+            Interaction::MergeStats(e1, e0);
+            e1.det_id = id_result;
+            e1.energy = energy_result;
+            e0.dropped = true;
+        } else {
+            Interaction::MergeStats(e0, e1);
+            e0.det_id = id_result;
+            e0.energy = energy_result;
+            e1.dropped = true;
+        }
     }
 
     const std::vector<int> base;

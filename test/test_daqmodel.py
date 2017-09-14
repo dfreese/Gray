@@ -467,7 +467,20 @@ def test_multiple_merge_egate_coinc():
     expected['energy'][1] += energies[2]
 
     [singles, output] = _create_and_run_merge(data, [
-        ('merge', 'detector', merge_window),
+        ('merge', 'detector', merge_window, 'first'),
+        ('filter', 'egate_low', egate_low),
+        ('coinc', 'window', coinc_win)])
+
+    assert(output.size == expected.size), \
+            'Size not expected for coinc sort'
+    assert((output == expected).all()), \
+            'Event data not as expected for coinc sort'
+
+    # Now data[1] and data[2] will be merged into data[2], but this will put
+    # the event outside of the coincidence time window.
+    expected = data[np.array((5, 6))]
+    [singles, output] = _create_and_run_merge(data, [
+        ('merge', 'detector', merge_window,),
         ('filter', 'egate_low', egate_low),
         ('coinc', 'window', coinc_win)])
 
