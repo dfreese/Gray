@@ -60,11 +60,10 @@ long KdTree::Traverse(const VectorR3& startPos, const VectorR3& dir,
 	long currentNodeIndex = RootIndex(); // The current node in the traversal
     const KdTreeNode* currentNode = &TreeNodes[currentNodeIndex];
     double minDistance = std::max(0.0, entryDist);
-	double maxDistance = exitDist;
+    double maxDistance = std::min(stopDistance, exitDist);
 	bool hitParallel = false;
 	double parallelHitMax = -DBL_MAX;
     long stopping_object = -1;
-	stopDistance = DBL_MAX;
 
     // Use array as a stack.  Don't use std::stack, as that would put objects
     // on the heap, and would be dynamically allocated.

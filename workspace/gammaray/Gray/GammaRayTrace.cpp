@@ -53,7 +53,7 @@ void GammaRayTrace::TracePhoton(
         const GammaMaterial & mat_gamma_prop = *MatStack.top();
 
 
-        double hitDist;
+        double hitDist = DBL_MAX;
         VisiblePoint visPoint;
         long intersectNum = tree.SeekIntersection(photon.pos, photon.dir,
                                                   hitDist, visPoint);
@@ -82,7 +82,7 @@ void GammaRayTrace::TracePhoton(
                     // This detector id will be used to determine if we scatter
                     // in a detector or inside a phantom
                     photon.det_id = visPoint.GetObject().GetDetectorId();
-                    MatStack.push(dynamic_cast<GammaMaterial const * const>(
+                    MatStack.push(static_cast<GammaMaterial const * const>(
                             &visPoint.GetMaterial()));
                 } else if (visPoint.IsBackFacing()) {
                     // Check to make sure we are exiting the material we think
@@ -162,6 +162,58 @@ void GammaRayTrace::TracePhoton(
     return;
 }
 
+/*!
+ * Checks if a photon's start position changes the geometry it is in relative
+ * to the center of the source from which we have already established a
+ * reliable materials stack.
+ *
+ * This calls SeekIntersection limited to the distance between the two points.
+ */
+bool GammaRayTrace::UpdateStack(const VectorR3 & src_pos,
+                                const VectorR3 & pos,
+                                std::stack<GammaMaterial const *> & mat_stack) const
+{
+    // If the points are equal, as they will be for a decay without some sort
+    // of blur like positron range, then bail without any ray tracing.
+    if (src_pos == pos) {
+        return (true);
+    }
+    // The direction vector from the center of the source to the photon's
+    // starting position. Leave this unnormalized for now so we can calculate
+    // the distance.
+    auto dir = pos - src_pos;
+    // This holds the maximum trace distance / returned hit distance
+    double dist = dir.Norm();
+    // The remaining distance we must trace to the photon's starting point
+    double remaining_dist = dist;
+    dir.Normalize();
+    VisiblePoint point;
+    point.SetPosition(src_pos);
+    while (tree.SeekIntersection(point.GetPosition() + Epsilon * dir, dir, dist, point) >= 0) {
+        remaining_dist -= dist + Epsilon;
+        dist = remaining_dist;
+        if (point.IsFrontFacing()) {
+            // Front face means we are entering a material.
+            mat_stack.push(static_cast<GammaMaterial const * const>(&point.GetMaterial()));
+        } else if (point.IsBackFacing()) {
+            // Back face means we are exiting a material
+            if (mat_stack.empty()) {
+                // If we somehow have an empty stack, then we somehow missed a
+                // front face.
+                return (false);
+            }
+            if (mat_stack.top() != (&point.GetMaterial())) {
+                // If the material we find on the back face isn't the material
+                // we think we're in, then there's probably some weird overlap.
+                return (false);
+            }
+            // If everything looks okay, pull that material off of the stack.
+            mat_stack.pop();
+        }
+    }
+    return (true);
+}
+
 void GammaRayTrace::TraceSources(std::vector<Interaction> & interactions,
                                  size_t soft_max_interactions)
 {
@@ -182,7 +234,13 @@ void GammaRayTrace::TraceSources(std::vector<Interaction> & interactions,
             while (!decay->IsEmpty()) {
                 Photon & photon = *decay->NextPhoton();
                 stats.photons++;
-                TracePhoton(photon, interactions, source->GetMaterialStack());
+                std::stack<GammaMaterial const *> mat_stack(source->GetMaterialStack());
+                if (!UpdateStack(source->GetPosition(), photon.pos, mat_stack)) {
+                    ++stats.error;
+                    continue;
+                }
+
+                TracePhoton(photon, interactions, std::move(mat_stack));
             }
         }
 

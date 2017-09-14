@@ -11,6 +11,7 @@ class IntersectKdTree;
 class Output;
 class Photon;
 class SourceList;
+class VectorR3;
 
 class GammaRayTrace {
 public:
@@ -49,6 +50,10 @@ private:
     void TracePhoton(Photon &photon,
                      std::vector<Interaction> & interactions,
                      std::stack<GammaMaterial const *> MatStack);
+    bool UpdateStack(const VectorR3 & src_pos,
+                     const VectorR3 & pos,
+                     std::stack<GammaMaterial const *> & mat_stack) const;
+
     static const double Epsilon;
 
     SourceList & sources;
