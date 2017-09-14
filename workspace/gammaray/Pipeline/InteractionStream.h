@@ -74,7 +74,7 @@ public:
 private:
     typedef std::function<TimeT(const EventT&, const EventT&)> TimeDiffF;
     typedef std::function<int(const EventT&)> InfoF;
-    typedef std::function<bool(const EventT&)> FilterF;
+    typedef std::function<bool(EventT&)> FilterF;
     typedef std::function<void(EventT&)> BlurF;
     typedef std::function<TimeT(const EventT&)> TimeF;
     typedef std::function<void(EventT&, const EventT&)> MergeF;
@@ -102,6 +102,8 @@ private:
     struct MergeFirstFunctor;
     struct MergeMaxFunctor;
     struct MergeAngerLogicFunctor;
+    struct FilterEnergyGateLowFunctor;
+    struct FilterEnergyGateHighFunctor;
 
     static int load_id_maps(const std::string & filename,
                             std::map<std::string, std::vector<int>> & id_maps);

@@ -16,7 +16,7 @@
 /*!
  * Creates a base class for events rolling merge of a user specified type.
  */
-template <class EventT, class FilterF = std::function<bool(const EventT&)>>
+template <class EventT, class FilterF = std::function<bool(EventT&)>>
 class FilterProcess : public Processor<EventT> {
 public:
 
@@ -36,7 +36,6 @@ private:
             EventT & event = *iter;
             if (!event.dropped) {
                 if (!this->filt_func(event)) {
-                    event.dropped = true;
                     this->inc_no_dropped();
                 }
             }

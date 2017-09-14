@@ -416,6 +416,43 @@ struct InteractionStream::MergeAngerLogicFunctor {
     const std::vector<int> reverse_map;
 };
 
+
+struct InteractionStream::FilterEnergyGateLowFunctor {
+    FilterEnergyGateLowFunctor(double energy_val) :
+        value(energy_val)
+    {
+    }
+
+    bool operator() (EventT & event) {
+        bool val = event.energy >= value;
+        if (!val) {
+            event.dropped = true;
+        }
+        return(val);
+    }
+
+    double value;
+};
+
+
+struct InteractionStream::FilterEnergyGateHighFunctor {
+    FilterEnergyGateHighFunctor(double energy_val) :
+    value(energy_val)
+    {
+    }
+
+    bool operator() (EventT & event) {
+        bool val = event.energy <= value;
+        if (!val) {
+            event.dropped = true;
+        }
+        return(val);
+    }
+
+    double value;
+};
+
+
 int InteractionStream::make_anger_func(
         const std::string & map_name,
         const std::vector<std::string> & anger_opts,
@@ -514,13 +551,9 @@ int InteractionStream::add_filter_process(const std::string & filter_name,
 {
     FilterF filt_func;
     if (filter_name == "egate_low") {
-        filt_func = [value](const EventT & e) {
-            return(e.energy >= value);
-        };
+        filt_func = FilterEnergyGateLowFunctor(value);
     } else if (filter_name == "egate_high") {
-        filt_func = [value](const EventT & e) {
-            return(e.energy <= value);
-        };
+        filt_func = FilterEnergyGateHighFunctor(value);
     } else {
         std::cerr << "Unknown filter type: " << filter_name << std::endl;
         return(-1);
