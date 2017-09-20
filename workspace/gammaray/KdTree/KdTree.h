@@ -205,9 +205,9 @@ public:
 
 private:
     // Defines the maximum the array used to mimic a stack in the Traverse
-    // function can be.  This limits the maximum leaf size, but if a leaf has
-    // 30 objects, then something went very wrong constructing the tree.
-    static constexpr int traverse_stack_size = 30;
+    // function can be.  This limits the maximum tree depth, but if a tree has
+    // a depth larger than this then the program would have failed anyway.
+    static constexpr int traverse_stack_size = 63;
 
     std::vector<KdTreeNode> TreeNodes;
     long RootIndex() const { return 0; }    // Index for the first entry in the array.

@@ -65,18 +65,18 @@ long KdTree::Traverse(const VectorR3& startPos, const VectorR3& dir,
 	double parallelHitMax = -DBL_MAX;
     long stopping_object = -1;
 
-    // Use array as a stack.  Don't use std::stack, as that would put objects
-    // on the heap, and would be dynamically allocated.
-    // as we could gain quite a bit by not actually allocating all of this
-    // memory.  14 was the maximum required for the pet_benchmark, and the
-    // average is probably closer to 1.  This is a 30% speedup from std::stack.
+    // Use array as a stack.  This is a 30% speedup from std::stack.
     // Bounds checking is done during the tree construction since the stack
-    // can't outgrow the size of any one leaf.
+    // can't outgrow the depth of the tree.  Since the size is fixed to 63,
+    // this would be an absolutely massive tree that would probably break other
+    // things.
     //
-    // TODO: look at stealing something like LLVMs SmallVector which could do
-    // the same thing but deal with a much smaller fixed amount of space.
-    // http://llvm.org/doxygen/classllvm_1_1SmallVector.html
-    static std::array<Kd_TraverseNodeData, traverse_stack_size> traverse_stack;
+    // Looked at using boost::container::small_vector, but this ended up not
+    // gaining much.
+    //
+    // static thread_local keeps this array from being regenerated each time
+    // the function is called, but makes it thread safe.
+    static thread_local std::array<Kd_TraverseNodeData, traverse_stack_size> traverse_stack;
     int stack_size = 0;
 
 	while ( true ) {
@@ -273,16 +273,30 @@ void KdTree::BuildTree(long numObjects)
 	RootNode.ParentIdx = -1;				// No parent, it is the root node
 	BuildSubTree ( RootIndex(), BoundingBox, TotalObjectCosts, XextentList, YextentList, ZextentList, spaceAvailable );
 
+    // Quite lazily get the depth of the tree
+    int tree_depth = 0;
+    for (const auto & node: TreeNodes) {
+        if (!node.IsLeaf()) {
+            continue;
+        }
+        auto curr_node = &node;
+        int depth = 0;
+        while (!curr_node->IsRoot()) {
+            ++depth;
+            curr_node = &TreeNodes[curr_node->ParentIdx];
+        }
+        tree_depth = std::max(tree_depth, depth);
+    }
+    if (tree_depth > traverse_stack_size) {
+        std::stringstream ss;
+        ss << "KdTree is too deep for the fixed stack approach used here.  The"
+           << "tree has a maximum depth of " << tree_depth << " but the stack"
+           << "size if fixed to " << traverse_stack_size << ".";
+        throw std::runtime_error(ss.str());
+    }
+
     for (auto node: TreeNodes) {
         if (node.IsLeaf()) {
-            if (node.Data.Leaf.Objects.size() > traverse_stack_size) {
-                std::stringstream ss;
-                ss << "A KdTree Leaf node has "
-                   << node.Data.Leaf.Objects.size() << " objects, but "
-                   << traverse_stack_size << " is the max that can be handled."
-                   << "  The Traverse stack could overflow otherwise.";
-                throw std::runtime_error(ss.str());
-            }
         }
     }
     // Could clear ObjectAABBs if memory was wanted.
