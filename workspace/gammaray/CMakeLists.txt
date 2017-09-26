@@ -98,6 +98,8 @@ add_library(gammaray
     Pipeline/sortprocess.h
     Random/Random.cpp
     Random/Random.h
+    Random/Transform.h
+    Random/Transform.cpp
     Sources/AnnulusCylinderSource.cpp
     Sources/AnnulusCylinderSource.h
     Sources/AnnulusEllipticCylinderSource.cpp
