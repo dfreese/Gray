@@ -1,9 +1,78 @@
 #include  "gtest/gtest.h"
 #include "VrMath/LinearR3.h"
 #include "Random/Transform.h"
+#include <cmath>
 
-TEST(AcolinearityTest, PreservesNorm) {
-    ASSERT_TRUE(true);    
+TEST(AcolinearityTest, ZeroPreservesAndNegates) {
+    VectorR3 unit_z(0, 0, 1);
+    VectorR3 neg_z(0, 0, -1);
+
+    for (double angle: {0.0, 0.04, 1.0, 20.0}) {
+        for (double rotation: {0.0, 0.01, 0.5, 1.0}) {
+            VectorR3 ret = Transform::Acolinearity(unit_z, angle, rotation, 0);
+            ASSERT_DOUBLE_EQ(ret.Norm(), 1.0);
+            ASSERT_EQ(neg_z, ret);
+        }
+    }
+}
+
+TEST(AcolinearityTest, CorrectAngle) {
+    VectorR3 unit_z(0, 0, 1);
+    VectorR3 neg_z(0, 0, -1);
+
+    const double gauss_variable = 1.0;
+    const double rot_variable = 0.3; // pick arbitrary number [0,1]
+    for (double angle: {0.0, 0.04, 1.0, 20.0}) {
+        VectorR3 ret = Transform::Acolinearity(unit_z, angle, rot_variable,
+                                               gauss_variable);
+        // get the cos of the angle between the vectors from the dot product
+        double cal_angle = unit_z ^ ret.Negate();
+        ASSERT_DOUBLE_EQ(ret.Norm(), 1.0);
+        ASSERT_EQ(cal_angle, std::cos(angle));
+    }
+}
+
+/*!
+ * Since the angle and the gaussian random variable are just multiplied
+ * together, but kept separate to indicate the different functionality, run
+ * essentially the CorrectAngle test again.
+ */
+TEST(AcolinearityTest, GaussScaling) {
+    VectorR3 unit_z(0, 0, 1);
+    VectorR3 neg_z(0, 0, -1);
+
+    const double angle = 1.0;
+    const double rot_variable = 0.3; // pick arbitrary number [0,1]
+    for (double gauss_variable: {0.0, 0.04, 1.0, 20.0}) {
+        VectorR3 ret = Transform::Acolinearity(unit_z, angle, rot_variable,
+                                               gauss_variable);
+        // get the cos of the angle between the vectors from the dot product
+        double cal_angle = unit_z ^ ret.Negate();
+        ASSERT_DOUBLE_EQ(ret.Norm(), 1.0);
+        ASSERT_EQ(cal_angle, std::cos(gauss_variable));
+    }
+}
+
+TEST(AcolinearityTest, VaryingReferences) {
+    VectorR3 ref(0, 0, 1);
+    const double gauss_variable = 1.0;
+    const double angle = 0.5;
+    const double rot_variable = 0.1;
+    for (size_t ii = 0; ii < 10; ++ii) {
+        VectorR3 ret = Transform::Acolinearity(ref, angle, rot_variable,
+                                               gauss_variable);
+        // get the cos of the angle between the vectors from the dot product
+        double cal_angle = ref ^ ret.Negate();
+
+        // Allow some inaccuracy as we are performing this with the same data
+        // many times.
+        ASSERT_LT(std::abs(ret.Norm() - 1.0), 1e-14);
+        ASSERT_LT(std::abs(cal_angle - std::cos(angle)), 1e-14);
+
+        // Restart the process from where we are currently at to move around
+        // the unit circle.
+        ref = ret;
+    }
 }
 
 TEST(UniformSphereTest, IsUnit) {
