@@ -10,8 +10,8 @@ TEST(AcolinearityTest, ZeroPreservesAndNegates) {
     for (double angle: {0.0, 0.04, 1.0, 20.0}) {
         for (double rotation: {0.0, 0.01, 0.5, 1.0}) {
             VectorR3 ret = Transform::Acolinearity(unit_z, angle, rotation, 0);
-            ASSERT_DOUBLE_EQ(ret.Norm(), 1.0);
-            ASSERT_EQ(neg_z, ret);
+            EXPECT_DOUBLE_EQ(ret.Norm(), 1.0);
+            EXPECT_EQ(neg_z, ret);
         }
     }
 }
@@ -27,8 +27,8 @@ TEST(AcolinearityTest, CorrectAngle) {
                                                gauss_variable);
         // get the cos of the angle between the vectors from the dot product
         double cal_angle = unit_z ^ ret.Negate();
-        ASSERT_DOUBLE_EQ(ret.Norm(), 1.0);
-        ASSERT_EQ(cal_angle, std::cos(angle));
+        EXPECT_DOUBLE_EQ(ret.Norm(), 1.0);
+        EXPECT_EQ(cal_angle, std::cos(angle));
     }
 }
 
@@ -48,8 +48,8 @@ TEST(AcolinearityTest, GaussScaling) {
                                                gauss_variable);
         // get the cos of the angle between the vectors from the dot product
         double cal_angle = unit_z ^ ret.Negate();
-        ASSERT_DOUBLE_EQ(ret.Norm(), 1.0);
-        ASSERT_EQ(cal_angle, std::cos(gauss_variable));
+        EXPECT_DOUBLE_EQ(ret.Norm(), 1.0);
+        EXPECT_EQ(cal_angle, std::cos(gauss_variable));
     }
 }
 
@@ -77,20 +77,20 @@ TEST(AcolinearityTest, VaryingReferences) {
 
 TEST(UniformSphereTest, IsUnit) {
     VectorR3 z = Transform::UniformSphere(0.0, 1.0);
-    ASSERT_DOUBLE_EQ(z.Norm(), 1.0);
-    ASSERT_DOUBLE_EQ(z.z, 1.0);
+    EXPECT_DOUBLE_EQ(z.Norm(), 1.0);
+    EXPECT_DOUBLE_EQ(z.z, 1.0);
 
     VectorR3 neg_z = Transform::UniformSphere(0.0, 0.0);
-    ASSERT_DOUBLE_EQ(neg_z.Norm(), 1.0);
-    ASSERT_DOUBLE_EQ(neg_z.z, -1.0);
+    EXPECT_DOUBLE_EQ(neg_z.Norm(), 1.0);
+    EXPECT_DOUBLE_EQ(neg_z.z, -1.0);
 
     VectorR3 x = Transform::UniformSphere(0.0, 0.5);
-    ASSERT_DOUBLE_EQ(x.Norm(), 1.0);
-    ASSERT_DOUBLE_EQ(x.x, 1.0);
+    EXPECT_DOUBLE_EQ(x.Norm(), 1.0);
+    EXPECT_DOUBLE_EQ(x.x, 1.0);
 
     VectorR3 y = Transform::UniformSphere(1.0, 0.5);
-    ASSERT_DOUBLE_EQ(y.Norm(), 1.0);
-    ASSERT_DOUBLE_EQ(y.x, 1.0);
+    EXPECT_DOUBLE_EQ(y.Norm(), 1.0);
+    EXPECT_DOUBLE_EQ(y.x, 1.0);
 }
 
 TEST(UniformCylinderTest, Radius) {
@@ -132,7 +132,7 @@ TEST(UniformAnnulusCylinderTest, Height) {
     for (double height: {0.1, 0.5, 30.0}) {
         VectorR3 ret = Transform::UniformAnnulusCylinder(height, radius, theta,
                                                          height_rand);
-        ASSERT_EQ(ret, VectorR3(radius, 0, height/2));
+        EXPECT_EQ(ret, VectorR3(radius, 0, height/2));
     }
 }
 
@@ -145,6 +145,6 @@ TEST(UniformAnnulusCylinderTest, HeightRandVar) {
                                                          height_rand);
         const VectorR3 exp(0, radius, height_rand * height - height/2);
         // There may be some error in sin(pi/2) not being exactly zero.
-        ASSERT_LT((ret - exp).Norm(), 1e-16);
+        EXPECT_LT((ret - exp).Norm(), 1e-16);
     }
 }
