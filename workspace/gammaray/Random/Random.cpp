@@ -65,6 +65,13 @@ void Random::Acolinearity(const VectorR3 & b, VectorR3 &r, double radians)
                                 Random::Gaussian());
 }
 
+VectorR3 Random::UniformCylinder(double height, double radius) {
+    return (Transform::UniformCylinder(height, radius,
+                                       Random::Uniform(),
+                                       Random::Uniform(),
+                                       Random::Uniform()));
+}
+
 VectorR3 Random::UniformAnnulusCylinder(double height, double radius) {
     return (Transform::UniformAnnulusCylinder(height, radius,
                                               Random::Uniform(),

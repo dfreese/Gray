@@ -29,19 +29,9 @@ CylinderSource::CylinderSource(const VectorR3 &p, double rad, VectorR3 L, double
 
 VectorR3 CylinderSource::Decay(int photon_number, double time)
 {
-    VectorR3 positron;
-    do {
-        positron.x = (1.0 - 2.0*Random::Uniform())*radius;
-        positron.y = (1.0 - 2.0*Random::Uniform())*radius;
-        positron.z = 0;
-    } while (positron.Norm() > radius);
-    positron.z = length*(0.5 - Random::Uniform());
-
-    VectorR3 roted;
-    roted = RotMtrx*positron;
-    roted += position;
-    isotope->Decay(photon_number, time, source_num, roted);
-    return(roted);
+    VectorR3 positron = RotMtrx * Random::UniformCylinder(length, radius) + position;
+    isotope->Decay(photon_number, time, source_num, positron);
+    return(positron);
 }
 
 void CylinderSource::SetRadius(double r)
@@ -57,22 +47,12 @@ void CylinderSource::SetAxis(VectorR3 L)
 
 bool CylinderSource::Inside(const VectorR3 & pos) const
 {
-    VectorR3 dist;
-    dist = pos;
-    dist -= position;
-    VectorR3 roted;
-
-    roted = RotMtrxInv*dist;
-
-    VectorR3 c;
-    c.x = roted.x;
-    c.y = roted.y;
-    c.z = 0.0;
-
-    if (c.Norm() > radius) {
+    // TODO: refactor this out for all cylinders.
+    const VectorR3 roted = RotMtrxInv * (pos - position);
+    if ((roted.x * roted.x + roted.y * roted.y) > radius * radius) {
         return false;
     }
-    if (fabs(roted.z) > length/2.0) {
+    if (std::abs(roted.z) > length/2.0) {
         return false;
     }
     return true;

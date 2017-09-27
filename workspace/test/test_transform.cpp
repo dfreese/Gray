@@ -93,6 +93,38 @@ TEST(UniformSphereTest, IsUnit) {
     ASSERT_DOUBLE_EQ(y.x, 1.0);
 }
 
+TEST(UniformCylinderTest, Radius) {
+    const double height = 1;
+    const double height_rand = 1.0;
+    const double rad_rand = 1.0;
+    const double theta_rand = 0.0;
+
+    for (double radius: {0.1, 0.5, 30.0}) {
+        const VectorR3 ret = Transform::UniformCylinder(height, radius,
+                                                        height_rand, rad_rand,
+                                                        theta_rand);
+        const VectorR3 exp(radius, 0, height / 2);
+        EXPECT_EQ(ret, exp);
+    }
+}
+
+TEST(UniformCylinderTest, RadiusSampling) {
+    const double height = 30.0;
+    const double height_rand = 0.0;
+    const double theta_rand = 0.25; // Transformed to pi / 2
+    const double radius = 30.0;
+
+    for (double rad_rand: {0.0, 0.1, 0.5, 1.0}) {
+        const VectorR3 ret = Transform::UniformCylinder(height, radius,
+                                                        height_rand, rad_rand,
+                                                        theta_rand);
+        const VectorR3 exp(0, radius * std::sqrt(rad_rand), -height / 2);
+        // There may be some error in sin(pi/2) not being exactly zero and the
+        // square root.
+        EXPECT_LT((ret - exp).Norm(), 1e-14);
+    }
+}
+
 TEST(UniformAnnulusCylinderTest, Height) {
     const double theta = 0;
     const double radius = 1;

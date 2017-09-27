@@ -71,13 +71,47 @@ VectorR3 Transform::Acolinearity(const VectorR3 & ref,
 }
 
 /*!
+ * Transforms two uniform random variables into a uniform cylinder with
+ * a particular height and radius.  The circle of the cylinder is in the XY
+ * plane and the height is in Z.  The cylinder is centered at the origin.
+ *
+ * To avoid rejection testing, this formulation is used:
+ * http://mathworld.wolfram.com/DiskPointPicking.html
+ *
+ * A height of 0 produces points uniformly distributed on the unit disk, in this
+ * case the height_random_uniform variable can also be a constant.
+ *
+ * \param height the height of the cylinder in z
+ * \param radius the radius of the cylinder int the xy plane
+ * \param theta_rand_uniform a uniform random variable [0,1] that is transformed
+ * into a random radian around the circle. x=cos(theta), y=sin(theta).
+ * \param radius_squared_rand_uniform a uniform random varaible [0,1] that is
+ * treated as the square of the radius, square-rooted to scale the radius
+ * appropriately.
+ * \param height_rand_uniform a uniform random variable [0,1] that dictates
+ * where along the height [-height/2, height/2] the point will be placed.
+ */
+VectorR3 Transform::UniformCylinder(double height, double radius,
+                                    double height_rand_uniform,
+                                    double radius_squared_rand_uniform,
+                                    double theta_rand_uniform)
+{
+    const double theta = 2.0 * M_PI * theta_rand_uniform;
+    const double radius_rand = radius * std::sqrt(radius_squared_rand_uniform);
+    const double x = radius_rand * cos(theta);
+    const double y = radius_rand * sin(theta);
+    const double z = height * (height_rand_uniform - 0.5);
+    return (VectorR3(x, y, z));
+}
+
+/*!
  * Transforms two uniform random variables into a annulus (empty) cylinder with
  * a particular height and radius.  The circle of the cylinder is in the XY
  * plane and the height is in Z.  The cylinder is centered at the origin.
  *
  * \param height the height of the cylinder in z
  * \param radius the radius of the cylinder int the xy plane
- * \param phi_rand_uniform a uniform random variable [0,1] that is transformed
+ * \param theta_rand_uniform a uniform random variable [0,1] that is transformed
  * into a random radian around the circle. x=cos(theta), y=sin(theta).
  * \param height_rand_uniform a uniform random variable [0,1] that dictates
  * where along the height [-height/2, height/2] the point will be placed.
