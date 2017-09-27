@@ -18,8 +18,8 @@ public:
     static double Uniform();
     static double Gaussian();
     static double Exponential(const double lambda);
-    static void UniformSphere(VectorR3 & p);
-    static void Acolinearity(const VectorR3 & b, VectorR3 &r, double radians);
+    static VectorR3 UniformSphere();
+    static VectorR3 Acolinearity(const VectorR3 & ref, double radians);
     static long Poisson(double lambda);
     static VectorR3 UniformCylinder(double height, double radius);
     static VectorR3 UniformAnnulusCylinder(double height, double radius);

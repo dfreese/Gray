@@ -89,8 +89,8 @@ void PositronDecay::Decay(int photon_number, double time, int src_id,
         blue.SetBlue();
         red.SetRed();
 
-        Random::UniformSphere(blue.dir);
-        Random::Acolinearity(blue.dir, red.dir, acolinearity);
+        blue.dir = Random::UniformSphere();
+        red.dir = Random::Acolinearity(blue.dir, acolinearity);
         AddPhoton(&blue);
         AddPhoton(&red);
     }

@@ -85,8 +85,7 @@ VectorR3 Positron::PositronRangeLevin(const VectorR3 & p, double positronC,
                                       double positronMaxRange)
 {
     // First generate a direction that the photon will be blurred
-    VectorR3 positronDir;
-    Random::UniformSphere(positronDir);
+    VectorR3 positronDir = Random::UniformSphere();
     double range;
     // generate cprime which is the scales the dual exponential into a form
     // that allows it to be monte-carlo generated
@@ -109,8 +108,7 @@ VectorR3 Positron::PositronRangeGauss(const VectorR3 & p, double positronFWHM,
                                       double positronMaxRange)
 {
     // First generate a direction that the photon will be blurred
-    VectorR3 positronDir;
-    Random::UniformSphere(positronDir);
+    VectorR3 positronDir = Random::UniformSphere();
     double range = 0.0;
     // must return cm, sigma expressed in mm
     do {

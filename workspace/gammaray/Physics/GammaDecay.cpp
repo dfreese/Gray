@@ -32,7 +32,7 @@ void GammaDecay::Decay(int photon_number, double time, int src_id,
     gamma.scatter_rayleigh_phantom = 0;
     gamma.scatter_rayleigh_detector = 0;
     gamma.xray_flouresence = 0;
-    Random::UniformSphere(gamma.dir);
+    gamma.dir = Random::UniformSphere();
     AddPhoton(&gamma);
 }
 

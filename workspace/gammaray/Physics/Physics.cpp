@@ -466,7 +466,7 @@ bool Physics::XrayEscape(Photon &p, const GammaStats & mat_gamma_prop,
         return(false);
         deposit = p.energy - xray_energy;
         p.energy = xray_energy;
-        Random::UniformSphere(p.dir);
+        p.dir = Random::UniformSphere();
         p.SetXrayFlouresence();
         return(true);
     }

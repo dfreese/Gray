@@ -54,15 +54,15 @@ void Random::RankReseed(int rank) {
     }
 }
 
-void Random::UniformSphere(VectorR3 & p)
+VectorR3 Random::UniformSphere()
 {
-    p = Transform::UniformSphere(Random::Uniform(), Random::Uniform());
+    return (Transform::UniformSphere(Random::Uniform(), Random::Uniform()));
 }
 
-void Random::Acolinearity(const VectorR3 & b, VectorR3 &r, double radians)
+VectorR3 Random::Acolinearity(const VectorR3 & ref, double radians)
 {
-    r = Transform::Acolinearity(b, radians, Random::Uniform(),
-                                Random::Gaussian());
+    return (Transform::Acolinearity(ref, radians, Random::Uniform(),
+                                    Random::Gaussian()));
 }
 
 VectorR3 Random::UniformCylinder(double height, double radius) {

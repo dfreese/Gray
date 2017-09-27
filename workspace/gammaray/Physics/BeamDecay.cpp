@@ -32,7 +32,7 @@ void BeamDecay::Decay(int photon_number, double time, int src_id,
 
     // Only randomly generate an angle if there's a non zero angle.
     if (angle) {
-        Random::Acolinearity(axis, blue.dir, angle);
+        blue.dir = Random::Acolinearity(axis, angle);
     } else {
         blue.dir = axis;
     }
