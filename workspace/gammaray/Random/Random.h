@@ -21,6 +21,7 @@ public:
     static void UniformSphere(VectorR3 & p);
     static void Acolinearity(const VectorR3 & b, VectorR3 &r, double radians);
     static long Poisson(double lambda);
+    static VectorR3 UniformAnnulusCylinder(double height, double radius);
     
 private:
     static std::mt19937 generator;

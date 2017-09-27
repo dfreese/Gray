@@ -27,24 +27,11 @@ AnnulusCylinderSource::AnnulusCylinderSource(const VectorR3 &p, double rad, Vect
                  axis.x*s, axis.y*s,c);
     RotMtrxInv = RotMtrx;
     RotMtrxInv.MakeTranspose();
-
-
 }
 
 VectorR3 AnnulusCylinderSource::Decay(int photon_number, double time)
 {
-
-    //FIXME: Sources are not rotating -- FIXED 01-13-2020 AVDB
-    //FIXME: Inside is not rotating -- BUG PDO
-
-    VectorR3 positron;
-    double phi = 2 * M_PI * Random::Uniform();
-    positron.x = radius*cos(phi);
-    positron.y = radius*sin(phi);
-    positron.z = length*(0.5 - Random::Uniform());
-
-    VectorR3 roted;
-    roted = RotMtrx*positron;
+    VectorR3 roted = RotMtrx * Random::UniformAnnulusCylinder(length, radius);
     roted += position;
     isotope->Decay(photon_number, time, source_num, roted);
     return(roted);
@@ -63,22 +50,15 @@ void AnnulusCylinderSource::SetAxis(VectorR3 L)
 
 bool AnnulusCylinderSource::Inside(const VectorR3 & pos) const
 {
-    VectorR3 dist;
-    dist = pos;
-    dist -= position;
-    VectorR3 roted;
-
-    roted = RotMtrxInv*dist;
-
-    VectorR3 c;
-    c.x = roted.x;
-    c.y = roted.y;
-    c.z = 0.0;
-
-    if (c.Norm() > radius) {
+    // FIXME: This calculates if something is inside of the cylinder, but
+    // doesn't calculate if it was inside the annulus.  This would make it
+    // incorrect for a negative source (which wouldn't really make sense for
+    // an annulus).
+    const VectorR3 roted = RotMtrxInv * (pos - position);
+    if ((roted.x * roted.x + roted.y * roted.y) > radius * radius) {
         return false;
     }
-    if (fabs(roted.z) > length/2.0) {
+    if (std::abs(roted.z) > length/2.0) {
         return false;
     }
     return true;

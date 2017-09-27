@@ -92,3 +92,27 @@ TEST(UniformSphereTest, IsUnit) {
     ASSERT_DOUBLE_EQ(y.Norm(), 1.0);
     ASSERT_DOUBLE_EQ(y.x, 1.0);
 }
+
+TEST(UniformAnnulusCylinderTest, Height) {
+    const double theta = 0;
+    const double radius = 1;
+    const double height_rand = 1;
+    for (double height: {0.1, 0.5, 30.0}) {
+        VectorR3 ret = Transform::UniformAnnulusCylinder(height, radius, theta,
+                                                         height_rand);
+        ASSERT_EQ(ret, VectorR3(radius, 0, height/2));
+    }
+}
+
+TEST(UniformAnnulusCylinderTest, HeightRandVar) {
+    const double theta = 0.25; // Transformed to PI/2
+    const double radius = 1;
+    const double height = 30;
+    for (double height_rand: {0.0, 0.1, 0.5, 1.0}) {
+        VectorR3 ret = Transform::UniformAnnulusCylinder(height, radius, theta,
+                                                         height_rand);
+        const VectorR3 exp(0, radius, height_rand * height - height/2);
+        // There may be some error in sin(pi/2) not being exactly zero.
+        ASSERT_LT((ret - exp).Norm(), 1e-16);
+    }
+}

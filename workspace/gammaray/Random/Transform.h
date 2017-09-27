@@ -6,4 +6,7 @@ namespace Transform {
     VectorR3 Acolinearity(const VectorR3 & ref, double std_radians,
                           double deflection_dir_rand_uniform,
                           double deflection_angle_gaussian_rand);
+    VectorR3 UniformAnnulusCylinder(double height, double radius,
+                                    double theta_rand_uniform,
+                                    double height_rand_uniform);
 }
