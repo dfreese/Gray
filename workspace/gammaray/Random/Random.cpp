@@ -23,16 +23,6 @@ double Random::Exponential(const double lambda)
     return(exponential_distribution(generator));
 }
 
-void Random::RandomHemiCube(VectorR3 & p)
-{
-    double z1,z2;
-    z1 = Random::Uniform();
-    z2 = Random::Uniform();
-    p.x = sqrt(z1 * (2.0 - z1)) * cos(2.0 * M_PI * z2);
-    p.y = sqrt(z1 * (2.0 - z1)) * sin(2.0 * M_PI * z2);
-    p.z = 1 - z1;
-}
-
 void Random::Seed(unsigned long seed)
 {
     generator.seed(seed);
