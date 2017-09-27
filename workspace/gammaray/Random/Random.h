@@ -19,6 +19,7 @@ public:
     static double Gaussian();
     static double Exponential(const double lambda);
     static VectorR3 UniformSphere();
+    static VectorR3 UniformSphereFilled();
     static VectorR3 Acolinearity(const VectorR3 & ref, double radians);
     static long Poisson(double lambda);
     static VectorR3 UniformCylinder(double height, double radius);

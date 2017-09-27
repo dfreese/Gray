@@ -93,6 +93,17 @@ TEST(UniformSphereTest, IsUnit) {
     EXPECT_DOUBLE_EQ(y.x, 1.0);
 }
 
+TEST(UniformSphereFilledTest, CubicScale) {
+    const double theta = 0;
+    const double cos_phi = 1.0;
+
+    for (const double radius_cubed: {0.0, 0.1, 0.5, 1.0}) {
+        const VectorR3 ret = Transform::UniformSphereFilled(theta, cos_phi, radius_cubed);
+        const VectorR3 exp(0.0, 0.0, std::pow(radius_cubed, 1.0 / 3));
+        EXPECT_EQ(ret, exp);
+    }
+}
+
 TEST(UniformCylinderTest, Radius) {
     const double height = 1;
     const double height_rand = 1.0;

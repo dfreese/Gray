@@ -59,6 +59,13 @@ VectorR3 Random::UniformSphere()
     return (Transform::UniformSphere(Random::Uniform(), Random::Uniform()));
 }
 
+VectorR3 Random::UniformSphereFilled()
+{
+    return (Transform::UniformSphereFilled(Random::Uniform(),
+                                           Random::Uniform(),
+                                           Random::Uniform()));
+}
+
 VectorR3 Random::Acolinearity(const VectorR3 & ref, double radians)
 {
     return (Transform::Acolinearity(ref, radians, Random::Uniform(),

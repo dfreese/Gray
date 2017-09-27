@@ -7,6 +7,9 @@
  * distributed across the unit sphere.
  *
  * See (6, 7, and 8) at http://mathworld.wolfram.com/SpherePointPicking.html
+ *
+ * \param a uniform random variable [0,1] representing the angle theta
+ * \param a uniform random variable [0,1] representing the cos phi.
  */
 VectorR3 Transform::UniformSphere(double theta_rand_uniform,
                                   double cos_phi_rand_uniform)
@@ -17,6 +20,22 @@ VectorR3 Transform::UniformSphere(double theta_rand_uniform,
     return (VectorR3(sin_phi * std::cos(theta),
                      sin_phi * std::sin(theta),
                      cos_phi));
+}
+
+/*!
+ * Interprets a uniform random variable as the cube of the radius to scale an
+ * output of UniformSphere so that the interior of a sphere is uniformly
+ * covered by points without using a rejection algorithm.
+ *
+ * \param a uniform random variable [0,1] that represents the cube of the
+ * radius of the point.
+ */
+VectorR3 Transform::UniformSphereFilled(double theta_rand_uniform,
+                                        double cos_phi_rand_uniform,
+                                        double r_cubed_rand_uniform)
+{
+    const double radius_scale = std::pow(r_cubed_rand_uniform, 1.0/3);
+    return (radius_scale * UniformSphere(theta_rand_uniform, cos_phi_rand_uniform));
 }
 
 /*!
