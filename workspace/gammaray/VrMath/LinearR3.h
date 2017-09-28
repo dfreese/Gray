@@ -803,6 +803,9 @@ void GetOrtho( const VectorR3& x,  VectorR3& y, VectorR3& z);
 // Returns a vector v orthonormal to unit vector x
 void GetOrtho( const VectorR3& x,  VectorR3& y );
 
+// Returns a vector v orthonormal to unit vector x
+VectorR3 GetOrtho( const VectorR3& x);
+
 // Projections
 
 // The next three functions are templated below.

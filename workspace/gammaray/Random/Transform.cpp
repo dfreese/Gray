@@ -62,11 +62,8 @@ VectorR3 Transform::Acolinearity(const VectorR3 & ref,
     // Phi: Angle around central axis any of 360 degrees in a circle
     const double phi = 2 * M_PI * deflection_dir_rand_uniform;
 
-    // Create rotation axis perpendicular to ref by crossing ref with the y
-    // unit vector, unless ref is the y unit vector, then just use unit x.
-    const VectorR3 unit_y(0, 1, 0);
-    const VectorR3 unit_x(1, 0, 0);
-    const VectorR3 rot_axis = (ref == unit_y) ? unit_x:(ref * unit_y).Normalize();
+    // Create rotation axis perpendicular
+    const VectorR3 rot_axis = GetOrtho(ref);
 
     // Generate a gaussian with std of std_radians
     const double theta = (deflection_angle_gaussian_rand * std_radians);
