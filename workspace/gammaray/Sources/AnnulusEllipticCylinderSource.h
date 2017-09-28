@@ -8,11 +8,13 @@
 class AnnulusEllipticCylinderSource : public Source
 {
 public:
-    AnnulusEllipticCylinderSource(const VectorR3 &pos, double radius1, double radius2, VectorR3 &L, double act);
+    AnnulusEllipticCylinderSource(const VectorR3 &pos, double radius1,
+                                  double radius2, const VectorR3 &L,
+                                  double act);
     virtual VectorR3 Decay(int photon_number, double time);
     bool virtual Inside(const VectorR3 & pos) const;
     void SetRadius(double r1, double r2);
-    void SetAxis(VectorR3 &L);
+    void SetAxis(VectorR3 L);
     double EllipticE(double m);
     double InverseEllipticE(double arc_length);
     double EllipticK(double m);
@@ -24,8 +26,8 @@ private:
     double length;
     std::vector<double>circ;
     VectorR3 axis;
-    Matrix3x3 RotMtrx;
-    Matrix3x3 RotMtrxInv;
+    RigidMapR3 local_to_global;
+    RigidMapR3 global_to_local;
 };
 
 #endif /*ANNULUSELLIPTICCYLINDERSOURCE_H_*/

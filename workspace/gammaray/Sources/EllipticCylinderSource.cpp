@@ -16,25 +16,13 @@ EllipticCylinderSource::EllipticCylinderSource(const VectorR3 &p, double r1,
                                                double act) :
     Source(p, act),
     radius1(r1),
-    radius2(r2),
-    length(L.Norm()),
-    axis(L.MakeUnit())
+    radius2(r2)
 {
-    /* Rotation Matrix based on Logbook 4 p72, AVDB) */
-    double c= axis.z;
-    double s=(axis.x*axis.x+axis.y*axis.y);
-    RotMtrx.Set( axis.y*axis.y + (1-axis.y*axis.y)*c, -axis.x*axis.y*(1-c), -axis.x*s,
-                 -axis.x*axis.y*(1-c), axis.x*axis.x + ( 1-axis.x*axis.x)*c, axis.y*s,
-                 axis.x*s, axis.y*s,c);
-    RotMtrxInv = RotMtrx;
-    RotMtrxInv.MakeTranspose();
+    SetAxis(L);
 }
 
 VectorR3 EllipticCylinderSource::Decay(int photon_number, double time)
 {
-
-    //FIXME: Sources are not rotating -- FIXED 01-13-2020 AVDB
-    //FIXME: Inside is not rotating -- BUG PDO
     double r1sq = radius1*radius1;
     double r2sq = radius2*radius2;
 
@@ -46,9 +34,7 @@ VectorR3 EllipticCylinderSource::Decay(int photon_number, double time)
     } while (positron.x*positron.x/r1sq + positron.y*positron.y/r2sq > 1);
     positron.z = length*(0.5 - Random::Uniform());
 
-    VectorR3 roted;
-    roted = RotMtrx*positron;
-    roted += position;
+    VectorR3 roted = local_to_global * positron;
     isotope->Decay(photon_number, time, source_num, roted);
     return(roted);
 }
@@ -63,30 +49,14 @@ void EllipticCylinderSource::SetAxis(VectorR3 &L)
 {
     length = L.Norm();
     axis = L.MakeUnit();
+    local_to_global = RefAxisPlusTransToMap(axis, position);
+    global_to_local = local_to_global.Inverse();
 }
 
 bool EllipticCylinderSource::Inside(const VectorR3 & pos) const
 {
-    double r1sq = radius1*radius1;
-    double r2sq = radius2*radius2;
-
-    VectorR3 dist;
-    dist = pos;
-    dist -= position;
-    VectorR3 roted;
-
-    roted = RotMtrxInv*dist;
-
-    VectorR3 c;
-    c.x = roted.x;
-    c.y = roted.y;
-    c.z = 0.0;
-
-    if ( c.x*c.x/r1sq + c.y*c.y/r2sq > 1) {
-        return false;
-    }
-    if (fabs(roted.z) > length/2.0) {
-        return false;
-    }
-    return true;
+    const VectorR3 roted = global_to_local * pos;
+    const double r1 = (roted.x * roted.x) / (radius1 * radius1);
+    const double r2 = (roted.y * roted.y) / (radius2 * radius2);
+    return (((r1 + r2) <= 1.0) && (std::abs(roted.z) <= (length / 2.0)));
 }

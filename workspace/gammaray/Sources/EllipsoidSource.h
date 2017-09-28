@@ -18,11 +18,12 @@ public:
     void SetAxis(const VectorR3 &a1,const VectorR3 &a2);
 private:
     double radius1, radius2, radius3;
+    VectorR3 axis;
     VectorR3 axis1;
     VectorR3 axis2;
     VectorR3 axis3;
-    Matrix3x3 RotMtrx;
-    Matrix3x3 RotMtrxInv;
+    RigidMapR3 local_to_global;
+    RigidMapR3 global_to_local;
 };
 
 #endif /*ELLIPSOIDSOURCE_H_*/

@@ -2465,3 +2465,5 @@ inline double SolidAngle( const VectorR3& v, const VectorR3& w)
 #endif
 
 // ******************* End of header material ********************
+RotationMapR3 RefVecToMap(const VectorR3 & ref_axis);
+RigidMapR3 RefAxisPlusTransToMap(const VectorR3 & ref_axis, const VectorR3 & trans);

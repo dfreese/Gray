@@ -12,27 +12,13 @@ AnnulusCylinderSource::AnnulusCylinderSource() :
 AnnulusCylinderSource::AnnulusCylinderSource(const VectorR3 &p, double rad, VectorR3 L, double act) :
     Source(p, act)
 {
-    radius = rad;
-    length = L.Norm();
-    axis = L.MakeUnit();
-    // calculate Rotation Matrix
-
-    //cout << "L.x = " << L.x << "  L.y = " << L.y << "  L.z = " << L.z <<endl;
-    //cout << "axis.x = " << axis.x << "  axis.y = " << axis.y << "  axis.z = " << axis.z <<endl;
-    /* Rotation Matrix based on Logbook 4 p72, AVDB) */
-    double c= axis.z;
-    double s=(axis.x*axis.x+axis.y*axis.y);
-    RotMtrx.Set( axis.y*axis.y + (1-axis.y*axis.y)*c, -axis.x*axis.y*(1-c), -axis.x*s,
-                 -axis.x*axis.y*(1-c), axis.x*axis.x + ( 1-axis.x*axis.x)*c, axis.y*s,
-                 axis.x*s, axis.y*s,c);
-    RotMtrxInv = RotMtrx;
-    RotMtrxInv.MakeTranspose();
+    SetRadius(rad);
+    SetAxis(L.MakeUnit());
 }
 
 VectorR3 AnnulusCylinderSource::Decay(int photon_number, double time)
 {
-    VectorR3 roted = RotMtrx * Random::UniformAnnulusCylinder(length, radius);
-    roted += position;
+    VectorR3 roted = local_to_global * Random::UniformAnnulusCylinder(length, radius);
     isotope->Decay(photon_number, time, source_num, roted);
     return(roted);
 }
@@ -46,6 +32,8 @@ void AnnulusCylinderSource::SetAxis(VectorR3 L)
 {
     length = L.Norm();
     axis = L.MakeUnit();
+    local_to_global = RefAxisPlusTransToMap(axis, position);
+    global_to_local = local_to_global.Inverse();
 }
 
 bool AnnulusCylinderSource::Inside(const VectorR3 & pos) const
@@ -54,7 +42,7 @@ bool AnnulusCylinderSource::Inside(const VectorR3 & pos) const
     // doesn't calculate if it was inside the annulus.  This would make it
     // incorrect for a negative source (which wouldn't really make sense for
     // an annulus).
-    const VectorR3 roted = RotMtrxInv * (pos - position);
+    const VectorR3 roted = global_to_local * pos;
     if ((roted.x * roted.x + roted.y * roted.y) > radius * radius) {
         return false;
     }
