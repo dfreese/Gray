@@ -914,6 +914,8 @@ bool LoadDetector::Load(const std::string & filename,
             // rectangular source
             VectorR3 baseCenter;
             VectorR3 baseSize;
+            // Always assume the rect_src is axis aligned for now.
+            VectorR3 orientation(0, 0, 1);
             double activity = -1.0;
             int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf",
                               &baseCenter.x, &baseCenter.y, &baseCenter.z,
@@ -922,11 +924,10 @@ bool LoadDetector::Load(const std::string & filename,
                 print_parse_error(line);
                 return(false);
             }
-            RigidMapR3 rect_source_map = MatrixStack.top();
-            rect_source_map.ApplyTranslationRight(baseCenter);
             MatrixStack.top().Transform(&baseCenter);
+            MatrixStack.top().Transform(&orientation);
             RectSource * s = new RectSource(baseCenter, baseSize,
-                                            rect_source_map,
+                                            orientation,
                                             actScale*activity);
             sources.AddSource(s);
         } else if (command == "array") {
