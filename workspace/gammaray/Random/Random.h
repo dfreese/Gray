@@ -28,7 +28,9 @@ public:
     static double GaussianEnergyBlur(double energy, double eres);
     static double GaussianEnergyBlurInverseSqrt(double energy, double eres,
                                                 double ref_energy);
-    
+    static double GaussianBlurTime(double time, double tres);
+    static double GaussianBlurTimeTrunc(double time, double tres,
+                                        double max_blur);
 private:
     static std::mt19937 generator;
     static std::normal_distribution<double> normal_distribution;

@@ -17,7 +17,6 @@
 #include <vector>
 #include <Physics/Interaction.h>
 #include <Pipeline/processor.h>
-#include <Pipeline/blur.h>
 #include <Pipeline/blurprocess.h>
 #include <Pipeline/coincprocess.h>
 #include <Pipeline/deadtimeprocess.h>

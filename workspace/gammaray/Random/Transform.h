@@ -23,6 +23,7 @@ namespace Transform {
     double GaussianEnergyBlurInverseSqrt(double energy, double eres,
                                          double ref_energy,
                                          double blur_rand_gauss);
+    double GaussianBlurTime(double time, double tres, double blur_rand_gauss);
     // 2.0 * std::sqrt(2.0 * std::log(2.0)) evaluated because cmath isn't
     // constexpr in c++11;
     constexpr double sigma_to_fwhm = 2.3548200450309493;

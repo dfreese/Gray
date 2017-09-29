@@ -4,6 +4,14 @@
 #include <Random/Transform.h>
 #include <VrMath/LinearR3.h>
 
+// There seems to be a bug particularly within the blurring functions when Gray
+// is run on a 32bit system.  It's not worth trying to trace that down right now
+// so until then, don't compile on 32bit systems, which will have an 4byte
+// pointer compared to 8 on a 64bit system.
+// TODO: implement tests that show this failure on 32bit
+static_assert(sizeof(void*) == 8,
+              "Only 64bit compilers are supported at this time");
+
 std::mt19937 Random::generator;
 std::normal_distribution<double> Random::normal_distribution;
 std::uniform_real_distribution<double> Random::uniform_distribution;
@@ -99,6 +107,21 @@ double Random::GaussianEnergyBlurInverseSqrt(double energy, double eres,
                                              double ref_energy)
 {
     return (Transform::GaussianEnergyBlurInverseSqrt(energy, eres, ref_energy, Random::Gaussian()));
+}
+
+double Random::GaussianBlurTime(double time, double tres) {
+    return (Transform::GaussianBlurTime(time, tres, Random::Gaussian()));
+}
+
+double Random::GaussianBlurTimeTrunc(double time, double tres,
+                                     double max_blur)
+{
+    // TODO: implement truncated gaussian that doesn't rely on rejection
+    double time_blur;
+    do {
+        time_blur = GaussianBlurTime(0, tres);
+    } while(std::abs(time_blur) > max_blur);
+    return (time_blur + time);
 }
 
 long Random::Poisson(double lambda)

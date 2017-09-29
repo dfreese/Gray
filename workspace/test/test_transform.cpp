@@ -229,3 +229,22 @@ TEST(GaussianEnergyBlurInverseSqrtTest, EresScaling) {
     }
 }
 
+TEST(GaussianTimeBlurTest, Scaling) {
+    const double time = 0;
+    for (const double tres: {0.0, 0.1, 0.5, 1.0}) {
+        for (const double rand_gauss: {0.0, 0.1, 0.5, 1.0}) {
+            const double result = Transform::GaussianBlurTime(time, tres, rand_gauss);
+            const double exp = tres * Transform::fwhm_to_sigma * rand_gauss;
+            EXPECT_DOUBLE_EQ(result, exp);
+        }
+    }
+}
+
+TEST(GaussianTimeBlurTest, Offset) {
+    const double tres = 0;
+    const double rand_gauss = 1.0;
+    for (const double time: {-30.0, 0.0, 30.0}) {
+        const double result = Transform::GaussianBlurTime(time, tres, rand_gauss);
+        EXPECT_DOUBLE_EQ(result, time);
+    }
+}

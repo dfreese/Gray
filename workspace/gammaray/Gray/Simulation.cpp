@@ -3,6 +3,7 @@
 #include <Gray/GammaRayTrace.h>
 #include <Gray/Mpi.h>
 #include <Pipeline/InteractionStream.h>
+#include <Random/Random.h>
 #include <Sources/SourceList.h>
 #include <GraphicsTrees/IntersectionKdTree.h>
 #include <iostream>

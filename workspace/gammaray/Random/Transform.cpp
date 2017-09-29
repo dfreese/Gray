@@ -201,3 +201,17 @@ double Transform::GaussianEnergyBlurInverseSqrt(double energy, double eres,
     eres *= (energy > 0) ? std::sqrt(ref_energy) / std::sqrt(energy):1.0;
     return (GaussianEnergyBlur(energy, eres, blur_rand_gauss));
 }
+
+/*!
+ * Generate a time blurred by a gaussian with a FWHM in the same units.
+ *
+ * \param time the unblurred time of the event
+ * \param tres the FWHM of the gaussian to be used.  Must be in the same units
+ * as time and non-negative.
+ * \param blur_rand_gauss a normally distributed gaussian random variable
+ */
+double Transform::GaussianBlurTime(double time, double tres,
+                                   double blur_rand_gauss)
+{
+    return (time + tres * fwhm_to_sigma * blur_rand_gauss);
+}

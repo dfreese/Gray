@@ -1,4 +1,5 @@
 #include <Pipeline/InteractionStream.h>
+#include <Random/Random.h>
 
 /*!
  * If the initial sort window is greater than zero, a sorting process is
@@ -504,7 +505,7 @@ struct InteractionStream::BlurTimeFunctor {
     }
 
     void operator() (EventT & event) {
-        Blur::blur_time_capped(event, value, max);
+        event.time = Random::GaussianBlurTimeTrunc(event.time, value, max);
     }
 
     const double value;

@@ -85,8 +85,6 @@ add_library(gammaray
     Physics/PositronDecay.h
     Physics/Physics.cpp
     Physics/Physics.h
-    Pipeline/blur.h
-    Pipeline/Blur.cpp
     Pipeline/blurprocess.h
     Pipeline/coincprocess.h
     Pipeline/deadtimeprocess.h
