@@ -472,7 +472,7 @@ struct InteractionStream::BlurEnergyFunctor {
     }
 
     void operator() (EventT & event) {
-        Blur::blur_energy(event, value);
+        event.energy = Random::GaussianEnergyBlur(event.energy, value);
     }
 
     const double value;
@@ -487,7 +487,7 @@ struct InteractionStream::BlurEnergyReferencedFunctor {
     }
 
     void operator() (EventT & event) {
-        Blur::blur_energy_invsqrt(event, value, ref);
+        event.energy = Random::GaussianEnergyBlurInverseSqrt(event.energy, value, ref);
     }
 
     const double value;

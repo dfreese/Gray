@@ -16,17 +16,6 @@
 class Blur {
 public:
     template<class T>
-    static void blur_energy(T & event, double eres) {
-        event.energy *= 1.0 + (eres * fwhm_to_sigma * Random::Gaussian());
-    }
-
-    template<class T>
-    static void blur_energy_invsqrt(T & event, double eres, double eref) {
-        eres *= std::sqrt(eref) / std::sqrt(event.energy);
-        blur_energy(event, eres);
-    }
-
-    template<class T>
     static void blur_time(T & event, double tres) {
         event.time += tres * fwhm_to_sigma * Random::Gaussian();
     }

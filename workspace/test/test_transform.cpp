@@ -194,4 +194,38 @@ TEST(UniformRectangleTest, Size) {
     }
 }
 
+TEST(GaussianEnergyBlurTest, ZeroEnergy) {
+    const double energy = 0;
+    const double rand_gauss = 0;
+    for (double eres: {0.0, 0.1, 0.5, 1.0}) {
+        const double result = Transform::GaussianEnergyBlur(energy, eres, rand_gauss);
+        EXPECT_DOUBLE_EQ(result, 0.0);
+    }
+}
+
+TEST(GaussianEnergyBlurTest, Scaling) {
+    const double energy = 0.100;
+    for (const double eres: {0.0, 0.1, 0.5, 1.0}) {
+        for (const double rand_gauss: {0.0, 0.1, 0.5, 1.0}) {
+            const double result = Transform::GaussianEnergyBlur(energy, eres, rand_gauss);
+            const double exp = energy * (1.0 + eres * Transform::fwhm_to_sigma * rand_gauss);
+            EXPECT_DOUBLE_EQ(result, exp);
+        }
+    }
+}
+
+TEST(GaussianEnergyBlurInverseSqrtTest, EresScaling) {
+    const double ref_energy = 0.511;
+    for (const double energy: {0.0, 0.1}) {
+        for (const double eres: {0.0, 0.1, 0.5, 1.0}) {
+            for (const double rand_gauss: {0.0, 0.1, 0.5, 1.0}) {
+                const double exp_eres = (energy > 0) ? eres * (std::sqrt(ref_energy) / std::sqrt(energy)) : 1.0;
+                const double exp = Transform::GaussianEnergyBlur(energy, exp_eres, rand_gauss);
+                const double result = Transform::GaussianEnergyBlurInverseSqrt(energy, eres,
+                                                                               ref_energy, rand_gauss);
+                EXPECT_DOUBLE_EQ(result, exp);
+            }
+        }
+    }
+}
 

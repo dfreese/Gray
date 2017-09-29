@@ -91,6 +91,16 @@ VectorR3 Random::UniformRectangle(const VectorR3 & size) {
                                         Random::Uniform()));
 }
 
+double Random::GaussianEnergyBlur(double energy, double eres) {
+    return (Transform::GaussianEnergyBlur(energy, eres, Random::Gaussian()));
+}
+
+double Random::GaussianEnergyBlurInverseSqrt(double energy, double eres,
+                                             double ref_energy)
+{
+    return (Transform::GaussianEnergyBlurInverseSqrt(energy, eres, ref_energy, Random::Gaussian()));
+}
+
 long Random::Poisson(double lambda)
 {
     std::poisson_distribution<long> poisson_distribution(lambda);

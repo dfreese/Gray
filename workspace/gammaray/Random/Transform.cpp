@@ -163,3 +163,41 @@ VectorR3 Transform::UniformRectangle(const VectorR3 & size,
                        (rand_z - 0.5) * size.z);
     return (pos);
 }
+
+/*!
+ * Blurs an energy by a percentage full-width at half-max (FWHM).  Takes a
+ * normal gaussian random variable and converts it into an appropriate
+ * percentage blur.  The resulting energy is:
+ *
+ * E = E * (1 + N(eres / 2.35))
+ *
+ * \param energy The current energy of the event.  Non-negative required.
+ * \param eres the energy blur to apply as a ratio. (1.0 = 100%, 0.13 = 13%)
+ * Non-negative required.
+ * \param blur_rand_gauss a normally distributed gaussian random variable
+ */
+double Transform::GaussianEnergyBlur(double energy, double eres,
+                                     double blur_rand_gauss)
+{
+    return (energy * (1.0 + eres * fwhm_to_sigma * blur_rand_gauss));
+}
+
+/*!
+ * Blurs an energy using GaussianEnergyBlur, but first scales the energy
+ * resolution by:
+ *
+ * Eres = Eres * (sqrt(reference) / sqrt(energy))
+ *
+ * Eres is left unchanged if energy is zero.
+ * \param ref_energy The reference energy from which to calculate the
+ * degredation.
+ */
+double Transform::GaussianEnergyBlurInverseSqrt(double energy, double eres,
+                                                double ref_energy,
+                                                double blur_rand_gauss)
+{
+    // Make sure to handle the divide by zero case so we don't inject nan or
+    // inf into energy.
+    eres *= (energy > 0) ? std::sqrt(ref_energy) / std::sqrt(energy):1.0;
+    return (GaussianEnergyBlur(energy, eres, blur_rand_gauss));
+}

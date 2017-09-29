@@ -25,6 +25,9 @@ public:
     static VectorR3 UniformCylinder(double height, double radius);
     static VectorR3 UniformAnnulusCylinder(double height, double radius);
     static VectorR3 UniformRectangle(const VectorR3 & size);
+    static double GaussianEnergyBlur(double energy, double eres);
+    static double GaussianEnergyBlurInverseSqrt(double energy, double eres,
+                                                double ref_energy);
     
 private:
     static std::mt19937 generator;
