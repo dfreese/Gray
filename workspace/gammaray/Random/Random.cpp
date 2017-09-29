@@ -85,6 +85,12 @@ VectorR3 Random::UniformAnnulusCylinder(double height, double radius) {
                                               Random::Uniform()));
 }
 
+VectorR3 Random::UniformRectangle(const VectorR3 & size) {
+    return (Transform::UniformRectangle(size, Random::Uniform(),
+                                        Random::Uniform(),
+                                        Random::Uniform()));
+}
+
 long Random::Poisson(double lambda)
 {
     std::poisson_distribution<long> poisson_distribution(lambda);

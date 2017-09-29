@@ -24,6 +24,7 @@ public:
     static long Poisson(double lambda);
     static VectorR3 UniformCylinder(double height, double radius);
     static VectorR3 UniformAnnulusCylinder(double height, double radius);
+    static VectorR3 UniformRectangle(const VectorR3 & size);
     
 private:
     static std::mt19937 generator;

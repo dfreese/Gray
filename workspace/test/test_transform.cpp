@@ -159,3 +159,39 @@ TEST(UniformAnnulusCylinderTest, HeightRandVar) {
         EXPECT_LT((ret - exp).Norm(), 1e-16);
     }
 }
+
+TEST(UniformRectangleTest, Scaling) {
+    const VectorR3 size(1, 1, 1);
+    const VectorR3 offset = size / 2.0;
+    auto rand_pt_test = {0.0, 0.1, 0.5, 1.0};
+    for (double rand_x: rand_pt_test) {
+        for (double rand_y: rand_pt_test) {
+            for (double rand_z: rand_pt_test) {
+                VectorR3 ret = Transform::UniformRectangle(size, rand_x, rand_y, rand_z);
+                VectorR3 exp = VectorR3(rand_x, rand_y, rand_z) - offset;
+                EXPECT_EQ(ret, exp);
+            }
+        }
+    }
+}
+
+TEST(UniformRectangleTest, Size) {
+    // Zero to test negative.
+    const double rand_x = 0.0;
+    const double rand_y = 0.0;
+    const double rand_z = 0.0;
+    auto size_pt_test = {0.1, 0.5, 30.0};
+    for (double size_x: size_pt_test) {
+        for (double size_y: size_pt_test) {
+            for (double size_z: size_pt_test) {
+                const VectorR3 size(size_x, size_y, size_z);
+                const VectorR3 offset = size / 2.0;
+                VectorR3 ret = Transform::UniformRectangle(size, rand_x, rand_y, rand_z);
+                VectorR3 exp = offset - size;
+                EXPECT_EQ(ret, exp);
+            }
+        }
+    }
+}
+
+

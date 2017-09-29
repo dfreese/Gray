@@ -142,3 +142,24 @@ VectorR3 Transform::UniformAnnulusCylinder(double height, double radius,
     const double z = height * (height_rand_uniform - 0.5);
     return (VectorR3(x, y, z));
 }
+
+/*!
+ * Transforms three uniform random variables into a point uniformly distributed
+ * in a rectangle with a specified size.  The rectangle is centered around the
+ * origin.
+ *
+ * \param size the size of the rectangle.  [-size.[x,y,z] / 2, size.[x,y,z] / 2]
+ * \param rand_x uniform random variable [0,1] translated into an x position,
+ * zero being most negative.
+ * \param rand_y uniform random variable [0,1] translated into an y position
+ * \param rand_z uniform random variable [0,1] translated into an z position
+ */
+VectorR3 Transform::UniformRectangle(const VectorR3 & size,
+                                     double rand_x, double rand_y,
+                                     double rand_z)
+{
+    const VectorR3 pos((rand_x - 0.5) * size.x,
+                       (rand_y - 0.5) * size.y,
+                       (rand_z - 0.5) * size.z);
+    return (pos);
+}

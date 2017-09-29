@@ -22,10 +22,7 @@ RectSource::RectSource(const VectorR3 &p, const VectorR3 &sz,
 
 VectorR3 RectSource::Decay(int photon_number, double time)
 {
-    VectorR3 pos((Random::Uniform() - 0.5) * size.x,
-                 (Random::Uniform() - 0.5) * size.y,
-                 (Random::Uniform() - 0.5) * size.z);
-    local_to_global.Transform(&pos);
+    VectorR3 pos = local_to_global * Random::UniformRectangle(size);
     isotope->Decay(photon_number, time, source_num, pos);
     return(pos);
 }

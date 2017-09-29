@@ -16,4 +16,6 @@ namespace Transform {
     VectorR3 UniformAnnulusCylinder(double height, double radius,
                                     double theta_rand_uniform,
                                     double height_rand_uniform);
+    VectorR3 UniformRectangle(const VectorR3 & size,
+                              double rand_x, double rand_y, double rand_z);
 }
