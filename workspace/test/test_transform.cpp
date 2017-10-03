@@ -248,3 +248,15 @@ TEST(GaussianTimeBlurTest, Offset) {
         EXPECT_DOUBLE_EQ(result, time);
     }
 }
+
+TEST(SelectionTest, LessThan) {
+    EXPECT_EQ(Transform::Selection(0.5, 0.4), true);
+}
+
+TEST(SelectionTest, Equal) {
+    EXPECT_EQ(Transform::Selection(0.5, 0.5), true);
+}
+
+TEST(SelectionTest, Greater) {
+    EXPECT_EQ(Transform::Selection(0.5, 0.6), false);
+}

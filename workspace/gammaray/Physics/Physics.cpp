@@ -352,8 +352,9 @@ void Physics::KleinNishinaAngle(double energy, double & theta,
     // Theta is the compton angle
     do {
         theta = M_PI * Random::Uniform();
-    } while (klein_nishina.dsigma_over_max(theta, energy, prob_e_theta) <
-             Random::Uniform());
+        // Continue to loop until we accept something
+    } while (!Random::Selection(klein_nishina.dsigma_over_max(theta, energy,
+                                                              prob_e_theta)));
 
     // phi is symmetric around a circle of 360 degrees
     phi = 2 * M_PI * Random::Uniform();
@@ -414,10 +415,12 @@ double Physics::RayleighProbability(double theta) {
 void Physics::RayleighScatter(Photon &p)
 {
     // FIXME: This implements Thompson scattering, not Rayleigh scattering
-    double theta = M_PI * Random::Uniform();
-    while (RayleighProbability(theta) < Random::Uniform()) {
+    double theta;
+    do {
         theta = M_PI * Random::Uniform();
-    }
+        // Keep generating an angle until we generate a select based on the
+        // normalized pdf.
+    } while (!Random::Selection(RayleighProbability(theta)));
 
     // phi is symmetric around a circle of 360 degrees
     double phi = 2 * M_PI * Random::Uniform();

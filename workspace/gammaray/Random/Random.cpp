@@ -124,6 +124,19 @@ double Random::GaussianBlurTimeTrunc(double time, double tres,
     return (time_blur + time);
 }
 
+/*!
+ * Generate a random boolean with a given probability of being true.
+ */
+bool Random::Selection(double probability) {
+    if (probability <= 0) {
+        return (false);
+    } else if (probability >= 1) {
+        return (true);
+    } else {
+        return (Transform::Selection(probability, Random::Uniform()));
+    }
+}
+
 long Random::Poisson(double lambda)
 {
     std::poisson_distribution<long> poisson_distribution(lambda);

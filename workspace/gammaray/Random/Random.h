@@ -31,6 +31,7 @@ public:
     static double GaussianBlurTime(double time, double tres);
     static double GaussianBlurTimeTrunc(double time, double tres,
                                         double max_blur);
+    static bool Selection(double probability);
 private:
     static std::mt19937 generator;
     static std::normal_distribution<double> normal_distribution;

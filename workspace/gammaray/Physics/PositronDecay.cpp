@@ -72,7 +72,7 @@ void PositronDecay::Decay(int photon_number, double time, int src_id,
     }
 
     // Check to see if a Positron was emitted with the gamma or not.
-    if (Random::Uniform() < positron_emission_prob) {
+    if (Random::Selection(positron_emission_prob)) {
         blue.time = time;
         blue.pos = anni_position;
         blue.energy = ENERGY_511;

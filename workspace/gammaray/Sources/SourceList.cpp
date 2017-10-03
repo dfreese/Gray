@@ -163,7 +163,7 @@ bool SourceList::InsideNegative(const VectorR3 & pos)
     for (int i = 0; i < neg_list.size(); i++) {
         if (neg_list[i]->Inside(pos)) {
             double ratio = -1 * neg_list[i]->GetActivity();
-            if (Random::Uniform() < ratio) {
+            if (Random::Selection(ratio)) {
                 return true;
             }
         }

@@ -215,3 +215,14 @@ double Transform::GaussianBlurTime(double time, double tres,
 {
     return (time + tres * fwhm_to_sigma * blur_rand_gauss);
 }
+
+/*!
+ * Check if random variable is less than a probability, to generate a random
+ * boolean with a certain probability.
+ *
+ * \param probability the probability for the boolean
+ * \param test_rand_uniform a uniform random varaible [0,1]
+ */
+bool Transform::Selection(double probability, double test_rand_uniform) {
+    return (probability >= test_rand_uniform);
+}
