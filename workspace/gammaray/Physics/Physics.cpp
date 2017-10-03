@@ -219,7 +219,7 @@ Physics::KleinNishina::KleinNishina() :
 double Physics::KleinNishina::dsigma(double theta, double energy_mev,
                                          double & prob_e_theta)
 {
-    double alpha = energy_mev / ENERGY_511;
+    double alpha = energy_mev / Physics::energy_511;
     double cs = cos(theta);
     double ss = sin(theta);
     prob_e_theta = 1. / (1. + alpha * (1. - cs));
@@ -282,11 +282,7 @@ double Physics::KleinNishina::find_max(double energy_mev)
     return(max_val);
 }
 
-
 Physics::KleinNishina Physics::klein_nishina;
-
-const double Physics::speed_of_light_cmpers = 29979245800.0;
-const double Physics::inverse_speed_of_light = (1.0 / speed_of_light_cmpers);
 
 /*!
  * Takes an energy (MeV) and uses that to calculate if there was an interaction
@@ -365,7 +361,7 @@ double Physics::KleinNishinaAngle(double energy, double & prob_e_theta)
 
 double Physics::KleinNishinaEnergy(double energy, double theta)
 {
-    return(energy / (1.0 + (energy / ENERGY_511) * (1. - cos(theta))));
+    return(energy / (1.0 + (energy / Physics::energy_511) * (1. - cos(theta))));
 }
 
 void Physics::ComptonScatter(Photon &p, double & deposit)

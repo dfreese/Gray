@@ -1,10 +1,7 @@
 #ifndef CSE167_PHOTON_H
 #define CSE167_PHOTON_H
 
-#include <VrMath/MathMisc.h>
 #include <VrMath/LinearR3.h>
-
-#define ENERGY_511 0.510998903
 
 class Photon
 {

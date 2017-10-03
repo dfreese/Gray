@@ -52,8 +52,9 @@ public:
     static bool XrayEscape(Photon &p, const GammaStats & mat_gamma_prop,
                            double & deposit);
     static void RayleighScatter(Photon &p);
-    static const double speed_of_light_cmpers;
-    static const double inverse_speed_of_light;
+    static constexpr double speed_of_light_cmpers = 29979245800.0;
+    static constexpr double inverse_speed_of_light = (1.0 / speed_of_light_cmpers);
+    static constexpr double energy_511 = 0.510998903;
 
 private:
     // A class for static initialization of the dsigma_max values as a function
