@@ -2,7 +2,7 @@
 #include <Graphics/VisiblePoint.h>
 #include <Graphics/ViewableBase.h>
 #include <Graphics/ViewableTriangle.h>
-#include <GraphicsTrees/IntersectionKdTree.h>
+#include <Graphics/SceneDescription.h>
 #include <Gray/GammaMaterial.h>
 #include <Physics/Interaction.h>
 #include <Physics/Positron.h>
@@ -16,13 +16,13 @@
 const double GammaRayTrace::Epsilon = 1e-10;
 
 GammaRayTrace::GammaRayTrace(SourceList & source_list,
-                             const IntersectKdTree & kd_tree,
+                             const SceneDescription & scene,
                              bool log_nuclear_decays_inter,
                              bool log_nonsensitive_inter,
                              bool log_nointeractions_inter,
                              bool log_errors_inter) :
     sources(source_list),
-    tree(kd_tree),
+    scene(scene),
     log_nuclear_decays(log_nuclear_decays_inter),
     log_nonsensitive(log_nonsensitive_inter),
     log_nointeractions(log_nointeractions_inter),
@@ -55,8 +55,8 @@ void GammaRayTrace::TracePhoton(
 
         double hitDist = DBL_MAX;
         VisiblePoint visPoint;
-        long intersectNum = tree.SeekIntersection(photon.pos, photon.dir,
-                                                  hitDist, visPoint);
+        long intersectNum = scene.SeekIntersection(photon.pos, photon.dir,
+                                                   hitDist, visPoint);
         // There was nothing further in the environment to hit, so return.
         if (intersectNum < 0) {
             stats.no_interaction++;
@@ -189,7 +189,7 @@ bool GammaRayTrace::UpdateStack(const VectorR3 & src_pos,
     dir.Normalize();
     VisiblePoint point;
     point.SetPosition(src_pos);
-    while (tree.SeekIntersection(point.GetPosition() + Epsilon * dir, dir, dist, point) >= 0) {
+    while (scene.SeekIntersection(point.GetPosition() + Epsilon * dir, dir, dist, point) >= 0) {
         remaining_dist -= dist + Epsilon;
         dist = remaining_dist;
         if (point.IsFrontFacing()) {

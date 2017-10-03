@@ -9,7 +9,7 @@
 class Source;
 class Isotope;
 class VectorR3;
-class IntersectKdTree;
+class SceneDescription;
 class GammaMaterial;
 
 class SourceList
@@ -20,7 +20,6 @@ public:
     Source * Decay();
     void AddSource(Source * s);
     bool SetCurIsotope(const std::string & iso);
-    void SetKdTree(IntersectKdTree & tree);
     void SetSimulationTime(double time);
     double GetTime() const;
     double GetElapsedTime() const;
@@ -31,7 +30,7 @@ public:
     void InitSources();
     bool LoadIsotopes(const std::string & filename);
     void AdjustTimeForSplit(int idx, int n);
-    void BuildMaterialStacks(const IntersectKdTree & tree,
+    void BuildMaterialStacks(const SceneDescription & scene,
                              GammaMaterial const * default_material);
 
 private:

@@ -8,6 +8,7 @@
 #include <Graphics/Light.h>
 #include <Graphics/Material.h>
 #include <Graphics/ViewableBase.h>
+#include <KdTree/KdTree.h>
 
 class SceneDescription
 {
@@ -148,8 +149,18 @@ public:
     void DeleteAllViewables();
     void DeleteAll();
 
+    void BuildTree(bool use_double_recurse_split, double object_cost);
+
+    long SeekIntersection(const VectorR3& pos, const VectorR3& direction,
+                          double & hitDist, VisiblePoint& returnedPoint) const;
+    bool TestOverlap() const;
 private:
 
+    bool TestOverlapSingle(VectorR3 & start, const VectorR3 & dir) const;
+    bool intersection_callback(long objectNum, const VectorR3 & start_pos,
+                               const VectorR3 & direction,
+                               double & retStopDistance,
+                               VisiblePoint & visible_point_return_ptr) const;
     VectorR3 TheGlobalAmbientLight;
     VectorR3 TheBackgroundColor;
 
@@ -162,6 +173,7 @@ private:
     std::vector<MaterialBase*> MaterialArray;
     std::vector<ViewableBase*> ViewableArray;
     std::map<std::string, int> material_names_map;
+    KdTree kd_tree;
 };
 
 #endif // SCENE_DESCRIPTION_H

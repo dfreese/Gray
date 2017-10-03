@@ -1,6 +1,5 @@
 #include <iostream>
 #include <Graphics/SceneDescription.h>
-#include <GraphicsTrees/IntersectionKdTree.h>
 #include <Gray/Config.h>
 #include <Gray/LoadMaterials.h>
 #include <Gray/LoadDetector.h>
@@ -49,8 +48,7 @@ int main(int argc, char ** argv)
         return(1);
     }
 
-    IntersectKdTree intersect_kd_tree(scene);
-    sources.SetKdTree(intersect_kd_tree);
+    scene.BuildTree(true, 8.0);
 
     run_viewer(argc, argv, scene);
     return(0);

@@ -100,3 +100,12 @@ bool AABB::RayIntersect(const VectorR3& startPos, const VectorR3 & dirInv,
     if (tzmax < tmax) tmax = tzmax;
     return((tmin < t1) && (tmax > t0));
 }
+
+bool AABB::Inside(const VectorR3 & pos) {
+    return ((pos.x >= GetMinX()) &&
+            (pos.x <= GetMaxX()) &&
+            (pos.y >= GetMinY()) &&
+            (pos.y <= GetMaxY()) &&
+            (pos.z >= GetMinZ()) &&
+            (pos.z <= GetMaxZ()));
+}
