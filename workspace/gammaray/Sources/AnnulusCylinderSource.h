@@ -19,7 +19,6 @@ private:
     double length;
     VectorR3 axis;
     RigidMapR3 local_to_global;
-    RigidMapR3 global_to_local;
 };
 
 #endif /*ANNULUSCYLINDERSOURCE_H_*/
