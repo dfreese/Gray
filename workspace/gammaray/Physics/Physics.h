@@ -47,8 +47,7 @@ public:
                                       const GammaStats & mat_gamma_prop,
                                       double & deposit);
     static void ComptonScatter(Photon &p, double & deposit);
-    static void KleinNishinaAngle(double energy, double & theta,
-                                  double & phi, double & prob_e_theta);
+    static double KleinNishinaAngle(double energy, double & prob_e_theta);
     static double KleinNishinaEnergy(double energy, double theta);
     static bool XrayEscape(Photon &p, const GammaStats & mat_gamma_prop,
                            double & deposit);
@@ -74,6 +73,7 @@ private:
     };
     static KleinNishina klein_nishina;
     static double RayleighProbability(double theta);
+    static double RayleighAngle();
 };
 
 #endif // PHYSICS_H

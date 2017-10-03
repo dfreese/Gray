@@ -345,19 +345,22 @@ Physics::INTER_TYPE Physics::InteractionType(
     }
 }
 
-void Physics::KleinNishinaAngle(double energy, double & theta,
-                                    double & phi, double & prob_e_theta)
+/*!
+ * A random angle theta based on the Klein-Nishina distribution given the
+ * current energy.  Also returns the probability of that theta to be used for
+ * the energy calculation later on.
+ */
+double Physics::KleinNishinaAngle(double energy, double & prob_e_theta)
 {
     /* Generate scattering angles - phi and theta */
     // Theta is the compton angle
+    double theta;
     do {
         theta = M_PI * Random::Uniform();
         // Continue to loop until we accept something
     } while (!Random::Selection(klein_nishina.dsigma_over_max(theta, energy,
                                                               prob_e_theta)));
-
-    // phi is symmetric around a circle of 360 degrees
-    phi = 2 * M_PI * Random::Uniform();
+    return (theta);
 }
 
 double Physics::KleinNishinaEnergy(double energy, double theta)
@@ -367,39 +370,12 @@ double Physics::KleinNishinaEnergy(double energy, double theta)
 
 void Physics::ComptonScatter(Photon &p, double & deposit)
 {
-    double theta, phi, prob_e_theta;
-    KleinNishinaAngle(p.energy, theta, phi, prob_e_theta);
+    double prob_e_theta;
+    const double theta = KleinNishinaAngle(p.energy, prob_e_theta);
     // After collision the photon loses some energy to the electron
-    deposit = p.energy;
+    deposit = p.energy * (1 - prob_e_theta);
     p.energy *= prob_e_theta;
-    deposit -= p.energy;
-
-    // Create rotation axis this is perpendicular to Y axis
-    // to generate the scattering angle theta
-    RotationMapR3 rotation;
-    VectorR3 rot_axis = p.dir;
-    VectorR3 UnitY;
-    UnitY.SetUnitY();
-    rot_axis *= UnitY;
-    rot_axis.Normalize();
-
-    // save direction for phi rotatation
-    VectorR3 comp_dir = p.dir;
-
-    // rotate incline
-    rotation.Set(rot_axis, theta);
-    rotation.Transform(&comp_dir);
-
-    // rotate theta using original direction as axis
-    p.dir.Normalize();
-    rotation.Set(p.dir,phi);
-    rotation.Transform(&comp_dir);
-
-    // next direction is from compton scattering angle
-    p.dir = comp_dir;
-
-    // If the photon scatters on a non-detector, it is a scatter, checked
-    // inside SetScatter
+    p.dir = Random::Deflection(p.dir, theta);
     p.SetScatterCompton();
 }
 
@@ -412,8 +388,12 @@ double Physics::RayleighProbability(double theta) {
     return((1.0 - cs * cs) / 2.0);
 }
 
-void Physics::RayleighScatter(Photon &p)
-{
+/*!
+ * Generates a random angle for Rayleigh Scattering based on an accept/reject
+ * method using RayleighProbability.  Angle range is [0, pi].
+ */
+double Physics::RayleighAngle() {
+
     // FIXME: This implements Thompson scattering, not Rayleigh scattering
     double theta;
     do {
@@ -421,34 +401,13 @@ void Physics::RayleighScatter(Photon &p)
         // Keep generating an angle until we generate a select based on the
         // normalized pdf.
     } while (!Random::Selection(RayleighProbability(theta)));
+    return (theta);
+}
 
-    // phi is symmetric around a circle of 360 degrees
-    double phi = 2 * M_PI * Random::Uniform();
-
-    // Create rotation axis this is perpendicular to Y axis
-    // to generate the scattering angle theta
-    RotationMapR3 rotation;
-    VectorR3 rot_axis = p.dir;
-    VectorR3 UnitY;
-    UnitY.SetUnitY();
-    rot_axis *= UnitY;
-    rot_axis.Normalize();
-
-    // save direction for phi rotatation
-    VectorR3 comp_dir = p.dir;
-
-    // rotate incline
-    rotation.Set(rot_axis, theta);
-    rotation.Transform(&comp_dir);
-
-    // rotate theta using original direction as axis
-    p.dir.Normalize();
-    rotation.Set(p.dir,phi);
-    rotation.Transform(&comp_dir);
-
-    // next direction is from scattering angle
-    p.dir = comp_dir;
-
+void Physics::RayleighScatter(Photon &p)
+{
+    const double theta = RayleighAngle();
+    p.dir = Random::Deflection(p.dir, theta);
     // If the photon scatters on a non-detector, it is a scatter, checked
     // inside SetScatter
     p.SetScatterRayleigh();

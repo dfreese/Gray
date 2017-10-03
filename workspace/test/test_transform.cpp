@@ -3,6 +3,27 @@
 #include "Random/Transform.h"
 #include <cmath>
 
+TEST(DeflectionTest, RangeWraps) {
+    const VectorR3 unit_z(0, 0, 1);
+    const double theta = 0.3; // pick arbitrary angle
+    const VectorR3 start = Transform::Deflection(unit_z, theta, 0);
+    const VectorR3 end = Transform::Deflection(unit_z, theta, 1);
+    // There may be some numerical error at 1.0.
+    EXPECT_LT((end - start).Norm(), 1e-16);
+}
+
+TEST(DeflectionTest, CorrectAngle) {
+    VectorR3 unit_z(0, 0, 1);
+    const double rot_variable = 0.3; // pick arbitrary number [0,1]
+    for (double angle: {0.0, 0.04, 1.0, 20.0}) {
+        VectorR3 ret = Transform::Deflection(unit_z, angle, rot_variable);
+        // get the cos of the angle between the vectors from the dot product
+        double cal_angle = unit_z ^ ret;
+        EXPECT_DOUBLE_EQ(ret.Norm(), 1.0);
+        EXPECT_EQ(cal_angle, std::cos(angle));
+    }
+}
+
 TEST(AcolinearityTest, ZeroPreservesAndNegates) {
     VectorR3 unit_z(0, 0, 1);
     VectorR3 neg_z(0, 0, -1);

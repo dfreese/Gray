@@ -39,6 +39,41 @@ VectorR3 Transform::UniformSphereFilled(double theta_rand_uniform,
 }
 
 /*!
+ * Deflects a unit vector by a specified angle and then spins the copy
+ * around the reference with a [0, 2 * pi] uniform random variable.
+ *
+ * \param ref a unit direction vector
+ * \param angle The deflection angle
+ * \param deflection_dir_rand_uniform a uniform random variable [0,1] that
+ * is translated into arbitrary axis along which the deflection is made.  This
+ * is uniform 360 degrees around the reference vector.
+ */
+VectorR3 Transform::Deflection(const VectorR3 & ref,
+                               const double theta,
+                               double deflection_dir_rand_uniform)
+{
+    // Phi: Angle around central axis any of 360 degrees in a circle
+    const double phi = 2 * M_PI * deflection_dir_rand_uniform;
+
+    // Create rotation axis perpendicular
+    const VectorR3 rot_axis = GetOrtho(ref);
+
+    // Start with the reference
+    VectorR3 ret(ref);
+
+    // Generate deflection angle away from the reference photon using our
+    // rotation map
+    RotationMapR3 rotation;
+    rotation.Set(rot_axis, theta);
+    rotation.Transform(&ret);
+
+    // using original ref axis rotate ret around by phi
+    rotation.Set(ref, phi);
+    rotation.Transform(&ret);
+    return (ret);
+}
+
+/*!
  * Transforms a normal gaussian random variable and a uniform random variable
  * to model 511keV photon acolinearity in PET.  The photons are launched 180
  * degrees from each other, with some minor deviation in an arbitrary direction.
@@ -59,27 +94,9 @@ VectorR3 Transform::Acolinearity(const VectorR3 & ref,
                                  double deflection_dir_rand_uniform,
                                  double deflection_angle_gaussian_rand)
 {
-    // Phi: Angle around central axis any of 360 degrees in a circle
-    const double phi = 2 * M_PI * deflection_dir_rand_uniform;
-
-    // Create rotation axis perpendicular
-    const VectorR3 rot_axis = GetOrtho(ref);
-
     // Generate a gaussian with std of std_radians
     const double theta = (deflection_angle_gaussian_rand * std_radians);
-
-    // Start with the reference
-    VectorR3 ret(ref);
-
-    // Generate acolinearity angle away from the reference photon using our
-    // rotation map
-    RotationMapR3 rotation;
-    rotation.Set(rot_axis, theta);
-    rotation.Transform(&ret);
-
-    // using original blue axis rotate red around blue by phi
-    rotation.Set(ref, phi);
-    rotation.Transform(&ret);
+    VectorR3 ret = Transform::Deflection(ref, theta, deflection_dir_rand_uniform);
 
     // Negate the vector to send it (roughly) off in the opposite direction
     ret.Negate();

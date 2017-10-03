@@ -6,6 +6,9 @@ namespace Transform {
     VectorR3 UniformSphereFilled(double theta_rand_uniform,
                                  double cos_phi_rand_uniform,
                                  double r_cubed_rand_uniform);
+    VectorR3 Deflection(const VectorR3 & ref,
+                        const double theta,
+                        double deflection_dir_rand_uniform);
     VectorR3 Acolinearity(const VectorR3 & ref, double std_radians,
                           double deflection_dir_rand_uniform,
                           double deflection_angle_gaussian_rand);
