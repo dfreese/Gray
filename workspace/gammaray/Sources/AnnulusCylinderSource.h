@@ -8,16 +8,14 @@ class AnnulusCylinderSource : public Source
 {
 public:
     AnnulusCylinderSource();
-    AnnulusCylinderSource(const VectorR3 &pos, double radius, VectorR3 L, double act);
+    AnnulusCylinderSource(const VectorR3 & position, double radius, VectorR3 L,
+                          double activity);
     virtual VectorR3 Decay(int photon_number, double time);
-    bool virtual Inside(const VectorR3 & pos) const;
-    void SetRadius(double r);
-    void SetAxis(VectorR3 L);
+    virtual bool Inside(const VectorR3 & pos) const;
 
 private:
     double radius;
     double length;
-    VectorR3 axis;
     RigidMapR3 local_to_global;
 };
 
