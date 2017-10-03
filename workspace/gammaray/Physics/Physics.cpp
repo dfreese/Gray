@@ -1,5 +1,6 @@
 #include <Physics/Physics.h>
 #include <cmath>
+#include <Math/Math.h>
 #include <Physics/GammaStats.h>
 #include <Physics/NuclearDecay.h>
 #include <Random/Random.h>
@@ -230,28 +231,12 @@ double Physics::KleinNishina::dsigma(double theta, double energy_mev,
 }
 
 /*!
- * Use std::upper_bound to binary search the closest value above the given
- * energy and then linearly interpolate the actual value from the lookup table
+ * Linearly interpolate an approximate max value from the lookup table
  * created in the constructor in energy_idx and dsigmal_max_val.
  */
 double Physics::KleinNishina::dsigma_max(double energy_mev)
 {
-    size_t idx = upper_bound(energy_idx.begin(), energy_idx.end(), energy_mev) -
-                 energy_idx.begin();
-
-    if (idx == 0) {
-        return(dsigma_max_val.front());
-    } else if (idx == energy_idx.size()) {
-        return(dsigma_max_val.back());
-    }
-    double delta = energy_idx[idx] - energy_idx[idx - 1];
-    double alpha = (energy_mev - energy_idx[idx - 1]) / delta;
-    if (alpha > 1.0) {
-        alpha = 1.0;
-    }
-    double dsigma_max = ((1.0 - alpha) * dsigma_max_val[idx - 1] +
-                         alpha * dsigma_max_val[idx]);
-    return(dsigma_max);
+    return (Math::interpolate(energy_idx, dsigma_max_val, energy_mev));
 }
 
 

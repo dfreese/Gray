@@ -54,6 +54,8 @@ add_library(gammaray
     KdTree/DoubleRecurse.h
     KdTree/KdTree.h
     KdTree/KdTree.cpp
+    Math/Math.h
+    Math/Math.cpp
     Output/BinaryFormat.h
     Output/Detector.cpp
     Output/Detector.h
