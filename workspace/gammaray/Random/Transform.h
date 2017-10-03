@@ -1,3 +1,5 @@
+#ifndef TRANSFORM_H
+#define TRANSFORM_H
 #include <VrMath/LinearR3.h>
 
 namespace Transform {
@@ -33,3 +35,5 @@ namespace Transform {
     constexpr double sigma_to_fwhm = 2.3548200450309493;
     constexpr double fwhm_to_sigma = 1.0 / sigma_to_fwhm;
 }
+
+#endif // TRANSFORM_H
