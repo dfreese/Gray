@@ -1,6 +1,7 @@
 #include <Math/Math.h>
 
 #include <vector>
+#include <numeric>
 
 /*!
  * For a given set of x and y, perform piecewise linear interpolation between
@@ -31,4 +32,56 @@ double Math::interpolate(const std::vector<double> & x,
     }
     double dsigma_max = ((1.0 - alpha) * y[idx - 1] + alpha * y[idx]);
     return(dsigma_max);
+}
+
+/*!
+ * Returns a vector no_points in length with the values evenly spaced on
+ * [start, end].  Note the start and end value are included in the range.
+ */
+std::vector<double> Math::linspace(double start, double end, int no_points)
+{
+    // Minus one on the number of points because we include the end point.
+    double step = (end - start) / (no_points - 1);
+    double val = start;
+    std::vector<double> ret(no_points);
+    for (double & ret_val: ret) {
+        ret_val = val;
+        val += step;
+    }
+    return (ret);
+}
+
+/*!
+ * Performs the trapezoidal approximation to an integral on x and y.  It
+ * assumes x is monotonically increasing, that x and y are two points or
+ * longer, and x and y are the same size.
+ */
+std::vector<double> Math::trap_z(const std::vector<double> & x,
+                                 const std::vector<double> & y)
+{
+    std::vector<double> result(y.size());
+    result.front() = 0;
+    for (size_t ii = 1; ii < x.size(); ++ii) {
+        result[ii] = result[ii - 1];
+        result[ii] += (y[ii] + y[ii - 1]) / 2 * (x[ii] - x[ii - 1]);
+    }
+    return (result);
+}
+
+/*!
+ * Converts a discrete sampling of a pdf into a cdf using the trapezodial
+ * integral approximation, and then normalizing the final integral to one.  A
+ * strict pdf that integrates to one is not required, unnormalized
+ * cross-sections are allowed.  The same requirements for x and y of trap_z are
+ * required of x and pdf, with the addition that pdf must be nonnegative.
+ */
+std::vector<double> Math::pdf_to_cdf(const std::vector<double> & x,
+                                     const std::vector<double> & pdf)
+{
+    std::vector<double> cdf(Math::trap_z(x, pdf));
+    // Make sure we are correctly normalized to one.
+    for (double & val: cdf) {
+        val /= cdf.back();
+    }
+    return (cdf);
 }
