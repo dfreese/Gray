@@ -201,11 +201,10 @@ Physics::KleinNishina::KleinNishina() :
     // 1.5MeV when linear interpolation is performed.
     energy_idx({
         0.0, 0.010, 0.030, 0.050, 0.100, 0.200, 0.300, 0.400, 0.500, 0.600,
-        0.700, 0.900, 1.100, 1.300, 1.500})
+        0.700, 0.900, 1.100, 1.300, 1.500}),
+    theta_idx(Math::linspace(0, M_PI, 50)),
+    scatter_cdfs(create_scatter_cdfs(energy_idx, theta_idx))
 {
-    dsigma_max_val.resize(energy_idx.size());
-    std::transform(energy_idx.begin(), energy_idx.end(),
-                   dsigma_max_val.begin(), find_max);
 }
 
 /*!
@@ -230,41 +229,26 @@ double Physics::KleinNishina::dsigma(double theta, double energy_mev,
     return(sigma);
 }
 
-/*!
- * Linearly interpolate an approximate max value from the lookup table
- * created in the constructor in energy_idx and dsigmal_max_val.
- */
-double Physics::KleinNishina::dsigma_max(double energy_mev)
-{
-    return (Math::interpolate(energy_idx, dsigma_max_val, energy_mev));
-}
 
-
-/*!
- * Calculate the pdf over it's max for use in an accept/reject monte carlo.  If
- * this is greater than or equal to a random value [0,1] then the angle theta
- * should be accepted.
- */
-double Physics::KleinNishina::dsigma_over_max(double theta,
-                                                  double energy_mev,
-                                                  double & prob_e_theta)
+std::vector<std::vector<double>> Physics::KleinNishina::create_scatter_cdfs(
+        const std::vector<double> & energies,
+        const std::vector<double> & thetas)
 {
-    return(dsigma(theta, energy_mev, prob_e_theta) / dsigma_max(energy_mev));
-}
+    std::vector<std::vector<double>> scatter_cdfs(
+            energies.size(), std::vector<double>(thetas.size()));
 
-/*!
- * For a particular energy, sweep theta for dsigma from 0 to pi in 100 steps to
- * determine the max.  100 steps is adequate for less than 0.5% error.
- */
-double Physics::KleinNishina::find_max(double energy_mev)
-{
-    // dsigma value is always positive, zero is safe.
-    double max_val = 0;
-    for (double theta = 0; theta <= M_PI; theta += (M_PI/ 100)) {
-        double prob_e_theta;
-        max_val = std::max(max_val, dsigma(theta, energy_mev, prob_e_theta));
+    for (size_t ii = 0; ii < energies.size(); ++ii) {
+        const double energy = energies[ii];
+        auto & energy_cdf = scatter_cdfs[ii];
+        std::transform(thetas.begin(), thetas.end(), energy_cdf.begin(),
+           [&energy](double theta) {
+               double drop;
+               return (Physics::KleinNishina::dsigma(theta, energy, drop));
+           });
+        energy_cdf = Math::pdf_to_cdf(thetas, energy_cdf);
     }
-    return(max_val);
+
+    return (scatter_cdfs);
 }
 
 Physics::KleinNishina Physics::klein_nishina;
@@ -335,12 +319,13 @@ double Physics::KleinNishinaAngle(double energy, double & prob_e_theta)
 {
     /* Generate scattering angles - phi and theta */
     // Theta is the compton angle
-    double theta;
-    do {
-        theta = M_PI * Random::Uniform();
-        // Continue to loop until we accept something
-    } while (!Random::Selection(klein_nishina.dsigma_over_max(theta, energy,
-                                                              prob_e_theta)));
+    double theta = -1;
+//    double theta;
+//    do {
+//        theta = M_PI * Random::Uniform();
+//        // Continue to loop until we accept something
+//    } while (!Random::Selection(klein_nishina.dsigma_over_max(theta, energy,
+//                                                              prob_e_theta)));
     return (theta);
 }
 

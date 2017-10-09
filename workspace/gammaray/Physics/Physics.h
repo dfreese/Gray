@@ -56,22 +56,24 @@ public:
     static constexpr double inverse_speed_of_light = (1.0 / speed_of_light_cmpers);
     static constexpr double energy_511 = 0.510998903;
 
-private:
     // A class for static initialization of the dsigma_max values as a function
     // of energy
     class KleinNishina {
     public:
         KleinNishina();
-        double dsigma_max(double energy_mev);
-        double dsigma_over_max(double theta, double energy_mev,
-                               double & prob_e_theta);
         static double dsigma(double theta, double energy_mev,
                              double & prob_e_theta);
+        static std::vector<std::vector<double>> create_scatter_cdfs(
+                const std::vector<double> & energies,
+                const std::vector<double> & thetas);
+        double scatter_angle(double energy, double rand_uniform);
     private:
-        static double find_max(double energy_mev);
         std::vector<double> energy_idx;
-        std::vector<double> dsigma_max_val;
+        std::vector<double> theta_idx;
+        std::vector<std::vector<double>> scatter_cdfs;
     };
+
+private:
     static KleinNishina klein_nishina;
     static double RayleighProbability(double theta);
     static double RayleighAngle();
