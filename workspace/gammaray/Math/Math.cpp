@@ -35,6 +35,47 @@ double Math::interpolate(const std::vector<double> & x,
 }
 
 /*!
+ * For a given set of x, y, and z perform piecewise linear interpolation
+ * between the z values for a specified x and y.  If x_value or y_value is
+ * greater than the last value in x or y, respectively, then the last value in
+ * z in that respective direction is returned.  If x_value or y_value is less
+ * than the first value, then the first value of z in the respective direction
+ * is returned.
+ *
+ * \param x a monotonically increasing vector of values to interpolate within.
+ * \param y a monotonically increasing vector of values to interpolate within.
+ * \param z the values of off of which the interpolation is done.  Must be the
+ * size [x.size(), y.size()].
+ *
+ */
+double Math::interpolate_2d(const std::vector<double> & x,
+                            const std::vector<double> & y,
+                            const std::vector<std::vector<double>> & z,
+                            double x_value, double y_value)
+{
+    size_t x_idx = upper_bound(x.begin(), x.end(), x_value) - x.begin();
+    size_t y_idx = upper_bound(y.begin(), y.end(), y_value) - y.begin();
+
+    x_idx = std::min(std::max(x_idx, 1ul), x.size() - 1);
+    y_idx = std::min(std::max(y_idx, 1ul), y.size() - 1);
+
+    const double delta_x = x[x_idx] - x[x_idx - 1];
+    const double delta_y = y[y_idx] - y[y_idx - 1];
+
+    double alpha_x = (x_value - x[x_idx - 1]) / delta_x;
+    double alpha_y = (y_value - y[y_idx - 1]) / delta_y;
+
+    alpha_x = std::min(std::max(0.0, alpha_x), 1.0);
+    alpha_y = std::min(std::max(0.0, alpha_y), 1.0);
+
+    double val = (alpha_x * alpha_y * z[x_idx][y_idx] +
+                  alpha_x * (1.0 - alpha_y) * z[x_idx][y_idx - 1] +
+                  (1.0 - alpha_x) * alpha_y * z[x_idx - 1][y_idx] +
+                  (1.0 - alpha_x) * (1.0 - alpha_y) * z[x_idx - 1][y_idx - 1]);
+    return (val);
+}
+
+/*!
  * Returns a vector no_points in length with the values evenly spaced on
  * [start, end].  Note the start and end value are included in the range.
  */

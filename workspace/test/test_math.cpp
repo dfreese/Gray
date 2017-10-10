@@ -30,6 +30,47 @@ TEST_F(InterpolateTest, Between) {
     EXPECT_DOUBLE_EQ(Math::interpolate(x, y, x_val), y_val_exp);
 }
 
+
+class Interpolate2dTest : public ::testing::Test {
+public:
+    const std::vector<double> x = {0.0, 0.1, 0.2, 0.3,};
+    const std::vector<double> y = {0.0, 0.1, 0.2, 0.3,};
+    const std::vector<std::vector<double>> z = {
+        {0.0, 0.5, -0.2, 1.3,},
+        {18.0, 50.0, -30, 0.7},
+        {10.0, 12.0, 13.0, 14.0},
+        {8.0, 10, 11, 0.7},
+    };
+};
+
+TEST_F(Interpolate2dTest, BelowBoth) {
+    EXPECT_DOUBLE_EQ(Math::interpolate_2d(x, y, z, -1.0, -1.0),
+                     z.front().front());
+}
+
+TEST_F(Interpolate2dTest, AboveBoth) {
+    EXPECT_DOUBLE_EQ(Math::interpolate_2d(x, y, z, 1.0, 1.0),
+                     z.back().back());
+}
+
+TEST_F(Interpolate2dTest, BelowX) {
+    EXPECT_DOUBLE_EQ(Math::interpolate_2d(x, y, z, -1.0, (y[0] + y[1]) / 2),
+                     (z[0][0] + z[0][1]) / 2);
+}
+
+TEST_F(Interpolate2dTest, BelowY) {
+    EXPECT_DOUBLE_EQ(Math::interpolate_2d(x, y, z, (x[0] + x[1]) / 2, -1.0),
+                     (z[0][0] + z[1][0]) / 2);
+}
+
+TEST_F(Interpolate2dTest, Between) {
+    const double exp_z = (z[0][0] + z[0][1] + z[1][0] + z[1][1]) / 4;
+    EXPECT_DOUBLE_EQ(exp_z, Math::interpolate_2d(x, y, z,
+                                                 (x[0] + x[1]) / 2,
+                                                 (y[0] + y[1]) / 2));
+}
+
+
 class LinspaceTest : public ::testing::Test {
 public:
     const double start = 30.0;

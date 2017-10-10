@@ -7,6 +7,10 @@ namespace Math {
     double interpolate(const std::vector<double> & x,
                        const std::vector<double> & y,
                        double x_value);
+    double interpolate_2d(const std::vector<double> & x,
+                          const std::vector<double> & y,
+                          const std::vector<std::vector<double>> & z,
+                          double x_value, double y_value);
     std::vector<double> linspace(double start, double end, int no_points);
     std::vector<double> trap_z(const std::vector<double> & x,
                                const std::vector<double> & y);
