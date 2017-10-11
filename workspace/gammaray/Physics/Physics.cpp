@@ -230,6 +230,12 @@ double Physics::KleinNishina::dsigma(double theta, double energy_mev,
 }
 
 
+double Physics::KleinNishina::scatter_angle(double energy, double rand_uniform)
+{
+    return (Math::interpolate_y_2d(energy_idx, theta_idx, scatter_cdfs,
+                                   energy, rand_uniform));
+}
+
 std::vector<std::vector<double>> Physics::KleinNishina::create_scatter_cdfs(
         const std::vector<double> & energies,
         const std::vector<double> & thetas)
@@ -310,24 +316,24 @@ Physics::INTER_TYPE Physics::InteractionType(
     }
 }
 
-/*!
- * A random angle theta based on the Klein-Nishina distribution given the
- * current energy.  Also returns the probability of that theta to be used for
- * the energy calculation later on.
- */
-double Physics::KleinNishinaAngle(double energy, double & prob_e_theta)
-{
-    /* Generate scattering angles - phi and theta */
-    // Theta is the compton angle
-    double theta = -1;
+///*!
+// * A random angle theta based on the Klein-Nishina distribution given the
+// * current energy.  Also returns the probability of that theta to be used for
+// * the energy calculation later on.
+// */
+//double Physics::KleinNishinaAngle(double energy, double & prob_e_theta)
+//{
+//    /* Generate scattering angles - phi and theta */
+//    // Theta is the compton angle
+//    double theta = -1;
 //    double theta;
 //    do {
 //        theta = M_PI * Random::Uniform();
 //        // Continue to loop until we accept something
 //    } while (!Random::Selection(klein_nishina.dsigma_over_max(theta, energy,
 //                                                              prob_e_theta)));
-    return (theta);
-}
+//    return (theta);
+//}
 
 double Physics::KleinNishinaEnergy(double energy, double theta)
 {
@@ -336,11 +342,11 @@ double Physics::KleinNishinaEnergy(double energy, double theta)
 
 void Physics::ComptonScatter(Photon &p, double & deposit)
 {
-    double prob_e_theta;
-    const double theta = KleinNishinaAngle(p.energy, prob_e_theta);
+    const double theta = klein_nishina.scatter_angle(p.energy, Random::Uniform());
     // After collision the photon loses some energy to the electron
-    deposit = p.energy * (1 - prob_e_theta);
-    p.energy *= prob_e_theta;
+    deposit = p.energy;
+    p.energy = KleinNishinaEnergy(p.energy, theta);
+    deposit -= p.energy;
     p.dir = Random::Deflection(p.dir, theta);
     p.SetScatterCompton();
 }
