@@ -1,5 +1,6 @@
 #include <Physics/BeamDecay.h>
 #include <Random/Random.h>
+#include <Physics/Physics.h>
 
 BeamDecay::BeamDecay() :
     angle(0),
@@ -25,14 +26,14 @@ void BeamDecay::Decay(int photon_number, double time, int src_id,
     blue.Reset();
     blue.time = time;
     blue.pos = position;
-    blue.energy = ENERGY_511;
+    blue.energy = Physics::energy_511;
     blue.id = photon_number;
     blue.det_id = -1;
     blue.src_id = src_id;
 
     // Only randomly generate an angle if there's a non zero angle.
     if (angle) {
-        Random::Acolinearity(axis, blue.dir, angle);
+        blue.dir = Random::Acolinearity(axis, angle);
     } else {
         blue.dir = axis;
     }

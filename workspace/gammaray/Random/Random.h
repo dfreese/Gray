@@ -18,11 +18,21 @@ public:
     static double Uniform();
     static double Gaussian();
     static double Exponential(const double lambda);
-    static void RandomHemiCube(VectorR3 & p);
-    static void UniformSphere(VectorR3 & p);
-    static void Acolinearity(const VectorR3 & b, VectorR3 &r, double radians);
+    static VectorR3 UniformSphere();
+    static VectorR3 UniformSphereFilled();
+    static VectorR3 Deflection(const VectorR3 & ref, double angle);
+    static VectorR3 Acolinearity(const VectorR3 & ref, double radians);
     static long Poisson(double lambda);
-    
+    static VectorR3 UniformCylinder(double height, double radius);
+    static VectorR3 UniformAnnulusCylinder(double height, double radius);
+    static VectorR3 UniformRectangle(const VectorR3 & size);
+    static double GaussianEnergyBlur(double energy, double eres);
+    static double GaussianEnergyBlurInverseSqrt(double energy, double eres,
+                                                double ref_energy);
+    static double GaussianBlurTime(double time, double tres);
+    static double GaussianBlurTimeTrunc(double time, double tres,
+                                        double max_blur);
+    static bool Selection(double probability);
 private:
     static std::mt19937 generator;
     static std::normal_distribution<double> normal_distribution;

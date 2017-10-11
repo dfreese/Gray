@@ -5,44 +5,33 @@ using namespace std;
 
 RectSource::RectSource():
     Source(),
-    size(0, 0, 0)
+    size(0, 0, 0),
+    local_to_global(RefAxisPlusTransToMap(VectorR3(0, 0, 1), VectorR3(0, 0, 0))),
+    global_to_local(local_to_global.Inverse())
 {
 }
 
 RectSource::RectSource(const VectorR3 &p, const VectorR3 &sz,
-                       const RigidMapR3 & map, double act) :
+                       const VectorR3 & orientation, double act) :
     Source(p, act),
     size(sz),
-    mapping(map),
-    inv_map(map.Inverse())
+    local_to_global(RefAxisPlusTransToMap(orientation, p)),
+    global_to_local(local_to_global.Inverse())
 {
 }
 
 VectorR3 RectSource::Decay(int photon_number, double time)
 {
-    VectorR3 pos;
-    pos.x = (0.5 - Random::Uniform());
-    pos.y = (0.5 - Random::Uniform());
-    pos.z = (0.5 - Random::Uniform());
-    mapping.Transform(&pos);
+    VectorR3 pos = local_to_global * Random::UniformRectangle(size);
     isotope->Decay(photon_number, time, source_num, pos);
     return(pos);
 }
 
-void RectSource::SetSize(const VectorR3 &sz)
-{
-    size = sz;
-}
-
 bool RectSource::Inside(const VectorR3 & pos) const
 {
-    VectorR3 dist;
-    inv_map.Transform(pos, &dist);
+    const VectorR3 dist = global_to_local * pos;
 
-    if ((abs(dist.x) > size.x/2.0) || (abs(dist.y) > size.y/2.0) ||
-        (abs(dist.z) > size.z/2.0))
-    {
-        return false;
-    }
-    return true;
+    return ((std::abs(dist.x) <= size.x / 2.0) &&
+            (std::abs(dist.y) <= size.y / 2.0) &&
+            (std::abs(dist.z) <= size.z / 2.0));
 }

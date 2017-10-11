@@ -54,6 +54,8 @@ add_library(gammaray
     KdTree/DoubleRecurse.h
     KdTree/KdTree.h
     KdTree/KdTree.cpp
+    Math/Math.h
+    Math/Math.cpp
     Output/BinaryFormat.h
     Output/Detector.cpp
     Output/Detector.h
@@ -85,8 +87,6 @@ add_library(gammaray
     Physics/PositronDecay.h
     Physics/Physics.cpp
     Physics/Physics.h
-    Pipeline/blur.h
-    Pipeline/Blur.cpp
     Pipeline/blurprocess.h
     Pipeline/coincprocess.h
     Pipeline/deadtimeprocess.h
@@ -98,6 +98,8 @@ add_library(gammaray
     Pipeline/sortprocess.h
     Random/Random.cpp
     Random/Random.h
+    Random/Transform.h
+    Random/Transform.cpp
     Sources/AnnulusCylinderSource.cpp
     Sources/AnnulusCylinderSource.h
     Sources/AnnulusEllipticCylinderSource.cpp

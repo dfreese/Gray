@@ -8,26 +8,12 @@ using namespace std;
 AnnulusEllipticCylinderSource::AnnulusEllipticCylinderSource(const VectorR3 &p,
                                                              double r1,
                                                              double r2,
-                                                             VectorR3 &L,
+                                                             const VectorR3 & L,
                                                              double act) :
     Source(p, act),
     radius1(r1),
-    radius2(r2),
-    length(L.Norm()),
-    axis(L.MakeUnit())
+    radius2(r2)
 {
-    // calculate Rotation Matrix
-    /* Rotation Matrix based on Logbook 4 p72, AVDB) */
-    double c= axis.z;
-    double s=(axis.x*axis.x+axis.y*axis.y);
-    RotMtrx.Set(axis.y*axis.y + (1-axis.y*axis.y)*c,
-                -axis.x*axis.y*(1-c), -axis.x*s,
-                -axis.x*axis.y*(1-c),
-                axis.x*axis.x + ( 1-axis.x*axis.x)*c, axis.y*s,
-                axis.x*s, axis.y*s,c);
-    RotMtrxInv = RotMtrx;
-    RotMtrxInv.MakeTranspose();
-
     const size_t table_size = 100000;
     double step = (2.0 * M_PI) / ((double) table_size);
     double m = 1-(radius2/radius1)*(radius2/radius1);
@@ -246,9 +232,6 @@ double AnnulusEllipticCylinderSource::IncompleteEllipticE(double phi, double m)
 
 VectorR3 AnnulusEllipticCylinderSource::Decay(int photon_number, double time)
 {
-    //FIXME: Sources are not rotating -- FIXED 01-13-2020 AVDB
-    //FIXME: Inside is not rotating -- BUG PDO
-
     double C = circ[circ.size()-1];
     double C_uniform = C * Random::Uniform();
     double phi = InverseEllipticE(C_uniform);
@@ -261,9 +244,7 @@ VectorR3 AnnulusEllipticCylinderSource::Decay(int photon_number, double time)
     positron.y = radius*sin(phi);
     positron.z = length * (0.5 - Random::Uniform());
 
-    VectorR3 roted;
-    roted = RotMtrx*positron;
-    roted += position;
+    VectorR3 roted = local_to_global * positron;
     isotope->Decay(photon_number, time, source_num, roted);
     return(roted);
 }
@@ -274,10 +255,12 @@ void AnnulusEllipticCylinderSource::SetRadius(double r1, double r2)
     radius2 = r2;
 }
 
-void AnnulusEllipticCylinderSource::SetAxis(VectorR3 &L)
+void AnnulusEllipticCylinderSource::SetAxis(VectorR3 L)
 {
     length = L.Norm();
     axis = L.MakeUnit();
+    local_to_global = RefAxisPlusTransToMap(axis, position);
+    global_to_local = local_to_global.Inverse();
 }
 
 bool AnnulusEllipticCylinderSource::Inside(const VectorR3 & pos) const

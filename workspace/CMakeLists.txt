@@ -6,22 +6,32 @@ find_package(MPI)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-# Adapted from http://stackoverflow.com/a/7750816/2465202
-set(BIN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../bin")
-set(LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../lib")
-# First for the generic no-config case
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BIN_DIR})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${LIB_DIR})
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${LIB_DIR})
-# Second, for multi-config builds (i.e. Debug, Release, RelWithDebInfo)
-foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
-    string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${BIN_DIR})
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${LIB_DIR})
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${LIB_DIR})
-endforeach(OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES)
+# Download and unpack googletest at configure time
+configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
+execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+  RESULT_VARIABLE result
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/googletest-download )
+if(result)
+  message(FATAL_ERROR "CMake step for googletest failed: ${result}")
+endif()
+execute_process(COMMAND ${CMAKE_COMMAND} --build .
+  RESULT_VARIABLE result
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/googletest-download )
+if(result)
+  message(FATAL_ERROR "Build step for googletest failed: ${result}")
+endif()
+
+# Prevent overriding the parent project's compiler/linker
+# settings on Windows
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+
+# Add googletest directly to our build. This defines
+# the gtest and gtest_main targets.
+add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
+                 ${CMAKE_BINARY_DIR}/googletest-build)
 
 add_subdirectory(gammaray)
 add_subdirectory(gray)
 add_subdirectory(daqmodel)
 add_subdirectory(Viewer)
+add_subdirectory(test)

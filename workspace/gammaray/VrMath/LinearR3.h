@@ -803,6 +803,9 @@ void GetOrtho( const VectorR3& x,  VectorR3& y, VectorR3& z);
 // Returns a vector v orthonormal to unit vector x
 void GetOrtho( const VectorR3& x,  VectorR3& y );
 
+// Returns a vector v orthonormal to unit vector x
+VectorR3 GetOrtho( const VectorR3& x);
+
 // Projections
 
 // The next three functions are templated below.
@@ -2462,3 +2465,5 @@ inline double SolidAngle( const VectorR3& v, const VectorR3& w)
 #endif
 
 // ******************* End of header material ********************
+RotationMapR3 RefVecToMap(const VectorR3 & ref_axis);
+RigidMapR3 RefAxisPlusTransToMap(const VectorR3 & ref_axis, const VectorR3 & trans);

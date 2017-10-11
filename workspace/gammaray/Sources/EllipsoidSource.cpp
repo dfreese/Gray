@@ -19,18 +19,9 @@ EllipsoidSource::EllipsoidSource(const VectorR3 &center, const VectorR3 &a1,
     Source(center, act),
     radius1(r1),
     radius2(r2),
-    radius3(r3),
-    axis1(a2),
-    axis2(a1 * a2),
-    axis3(a1)
+    radius3(r3)
 {
-    //FIXME: Ellipsoids DO NOT ROTATE
-    RotMtrx.Set(1, 0, 0,
-                0, 1, 0,
-                0, 0, 1);
-    RotMtrxInv = RotMtrx;
-    RotMtrxInv.MakeTranspose();
-
+    SetAxis(a1, a2);
 }
 
 VectorR3 EllipsoidSource::Decay(int photon_number, double time)
@@ -51,9 +42,7 @@ VectorR3 EllipsoidSource::Decay(int photon_number, double time)
         p.z = (1.0 - 2.0*Random::Uniform())*radius3;
     } while ( (p.x*p.x/r1sq + p.y*p.y/r2sq + p.z*p.z/r3sq) > 1 );
 
-    VectorR3 roted;
-    roted = RotMtrx*p;
-    roted += position;
+    VectorR3 roted = local_to_global * p;
     isotope->Decay(photon_number, time, source_num, roted);
     return(roted);
 }
@@ -70,33 +59,20 @@ void EllipsoidSource::SetAxis(const VectorR3 &a1, const VectorR3 &a2)
     axis1 = a2;
     axis2 = a1*a2;
     axis3 = a1;
+    axis = a1;
+    axis.MakeUnit();
+    local_to_global = RefAxisPlusTransToMap(axis, position);
+    global_to_local = local_to_global.Inverse();
 }
 
 bool EllipsoidSource::Inside(const VectorR3 & pos) const
 {
+    VectorR3 local = global_to_local * pos;
 
-    //FIXME: Ellipsoids DO NOT ROTATE
-
-    VectorR3 dist;
-    dist = pos;
-    dist -= position;
-    VectorR3 roted;
-
-    roted = RotMtrxInv*dist;
-
-    VectorR3 c;
-    c.x = roted.x;
-    c.y = roted.y;
-    c.z = roted.z;
-
-    double r1sq = radius1*radius1;
-    double r2sq = radius2*radius2;
-    double r3sq = radius3*radius3;
+    const double r1 = (local.x * local.x) / (radius1 * radius1);
+    const double r2 = (local.y * local.y) / (radius2 * radius2);
+    const double r3 = (local.z * local.z) / (radius3 * radius3);
 
     // ellipsoid test
-    if ( (c.x*c.x/r1sq + c.y*c.y/r2sq + c.z*c.z/r3sq) < 1 ) {
-        return true;
-    } else {
-        return false;
-    }
+    return ((r1 + r2 + r3) < 1);
 }

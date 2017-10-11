@@ -72,8 +72,7 @@ void VectorSource::SetMax(const VectorR3 &vert)
 
 bool VectorSource::Inside(const VectorR3 & pos) const
 {
-    VectorR3 dir;
-    Random::UniformSphere(dir);
+    VectorR3 dir = Random::UniformSphere();
 
     double hitDist;
     VisiblePoint visPoint;

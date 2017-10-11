@@ -908,6 +908,23 @@ RotationMapR3 RotateToMap( const VectorR3& fromVec, const VectorR3& toVec)
     }
 }
 
+/*!
+ * Returns a rotation map that rotates unit z to the reference axis.  Useful
+ * for performing some operation in a local coordinate system then rotating to
+ * a global coordinate system.
+ */
+RotationMapR3 RefVecToMap(const VectorR3 & ref_axis) {
+    return (RotateToMap(VectorR3(0, 0, 1), ref_axis));
+}
+
+/*!
+ * Uses RefVecToMap to generate a rotation map and then combines that with a
+ * translation post rotation in a RigidMapR3.
+ */
+RigidMapR3 RefAxisPlusTransToMap(const VectorR3 & ref_axis, const VectorR3 & trans) {
+    return (RigidMapR3(RefVecToMap(ref_axis), trans));
+}
+
 // **************************************************************
 // * RigidMapR3 class - math library functions					*
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * **
@@ -1029,6 +1046,19 @@ void GetOrtho( const VectorR3& u,  VectorR3& v )
     }
     v.Normalize();
     return;
+}
+
+// Returns a vector v orthonormal to unit vector u
+VectorR3 GetOrtho(const VectorR3 & u)
+{
+    VectorR3 v;
+    if ( u.x > 0.5 || u.x<-0.5 || u.y > 0.5 || u.y<-0.5 ) {
+        v.Set ( u.y, -u.x, 0.0 );
+    } else {
+        v.Set ( 0.0, u.z, -u.y);
+    }
+    v.Normalize();
+    return (v);
 }
 
 // ***************************************************************

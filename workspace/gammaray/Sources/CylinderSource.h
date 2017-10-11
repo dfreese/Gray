@@ -19,8 +19,8 @@ private:
     double radius;
     double length;
     VectorR3 axis;
-    Matrix3x3 RotMtrx;
-    Matrix3x3 RotMtrxInv;
+    RigidMapR3 local_to_global;
+    RigidMapR3 global_to_local;
 };
 
 #endif /*CYLINDERSOURCE_H_*/

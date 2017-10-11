@@ -1,13 +1,9 @@
 #include <Physics/PositronDecay.h>
-#include <stdio.h>
-#include <math.h>
+#include <Physics/Physics.h>
 #include <Random/Random.h>
+#include <Random/Transform.h>
 
 using namespace std;
-
-namespace {
-    const double CONST_FWHM_TO_SIGMA = (1.0)/(2.35482005);
-}
 
 PositronDecay::PositronDecay() :
     acolinearity(0),
@@ -20,7 +16,7 @@ PositronDecay::PositronDecay() :
 PositronDecay::PositronDecay(double acolinearity_deg_fwhm,
                              double positron_emis_prob,
                              double gamma_decay_energy_mev) :
-    acolinearity(acolinearity_deg_fwhm / 180.0 * M_PI * CONST_FWHM_TO_SIGMA),
+    acolinearity(acolinearity_deg_fwhm / 180.0 * M_PI * Transform::fwhm_to_sigma),
     gamma_decay_energy(gamma_decay_energy_mev),
     positron_emission_prob(positron_emis_prob),
     emit_gamma(true)
@@ -72,10 +68,10 @@ void PositronDecay::Decay(int photon_number, double time, int src_id,
     }
 
     // Check to see if a Positron was emitted with the gamma or not.
-    if (Random::Uniform() < positron_emission_prob) {
+    if (Random::Selection(positron_emission_prob)) {
         blue.time = time;
         blue.pos = anni_position;
-        blue.energy = ENERGY_511;
+        blue.energy = Physics::energy_511;
         blue.id = photon_number;
         blue.det_id = -1;
         blue.src_id = src_id;
@@ -89,8 +85,8 @@ void PositronDecay::Decay(int photon_number, double time, int src_id,
         blue.SetBlue();
         red.SetRed();
 
-        Random::UniformSphere(blue.dir);
-        Random::Acolinearity(blue.dir, red.dir, acolinearity);
+        blue.dir = Random::UniformSphere();
+        red.dir = Random::Acolinearity(blue.dir, acolinearity);
         AddPhoton(&blue);
         AddPhoton(&red);
     }

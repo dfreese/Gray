@@ -12,36 +12,15 @@ CylinderSource::CylinderSource() :
 CylinderSource::CylinderSource(const VectorR3 &p, double rad, VectorR3 L, double act) :
     Source(p, act)
 {
-    radius = rad;
-    length = L.Norm();
-    axis = L.MakeUnit();
-    /* Rotation Matrix based on Logbook 4 p72, AVDB) */
-    double c= axis.z;
-    double s=(axis.x*axis.x+axis.y*axis.y);
-    RotMtrx.Set( axis.y*axis.y + (1-axis.y*axis.y)*c, -axis.x*axis.y*(1-c), -axis.x*s,
-                 -axis.x*axis.y*(1-c), axis.x*axis.x + ( 1-axis.x*axis.x)*c, axis.y*s,
-                 axis.x*s, axis.y*s,c);
-    RotMtrxInv = RotMtrx;
-    RotMtrxInv.MakeTranspose();
-
-
+    SetRadius(rad);
+    SetAxis(L.MakeUnit());
 }
 
 VectorR3 CylinderSource::Decay(int photon_number, double time)
 {
-    VectorR3 positron;
-    do {
-        positron.x = (1.0 - 2.0*Random::Uniform())*radius;
-        positron.y = (1.0 - 2.0*Random::Uniform())*radius;
-        positron.z = 0;
-    } while (positron.Norm() > radius);
-    positron.z = length*(0.5 - Random::Uniform());
-
-    VectorR3 roted;
-    roted = RotMtrx*positron;
-    roted += position;
-    isotope->Decay(photon_number, time, source_num, roted);
-    return(roted);
+    VectorR3 positron = local_to_global * Random::UniformCylinder(length, radius);
+    isotope->Decay(photon_number, time, source_num, positron);
+    return(positron);
 }
 
 void CylinderSource::SetRadius(double r)
@@ -53,26 +32,18 @@ void CylinderSource::SetAxis(VectorR3 L)
 {
     length = L.Norm();
     axis = L.MakeUnit();
+    local_to_global = RefAxisPlusTransToMap(axis, position);
+    global_to_local = local_to_global.Inverse();
 }
 
 bool CylinderSource::Inside(const VectorR3 & pos) const
 {
-    VectorR3 dist;
-    dist = pos;
-    dist -= position;
-    VectorR3 roted;
-
-    roted = RotMtrxInv*dist;
-
-    VectorR3 c;
-    c.x = roted.x;
-    c.y = roted.y;
-    c.z = 0.0;
-
-    if (c.Norm() > radius) {
+    // TODO: refactor this out for all cylinders.
+    const VectorR3 roted = global_to_local * pos;
+    if ((roted.x * roted.x + roted.y * roted.y) > radius * radius) {
         return false;
     }
-    if (fabs(roted.z) > length/2.0) {
+    if (std::abs(roted.z) > length/2.0) {
         return false;
     }
     return true;

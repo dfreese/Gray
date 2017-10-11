@@ -1,5 +1,6 @@
 #include <Physics/Physics.h>
 #include <cmath>
+#include <Math/Math.h>
 #include <Physics/GammaStats.h>
 #include <Physics/NuclearDecay.h>
 #include <Random/Random.h>
@@ -200,11 +201,10 @@ Physics::KleinNishina::KleinNishina() :
     // 1.5MeV when linear interpolation is performed.
     energy_idx({
         0.0, 0.010, 0.030, 0.050, 0.100, 0.200, 0.300, 0.400, 0.500, 0.600,
-        0.700, 0.900, 1.100, 1.300, 1.500})
+        0.700, 0.900, 1.100, 1.300, 1.500}),
+    theta_idx(Math::linspace(0, M_PI, 50)),
+    scatter_cdfs(create_scatter_cdfs(energy_idx, theta_idx))
 {
-    dsigma_max_val.resize(energy_idx.size());
-    std::transform(energy_idx.begin(), energy_idx.end(),
-                   dsigma_max_val.begin(), find_max);
 }
 
 /*!
@@ -219,7 +219,7 @@ Physics::KleinNishina::KleinNishina() :
 double Physics::KleinNishina::dsigma(double theta, double energy_mev,
                                          double & prob_e_theta)
 {
-    double alpha = energy_mev / ENERGY_511;
+    double alpha = energy_mev / Physics::energy_511;
     double cs = cos(theta);
     double ss = sin(theta);
     prob_e_theta = 1. / (1. + alpha * (1. - cs));
@@ -229,64 +229,35 @@ double Physics::KleinNishina::dsigma(double theta, double energy_mev,
     return(sigma);
 }
 
-/*!
- * Use std::upper_bound to binary search the closest value above the given
- * energy and then linearly interpolate the actual value from the lookup table
- * created in the constructor in energy_idx and dsigmal_max_val.
- */
-double Physics::KleinNishina::dsigma_max(double energy_mev)
-{
-    size_t idx = upper_bound(energy_idx.begin(), energy_idx.end(), energy_mev) -
-                 energy_idx.begin();
 
-    if (idx == 0) {
-        return(dsigma_max_val.front());
-    } else if (idx == energy_idx.size()) {
-        return(dsigma_max_val.back());
-    }
-    double delta = energy_idx[idx] - energy_idx[idx - 1];
-    double alpha = (energy_mev - energy_idx[idx - 1]) / delta;
-    if (alpha > 1.0) {
-        alpha = 1.0;
-    }
-    double dsigma_max = ((1.0 - alpha) * dsigma_max_val[idx - 1] +
-                         alpha * dsigma_max_val[idx]);
-    return(dsigma_max);
+double Physics::KleinNishina::scatter_angle(double energy, double rand_uniform)
+{
+    return (Math::interpolate_y_2d(energy_idx, theta_idx, scatter_cdfs,
+                                   energy, rand_uniform));
 }
 
-
-/*!
- * Calculate the pdf over it's max for use in an accept/reject monte carlo.  If
- * this is greater than or equal to a random value [0,1] then the angle theta
- * should be accepted.
- */
-double Physics::KleinNishina::dsigma_over_max(double theta,
-                                                  double energy_mev,
-                                                  double & prob_e_theta)
+std::vector<std::vector<double>> Physics::KleinNishina::create_scatter_cdfs(
+        const std::vector<double> & energies,
+        const std::vector<double> & thetas)
 {
-    return(dsigma(theta, energy_mev, prob_e_theta) / dsigma_max(energy_mev));
-}
+    std::vector<std::vector<double>> scatter_cdfs(
+            energies.size(), std::vector<double>(thetas.size()));
 
-/*!
- * For a particular energy, sweep theta for dsigma from 0 to pi in 100 steps to
- * determine the max.  100 steps is adequate for less than 0.5% error.
- */
-double Physics::KleinNishina::find_max(double energy_mev)
-{
-    // dsigma value is always positive, zero is safe.
-    double max_val = 0;
-    for (double theta = 0; theta <= M_PI; theta += (M_PI/ 100)) {
-        double prob_e_theta;
-        max_val = std::max(max_val, dsigma(theta, energy_mev, prob_e_theta));
+    for (size_t ii = 0; ii < energies.size(); ++ii) {
+        const double energy = energies[ii];
+        auto & energy_cdf = scatter_cdfs[ii];
+        std::transform(thetas.begin(), thetas.end(), energy_cdf.begin(),
+           [&energy](double theta) {
+               double drop;
+               return (Physics::KleinNishina::dsigma(theta, energy, drop));
+           });
+        energy_cdf = Math::pdf_to_cdf(thetas, energy_cdf);
     }
-    return(max_val);
-}
 
+    return (scatter_cdfs);
+}
 
 Physics::KleinNishina Physics::klein_nishina;
-
-const double Physics::speed_of_light_cmpers = 29979245800.0;
-const double Physics::inverse_speed_of_light = (1.0 / speed_of_light_cmpers);
 
 /*!
  * Takes an energy (MeV) and uses that to calculate if there was an interaction
@@ -345,60 +316,38 @@ Physics::INTER_TYPE Physics::InteractionType(
     }
 }
 
-void Physics::KleinNishinaAngle(double energy, double & theta,
-                                    double & phi, double & prob_e_theta)
-{
-    /* Generate scattering angles - phi and theta */
-    // Theta is the compton angle
-    do {
-        theta = M_PI * Random::Uniform();
-    } while (klein_nishina.dsigma_over_max(theta, energy, prob_e_theta) <
-             Random::Uniform());
-
-    // phi is symmetric around a circle of 360 degrees
-    phi = 2 * M_PI * Random::Uniform();
-}
+///*!
+// * A random angle theta based on the Klein-Nishina distribution given the
+// * current energy.  Also returns the probability of that theta to be used for
+// * the energy calculation later on.
+// */
+//double Physics::KleinNishinaAngle(double energy, double & prob_e_theta)
+//{
+//    /* Generate scattering angles - phi and theta */
+//    // Theta is the compton angle
+//    double theta = -1;
+//    double theta;
+//    do {
+//        theta = M_PI * Random::Uniform();
+//        // Continue to loop until we accept something
+//    } while (!Random::Selection(klein_nishina.dsigma_over_max(theta, energy,
+//                                                              prob_e_theta)));
+//    return (theta);
+//}
 
 double Physics::KleinNishinaEnergy(double energy, double theta)
 {
-    return(energy / (1.0 + (energy / ENERGY_511) * (1. - cos(theta))));
+    return(energy / (1.0 + (energy / Physics::energy_511) * (1. - cos(theta))));
 }
 
 void Physics::ComptonScatter(Photon &p, double & deposit)
 {
-    double theta, phi, prob_e_theta;
-    KleinNishinaAngle(p.energy, theta, phi, prob_e_theta);
+    const double theta = klein_nishina.scatter_angle(p.energy, Random::Uniform());
     // After collision the photon loses some energy to the electron
     deposit = p.energy;
-    p.energy *= prob_e_theta;
+    p.energy = KleinNishinaEnergy(p.energy, theta);
     deposit -= p.energy;
-
-    // Create rotation axis this is perpendicular to Y axis
-    // to generate the scattering angle theta
-    RotationMapR3 rotation;
-    VectorR3 rot_axis = p.dir;
-    VectorR3 UnitY;
-    UnitY.SetUnitY();
-    rot_axis *= UnitY;
-    rot_axis.Normalize();
-
-    // save direction for phi rotatation
-    VectorR3 comp_dir = p.dir;
-
-    // rotate incline
-    rotation.Set(rot_axis, theta);
-    rotation.Transform(&comp_dir);
-
-    // rotate theta using original direction as axis
-    p.dir.Normalize();
-    rotation.Set(p.dir,phi);
-    rotation.Transform(&comp_dir);
-
-    // next direction is from compton scattering angle
-    p.dir = comp_dir;
-
-    // If the photon scatters on a non-detector, it is a scatter, checked
-    // inside SetScatter
+    p.dir = Random::Deflection(p.dir, theta);
     p.SetScatterCompton();
 }
 
@@ -411,41 +360,26 @@ double Physics::RayleighProbability(double theta) {
     return((1.0 - cs * cs) / 2.0);
 }
 
+/*!
+ * Generates a random angle for Rayleigh Scattering based on an accept/reject
+ * method using RayleighProbability.  Angle range is [0, pi].
+ */
+double Physics::RayleighAngle() {
+
+    // FIXME: This implements Thompson scattering, not Rayleigh scattering
+    double theta;
+    do {
+        theta = M_PI * Random::Uniform();
+        // Keep generating an angle until we generate a select based on the
+        // normalized pdf.
+    } while (!Random::Selection(RayleighProbability(theta)));
+    return (theta);
+}
+
 void Physics::RayleighScatter(Photon &p)
 {
-    // FIXME: This implements Thompson scattering, not Rayleigh scattering
-    double theta = M_PI * Random::Uniform();
-    while (RayleighProbability(theta) < Random::Uniform()) {
-        theta = M_PI * Random::Uniform();
-    }
-
-    // phi is symmetric around a circle of 360 degrees
-    double phi = 2 * M_PI * Random::Uniform();
-
-    // Create rotation axis this is perpendicular to Y axis
-    // to generate the scattering angle theta
-    RotationMapR3 rotation;
-    VectorR3 rot_axis = p.dir;
-    VectorR3 UnitY;
-    UnitY.SetUnitY();
-    rot_axis *= UnitY;
-    rot_axis.Normalize();
-
-    // save direction for phi rotatation
-    VectorR3 comp_dir = p.dir;
-
-    // rotate incline
-    rotation.Set(rot_axis, theta);
-    rotation.Transform(&comp_dir);
-
-    // rotate theta using original direction as axis
-    p.dir.Normalize();
-    rotation.Set(p.dir,phi);
-    rotation.Transform(&comp_dir);
-
-    // next direction is from scattering angle
-    p.dir = comp_dir;
-
+    const double theta = RayleighAngle();
+    p.dir = Random::Deflection(p.dir, theta);
     // If the photon scatters on a non-detector, it is a scatter, checked
     // inside SetScatter
     p.SetScatterRayleigh();
@@ -466,7 +400,7 @@ bool Physics::XrayEscape(Photon &p, const GammaStats & mat_gamma_prop,
         return(false);
         deposit = p.energy - xray_energy;
         p.energy = xray_energy;
-        Random::UniformSphere(p.dir);
+        p.dir = Random::UniformSphere();
         p.SetXrayFlouresence();
         return(true);
     }
