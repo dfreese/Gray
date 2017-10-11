@@ -76,6 +76,35 @@ double Math::interpolate_2d(const std::vector<double> & x,
 }
 
 /*!
+ * Assuming a smoothly varying and monotonically increasing in y function, this
+ * interpolates the appropriate y_value.
+ *
+ * \param x a monotonically increasing vector of values to interpolate within.
+ * \param y a monotonically increasing vector of values to interpolate within.
+ * \param z the values of off of which the interpolation is done.  Must be the
+ * size [x.size(), y.size()].
+ */
+double Math::interpolate_y_2d(const std::vector<double> & x,
+                              const std::vector<double> & y,
+                              const std::vector<std::vector<double>> & z,
+                              double x_value, double z_value)
+{
+    size_t x_idx = upper_bound(x.begin(), x.end(), x_value) - x.begin();
+    x_idx = std::min(std::max(x_idx, 1ul), x.size() - 1);
+
+    const double delta_x = x[x_idx] - x[x_idx - 1];
+    double alpha_x = (x_value - x[x_idx - 1]) / delta_x;
+
+    alpha_x = std::min(std::max(0.0, alpha_x), 1.0);
+
+    const double y_val0 = interpolate(z[x_idx - 1], y, z_value);
+    const double y_val1 = interpolate(z[x_idx], y, z_value);
+
+    const double val = (1.0 - alpha_x) * y_val0 + alpha_x * y_val1;
+    return (val);
+}
+
+/*!
  * Returns a vector no_points in length with the values evenly spaced on
  * [start, end].  Note the start and end value are included in the range.
  */

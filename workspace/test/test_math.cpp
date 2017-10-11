@@ -71,6 +71,33 @@ TEST_F(Interpolate2dTest, Between) {
 }
 
 
+class InterpolateY2dTest : public ::testing::Test {
+public:
+    const std::vector<double> x = {0.0, 0.1, 0.2, 0.3,};
+    const std::vector<double> y = {0.0, 0.1, 0.2, 0.3,};
+    const std::vector<std::vector<double>> z = {
+        {0.0, 0.1, 0.6, 1.0,},
+        {0.0, 0.1, 0.7, 1.0,},
+        {0.0, 0.2, 0.8, 1.0,},
+        {0.0, 0.4, 0.9, 1.0,},
+    };
+};
+
+TEST_F(InterpolateY2dTest, BelowZ) {
+    for (double x_val: {-1.0, 0.15, 0.25, 4.0}) {
+        EXPECT_DOUBLE_EQ(Math::interpolate_y_2d(x, y, z, x_val, -1.0), y[0]);
+    }
+}
+
+TEST_F(InterpolateY2dTest, OnXandZ) {
+    EXPECT_DOUBLE_EQ(Math::interpolate_y_2d(x, y, z, 0.1, 0.7), y[2]);
+}
+
+TEST_F(InterpolateY2dTest, OnX) {
+    EXPECT_DOUBLE_EQ(Math::interpolate_y_2d(x, y, z, 0.1, 0.4),
+                     (y[1] + y[2]) / 2);
+}
+
 class LinspaceTest : public ::testing::Test {
 public:
     const double start = 30.0;
