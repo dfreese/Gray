@@ -15,4 +15,7 @@ target_link_libraries(gray-view ${OPENGL_LIBRARIES})
 target_link_libraries(gray-view ${GLUT_LIBRARIES})
 target_link_libraries(gray-view gammaray)
 
+add_custom_command(TARGET gray-view POST_BUILD 
+    COMMAND "${CMAKE_COMMAND}" -E copy  "$<TARGET_FILE:gray-view>" "../../bin/")
+
 endif (OPENGL_FOUND AND OPENGL_GLU_FOUND AND GLUT_FOUND)
