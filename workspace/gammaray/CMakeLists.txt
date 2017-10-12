@@ -35,8 +35,6 @@ add_library(gammaray
     Graphics/ViewableTriangle.cpp
     Graphics/ViewableTriangle.h
     Graphics/VisiblePoint.h
-    GraphicsTrees/IntersectionKdTree.cpp
-    GraphicsTrees/IntersectionKdTree.h
     Gray/Config.h
     Gray/Config.cpp
     Gray/GammaMaterial.h

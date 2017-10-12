@@ -5,7 +5,7 @@
 
 class Config;
 class SourceList;
-class IntersectKdTree;
+class SceneDescription;
 class Output;
 class InteractionStream;
 class GammaMaterial;
@@ -14,14 +14,14 @@ class Simulation {
 public:
     static void SetupSeed(const Config & config);
     static void SetupSources(const Config & config, SourceList & sources,
-                             IntersectKdTree & intersect_kd_tree,
+                             SceneDescription & scene,
                              GammaMaterial const * const default_material);
     static int SetupOutput(const Config & config, Output & output_hits,
                            Output & output_singles,
                            std::vector<Output> & outputs_coinc);
 
     static void RunSim(const Config & config, SourceList & sources,
-                       const IntersectKdTree & intersect_kd_tree,
+                       const SceneDescription & scene,
                        Output & output_hits, Output & output_singles,
                        std::vector<Output> & outputs_coinc,
                        InteractionStream & singles_stream,

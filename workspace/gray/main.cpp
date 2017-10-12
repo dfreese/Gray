@@ -1,7 +1,6 @@
 #include <ctime>
 #include <iostream>
 #include <Graphics/SceneDescription.h>
-#include <GraphicsTrees/IntersectionKdTree.h>
 #include <Gray/GammaMaterial.h>
 #include <Gray/GammaRayTrace.h>
 #include <Gray/LoadMaterials.h>
@@ -81,11 +80,11 @@ int gray(int argc, char ** argv)
         return(3);
     }
 
-    IntersectKdTree intersect_kd_tree(scene);
+    scene.BuildTree(true, 8.0);
 
     if (config.get_run_overlap_test()) {
         cout << "testing for overlapping geometries" << endl;
-        if (intersect_kd_tree.TestOverlap()) {
+        if (scene.TestOverlap()) {
             cerr << "overlap test failed" << endl;
             return (4);
         } else {
@@ -107,11 +106,10 @@ int gray(int argc, char ** argv)
         return(4);
     }
     GammaMaterial * default_material = dynamic_cast<GammaMaterial*>(&scene.GetMaterial(0));
-    Simulation::SetupSources(config, sources, intersect_kd_tree,
-                             default_material);
+    Simulation::SetupSources(config, sources, scene, default_material);
 
     clock_t setup_time = clock();
-    Simulation::RunSim(config, sources, intersect_kd_tree, output_hits,
+    Simulation::RunSim(config, sources, scene, output_hits,
                        output_singles, outputs_coinc, singles_stream,
                        default_material);
 

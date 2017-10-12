@@ -1,6 +1,7 @@
 #include <Gray/LoadDetector.h>
 #include <cstdio>
 #include <cstring>
+#include <memory>
 #include <stack>
 #include <sstream>
 #include <unordered_set>
@@ -27,6 +28,7 @@
 #include <Sources/VectorSource.h>
 #include <Sources/VoxelSource.h>
 #include <Sources/SourceList.h>
+#include <VrMath/Aabb.h>
 #include <VrMath/LinearR3.h>
 
 void LoadDetector::ApplyTranslation(const VectorR3&t,
@@ -297,8 +299,8 @@ bool LoadDetector::Load(const std::string & filename,
 
     // Vectorial Source parsing
     bool parse_VectorSource = false;
-    VectorSource * curVectorSource = NULL;
-
+    double vector_source_activity = -1;
+    unique_ptr<SceneDescription> vector_source_scene;
     
     GammaMaterial* curMaterial = dynamic_cast<GammaMaterial*>(&theScene.GetMaterial(0));
 
@@ -869,20 +871,12 @@ bool LoadDetector::Load(const std::string & filename,
                 return(false);
             }
             cout << "Starting Vector Source\n";
-            curVectorSource = new VectorSource(actScale*activity);
             parse_VectorSource = true;
+            vector_source_activity = activity;
+            vector_source_scene = unique_ptr<SceneDescription>(new SceneDescription());
         } else if (command == "end_vecsrc") {
-            char string[256];
-            int scanCode = sscanf(args.c_str(), "%s", string);
-            if ((scanCode != 1) || (curVectorSource == NULL)) {
-                print_parse_error(line);
-                return(false);
-            }
-            sources.AddSource(curVectorSource);
-            cout << "Ending Vector Source:\n" << curVectorSource->GetMin()
-                 << "\n" << curVectorSource->GetMax() << "\n";
+            sources.AddSource(new VectorSource(actScale * vector_source_activity, std::move(vector_source_scene)));
             parse_VectorSource = false;
-            curVectorSource = NULL;
         } else if (command == "v") {
             // Deprecated, and generic defaults added
         } else if (command == "scale") {
@@ -1237,17 +1231,18 @@ bool LoadDetector::Load(const std::string & filename,
                 looking_for_polygon_lines = false;
                 // arbitrary triangles must use increment to advance detector ids
                 // detector only is used when material is sensitive
+                int polygon_det_id_if_sensitive = -1;
                 if (curMaterial->log_material) {
-                    ProcessFaceDFF(no_polygon_lines_needed, curMaterial,
-                                   polygon_lines, curVectorSource,
-                                   parse_VectorSource, polygon_det_id,
-                                   theScene, polygonScale, MatrixStack.top());
-                } else {
-                    ProcessFaceDFF(no_polygon_lines_needed, curMaterial,
-                                   polygon_lines, curVectorSource,
-                                   parse_VectorSource, -1,
-                                   theScene, polygonScale, MatrixStack.top());
+                    polygon_det_id_if_sensitive = polygon_det_id;
                 }
+                // Choose if we're adding this to the vector source's scene or
+                // the geometric scene.
+                SceneDescription & local_scene = (parse_VectorSource ?
+                        theScene:(*vector_source_scene.get()));
+                ProcessFaceDFF(no_polygon_lines_needed, curMaterial,
+                               polygon_lines, parse_VectorSource,
+                               polygon_det_id_if_sensitive, local_scene,
+                               polygonScale, MatrixStack.top());
             }
         } else {
             print_parse_error(line);
@@ -1265,7 +1260,6 @@ bool LoadDetector::Load(const std::string & filename,
 
     if (parse_VectorSource) {
         cerr << "unpaired start_vecsrc command" << endl;
-        delete curVectorSource;
         return(false);
     }
     if (!lookat_pos_set) {
@@ -1376,7 +1370,6 @@ void LoadDetector::SetCameraViewInfo(CameraView& theView,
 bool LoadDetector::ProcessFaceDFF(int numVerts,
                                   const Material* curMaterial,
                                   const std::vector<std::string> & lines,
-                                  VectorSource *s,
                                   bool parse_VectorSource,
                                   int det_id,
                                   SceneDescription & scene,
@@ -1407,18 +1400,11 @@ bool LoadDetector::ProcessFaceDFF(int numVerts,
         TransformWithRigid(vt, current_matrix);
 
         if (parse_VectorSource) {
-            s->SetMin(vt->GetVertexA());
-            s->SetMax(vt->GetVertexA());
-            s->SetMin(vt->GetVertexB());
-            s->SetMax(vt->GetVertexB());
-            s->SetMin(vt->GetVertexC());
-            s->SetMax(vt->GetVertexC());
             vt->SetSrcId(1);
         } else {
             vt->SetSrcId(0);
         }
-
-        scene.AddViewable( vt );
+        scene.AddViewable(vt);
         prevVert = thisVert;
     }
     return true;

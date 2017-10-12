@@ -13,6 +13,7 @@ class SourceList;
 class SceneDescription;
 class VectorSource;
 class VectorR3;
+class AABB;
 
 class LoadDetector {
 public:
@@ -44,7 +45,6 @@ private:
     static bool ProcessFaceDFF(int numVerts,
                                const Material* curMaterial,
                                const std::vector<std::string> & lines,
-                               VectorSource *s,
                                bool parse_VectorSource,
                                int det_id,
                                SceneDescription & scene,

@@ -60,6 +60,13 @@ public:
     // Calculate the axis aligned bounding box
     virtual void CalcAABB( AABB& retAABB ) const;
 
+    // Return the axis aligned bounding box
+    AABB GetAABB() const {
+        AABB ret;
+        CalcAABB(ret);
+        return (ret);
+    }
+
     // Calculate the extent intersected with a bounding box
     virtual bool CalcExtentsInBox( const AABB& aabb, AABB& retAABB ) const;
 
@@ -75,19 +82,19 @@ public:
     virtual bool CalcPartials( const VisiblePoint& visPoint,
                                VectorR3& retPartialU, VectorR3& retPartialV ) const = 0;
 
-    unsigned GetDetectorId() const
+    int GetDetectorId() const
     {
         return detector_id;
     }
-    void SetDetectorId(unsigned id)
+    void SetDetectorId(int id)
     {
         detector_id = id;
     }
-    void SetSrcId(unsigned char id)
+    void SetSrcId(int id)
     {
         src_id = id;
     }
-    unsigned char GetSrcId() const
+    int GetSrcId() const
     {
         return src_id;
     }
@@ -114,8 +121,8 @@ protected:
         double *intersectDistance, VisiblePoint& returnedPoint ) const = 0;
 
 private:
-    unsigned detector_id;
-    unsigned char src_id;
+    int detector_id;
+    int src_id;
 
     const MaterialBase* FrontMat;
     const MaterialBase* BackMat;	// Null point if not visible from back

@@ -129,7 +129,7 @@ public:
                       int signDirX, int signDirY, int signDirZ,
                       double t0, double t1, double & tmin,
                       double & tmax) const;
-
+    bool Inside(const VectorR3 & pos);
 private:
     VectorR3 bounds[2];
 };

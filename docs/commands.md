@@ -350,11 +350,14 @@ Creates a rectangular source.
 
 ### start_vecsrc
 
-start_vecsrc
+start_vecsrc [activity]
 
-Takes no options.  Indicates the start of a vectorized source, made of a number
-of polygons.  Any polygons until end_vecsrc will be assigned to the source.  The
-polygons should encapsulate a closed volume.
+Indicates the start of a vectorized source, made of a number of polygons.  Any
+polygons until end_vecsrc will be assigned to the source.  The polygons should
+encapsulate a closed volume.  None of the polygons will be used in the main
+simulation geometry, so if a material geometry is supposed to mimic the source
+geometry, then the full set of polygons should be specified again before
+start_vecsrc or after end_vecsrc.
 
 ### end_vecsrc
 

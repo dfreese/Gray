@@ -7,7 +7,7 @@
 
 class GammaMaterial;
 class Interaction;
-class IntersectKdTree;
+class SceneDescription;
 class Output;
 class Photon;
 class SourceList;
@@ -17,7 +17,7 @@ class GammaRayTrace {
 public:
 
     GammaRayTrace(SourceList & source_list,
-                  const IntersectKdTree & kd_tree,
+                  const SceneDescription & scene,
                   bool log_nuclear_decays_inter,
                   bool log_nonsensitive_inter,
                   bool log_nointeractions_inter,
@@ -57,7 +57,7 @@ private:
     static const double Epsilon;
 
     SourceList & sources;
-    const IntersectKdTree & tree;
+    const SceneDescription & scene;
     bool log_nuclear_decays;
     bool log_nonsensitive;
     bool log_nointeractions;

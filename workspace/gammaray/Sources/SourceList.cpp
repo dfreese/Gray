@@ -7,7 +7,7 @@
 #include <Sources/BeamPointSource.h>
 #include <Sources/VectorSource.h>
 #include <Graphics/VisiblePoint.h>
-#include <GraphicsTrees/IntersectionKdTree.h>
+#include <Graphics/SceneDescription.h>
 #include <Gray/GammaMaterial.h>
 #include <VrMath/LinearR3.h>
 #include <exception>
@@ -73,20 +73,6 @@ void SourceList::AddSource(Source * s)
         s->SetSourceNum(static_cast<int>(list.size()));
         list.push_back(s);
     }
-}
-
-void SourceList::SetKdTree(IntersectKdTree & tree) {
-    // We add the KdTree to the sources later, as the tree is not constructed
-    // until after all of the sources are made, and the geometry is determined.
-    // Probably could pass along a pointer initially into LoadDetector, but
-    // this also works for now.
-    for (auto source: list) {
-        VectorSource * vec_src = dynamic_cast<VectorSource *>(source);
-        if (vec_src) {
-            vec_src->SetKdTree(tree);
-        }
-    }
-    // A vector source cannot be negative, so we do not check the neg_list
 }
 
 double SourceList::GetTime() const
@@ -292,7 +278,7 @@ void SourceList::InitSources() {
     }
 }
 
-void SourceList::BuildMaterialStacks(const IntersectKdTree & tree,
+void SourceList::BuildMaterialStacks(const SceneDescription & scene,
                                      GammaMaterial const * default_material)
 {
     VectorR3 dir;
@@ -306,7 +292,7 @@ void SourceList::BuildMaterialStacks(const IntersectKdTree & tree,
         point.SetPosition(source->GetPosition());
 
         double hit_dist = DBL_MAX;
-        long obj_num = tree.SeekIntersection(point.GetPosition() + dir * 1e-10,
+        long obj_num = scene.SeekIntersection(point.GetPosition() + dir * 1e-10,
                                              dir, hit_dist, point);
 
         while (obj_num >= 0) {
@@ -317,7 +303,7 @@ void SourceList::BuildMaterialStacks(const IntersectKdTree & tree,
                 front_face.push(false);
             }
             hit_dist = DBL_MAX;
-            obj_num = tree.SeekIntersection(point.GetPosition() + dir * 1e-10,
+            obj_num = scene.SeekIntersection(point.GetPosition() + dir * 1e-10,
                                             dir, hit_dist, point);
         }
 

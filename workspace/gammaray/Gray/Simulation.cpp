@@ -5,7 +5,7 @@
 #include <Pipeline/InteractionStream.h>
 #include <Random/Random.h>
 #include <Sources/SourceList.h>
-#include <GraphicsTrees/IntersectionKdTree.h>
+#include <Graphics/SceneDescription.h>
 #include <iostream>
 #include <vector>
 
@@ -22,14 +22,13 @@ void Simulation::SetupSeed(const Config & config) {
 }
 
 void Simulation::SetupSources(const Config & config, SourceList & sources,
-                              IntersectKdTree & intersect_kd_tree,
+                              SceneDescription & scene,
                               GammaMaterial const * const default_material)
 {
-    sources.SetKdTree(intersect_kd_tree);
     sources.SetSimulationTime(config.get_time());
     sources.SetStartTime(config.get_start_time());
     Mpi::AdjustSimTime(sources);
-    sources.BuildMaterialStacks(intersect_kd_tree, default_material);
+    sources.BuildMaterialStacks(scene, default_material);
     sources.InitSources();
 }
 
@@ -67,7 +66,7 @@ int Simulation::SetupOutput(const Config & config, Output & output_hits,
 }
 
 void Simulation::RunSim(const Config & config, SourceList & sources,
-                        const IntersectKdTree & intersect_kd_tree,
+                        const SceneDescription & scene,
                         Output & output_hits, Output & output_singles,
                         std::vector<Output> & outputs_coinc,
                         InteractionStream & singles_stream,
@@ -78,7 +77,7 @@ void Simulation::RunSim(const Config & config, SourceList & sources,
     double tick_mark = sources.GetSimulationTime() / num_chars;
     int current_tick = 0;
 
-    GammaRayTrace ray_tracer(sources, intersect_kd_tree,
+    GammaRayTrace ray_tracer(sources, scene,
                              config.get_log_nuclear_decays(),
                              config.get_log_nonsensitive(),
                              config.get_log_nointeraction(),

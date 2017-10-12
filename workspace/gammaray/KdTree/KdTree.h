@@ -150,14 +150,15 @@ public:
     KdTree();
 
     // This constructor builds directly the entire KdTree.
-    KdTree(long numObjects);
+    KdTree(long numObjects,
+           std::function<void(long,AABB&)> ExtentFunc,
+           std::function<bool(long, const AABB&, AABB&)> ExtentInBoxFunc);
 
     // Destructor
     virtual ~KdTree();
 
     void ResetStats();
 
-protected:
     // Callback routines that are used to return information while traversing
     // the tree.  Gives an object in a leaf node. Return code is "true" if the
     // returned stop distance is relevant.
@@ -166,7 +167,6 @@ protected:
     long Traverse(const VectorR3 & startPos, const VectorR3 & dir,
                   double & stopDistance, CallbackF ObjectCallback) const;
 
-public:
     // ****** Tree building routines *******
 
     // Set the assumed cost for intersecting a single object.
@@ -196,7 +196,13 @@ public:
     void SetStoppingCriterion( long numRays, double numAccesses );
 
     // Can call BuildTree at most once.
-    void BuildTree(long numObject);
+    // ExtentFunc returns bounding box (an AABB) enclosing the object.  It must
+    // be overridden by a derived class.
+    // ExtentInBoxFunc returns a AABB that encloses the intersection of the
+    // object and the clippingBox.  Returns the "boundingBox" and returns true
+    // if the box is non-empty.  this must be overrriden in a derived class.
+    void BuildTree(long numObject, std::function<void(long,AABB&)> ExtentFunc,
+                   std::function<bool(long, const AABB&, AABB&)> ExtentInBoxFunc);
 
     const static int ExtentTripleStorageMultiplier  = 4;    // m/(1-m) where m is the overlapping fraction expected
 
@@ -230,14 +236,7 @@ private:
     double ObjectConstantCost;
     static double DefaultObjectCost() { return 2.0; }
 
-    // ExtentFunc returns bounding box (an AABB) enclosing the object.  It must
-    // be overridden by a derived class.
-    virtual void ExtentFunc(long objectNum, AABB& boundingBox ) const = 0;
-    // ExtentInBoxFunc returns a AABB that encloses the intersection of the
-    // object and the clippingBox.  Returns the "boundingBox" and returns true
-    // if the box is non-empty.  this must be overrriden in a derived class.
-    virtual bool ExtentInBoxFunc(long objectNum, const AABB& clippingBox,
-                                 AABB& boundingBox) const = 0;
+    std::function<bool(long, const AABB&, AABB&)> ExtentInBoxFunc;
 
     // Holds extents (and extents in boxes) for each object.
     std::vector<AABB> ObjectAABBs;
@@ -490,12 +489,14 @@ inline KdTree::KdTree()
     SetStoppingCriterion( 1000000, 4.0 );
 }
 
-inline KdTree::KdTree(long numObjects)
+inline KdTree::KdTree(long numObjects,
+                      std::function<void(long,AABB&)> ExtentFunc,
+                      std::function<bool(long, const AABB&, AABB&)> ExtentInBoxFunc)
 {
     SplitAlgorithm = MacDonaldBooth;
     SetObjectCost ( DefaultObjectCost() );
     SetStoppingCriterion( 1000000, 4.0 );
-    BuildTree(numObjects);
+    BuildTree(numObjects, ExtentFunc, ExtentInBoxFunc);
 }
 
 // Set a cost function for objects

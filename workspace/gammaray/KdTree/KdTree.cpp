@@ -212,11 +212,14 @@ long KdTree::Traverse(const VectorR3& startPos, const VectorR3& dir,
 /***********************************************************************************************
  * Tree building functions.
  ***********************************************************************************************/
-void KdTree::BuildTree(long numObjects)
+void KdTree::BuildTree(long numObjects,
+                       std::function<void(long,AABB&)> ExtentFunc,
+                       std::function<bool(long, const AABB&, AABB&)> ExtentInBoxFunc)
 {
     if (TreeNodes.size() > 0) {
         return;
     }
+    this->ExtentInBoxFunc = ExtentInBoxFunc;
     // If it's a perfect binary tree, in the worst case we need 2x nodes.
     TreeNodes.reserve(numObjects * 2);
 	NumObjects = numObjects;
