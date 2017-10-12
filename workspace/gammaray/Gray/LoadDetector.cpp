@@ -31,71 +31,6 @@
 #include <VrMath/Aabb.h>
 #include <VrMath/LinearR3.h>
 
-void LoadDetector::ApplyTranslation(const VectorR3&t,
-                                    RigidMapR3 & current_matrix)
-{
-
-    RigidMapR3 trans;
-    trans.ApplyTranslationLeft(t);
-    current_matrix *= trans;
-
-}
-
-void LoadDetector::ApplyRotation(const VectorR3& axis, double theta,
-                                 RigidMapR3 & current_matrix)
-{
-
-    //FIXME: This became a mega hack to try and get rotations working correctly
-    // When using Rotation Maps, translations were not being operated on
-    // So I had to transition to 4x4 matricies, and hardcode it in
-
-    RotationMapR3 rot;
-    RigidMapR3 cur, cur2;
-    LinearMapR4 t1,t2,t3;
-    rot.Set(axis, -1.0*theta);
-
-    t1.SetColumn1(rot.Column1().x, rot.Column1().y, rot.Column1().z, 0.0);
-    t1.SetColumn2(rot.Column2().x, rot.Column2().y, rot.Column2().z, 0.0);
-    t1.SetColumn3(rot.Column3().x, rot.Column3().y, rot.Column3().z, 0.0);
-    t1.SetColumn4(0.0, 0.0, 0.0, 1.0);
-
-    cur = current_matrix;
-    t2.SetColumn1(cur.Column1().x, cur.Column1().y, cur.Column1().z, cur.m14);
-    t2.SetColumn2(cur.Column2().x, cur.Column2().y, cur.Column2().z, cur.m24);
-    t2.SetColumn3(cur.Column3().x, cur.Column3().y, cur.Column3().z, cur.m34);
-    t2.SetColumn4(0.0 , 0.0, 0.0, 1.0);
-
-    t2 *= t1;
-    cur.m14 = t2.m41;
-    cur.m24 = t2.m42;
-    cur.m34 = t2.m43;
-
-    cur2 = current_matrix;
-
-    rot.Set(axis, theta);
-    t1.SetColumn1(rot.Column1().x, rot.Column1().y, rot.Column1().z, 0.0);
-    t1.SetColumn2(rot.Column2().x, rot.Column2().y, rot.Column2().z, 0.0);
-    t1.SetColumn3(rot.Column3().x, rot.Column3().y, rot.Column3().z, 0.0);
-    t1.SetColumn4(0.0, 0.0, 0.0, 1.0);
-
-    t2.SetColumn1(cur2.Column1().x, cur2.Column1().y, cur2.Column1().z, cur2.m14);
-    t2.SetColumn2(cur2.Column2().x, cur2.Column2().y, cur2.Column2().z, cur2.m24);
-    t2.SetColumn3(cur2.Column3().x, cur2.Column3().y, cur2.Column3().z, cur2.m34);
-    t2.SetColumn4(0.0 , 0.0, 0.0, 1.0);
-
-    t2 *= t1;
-
-    // FIXME: Mega hackage
-
-    cur.SetColumn1(t2.Column1().x,t2.Column1().y, t2.Column1().z);
-    cur.SetColumn2(t2.Column2().x,t2.Column2().y, t2.Column2().z);
-    cur.SetColumn3(t2.Column3().x,t2.Column3().y, t2.Column3().z);
-
-    current_matrix = cur;
-
-
-}
-
 bool LoadDetector::LoadConfig(const std::string & filename, Config & config) {
     ifstream input(filename);
     if (!input) {
@@ -431,9 +366,8 @@ bool LoadDetector::Load(const std::string & filename,
 
                 switch (info.type) {
                     case RepeatInfo::rotate: {
-                        ApplyRotation(info.rotate_axis,
-                                      info.rotate_angle * (M_PI/180.0),
-                                      MatrixStack.top());
+                        MatrixStack.top() *= VrRotate(info.rotate_angle * (M_PI/180.0),
+                                                      info.rotate_axis);
                         break;
                     }
                     case RepeatInfo::grid: {
@@ -1086,7 +1020,8 @@ bool LoadDetector::Load(const std::string & filename,
                 print_parse_error(line);
                 return(false);
             }
-            ApplyRotation(axis, degree * (M_PI/180.0), MatrixStack.top());
+            const double theta = degree * (M_PI / 180.0);
+            MatrixStack.top() *= VrRotate(theta, axis);
         } else if (command == "from") {
             int scanCode = sscanf(args.c_str(), "%lf %lf %lf",
                                   &(viewPos.x), &(viewPos.y), &(viewPos.z));

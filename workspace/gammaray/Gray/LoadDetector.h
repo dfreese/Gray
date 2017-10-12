@@ -37,11 +37,6 @@ private:
                                   const VectorR3& upVector, double fovy,
                                   int screenWidth, int screenHeight,
                                   double nearClipping);
-    static void ApplyTranslation(const VectorR3&t,
-                                 RigidMapR3 & current_matrix);
-    static void ApplyRotation(const VectorR3& axis,
-                              double theta,
-                              RigidMapR3 & current_matrix);
     static bool ProcessFaceDFF(int numVerts,
                                const Material* curMaterial,
                                const std::vector<std::string> & lines,
