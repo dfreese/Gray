@@ -1,7 +1,9 @@
 #include <Math/Math.h>
 
+#include <cmath>
 #include <vector>
 #include <numeric>
+#include <algorithm>
 
 /*!
  * For a given set of x and y, perform piecewise linear interpolation between
@@ -18,7 +20,7 @@ double Math::interpolate(const std::vector<double> & x,
                          const std::vector<double> & y,
                          double x_value)
 {
-    size_t idx = upper_bound(x.begin(), x.end(), x_value) - x.begin();
+    size_t idx = std::upper_bound(x.begin(), x.end(), x_value) - x.begin();
 
     if (idx == 0) {
         return(y.front());
@@ -53,8 +55,8 @@ double Math::interpolate_2d(const std::vector<double> & x,
                             const std::vector<std::vector<double>> & z,
                             double x_value, double y_value)
 {
-    size_t x_idx = upper_bound(x.begin(), x.end(), x_value) - x.begin();
-    size_t y_idx = upper_bound(y.begin(), y.end(), y_value) - y.begin();
+    size_t x_idx = std::upper_bound(x.begin(), x.end(), x_value) - x.begin();
+    size_t y_idx = std::upper_bound(y.begin(), y.end(), y_value) - y.begin();
 
     x_idx = std::min(std::max(x_idx, 1ul), x.size() - 1);
     y_idx = std::min(std::max(y_idx, 1ul), y.size() - 1);
@@ -89,7 +91,7 @@ double Math::interpolate_y_2d(const std::vector<double> & x,
                               const std::vector<std::vector<double>> & z,
                               double x_value, double z_value)
 {
-    size_t x_idx = upper_bound(x.begin(), x.end(), x_value) - x.begin();
+    size_t x_idx = std::upper_bound(x.begin(), x.end(), x_value) - x.begin();
     x_idx = std::min(std::max(x_idx, 1ul), x.size() - 1);
 
     const double delta_x = x[x_idx] - x[x_idx - 1];
