@@ -6,35 +6,74 @@
 class Photon
 {
 public:
-    Photon();
-    Photon(int set_id, double e, const VectorR3 & p, const VectorR3 & d);
     enum Color {
         P_BLUE = 0,
         P_RED = 1,
         P_YELLOW = 2
     };
-    void SetRed()
-    {
-        color = P_RED;
-    }
-    void SetBlue()
-    {
-        color = P_BLUE;
-    }
-    void SetSrc(int val)
-    {
-        src_id=val;
-    }
-    int GetSrc(void) const
-    {
-        return src_id;
-    }
-    void Reset();
+
+    Photon();
+    Photon(const VectorR3 & pos, const VectorR3 & dir, double energy,
+           double time, int id, Color color, int src_id);
+
     void SetScatterCompton();
     void SetScatterRayleigh();
     void SetXrayFlouresence();
-
-public:
+    const VectorR3 & GetPos() const {
+        return (pos);
+    }
+    void AddPos(const VectorR3 & rhs) {
+        pos += rhs;
+    }
+    const VectorR3 & GetDir() const {
+        return (dir);
+    }
+    void SetDir(const VectorR3 & dir) {
+        this->dir = dir;
+    }
+    double GetEnergy() const {
+        return (energy);
+    }
+    void SetEnergy(double energy) {
+        this->energy = energy;
+    }
+    double GetTime() const {
+        return (time);
+    }
+    void AddTime(double rhs) {
+        time += rhs;
+    }
+    int GetId() const {
+        return (id);
+    }
+    Color GetColor() const {
+        return (color);
+    }
+    int GetDetId() const {
+        return (det_id);
+    }
+    int GetScatterComptonPhantom() const {
+        return (scatter_compton_phantom);
+    }
+    int GetScatterComptonDetector() const {
+        return (scatter_compton_detector);
+    }
+    int GetScatterRayleighPhantom() const {
+        return (scatter_rayleigh_phantom);
+    }
+    int GetScatterRayleighDetector() const {
+        return (scatter_rayleigh_detector);
+    }
+    int GetXrayFlouresence() const {
+        return (xray_flouresence);
+    }
+    void SetDetId(int det_id) {
+        this->det_id = det_id;
+    }
+    int GetSrc() const {
+        return src_id;
+    }
+private:
     VectorR3 pos;
     VectorR3 dir;
     double energy;

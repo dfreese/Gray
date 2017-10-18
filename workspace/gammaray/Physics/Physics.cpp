@@ -17,19 +17,19 @@ Interaction Physics::NoInteraction(const Photon & p,
 {
     Interaction hit;
     hit.type = NO_INTERACTION;
-    hit.decay_id = p.id;
-    hit.time = p.time;
-    hit.pos = p.pos;
-    hit.energy = p.energy;
-    hit.color = p.color;
+    hit.decay_id = p.GetId();
+    hit.time = p.GetTime();
+    hit.pos = p.GetPos();
+    hit.energy = p.GetEnergy();
+    hit.color = p.GetColor();
     hit.src_id = p.GetSrc();
     hit.mat_id = mat_gamma_prop.GetMaterial();
-    hit.det_id = p.det_id;
-    hit.scatter_compton_phantom = p.scatter_compton_phantom;
-    hit.scatter_compton_detector = p.scatter_compton_detector;
-    hit.scatter_rayleigh_phantom = p.scatter_rayleigh_phantom;
-    hit.scatter_rayleigh_detector = p.scatter_rayleigh_detector;
-    hit.xray_flouresence = p.xray_flouresence;
+    hit.det_id = p.GetDetId();
+    hit.scatter_compton_phantom = p.GetScatterComptonPhantom();
+    hit.scatter_compton_detector = p.GetScatterComptonDetector();
+    hit.scatter_rayleigh_phantom = p.GetScatterRayleighPhantom();
+    hit.scatter_rayleigh_detector = p.GetScatterRayleighDetector();
+    hit.xray_flouresence = p.GetXrayFlouresence();
     // Don't process this in the DAQ
     hit.dropped = true;
     return(hit);
@@ -40,19 +40,19 @@ Interaction Physics::Photoelectric(const Photon & p,
 {
     Interaction hit;
     hit.type = PHOTOELECTRIC;
-    hit.decay_id = p.id;
-    hit.time = p.time;
-    hit.pos = p.pos;
-    hit.energy = p.energy;
-    hit.color = p.color;
+    hit.decay_id = p.GetId();
+    hit.time = p.GetTime();
+    hit.pos = p.GetPos();
+    hit.energy = p.GetEnergy();
+    hit.color = p.GetColor();
     hit.src_id = p.GetSrc();
     hit.mat_id = mat_gamma_prop.GetMaterial();
-    hit.det_id = p.det_id;
-    hit.scatter_compton_phantom = p.scatter_compton_phantom;
-    hit.scatter_compton_detector = p.scatter_compton_detector;
-    hit.scatter_rayleigh_phantom = p.scatter_rayleigh_phantom;
-    hit.scatter_rayleigh_detector = p.scatter_rayleigh_detector;
-    hit.xray_flouresence = p.xray_flouresence;
+    hit.det_id = p.GetDetId();
+    hit.scatter_compton_phantom = p.GetScatterComptonPhantom();
+    hit.scatter_compton_detector = p.GetScatterComptonDetector();
+    hit.scatter_rayleigh_phantom = p.GetScatterRayleighPhantom();
+    hit.scatter_rayleigh_detector = p.GetScatterRayleighDetector();
+    hit.xray_flouresence = p.GetXrayFlouresence();
     // Process this in the DAQ if it was a sensitive interaction
     hit.dropped = !mat_gamma_prop.log_material;
     return(hit);
@@ -63,19 +63,19 @@ Interaction Physics::XrayEscape(const Photon & p, double deposit,
 {
     Interaction hit;
     hit.type = XRAY_ESCAPE;
-    hit.decay_id = p.id;
-    hit.time = p.time;
-    hit.pos = p.pos;
+    hit.decay_id = p.GetId();
+    hit.time = p.GetTime();
+    hit.pos = p.GetPos();
     hit.energy = deposit;
-    hit.color = p.color;
+    hit.color = p.GetColor();
     hit.src_id = p.GetSrc();
     hit.mat_id = mat_gamma_prop.GetMaterial();
-    hit.det_id = p.det_id;
-    hit.scatter_compton_phantom = p.scatter_compton_phantom;
-    hit.scatter_compton_detector = p.scatter_compton_detector;
-    hit.scatter_rayleigh_phantom = p.scatter_rayleigh_phantom;
-    hit.scatter_rayleigh_detector = p.scatter_rayleigh_detector;
-    hit.xray_flouresence = p.xray_flouresence;
+    hit.det_id = p.GetDetId();
+    hit.scatter_compton_phantom = p.GetScatterComptonPhantom();
+    hit.scatter_compton_detector = p.GetScatterComptonDetector();
+    hit.scatter_rayleigh_phantom = p.GetScatterRayleighPhantom();
+    hit.scatter_rayleigh_detector = p.GetScatterRayleighDetector();
+    hit.xray_flouresence = p.GetXrayFlouresence();
     // Process this in the DAQ if it was a sensitive interaction
     hit.dropped = !mat_gamma_prop.log_material;
     return(hit);
@@ -86,19 +86,19 @@ Interaction Physics::Compton(const Photon & p, double deposit,
 {
     Interaction hit;
     hit.type = COMPTON;
-    hit.decay_id = p.id;
-    hit.time = p.time;
-    hit.pos = p.pos;
+    hit.decay_id = p.GetId();
+    hit.time = p.GetTime();
+    hit.pos = p.GetPos();
     hit.energy = deposit;
-    hit.color = p.color;
+    hit.color = p.GetColor();
     hit.src_id = p.GetSrc();
     hit.mat_id = mat_gamma_prop.GetMaterial();
-    hit.det_id = p.det_id;
-    hit.scatter_compton_phantom = p.scatter_compton_phantom;
-    hit.scatter_compton_detector = p.scatter_compton_detector;
-    hit.scatter_rayleigh_phantom = p.scatter_rayleigh_phantom;
-    hit.scatter_rayleigh_detector = p.scatter_rayleigh_detector;
-    hit.xray_flouresence = p.xray_flouresence;
+    hit.det_id = p.GetDetId();
+    hit.scatter_compton_phantom = p.GetScatterComptonPhantom();
+    hit.scatter_compton_detector = p.GetScatterComptonDetector();
+    hit.scatter_rayleigh_phantom = p.GetScatterRayleighPhantom();
+    hit.scatter_rayleigh_detector = p.GetScatterRayleighDetector();
+    hit.xray_flouresence = p.GetXrayFlouresence();
     // Process this in the DAQ if it was a sensitive interaction
     hit.dropped = !mat_gamma_prop.log_material;
     return(hit);
@@ -109,19 +109,19 @@ Interaction Physics::Rayleigh(const Photon & p,
 {
     Interaction hit;
     hit.type = RAYLEIGH;
-    hit.decay_id = p.id;
-    hit.time = p.time;
-    hit.pos = p.pos;
+    hit.decay_id = p.GetId();
+    hit.time = p.GetTime();
+    hit.pos = p.GetPos();
     hit.energy = 0;
-    hit.color = p.color;
+    hit.color = p.GetColor();
     hit.src_id = p.GetSrc();
     hit.mat_id = mat_gamma_prop.GetMaterial();
-    hit.det_id = p.det_id;
-    hit.scatter_compton_phantom = p.scatter_compton_phantom;
-    hit.scatter_compton_detector = p.scatter_compton_detector;
-    hit.scatter_rayleigh_phantom = p.scatter_rayleigh_phantom;
-    hit.scatter_rayleigh_detector = p.scatter_rayleigh_detector;
-    hit.xray_flouresence = p.xray_flouresence;
+    hit.det_id = p.GetDetId();
+    hit.scatter_compton_phantom = p.GetScatterComptonPhantom();
+    hit.scatter_compton_detector = p.GetScatterComptonDetector();
+    hit.scatter_rayleigh_phantom = p.GetScatterRayleighPhantom();
+    hit.scatter_rayleigh_detector = p.GetScatterRayleighDetector();
+    hit.xray_flouresence = p.GetXrayFlouresence();
     // Process this in the DAQ if it was a sensitive interaction
     hit.dropped = !mat_gamma_prop.log_material;
     return(hit);
@@ -156,19 +156,19 @@ Interaction Physics::ErrorTraceDepth(const Photon & p,
 {
     Interaction hit;
     hit.type = ERROR_TRACE_DEPTH;
-    hit.decay_id = p.id;
-    hit.time = p.time;
-    hit.pos = p.pos;
-    hit.energy = p.energy;
-    hit.color = p.color;
+    hit.decay_id = p.GetId();
+    hit.time = p.GetTime();
+    hit.pos = p.GetPos();
+    hit.energy = p.GetEnergy();
+    hit.color = p.GetColor();
     hit.src_id = p.GetSrc();
     hit.mat_id = mat_gamma_prop.GetMaterial();
-    hit.det_id = p.det_id;
-    hit.scatter_compton_phantom = p.scatter_compton_phantom;
-    hit.scatter_compton_detector = p.scatter_compton_detector;
-    hit.scatter_rayleigh_phantom = p.scatter_rayleigh_phantom;
-    hit.scatter_rayleigh_detector = p.scatter_rayleigh_detector;
-    hit.xray_flouresence = p.xray_flouresence;
+    hit.det_id = p.GetDetId();
+    hit.scatter_compton_phantom = p.GetScatterComptonPhantom();
+    hit.scatter_compton_detector = p.GetScatterComptonDetector();
+    hit.scatter_rayleigh_phantom = p.GetScatterRayleighPhantom();
+    hit.scatter_rayleigh_detector = p.GetScatterRayleighDetector();
+    hit.xray_flouresence = p.GetXrayFlouresence();
     // Don't process this in the DAQ
     hit.dropped = true;
     return(hit);
@@ -178,19 +178,19 @@ Interaction Physics::ErrorEmtpy(const Photon & p)
 {
     Interaction hit;
     hit.type = ERROR_TRACE_DEPTH;
-    hit.decay_id = p.id;
-    hit.time = p.time;
-    hit.pos = p.pos;
-    hit.energy = p.energy;
-    hit.color = p.color;
+    hit.decay_id = p.GetId();
+    hit.time = p.GetTime();
+    hit.pos = p.GetPos();
+    hit.energy = p.GetEnergy();
+    hit.color = p.GetColor();
     hit.src_id = p.GetSrc();
     hit.mat_id = -1;
-    hit.det_id = p.det_id;
-    hit.scatter_compton_phantom = p.scatter_compton_phantom;
-    hit.scatter_compton_detector = p.scatter_compton_detector;
-    hit.scatter_rayleigh_phantom = p.scatter_rayleigh_phantom;
-    hit.scatter_rayleigh_detector = p.scatter_rayleigh_detector;
-    hit.xray_flouresence = p.xray_flouresence;
+    hit.det_id = p.GetDetId();
+    hit.scatter_compton_phantom = p.GetScatterComptonPhantom();
+    hit.scatter_compton_detector = p.GetScatterComptonDetector();
+    hit.scatter_rayleigh_phantom = p.GetScatterRayleighPhantom();
+    hit.scatter_rayleigh_detector = p.GetScatterRayleighDetector();
+    hit.xray_flouresence = p.GetXrayFlouresence();
     // Don't process this in the DAQ
     hit.dropped = true;
     return(hit);
@@ -272,13 +272,13 @@ Physics::INTER_TYPE Physics::InteractionType(
 {
     if (!mat_gamma_prop.enable_interactions) {
         // move photon to interaction point, or exit point of material
-        photon.pos += (dist * photon.dir.Normalize());
-        photon.time += (dist * inverse_speed_of_light);
+        photon.AddPos(dist * photon.GetDir());
+        photon.AddTime(dist * inverse_speed_of_light);
         return(NO_INTERACTION);
     }
 
     double pe, compton, rayleigh;
-    mat_gamma_prop.GetInteractionProbs(photon.energy, pe, compton, rayleigh);
+    mat_gamma_prop.GetInteractionProbs(photon.GetEnergy(), pe, compton, rayleigh);
 
     // TODO: add back in rayleigh scattering once the distribution is fixed
     // double rand_dist = RandomExponentialDistance(pe + compton + rayleigh);
@@ -288,8 +288,8 @@ Physics::INTER_TYPE Physics::InteractionType(
     }
 
     // move photon to interaction point, or exit point of material
-    photon.pos += (dist * photon.dir.Normalize());
-    photon.time += (dist * inverse_speed_of_light);
+    photon.AddPos(dist * photon.GetDir());
+    photon.AddTime(dist * inverse_speed_of_light);
     if (dist < rand_dist || !mat_gamma_prop.enable_interactions) {
         return(NO_INTERACTION);
     }
@@ -316,25 +316,6 @@ Physics::INTER_TYPE Physics::InteractionType(
     }
 }
 
-///*!
-// * A random angle theta based on the Klein-Nishina distribution given the
-// * current energy.  Also returns the probability of that theta to be used for
-// * the energy calculation later on.
-// */
-//double Physics::KleinNishinaAngle(double energy, double & prob_e_theta)
-//{
-//    /* Generate scattering angles - phi and theta */
-//    // Theta is the compton angle
-//    double theta = -1;
-//    double theta;
-//    do {
-//        theta = M_PI * Random::Uniform();
-//        // Continue to loop until we accept something
-//    } while (!Random::Selection(klein_nishina.dsigma_over_max(theta, energy,
-//                                                              prob_e_theta)));
-//    return (theta);
-//}
-
 double Physics::KleinNishinaEnergy(double energy, double theta)
 {
     return(energy / (1.0 + (energy / Physics::energy_511) * (1. - cos(theta))));
@@ -342,12 +323,12 @@ double Physics::KleinNishinaEnergy(double energy, double theta)
 
 void Physics::ComptonScatter(Photon &p, double & deposit)
 {
-    const double theta = klein_nishina.scatter_angle(p.energy, Random::Uniform());
+    const double theta = klein_nishina.scatter_angle(p.GetEnergy(), Random::Uniform());
     // After collision the photon loses some energy to the electron
-    deposit = p.energy;
-    p.energy = KleinNishinaEnergy(p.energy, theta);
-    deposit -= p.energy;
-    p.dir = Random::Deflection(p.dir, theta);
+    deposit = p.GetEnergy();
+    p.SetEnergy(KleinNishinaEnergy(p.GetEnergy(), theta));
+    deposit -= p.GetEnergy();
+    p.SetDir(Random::Deflection(p.GetDir(), theta));
     p.SetScatterCompton();
 }
 
@@ -379,7 +360,7 @@ double Physics::RayleighAngle() {
 void Physics::RayleighScatter(Photon &p)
 {
     const double theta = RayleighAngle();
-    p.dir = Random::Deflection(p.dir, theta);
+    p.SetDir(Random::Deflection(p.GetDir(), theta));
     // If the photon scatters on a non-detector, it is a scatter, checked
     // inside SetScatter
     p.SetScatterRayleigh();
@@ -391,16 +372,16 @@ bool Physics::XrayEscape(Photon &p, const GammaStats & mat_gamma_prop,
     const std::vector<double> & emit_e = mat_gamma_prop.GetXrayEmissionEnergies();
     const std::vector<double> & prob_e = mat_gamma_prop.GetXrayEmissionCumProb();
     double rand = Random::Uniform();
-    rand *= mat_gamma_prop.GetXrayBindEnergyScale(p.energy);
+    rand *= mat_gamma_prop.GetXrayBindEnergyScale(p.GetEnergy());
     size_t idx = lower_bound(prob_e.begin(), prob_e.end(), rand) - prob_e.begin();
     double xray_energy = emit_e[idx];
     if (xray_energy == 0) {
         return(false);
     } else {
         return(false);
-        deposit = p.energy - xray_energy;
-        p.energy = xray_energy;
-        p.dir = Random::UniformSphere();
+        deposit = p.GetEnergy() - xray_energy;
+        p.SetEnergy(xray_energy);
+        p.SetDir(Random::UniformSphere());
         p.SetXrayFlouresence();
         return(true);
     }

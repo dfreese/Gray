@@ -50,43 +50,24 @@ void PositronDecay::Decay(int photon_number, double time, int src_id,
     if (emit_gamma) {
         // TODO: log the positron annihilation and nuclear decay positions
         // separately
-        yellow.pos = position;
         // TODO: correctly set the time on the gamma decay, based on the
         // lifetime of the intermediate decay state.
-        yellow.time = time;
-        yellow.energy = gamma_decay_energy;
-        yellow.id = photon_number;
-        yellow.det_id = -1;
-        yellow.src_id = src_id;
-        yellow.scatter_compton_detector = 0;
-        yellow.scatter_compton_phantom = 0;
-        yellow.scatter_rayleigh_detector = 0;
-        yellow.scatter_rayleigh_phantom = 0;
-        yellow.xray_flouresence = 0;
-        yellow.color = Photon::P_YELLOW;
+        yellow = Photon(position, Random::UniformSphere(), gamma_decay_energy,
+                        time, photon_number, Photon::P_YELLOW, src_id);
         AddPhoton(&yellow);
     }
 
     // Check to see if a Positron was emitted with the gamma or not.
     if (Random::Selection(positron_emission_prob)) {
-        blue.time = time;
-        blue.pos = anni_position;
-        blue.energy = Physics::energy_511;
-        blue.id = photon_number;
-        blue.det_id = -1;
-        blue.src_id = src_id;
-        blue.scatter_compton_detector = 0;
-        blue.scatter_compton_phantom = 0;
-        blue.scatter_rayleigh_detector = 0;
-        blue.scatter_rayleigh_phantom = 0;
-        blue.xray_flouresence = 0;
-        red = blue;
+        blue = Photon(anni_position, Random::UniformSphere(), Physics::energy_511,
+                      time, photon_number, Photon::P_BLUE, src_id);
 
-        blue.SetBlue();
-        red.SetRed();
 
-        blue.dir = Random::UniformSphere();
-        red.dir = Random::Acolinearity(blue.dir, acolinearity);
+        red = Photon(anni_position,
+                     Random::Acolinearity(blue.GetDir(), acolinearity),
+                     Physics::energy_511, time, photon_number, Photon::P_RED,
+                     src_id);
+
         AddPhoton(&blue);
         AddPhoton(&red);
     }

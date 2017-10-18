@@ -19,20 +19,8 @@ void GammaDecay::Decay(int photon_number, double time, int src_id,
     this->decay_number = photon_number;
     this->time = time;
     this->src_id = src_id;
-    gamma.time = time;
-    gamma.pos = position;
-    gamma.energy = energy;
-    gamma.id = photon_number;
-    gamma.det_id = -1;
-    gamma.color = Photon::P_YELLOW;
-    gamma.dir.SetUnitZ();
-    gamma.src_id = src_id;
-    gamma.scatter_compton_phantom = 0;
-    gamma.scatter_compton_detector = 0;
-    gamma.scatter_rayleigh_phantom = 0;
-    gamma.scatter_rayleigh_detector = 0;
-    gamma.xray_flouresence = 0;
-    gamma.dir = Random::UniformSphere();
+    gamma = Photon(position, Random::UniformSphere(), energy,
+                   time, photon_number, Photon::P_YELLOW, src_id);
     AddPhoton(&gamma);
 }
 

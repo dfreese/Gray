@@ -1,33 +1,11 @@
 #include <Physics/Photon.h>
 
-Photon::Photon()
-{
-    Reset();
-}
-
-void Photon::Reset()
-{
-    energy = -1.0;
-    time = 0.0;
-    dir.SetZero();
-    pos.SetZero();
-    id = 0;
-    src_id = -1;
-    det_id = -1;
-    color = P_BLUE;
-    scatter_compton_phantom = 0;
-    scatter_compton_detector = 0;
-    scatter_rayleigh_phantom = 0;
-    scatter_rayleigh_detector = 0;
-    xray_flouresence = 0;
-}
-
-Photon::Photon(int set_id, double e, const VectorR3 & p, const VectorR3 & d) :
-    pos(p),
-    dir(d),
-    energy(e),
+Photon::Photon() :
+    pos(0,0,0),
+    dir(0,0,1),
+    energy(-1),
     time(0.0),
-    id(set_id),
+    id(0),
     color(P_BLUE),
     det_id(-1),
     scatter_compton_phantom(0),
@@ -36,6 +14,24 @@ Photon::Photon(int set_id, double e, const VectorR3 & p, const VectorR3 & d) :
     scatter_rayleigh_detector(0),
     xray_flouresence(0),
     src_id(-1)
+{
+}
+
+Photon::Photon(const VectorR3 & pos, const VectorR3 & dir, double energy,
+               double time, int id, Color color, int src_id) :
+    pos(pos),
+    dir(dir),
+    energy(energy),
+    time(time),
+    id(id),
+    color(color),
+    det_id(-1),
+    scatter_compton_phantom(0),
+    scatter_compton_detector(0),
+    scatter_rayleigh_phantom(0),
+    scatter_rayleigh_detector(0),
+    xray_flouresence(0),
+    src_id(src_id)
 {
 }
 

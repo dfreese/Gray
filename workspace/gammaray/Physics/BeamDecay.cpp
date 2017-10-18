@@ -22,26 +22,19 @@ void BeamDecay::Decay(int photon_number, double time, int src_id,
     this->time = time;
     this->position = position;
     this->decay_number = photon_number;
-
-    blue.Reset();
-    blue.time = time;
-    blue.pos = position;
-    blue.energy = Physics::energy_511;
-    blue.id = photon_number;
-    blue.det_id = -1;
-    blue.src_id = src_id;
-
+    
+    VectorR3 dir;
     // Only randomly generate an angle if there's a non zero angle.
     if (angle) {
-        blue.dir = Random::Acolinearity(axis, angle);
+        dir = Random::Acolinearity(axis, angle);
     } else {
-        blue.dir = axis;
+        dir = axis;
     }
-    red = blue;
 
-    blue.SetBlue();
-    red.SetRed();
-    red.dir.Negate();
+    blue = Photon(position, dir, Physics::energy_511,
+                  time, photon_number, Photon::P_BLUE, src_id);
+    red = Photon(position, dir.Negate(), Physics::energy_511,
+                 time, photon_number, Photon::P_RED, src_id);
     AddPhoton(&blue);
     AddPhoton(&red);
 }

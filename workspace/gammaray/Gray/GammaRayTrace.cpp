@@ -55,7 +55,7 @@ void GammaRayTrace::TracePhoton(
 
         double hitDist = DBL_MAX;
         VisiblePoint visPoint;
-        long intersectNum = scene.SeekIntersection(photon.pos, photon.dir,
+        long intersectNum = scene.SeekIntersection(photon.GetPos(), photon.GetDir(),
                                                    hitDist, visPoint);
         // There was nothing further in the environment to hit, so return.
         if (intersectNum < 0) {
@@ -70,7 +70,7 @@ void GammaRayTrace::TracePhoton(
         double deposit = 0;
         Physics::INTER_TYPE type = Physics::InteractionType(
                 photon, hitDist, mat_gamma_prop, deposit);
-        bool is_sensitive = (photon.det_id >= 0);
+        bool is_sensitive = (photon.GetDetId() >= 0);
         bool log_interact = ((!is_sensitive && log_nonsensitive) ||
                              is_sensitive);
         // test for Photoelectric interaction
@@ -81,7 +81,7 @@ void GammaRayTrace::TracePhoton(
                 if (visPoint.IsFrontFacing()) {
                     // This detector id will be used to determine if we scatter
                     // in a detector or inside a phantom
-                    photon.det_id = visPoint.GetObject().GetDetectorId();
+                    photon.SetDetId(visPoint.GetObject().GetDetectorId());
                     MatStack.push(static_cast<GammaMaterial const * const>(
                             &visPoint.GetMaterial()));
                 } else if (visPoint.IsBackFacing()) {
@@ -95,13 +95,13 @@ void GammaRayTrace::TracePhoton(
                         stats.error++;
                         return;
                     }
-                    photon.det_id = -1;
+                    photon.SetDetId(-1);
                     MatStack.pop();
                 } else {
                     throw(runtime_error("Material has no face"));
                 }
                 // Make sure not to hit same place in kdtree
-                photon.pos = visPoint.GetPosition() + photon.dir * Epsilon;
+                photon.AddPos(photon.GetDir() * Epsilon);
                 break;
             }
             case Physics::PHOTOELECTRIC: {
@@ -235,7 +235,7 @@ void GammaRayTrace::TraceSources(std::vector<Interaction> & interactions,
                 Photon & photon = *decay->NextPhoton();
                 stats.photons++;
                 std::stack<GammaMaterial const *> mat_stack(source->GetMaterialStack());
-                if (!UpdateStack(source->GetPosition(), photon.pos, mat_stack)) {
+                if (!UpdateStack(source->GetPosition(), photon.GetPos(), mat_stack)) {
                     ++stats.error;
                     continue;
                 }
