@@ -575,12 +575,12 @@ bool LoadDetector::Load(const std::string & filename,
                 print_parse_error(line);
                 return(false);
             }
-            VoxelSource * s = new VoxelSource(position, dims, voxelsize,
-                                              actScale * activity);
+            std::unique_ptr<VoxelSource> s(new VoxelSource(position, dims,
+                                                           voxelsize,
+                                                           actScale * activity));
             if (s->Load(string)) {
-                sources.AddSource(s);
+                sources.AddSource(std::move(s));
             } else {
-                delete s;
                 print_parse_error(line);
                 cerr << "Unable to load voxelized source: " << string << endl;
                 return(false);
@@ -642,10 +642,10 @@ bool LoadDetector::Load(const std::string & filename,
                 print_parse_error(line);
                 return(false);
             }
-            EllipsoidSource *ve = new EllipsoidSource(
+            std::unique_ptr<EllipsoidSource> ve(new EllipsoidSource(
                     center, axis1, axis2, radius1, radius2, radius3,
-                    actScale*activity);
-            sources.AddSource(ve);
+                    actScale*activity));
+            sources.AddSource(std::move(ve));
         } else if (command == "elliptic_cyl") {
             VectorR3 center;
             VectorR3 axis;
@@ -688,9 +688,9 @@ bool LoadDetector::Load(const std::string & filename,
             MatrixStack.top().Transform(&center);
             MatrixStack.top().Transform3x3(&axis);
             axis *= height;
-            EllipticCylinderSource * cyl = new EllipticCylinderSource(
-                    center, radius1, radius2, axis, actScale*activity);
-            sources.AddSource(cyl);
+            std::unique_ptr<EllipticCylinderSource> cyl(new EllipticCylinderSource(
+                    center, radius1, radius2, axis, actScale*activity));
+            sources.AddSource(std::move(cyl));
         } else if (command == "annulus_ell_src") {
             VectorR3 center;
             VectorR3 axis;
@@ -710,10 +710,10 @@ bool LoadDetector::Load(const std::string & filename,
             MatrixStack.top().Transform(&center);
             MatrixStack.top().Transform3x3(&axis);
             axis *= height;
-            AnnulusEllipticCylinderSource * cyl =
+            std::unique_ptr<AnnulusEllipticCylinderSource> cyl(
                     new AnnulusEllipticCylinderSource(center, radius1, radius2,
-                                                      axis, actScale*activity);
-            sources.AddSource(cyl);
+                                                      axis, actScale*activity));
+            sources.AddSource(std::move(cyl));
         } else if (command == "annulus_cyl_src") {
             VectorR3 center;
             VectorR3 axis;
@@ -733,9 +733,9 @@ bool LoadDetector::Load(const std::string & filename,
             MatrixStack.top().Transform(&center);
             MatrixStack.top().Transform3x3(&axis);
             axis *= height;
-            AnnulusCylinderSource * cyl = new AnnulusCylinderSource(
-                    center, radius, axis, actScale*activity);
-            sources.AddSource(cyl);
+            std::unique_ptr<AnnulusCylinderSource> cyl(new AnnulusCylinderSource(
+                    center, radius, axis, actScale*activity));
+            sources.AddSource(std::move(cyl));
         } else if (command == "save_detector") {
             char filename[256];
             int scanCode = sscanf(args.c_str(), "%s", filename);
@@ -794,9 +794,9 @@ bool LoadDetector::Load(const std::string & filename,
             axis.Normalize();
             MatrixStack.top().Transform(&position);
             MatrixStack.top().Transform3x3(&axis);
-            BeamPointSource * s = new BeamPointSource(position, axis, angle,
-                                                      actScale*activity);
-            sources.AddSource(s);
+            std::unique_ptr<BeamPointSource> s(new BeamPointSource(
+                    position, axis, angle, actScale*activity));
+            sources.AddSource(std::move(s));
         } else if (command == "start_vecsrc") {
             double activity = -1.0;
             int scanCode = sscanf(args.c_str(), "%lf", &activity);
@@ -809,7 +809,7 @@ bool LoadDetector::Load(const std::string & filename,
             vector_source_activity = activity;
             vector_source_scene = unique_ptr<SceneDescription>(new SceneDescription());
         } else if (command == "end_vecsrc") {
-            sources.AddSource(new VectorSource(actScale * vector_source_activity, std::move(vector_source_scene)));
+            sources.AddSource(std::unique_ptr<Source>(new VectorSource(actScale * vector_source_activity, std::move(vector_source_scene))));
             parse_VectorSource = false;
         } else if (command == "v") {
             // Deprecated, and generic defaults added
@@ -835,9 +835,9 @@ bool LoadDetector::Load(const std::string & filename,
             }
 
             MatrixStack.top().Transform(&position);
-            SphereSource * s = new SphereSource(position, radius,
-                                                actScale*activity);
-            sources.AddSource(s);
+            std::unique_ptr<SphereSource> s(new SphereSource(position, radius,
+                                                             actScale*activity));
+            sources.AddSource(std::move(s));
         } else if (command == "rect_src") {
             // rectangular source
             VectorR3 baseCenter;
@@ -854,10 +854,10 @@ bool LoadDetector::Load(const std::string & filename,
             }
             MatrixStack.top().Transform(&baseCenter);
             MatrixStack.top().Transform(&orientation);
-            RectSource * s = new RectSource(baseCenter, baseSize,
-                                            orientation,
-                                            actScale*activity);
-            sources.AddSource(s);
+            std::unique_ptr<RectSource> s(new RectSource(baseCenter, baseSize,
+                                                         orientation,
+                                                         actScale*activity));
+            sources.AddSource(std::move(s));
         } else if (command == "array") {
             // repeat detector in 3d
             VectorR3 StartPos;
@@ -954,9 +954,9 @@ bool LoadDetector::Load(const std::string & filename,
             MatrixStack.top().Transform(&center);
             MatrixStack.top().Transform3x3(&axis);
             axis *= height;
-            CylinderSource * cyl = new CylinderSource(center, radius, axis,
-                                                      actScale*activity);
-            sources.AddSource(cyl);
+            std::unique_ptr<Source> cyl(new CylinderSource(center, radius, axis,
+                                                           actScale*activity));
+            sources.AddSource(std::move(cyl));
         } else if (command == "l") {
             // light
             VectorR3 lightPos, lightColor;

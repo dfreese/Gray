@@ -2,11 +2,12 @@
 #define CSE167_SOURCELIST_H
 
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 #include <Physics/Positron.h>
+#include <Sources/Source.h>
 
-class Source;
 class Isotope;
 class VectorR3;
 class SceneDescription;
@@ -16,9 +17,8 @@ class SourceList
 {
 public:
     SourceList();
-    ~SourceList();
     Source * Decay();
-    void AddSource(Source * s);
+    void AddSource(std::unique_ptr<Source> s);
     bool SetCurIsotope(const std::string & iso);
     void SetSimulationTime(double time);
     double GetTime() const;
@@ -43,9 +43,8 @@ private:
     double SearchSplitTime(double start_time, double full_sim_time,
                            double split_start, double no_photons,
                            double tol) const;
-    std::vector <Source*> list;
-    std::vector <Source*> neg_list;
-    std::vector <Isotope*> isotopes;
+    std::vector <std::unique_ptr<Source>> list;
+    std::vector <std::unique_ptr<Source>> neg_list;
     double CalculateTime();
     bool InsideNegative(const VectorR3 & pos);
     int decay_number;

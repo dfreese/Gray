@@ -5,11 +5,9 @@
 #ifndef SOURCE_H
 #define SOURCE_H
 
-#include <stdlib.h>
-#include <math.h>
-#include <limits.h>
-#include <vector>
+#include <memory>
 #include <stack>
+#include <vector>
 
 #include <VrMath/MathMisc.h>
 #include <VrMath/LinearR3.h>
@@ -22,7 +20,7 @@ class Source
 {
 public:
     Source() :
-        isotope(NULL),
+        isotope(nullptr),
         activity(0),
         negative(false),
         source_num(0),
@@ -31,7 +29,7 @@ public:
     }
 
     Source(const VectorR3 & pos, double act) :
-        isotope(NULL),
+        isotope(nullptr),
         activity(act),
         negative(false),
         source_num(0),
@@ -49,9 +47,9 @@ public:
         return activity;
     }
 
-    void SetIsotope(Isotope * i)
+    virtual void SetIsotope(std::unique_ptr<Isotope> i)
     {
-        isotope = i;
+        isotope = std::move(i);
     }
 
     void SetPosition(const VectorR3 & pos)
@@ -82,7 +80,7 @@ public:
 
     Isotope * GetIsotope()
     {
-        return isotope;
+        return isotope.get();
     }
 
     void Reset() {
@@ -93,7 +91,7 @@ public:
     virtual VectorR3 Decay(int photon_number, double time) = 0;
 
 protected:
-    Isotope * isotope;
+    std::unique_ptr<Isotope> isotope;
     double activity;
     bool negative;
     int source_num;

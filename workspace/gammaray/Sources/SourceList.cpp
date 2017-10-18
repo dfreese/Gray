@@ -3,7 +3,6 @@
 #include <Physics/Beam.h>
 #include <Physics/Positron.h>
 #include <Physics/PositronDecay.h>
-#include <Sources/Source.h>
 #include <Sources/BeamPointSource.h>
 #include <Sources/VectorSource.h>
 #include <Graphics/VisiblePoint.h>
@@ -24,54 +23,37 @@ SourceList::SourceList() :
 {
 }
 
-SourceList::~SourceList()
+void SourceList::AddSource(std::unique_ptr<Source> s)
 {
-    while (!list.empty()) {
-        delete list.back();
-        list.pop_back();
-    }
-    while (!neg_list.empty()) {
-        delete neg_list.back();
-        neg_list.pop_back();
-    }
-    while (!isotopes.empty()) {
-        delete isotopes.back();
-        isotopes.pop_back();
-    }
-}
-
-void SourceList::AddSource(Source * s)
-{
-    Isotope * isotope;
+    std::unique_ptr<Isotope> isotope;
 
     // BeamPointSource requires a beam isotope, so override the current isotope
     // setting to make sure that is given.
-    BeamPointSource * beam_pt_src = dynamic_cast<BeamPointSource *>(s);
+    BeamPointSource * beam_pt_src = dynamic_cast<BeamPointSource *>(s.get());
     if (beam_pt_src) {
-        isotope = static_cast<Isotope *>(new Beam());
+        isotope = std::unique_ptr<Isotope>(new Beam());
     } else {
         if (valid_positrons.count(current_isotope) > 0) {
-            Positron * pos = new Positron(valid_positrons[current_isotope]);
-            isotope = static_cast<Isotope *>(pos);
+            isotope = std::unique_ptr<Isotope>(
+                    new Positron(valid_positrons[current_isotope]));
         } else {
             string error = "Isotope named " + current_isotope
                 + " somehow set as current isotope, but was not implemented";
             throw(runtime_error(error));
         }
     }
-    isotopes.push_back(isotope);
     
-    s->SetIsotope(isotope);
+    s->SetIsotope(std::move(isotope));
     if (s->isNegative()) {
         if (s->GetActivity() < -1.0) {
             string error = "Negative Source activities should be [-1,0)";
             throw(runtime_error(error));
         }
-        neg_list.push_back(s);
-        s->SetSourceNum(-1 * static_cast<int>(neg_list.size()));
+        s->SetSourceNum(static_cast<int>(neg_list.size()) - 1);
+        neg_list.push_back(std::move(s));
     } else {
         s->SetSourceNum(static_cast<int>(list.size()));
-        list.push_back(s);
+        list.push_back(std::move(s));
     }
 }
 
@@ -103,7 +85,7 @@ double SourceList::GetEndTime() const {
 
 void SourceList::AddNextDecay(size_t source_idx, double base_time) {
     // Calculating the next source decay time
-    Source * source = list[source_idx];
+    auto & source = list[source_idx];
     double source_activity_bq = source->GetActivity() * microCurie;
     if (simulate_isotope_half_life) {
         Isotope * isotope = source->GetIsotope();
@@ -130,7 +112,7 @@ Source * SourceList::Decay()
     size_t s_idx;
     GetNextDecay(s_idx, decay_time);
     AddNextDecay(s_idx, decay_time);
-    Source * source = list[s_idx];
+    auto & source = list[s_idx];
     source->Reset();
     VectorR3 decay_pos = source->Decay(decay_number, decay_time);
     // Time advances even if the decay is rejected by the inside negative
@@ -140,7 +122,8 @@ Source * SourceList::Decay()
         return(NULL);
     } else {
         decay_number++;
-        return(source);
+        // FIXME
+        return(source.get());
     }
 }
 
@@ -184,7 +167,7 @@ void SourceList::SetStartTime(double val)
 
 double SourceList::ExpectedDecays(double start_time, double sim_time) const {
     double total = 0;
-    for (Source * source: list) {
+    for (auto & source: list) {
         double activity = source->GetActivity();
         double half_life = source->GetIsotope()->GetHalfLife();
         double source_decays = (pow(0.5, start_time / half_life) -
@@ -200,7 +183,7 @@ double SourceList::ExpectedDecays(double start_time, double sim_time) const {
 
 double SourceList::ExpectedPhotons(double start_time, double sim_time) const {
     double total = 0;
-    for (Source * source: list) {
+    for (auto & source: list) {
         double activity = source->GetActivity();
         double half_life = source->GetIsotope()->GetHalfLife();
         double source_decays = (pow(0.5, start_time / half_life) -
@@ -284,8 +267,7 @@ void SourceList::BuildMaterialStacks(const SceneDescription & scene,
     VectorR3 dir;
     dir.SetUnitX();
 
-    for (int src_idx = 0; src_idx < list.size(); src_idx++) {
-        Source * source = list[src_idx];
+    for (auto & source: list) {
         stack<GammaMaterial const *> materials;
         stack<bool> front_face;
         VisiblePoint point;

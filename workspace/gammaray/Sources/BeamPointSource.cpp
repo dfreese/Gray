@@ -10,17 +10,17 @@ BeamPointSource::BeamPointSource(const VectorR3 &p, const VectorR3 &a, double an
 {
 }
 
-void BeamPointSource::SetIsotope(Isotope * i)
+void BeamPointSource::SetIsotope(std::unique_ptr<Isotope> i)
 {
-    isotope = dynamic_cast<Beam*>(i);
-    if (!isotope) {
+    if (!dynamic_cast<Beam*>(i.get())) {
         throw(std::runtime_error("BeamPointSource requires Beam Isotope"));
     }
+    isotope = std::move(i);
 };
 
 VectorR3 BeamPointSource::Decay(int photon_number, double time)
 {
-    dynamic_cast<Beam*>(isotope)->SetBeam(beam_axis, beam_angle);
+    static_cast<Beam&>(*isotope).SetBeam(beam_axis, beam_angle);
     isotope->Decay(photon_number, time, source_num, position);
     return(position);
 }
