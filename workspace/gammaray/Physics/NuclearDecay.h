@@ -19,10 +19,9 @@ public:
     int GetSourceId() const;
     VectorR3 GetPosition() const;
     double GetTime() const;
+    void AddPhoton(Photon && p);
 
 protected:
-    void AddPhoton(Photon && p);
-    
     double energy;
     int decay_number;
     int src_id;

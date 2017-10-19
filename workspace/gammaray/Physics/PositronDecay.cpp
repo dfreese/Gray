@@ -47,34 +47,20 @@ void PositronDecay::Decay(int photon_number, double time, int src_id,
     this->src_id = src_id;
     this->time = time;
     this->position = anni_position;
-
-    if (emit_gamma) {
-        // TODO: log the positron annihilation and nuclear decay positions
-        // separately
-        // TODO: correctly set the time on the gamma decay, based on the
-        // lifetime of the intermediate decay state.
-        this->AddPhoton(Photon(position, Random::UniformSphere(), gamma_decay_energy,
-                               time, photon_number, Photon::P_YELLOW, src_id));
-    }
-
-    // Check to see if a Positron was emitted with the gamma or not.
-    if (Random::Selection(positron_emission_prob)) {
-        const VectorR3 dir = Random::UniformSphere();
-        this->AddPhoton(Photon(anni_position, dir,
-                               Physics::energy_511, time, photon_number,
-                               Photon::P_BLUE, src_id));
-        this->AddPhoton(Photon(anni_position,
-                               Random::Acolinearity(dir, acolinearity),
-                               Physics::energy_511, time, photon_number,
-                               Photon::P_RED, src_id));
-    }
 }
 
 bool PositronDecay::EmitsGamma() const {
     return(emit_gamma);
 }
 
-
 double PositronDecay::PositronEmissionProb() const {
     return(positron_emission_prob);
+}
+
+double PositronDecay::GammaDecayEnergy() const {
+    return (gamma_decay_energy);
+}
+
+double PositronDecay::Acolinearity() const {
+    return (acolinearity);
 }

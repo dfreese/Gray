@@ -1,4 +1,5 @@
 #include <Physics/Positron.h>
+#include <Physics/Physics.h>
 #include <Random/Random.h>
 
 using namespace std;
@@ -50,17 +51,39 @@ void Positron::Decay(int photon_number, double time, int src_id,
                      const VectorR3 & position)
 {
     AddNuclearDecay(&p);
+    VectorR3 anni_position;
     if (use_positron_dbexp) {
-        VectorR3 anni_position = PositronRangeLevin(position, positronC,
-                                                    positronK1, positronK2,
-                                                    positronMaxRange);
-        p.Decay(photon_number, time, src_id, position, anni_position);
+        anni_position = PositronRangeLevin(position, positronC,
+                                           positronK1, positronK2,
+                                           positronMaxRange);
     } else if (use_positron_gauss) {
-        VectorR3 anni_position = PositronRangeGauss(position, positronFWHM,
-                                                    positronMaxRange);
-        p.Decay(photon_number, time, src_id, position, anni_position);
+        anni_position = PositronRangeGauss(position, positronFWHM,
+                                           positronMaxRange);
     } else {
-        p.Decay(photon_number, time, src_id, position);
+        anni_position = position;
+    }
+    p.Decay(photon_number, time, src_id, position);
+
+    if (p.EmitsGamma()) {
+        // TODO: log the positron annihilation and nuclear decay positions
+        // separately
+        // TODO: correctly set the time on the gamma decay, based on the
+        // lifetime of the intermediate decay state.
+        p.AddPhoton(Photon(position, Random::UniformSphere(),
+                           p.GammaDecayEnergy(), time, photon_number,
+                           Photon::P_YELLOW, src_id));
+    }
+
+    // Check to see if a Positron was emitted with the gamma or not.
+    if (Random::Selection(p.PositronEmissionProb())) {
+        const VectorR3 dir = Random::UniformSphere();
+        p.AddPhoton(Photon(anni_position, dir,
+                           Physics::energy_511, time, photon_number,
+                           Photon::P_BLUE, src_id));
+        p.AddPhoton(Photon(anni_position,
+                           Random::Acolinearity(dir, p.Acolinearity()),
+                           Physics::energy_511, time, photon_number,
+                           Photon::P_RED, src_id));
     }
 }
 

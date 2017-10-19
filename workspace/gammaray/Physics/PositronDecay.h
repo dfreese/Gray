@@ -16,6 +16,8 @@ public:
                const VectorR3 & position, const VectorR3 & anni_position);
     bool EmitsGamma() const;
     double PositronEmissionProb() const;
+    double GammaDecayEnergy() const;
+    double Acolinearity() const;
 
 private:
     double acolinearity;

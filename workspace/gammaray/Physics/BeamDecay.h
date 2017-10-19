@@ -8,13 +8,8 @@ class BeamDecay : public NuclearDecay
 {
 public:
     BeamDecay();
-    void SetBeam(const VectorR3 &axis, const double angle);
     virtual void Decay(int photon_number, double time, int src_id,
                        const VectorR3 & position);
-
-private:
-    double angle;
-    VectorR3 axis;
 };
 
 #endif /* BEAMDECAY_H */
