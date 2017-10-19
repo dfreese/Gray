@@ -3,36 +3,6 @@
 #include <Random/Random.h>
 #include <Random/Transform.h>
 
-using namespace std;
-
-namespace {
-    const double CONST_FWHM_TO_SIGMA = (1.0)/(2.35482005);
-    const double CONST_MM_TO_CM = (0.1); // 10 mm per cm
-}
-
-Positron::Positron() :
-    Isotope(),
-    use_positron_dbexp(false),
-    use_positron_gauss(false),
-    acolinearity(0),
-    gamma_decay_energy(0),
-    positron_emission_prob(1.0),
-    emit_gamma(false)
-{
-}
-
-
-Positron::Positron(double acolinearity_deg_fwhm, double half_life) :
-    Positron(acolinearity_deg_fwhm, half_life, 1.0, 0)
-{
-}
-
-Positron::Positron(double acolinearity_deg_fwhm, double half_life,
-                   double positron_emis_prob) :
-    Positron(acolinearity_deg_fwhm, half_life, positron_emis_prob, 0)
-{
-}
-
 Positron::Positron(double acolinearity_deg_fwhm, double half_life,
                    double positron_emis_prob, double gamma_decay_energy_mev) :
     Isotope(half_life),
@@ -52,10 +22,10 @@ void Positron::Decay(int photon_number, double time, int src_id,
     if (use_positron_dbexp) {
         anni_position = PositronRangeLevin(position, positronC,
                                            positronK1, positronK2,
-                                           positronMaxRange);
+                                           positron_max_range_cm);
     } else if (use_positron_gauss) {
-        anni_position = PositronRangeGauss(position, positronFWHM,
-                                           positronMaxRange);
+        anni_position = PositronRangeGauss(position, positron_range_sigma_cm,
+                                           positron_max_range_cm);
     } else {
         anni_position = position;
     }
@@ -89,17 +59,21 @@ void Positron::Decay(int photon_number, double time, int src_id,
 void Positron::SetPositronRange(double c, double k1, double k2, double max) {
     use_positron_dbexp = true;
     use_positron_gauss  = false;
-    positronC = c;
-    positronK1 = k1;
-    positronK2 = k2;
-    positronMaxRange = max;
+
+    // generate cprime which is the scales the dual exponential into a form
+    // that allows it to be monte-carlo generated.  It is the integral of
+    // exponential k1 portion over the integral of total.
+    positronC = c / (c + k1 / k2 * (1 - c));
+    positronK1 = k1 / mm_to_cm;
+    positronK2 = k2 / mm_to_cm;
+    positron_max_range_cm = max * mm_to_cm;
 }
 
 void Positron::SetPositronRange(double fwhm, double max) {
     use_positron_dbexp = true;
     use_positron_gauss  = false;
-    positronFWHM = fwhm;
-    positronMaxRange = max;
+    positron_range_sigma_cm = fwhm * mm_to_cm * Transform::fwhm_to_sigma;
+    positron_max_range_cm = max * mm_to_cm;
 }
 
 VectorR3 Positron::PositronRangeLevin(const VectorR3 & p, double positronC,
@@ -109,34 +83,28 @@ VectorR3 Positron::PositronRangeLevin(const VectorR3 & p, double positronC,
     // First generate a direction that the photon will be blurred
     VectorR3 positronDir = Random::UniformSphere();
     double range;
-    // generate cprime which is the scales the dual exponential into a form
-    // that allows it to be monte-carlo generated
-    double cp = (positronC)/(positronC+positronK1/positronK2*(1-positronC));
     do {
-        if (Random::Selection(cp)) {
+        if (Random::Selection(positronC)) {
             range = Random::Exponential(positronK1);
         } else {
             range = Random::Exponential(positronK2);
         }
-
     } while (range > positronMaxRange); // rejection test positron range
-    range *= CONST_MM_TO_CM;
 
     positronDir *= range;
     return(p + positronDir);
 }
 
-VectorR3 Positron::PositronRangeGauss(const VectorR3 & p, double positronFWHM,
-                                      double positronMaxRange)
+VectorR3 Positron::PositronRangeGauss(const VectorR3 & p,
+                                      double positron_range_sigma,
+                                      double positron_max_range)
 {
     // First generate a direction that the photon will be blurred
     VectorR3 positronDir = Random::UniformSphere();
     double range = 0.0;
-    // must return cm, sigma expressed in mm
     do {
-        range = Random::Gaussian() * positronFWHM * CONST_FWHM_TO_SIGMA;
-    } while (range > positronMaxRange); // rejection test positron range
-    range *= CONST_MM_TO_CM;
+        range = Random::Gaussian() * positron_range_sigma;
+    } while (range > positron_max_range); // rejection test positron range
     positronDir *= range;
 
     return(p + positronDir);

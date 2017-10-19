@@ -353,14 +353,13 @@ bool SourceList::LoadIsotopes(const std::string &filename) {
         if ((pos_emission_prob < 0) || (pos_emission_prob > 1.0)) {
             pos_emission_prob = 1.0;
         }
-        if (gamma_emission_energy <= 0) {
-            valid_positrons[isotope_name] = Positron(acolinearity, half_life,
-                                                     pos_emission_prob);
-        } else {
-            valid_positrons[isotope_name] = Positron(acolinearity, half_life,
-                                                     pos_emission_prob,
-                                                     gamma_emission_energy);
+        if (gamma_emission_energy < 0) {
+            gamma_emission_energy = 0;
         }
+
+        valid_positrons[isotope_name] = Positron(acolinearity, half_life,
+                                                 pos_emission_prob,
+                                                 gamma_emission_energy);
 
         if (positron_model == "none") {
         } else if (positron_model == "gauss") {
@@ -372,9 +371,6 @@ bool SourceList::LoadIsotopes(const std::string &filename) {
                 cerr << "Unable to parse gauss fwhm_mm or max_mm" << endl;
                 return(false);
             }
-            valid_positrons[isotope_name] = Positron(acolinearity, half_life,
-                                                     pos_emission_prob,
-                                                     gamma_emission_energy);
             valid_positrons[isotope_name].SetPositronRange(fwhm_mm, max_mm);
         } else if (positron_model == "levin_exp") {
             double c;
@@ -389,9 +385,6 @@ bool SourceList::LoadIsotopes(const std::string &filename) {
                 cerr << "Unable to parse levin_exp options" << endl;
                 return(false);
             }
-            valid_positrons[isotope_name] = Positron(acolinearity, half_life,
-                                                     pos_emission_prob,
-                                                     gamma_emission_energy);
             valid_positrons[isotope_name].SetPositronRange(c, k1, k2, max_mm);
         } else {
             cerr << "unrecognized positron model: " << positron_model << endl;
