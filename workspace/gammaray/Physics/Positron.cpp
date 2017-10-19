@@ -18,16 +18,15 @@ Positron::Positron(double acolinearity_deg_fwhm, double half_life,
 void Positron::Decay(int photon_number, double time, int src_id,
                      const VectorR3 & position)
 {
-    VectorR3 anni_position;
+    VectorR3 anni_position(position);
     if (use_positron_dbexp) {
-        anni_position = PositronRangeLevin(position, positronC,
-                                           positronK1, positronK2,
-                                           positron_max_range_cm);
+        const double range = Random::TruncatedLevinDoubleExp(
+                positronC, positronK1, positronK2, positron_range_max_cm);
+        anni_position += range * Random::UniformSphere();
     } else if (use_positron_gauss) {
-        anni_position = PositronRangeGauss(position, positron_range_sigma_cm,
-                                           positron_max_range_cm);
-    } else {
-        anni_position = position;
+        const double range = Random::TruncatedGaussian(positron_range_sigma_cm,
+                                                       positron_range_max_cm);
+        anni_position += range * Random::UniformSphere();
     }
     // TODO: log the positron annihilation and nuclear decay positions
     // separately
@@ -66,48 +65,14 @@ void Positron::SetPositronRange(double c, double k1, double k2, double max) {
     positronC = c / (c + k1 / k2 * (1 - c));
     positronK1 = k1 / mm_to_cm;
     positronK2 = k2 / mm_to_cm;
-    positron_max_range_cm = max * mm_to_cm;
+    positron_range_max_cm = max * mm_to_cm;
 }
 
 void Positron::SetPositronRange(double fwhm, double max) {
     use_positron_dbexp = true;
     use_positron_gauss  = false;
     positron_range_sigma_cm = fwhm * mm_to_cm * Transform::fwhm_to_sigma;
-    positron_max_range_cm = max * mm_to_cm;
-}
-
-VectorR3 Positron::PositronRangeLevin(const VectorR3 & p, double positronC,
-                                      double positronK1, double positronK2,
-                                      double positronMaxRange)
-{
-    // First generate a direction that the photon will be blurred
-    VectorR3 positronDir = Random::UniformSphere();
-    double range;
-    do {
-        if (Random::Selection(positronC)) {
-            range = Random::Exponential(positronK1);
-        } else {
-            range = Random::Exponential(positronK2);
-        }
-    } while (range > positronMaxRange); // rejection test positron range
-
-    positronDir *= range;
-    return(p + positronDir);
-}
-
-VectorR3 Positron::PositronRangeGauss(const VectorR3 & p,
-                                      double positron_range_sigma,
-                                      double positron_max_range)
-{
-    // First generate a direction that the photon will be blurred
-    VectorR3 positronDir = Random::UniformSphere();
-    double range = 0.0;
-    do {
-        range = Random::Gaussian() * positron_range_sigma;
-    } while (range > positron_max_range); // rejection test positron range
-    positronDir *= range;
-
-    return(p + positronDir);
+    positron_range_max_cm = max * mm_to_cm;
 }
 
 double Positron::_ExpectedNoPhotons() const {

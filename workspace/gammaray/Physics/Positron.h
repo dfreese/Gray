@@ -17,17 +17,11 @@ public:
 private:
     bool use_positron_dbexp = false;
     bool use_positron_gauss = false;
-    double positron_max_range_cm = 0;
+    double positron_range_max_cm = 0;
     double positron_range_sigma_cm = 0;
     double positronC = 0;
     double positronK1 = 0;
     double positronK2 = 0;
-    static VectorR3 PositronRangeLevin(const VectorR3 & p, double positronC,
-                                       double positronK1, double positronK2,
-                                       double positronMaxRange);
-    static VectorR3 PositronRangeGauss(const VectorR3 & p,
-                                       double positron_range_sigma,
-                                       double positron_max_range);
     virtual double _ExpectedNoPhotons() const;
 
     double acolinearity = 0;

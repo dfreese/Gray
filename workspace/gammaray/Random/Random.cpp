@@ -151,3 +151,26 @@ long Random::Poisson(double lambda)
     std::poisson_distribution<long> poisson_distribution(lambda);
     return(poisson_distribution(generator));
 }
+
+double Random::LevinDoubleExp(double c, double k1, double k2) {
+    return (Random::Exponential(Random::Selection(c) ? k1:k2));
+}
+
+double Random::TruncatedLevinDoubleExp(double c, double k1, double k2,
+                                       double max)
+{
+    double range;
+    do {
+        range = Random::LevinDoubleExp(c, k1, k2);
+    } while (range > max);
+    return(range);
+}
+
+double Random::TruncatedGaussian(double sigma, double max) {
+    double range;
+    do {
+        range = Random::Gaussian() * sigma;
+    } while (range > max);
+    return(range);
+}
+
