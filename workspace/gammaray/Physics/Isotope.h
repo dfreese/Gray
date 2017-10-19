@@ -10,25 +10,17 @@
 class Isotope
 {
 public:
-    Isotope();
+    Isotope() = default;
     Isotope(double half_life_s);
-    virtual ~Isotope() {};
-    virtual void Decay(int photon_number, double time, int src_id,
-                       const VectorR3 & position) = 0;
-    virtual void Reset();
-    NuclearDecay NextNuclearDecay();
-    bool IsEmpty() const;
+    virtual ~Isotope() = default;
+    virtual NuclearDecay Decay(int photon_number, double time, int src_id,
+                               const VectorR3 & position) = 0;
     double GetHalfLife() const;
     double FractionRemaining(double time) const;
-    double ExpectedNoPhotons() const;
-
-protected:
-    void AddNuclearDecay(NuclearDecay && nd);
+    virtual double ExpectedNoPhotons() const = 0;
 
 private:
-    double half_life;
-    std::stack<NuclearDecay> daughter;
-    virtual double _ExpectedNoPhotons() const = 0;
+    double half_life = std::numeric_limits<double>::infinity();
 };
 
 #endif /* ISOTOPE_H */

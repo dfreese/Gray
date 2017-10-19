@@ -50,19 +50,16 @@ size_t VoxelSource::search(double e, size_t b_idx, size_t s_idx)
     }
 }
 
-VectorR3 VoxelSource::Decay(int photon_number, double time)
+VectorR3 VoxelSource::Decay()
 {
-    VectorR3 pos;
     // Random is uniformly distributed between 0 and 1
     // prob.size is number of voxels.
     size_t idx = search(Random::Uniform(), 0, prob.size() - 1);
-    pos.x = scale.x * (index[idx][0] + Random::Uniform());
-    pos.y = scale.y * (index[idx][1] + Random::Uniform());
-    pos.z = scale.z * (index[idx][2] + Random::Uniform());
+    VectorR3 pos(scale.x * (index[idx][0] + Random::Uniform()),
+                 scale.y * (index[idx][1] + Random::Uniform()),
+                 scale.z * (index[idx][2] + Random::Uniform()));
 
     pos += position;
-
-    isotope->Decay(photon_number, time, source_num, pos);
     return(pos);
 }
 

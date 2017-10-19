@@ -12,8 +12,8 @@ class VectorSource : public Source
 {
 public:
     VectorSource(const double act, std::unique_ptr<SceneDescription> scene);
-    virtual VectorR3 Decay(int photon_number, double time);
-    bool virtual Inside(const VectorR3 & pos) const;
+    VectorR3 Decay() override;
+    bool Inside(const VectorR3 & pos) const override;
 
 private:
     const VectorR3 size;

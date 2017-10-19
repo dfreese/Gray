@@ -8,10 +8,8 @@ class SphereSource : public Source
 public:
     SphereSource();
     SphereSource(const VectorR3 &pos, double radius, double act);
-    void SetRadius(double r);
-
-    virtual VectorR3 Decay(int photon_number, double time);
-    bool virtual Inside(const VectorR3 & pos) const;
+    VectorR3 Decay() override;
+    bool Inside(const VectorR3 & pos) const override;
 private:
     double radius;
 };

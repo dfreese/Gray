@@ -24,7 +24,6 @@ public:
                   bool log_errors_inter);
 
     struct TraceStats {
-        long events = 0;
         long decays = 0;
         long photons = 0;
         long no_interaction = 0;
@@ -50,9 +49,6 @@ private:
     void TracePhoton(Photon &photon,
                      std::vector<Interaction> & interactions,
                      std::stack<GammaMaterial const *> MatStack);
-    bool UpdateStack(const VectorR3 & src_pos,
-                     const VectorR3 & pos,
-                     std::stack<GammaMaterial const *> & mat_stack) const;
 
     static const double Epsilon;
 

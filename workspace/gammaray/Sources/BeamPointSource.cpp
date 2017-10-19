@@ -16,12 +16,10 @@ void BeamPointSource::SetIsotope(std::unique_ptr<Isotope> i)
         throw(std::runtime_error("BeamPointSource requires Beam Isotope"));
     }
     isotope = std::move(i);
+    static_cast<Beam&>(*isotope).SetBeam(beam_axis, beam_angle);
 };
 
-VectorR3 BeamPointSource::Decay(int photon_number, double time)
-{
-    static_cast<Beam&>(*isotope).SetBeam(beam_axis, beam_angle);
-    isotope->Decay(photon_number, time, source_num, position);
+VectorR3 BeamPointSource::Decay() {
     return(position);
 }
 

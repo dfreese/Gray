@@ -12,8 +12,8 @@ class EllipsoidSource : public Source
 public:
     EllipsoidSource();
     EllipsoidSource(const VectorR3 &center, const VectorR3 &a1, const VectorR3 &a2, double r1, double r2, double r3, double act);
-    virtual VectorR3 Decay(int photon_number, double time);
-    bool virtual Inside(const VectorR3 & pos) const;
+    VectorR3 Decay() override;
+    bool Inside(const VectorR3 & pos) const override;
     void SetRadius(double r1, double r2, double r3);
     void SetAxis(const VectorR3 &a1,const VectorR3 &a2);
 private:

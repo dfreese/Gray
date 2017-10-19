@@ -15,7 +15,7 @@ Positron::Positron(double acolinearity_deg_fwhm, double half_life,
 {
 }
 
-void Positron::Decay(int photon_number, double time, int src_id,
+NuclearDecay Positron::Decay(int photon_number, double time, int src_id,
                      const VectorR3 & position)
 {
     VectorR3 anni_position(position);
@@ -52,7 +52,7 @@ void Positron::Decay(int photon_number, double time, int src_id,
                            Photon::P_RED, src_id));
     }
 
-    this->AddNuclearDecay(std::move(p));
+    return (p);
 }
 
 void Positron::SetPositronRange(double c, double k1, double k2, double max) {
@@ -75,7 +75,7 @@ void Positron::SetPositronRange(double fwhm, double max) {
     positron_range_max_cm = max * mm_to_cm;
 }
 
-double Positron::_ExpectedNoPhotons() const {
+double Positron::ExpectedNoPhotons() const {
     double expected = 2.0 * positron_emission_prob;
     if (emit_gamma) {
         expected += 1.0;

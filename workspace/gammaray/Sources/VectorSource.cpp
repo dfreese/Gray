@@ -19,15 +19,12 @@ VectorSource::VectorSource(const double act,
     this->scene->BuildTree(true, 8.0);
 }
 
-VectorR3 VectorSource::Decay(int photon_number, double time)
-{
+VectorR3 VectorSource::Decay() {
     VectorR3 pos;
     do {
         pos = center + Random::UniformRectangle(size);
     } while (!Inside(pos));
-
-    isotope->Decay(photon_number, time, source_num, pos);
-    return(pos);
+    return (pos);
 }
 
 bool VectorSource::Inside(const VectorR3 & pos) const

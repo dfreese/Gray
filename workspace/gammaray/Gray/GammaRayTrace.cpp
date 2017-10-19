@@ -162,86 +162,22 @@ void GammaRayTrace::TracePhoton(
     return;
 }
 
-/*!
- * Checks if a photon's start position changes the geometry it is in relative
- * to the center of the source from which we have already established a
- * reliable materials stack.
- *
- * This calls SeekIntersection limited to the distance between the two points.
- */
-bool GammaRayTrace::UpdateStack(const VectorR3 & src_pos,
-                                const VectorR3 & pos,
-                                std::stack<GammaMaterial const *> & mat_stack) const
-{
-    // If the points are equal, as they will be for a decay without some sort
-    // of blur like positron range, then bail without any ray tracing.
-    if (src_pos == pos) {
-        return (true);
-    }
-    // The direction vector from the center of the source to the photon's
-    // starting position. Leave this unnormalized for now so we can calculate
-    // the distance.
-    auto dir = pos - src_pos;
-    // This holds the maximum trace distance / returned hit distance
-    double dist = dir.Norm();
-    // The remaining distance we must trace to the photon's starting point
-    double remaining_dist = dist;
-    dir.Normalize();
-    VisiblePoint point;
-    point.SetPosition(src_pos);
-    while (scene.SeekIntersection(point.GetPosition() + Epsilon * dir, dir, dist, point) >= 0) {
-        remaining_dist -= dist + Epsilon;
-        dist = remaining_dist;
-        if (point.IsFrontFacing()) {
-            // Front face means we are entering a material.
-            mat_stack.push(static_cast<GammaMaterial const * const>(&point.GetMaterial()));
-        } else if (point.IsBackFacing()) {
-            // Back face means we are exiting a material
-            if (mat_stack.empty()) {
-                // If we somehow have an empty stack, then we somehow missed a
-                // front face.
-                return (false);
-            }
-            if (mat_stack.top() != (&point.GetMaterial())) {
-                // If the material we find on the back face isn't the material
-                // we think we're in, then there's probably some weird overlap.
-                return (false);
-            }
-            // If everything looks okay, pull that material off of the stack.
-            mat_stack.pop();
-        }
-    }
-    return (true);
-}
-
 void GammaRayTrace::TraceSources(std::vector<Interaction> & interactions,
                                  size_t soft_max_interactions)
 {
     while (sources.GetTime() < sources.GetEndTime()) {
-        Source * source = sources.Decay();
-        stats.events++;
-        if (!source) {
-            continue;
+        NuclearDecay decay = sources.Decay();
+        stats.decays++;
+        int src_id = decay.GetSourceId();
+        if (log_nuclear_decays) {
+            interactions.push_back(
+                    Physics::NuclearDecay(decay, sources.GetSourceMaterial(src_id)));
         }
-        Isotope * isotope = source->GetIsotope();
-        while(!isotope->IsEmpty()) {
-            NuclearDecay decay = isotope->NextNuclearDecay();
-            stats.decays++;
-            if (log_nuclear_decays) {
-                interactions.push_back(
-                        Physics::NuclearDecay(decay, *source->GetMaterialStack().top()));
-            }
-            while (!decay.IsEmpty()) {
-                Photon photon = decay.NextPhoton();
-                stats.photons++;
-                std::stack<GammaMaterial const *> mat_stack(source->GetMaterialStack());
-                if (!UpdateStack(source->GetPosition(), photon.GetPos(), mat_stack)) {
-                    ++stats.error;
-                    continue;
-                }
-
-                TracePhoton(photon, interactions, std::move(mat_stack));
-            }
+        while (!decay.IsEmpty()) {
+            Photon photon = decay.NextPhoton();
+            stats.photons++;
+            TracePhoton(photon, interactions,
+                        sources.GetUpdatedStack(src_id, photon.GetPos(), scene));
         }
 
         if (interactions.size() >= soft_max_interactions) {
@@ -257,8 +193,7 @@ const GammaRayTrace::TraceStats & GammaRayTrace::statistics() const {
 std::ostream & operator<< (std::ostream & os,
                            const GammaRayTrace::TraceStats& s)
 {
-    os << "events: " << s.events << "\n"
-       << "decays: " << s.decays << "\n"
+    os << "decays: " << s.decays << "\n"
        << "photons: " << s.photons << "\n"
        << "no_interaction: " << s.no_interaction << "\n"
        << "photoelectric: " << s.photoelectric << "\n"

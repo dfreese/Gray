@@ -17,11 +17,8 @@ AnnulusCylinderSource::AnnulusCylinderSource(const VectorR3 & position,
 {
 }
 
-VectorR3 AnnulusCylinderSource::Decay(int photon_number, double time)
-{
-    VectorR3 roted = local_to_global * Random::UniformAnnulusCylinder(length, radius);
-    isotope->Decay(photon_number, time, source_num, roted);
-    return(roted);
+VectorR3 AnnulusCylinderSource::Decay() {
+    return(local_to_global * Random::UniformAnnulusCylinder(length, radius));
 }
 
 bool AnnulusCylinderSource::Inside(const VectorR3 & pos) const

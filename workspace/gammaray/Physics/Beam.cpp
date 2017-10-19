@@ -17,7 +17,7 @@ void Beam::SetBeam(const VectorR3 & axis, double angle)
     beam_angle = angle;
 }
 
-void Beam::Decay(int photon_number, double time, int src_id,
+NuclearDecay Beam::Decay(int photon_number, double time, int src_id,
                  const VectorR3 & position)
 {
     NuclearDecay beam(photon_number, time, src_id, position, 0);
@@ -33,9 +33,9 @@ void Beam::Decay(int photon_number, double time, int src_id,
                           time, photon_number, Photon::P_BLUE, src_id));
     beam.AddPhoton(Photon(position, dir.Negate(), Physics::energy_511,
                           time, photon_number, Photon::P_RED, src_id));
-    this->AddNuclearDecay(std::move(beam));
+    return (beam);
 }
 
-double Beam::_ExpectedNoPhotons() const {
+double Beam::ExpectedNoPhotons() const {
     return(2.0);
 }

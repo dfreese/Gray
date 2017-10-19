@@ -51,7 +51,6 @@ void SourceList::AddSource(std::unique_ptr<Source> s)
         s->SetSourceNum(static_cast<int>(neg_list.size()) - 1);
         neg_list.push_back(std::move(s));
     } else {
-        s->ConvertActivityMicroCuireToBq();
         s->SetSourceNum(static_cast<int>(list.size()));
         list.push_back(std::move(s));
     }
@@ -67,7 +66,7 @@ double SourceList::GetTime() const
     // Set the current time to be the next decay that will happen.  This won't
     // be accessed until the next iteration of the main loop, this way we don't
     // simulate events outside of the simulation time.
-    return((*decay_list.begin()).first);
+    return((*decay_list.begin()).time);
 }
 
 double SourceList::GetElapsedTime() const {
@@ -83,48 +82,43 @@ double SourceList::GetEndTime() const {
     return(simulation_time + start_time);
 }
 
-void SourceList::AddNextDecay(size_t source_idx, double base_time) {
-    // Calculating the next source decay time
-    auto & source = list[source_idx];
+void SourceList::AddNextDecay(DecayInfo base_info) {
+    // Calculating the next source decay timesize_t source_idx, double base_time
+    auto & source = list[base_info.source_idx];
     double source_activity_bq = source->GetActivity();
-    if (simulate_isotope_half_life) {
-        Isotope * isotope = source->GetIsotope();
-        source_activity_bq *= isotope->FractionRemaining(base_time);
-    }
-    double decay_time = Random::Exponential(source_activity_bq);
-    decay_list[base_time + decay_time] = source_idx;
+    do {
+        if (simulate_isotope_half_life) {
+            Isotope & isotope = *source->GetIsotope();
+            source_activity_bq *= isotope.FractionRemaining(base_info.time);
+        }
+        // Time advances even if the decay is rejected by the inside negative
+        // source test.  This is by design, as we do not know how much activity
+        // a negative source inherently removes from the positive sources.
+        base_info.time += Random::Exponential(source_activity_bq);
+        base_info.position = source->Decay();
+    } while (InsideNegative(base_info.position));
+    base_info.decay_number = decay_number++;
+    decay_list.insert(base_info);
 }
 
-void SourceList::GetNextDecay(size_t & source_idx, double & time) {
-    time = (*decay_list.begin()).first;
-    source_idx = (*decay_list.begin()).second;
+SourceList::DecayInfo SourceList::GetNextDecay() {
+    DecayInfo ret_val(*decay_list.begin());
     decay_list.erase(decay_list.begin());
+    return (ret_val);
 }
 
-Source * SourceList::Decay()
-{
+NuclearDecay SourceList::Decay() {
     if (list.empty()) {
         string error = "Decay called with no sources to decay";
         throw(runtime_error(error));
     }
 
-    double decay_time;
-    size_t s_idx;
-    GetNextDecay(s_idx, decay_time);
-    AddNextDecay(s_idx, decay_time);
-    auto & source = list[s_idx];
-    source->Reset();
-    VectorR3 decay_pos = source->Decay(decay_number, decay_time);
-    // Time advances even if the decay is rejected by the inside negative
-    // source test.  This is by design, as we do not know how much activity a
-    // negative source inherently removes from the positive sources.
-    if (InsideNegative(decay_pos)) {
-        return(NULL);
-    } else {
-        decay_number++;
-        // FIXME
-        return(source.get());
-    }
+    DecayInfo decay = GetNextDecay();
+    AddNextDecay(decay);
+    auto & source = list[decay.source_idx];
+    Isotope & isotope = *source->GetIsotope();
+    return (isotope.Decay(decay.decay_number, decay.time, decay.source_idx,
+                          decay.position));
 }
 
 bool SourceList::InsideNegative(const VectorR3 & pos)
@@ -257,7 +251,10 @@ void SourceList::AdjustTimeForSplit(int idx, int n) {
 
 void SourceList::InitSources() {
     for (size_t sidx = 0; sidx < list.size(); sidx++) {
-        AddNextDecay(sidx, start_time);
+        DecayInfo info;
+        info.time = start_time;
+        info.source_idx = sidx;
+        AddNextDecay(info);
     }
 }
 
@@ -308,6 +305,69 @@ void SourceList::BuildMaterialStacks(const SceneDescription & scene,
         }
         source->SetMaterialStack(true_materials);
     }
+}
+
+std::stack<GammaMaterial const *> SourceList::GetSourceMaterialStack(size_t idx) const
+{
+    return (list[idx]->GetMaterialStack());
+}
+
+const GammaMaterial & SourceList::GetSourceMaterial(size_t idx) const {
+    return (*list[idx]->GetMaterialStack().top());
+}
+
+/*!
+ * Checks if a photon's start position changes the geometry it is in relative
+ * to the center of the source from which we have already established a
+ * reliable materials stack.
+ *
+ * This calls SeekIntersection limited to the distance between the two points.
+ */
+std::stack<GammaMaterial const *> SourceList::GetUpdatedStack(
+        size_t idx, const VectorR3 & pos, const SceneDescription & scene) const
+{
+    std::stack<GammaMaterial const *> mat_stack(GetSourceMaterialStack(idx));
+    VectorR3 src_pos(list[idx]->GetPosition());
+    // If the points are equal, as they will be for a decay without some sort
+    // of blur like positron range, then bail without any ray tracing.
+    if (src_pos == pos) {
+        return (mat_stack);
+    }
+    // The direction vector from the center of the source to the photon's
+    // starting position. Leave this unnormalized for now so we can calculate
+    // the distance.
+    auto dir = pos - src_pos;
+    // This holds the maximum trace distance / returned hit distance
+    double dist = dir.Norm();
+    // The remaining distance we must trace to the photon's starting point
+    double remaining_dist = dist;
+    dir.Normalize();
+    VisiblePoint point;
+    point.SetPosition(src_pos);
+    while (scene.SeekIntersection(point.GetPosition() + 1e-10 * dir, dir, dist, point) >= 0)
+    {
+        remaining_dist -= dist + 1e-10;
+        dist = remaining_dist;
+        if (point.IsFrontFacing()) {
+            // Front face means we are entering a material.
+            mat_stack.push(static_cast<GammaMaterial const * const>(&point.GetMaterial()));
+        } else if (point.IsBackFacing()) {
+            // Back face means we are exiting a material
+            if (mat_stack.empty()) {
+                // If we somehow have an empty stack, then we somehow missed a
+                // front face.
+                break;
+            }
+            if (mat_stack.top() != (&point.GetMaterial())) {
+                // If the material we find on the back face isn't the material
+                // we think we're in, then there's probably some weird overlap.
+                break;
+            }
+            // If everything looks okay, pull that material off of the stack.
+            mat_stack.pop();
+        }
+    }
+    return (mat_stack);
 }
 
 bool SourceList::LoadIsotopes(const std::string &filename) {

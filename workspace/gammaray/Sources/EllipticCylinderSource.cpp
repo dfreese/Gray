@@ -21,8 +21,7 @@ EllipticCylinderSource::EllipticCylinderSource(const VectorR3 &p, double r1,
     SetAxis(L);
 }
 
-VectorR3 EllipticCylinderSource::Decay(int photon_number, double time)
-{
+VectorR3 EllipticCylinderSource::Decay() {
     double r1sq = radius1*radius1;
     double r2sq = radius2*radius2;
 
@@ -33,10 +32,7 @@ VectorR3 EllipticCylinderSource::Decay(int photon_number, double time)
         positron.z = 0;
     } while (positron.x*positron.x/r1sq + positron.y*positron.y/r2sq > 1);
     positron.z = length*(0.5 - Random::Uniform());
-
-    VectorR3 roted = local_to_global * positron;
-    isotope->Decay(photon_number, time, source_num, roted);
-    return(roted);
+    return(local_to_global * positron);
 }
 
 void EllipticCylinderSource::SetRadius(double r1, double r2)

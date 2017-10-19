@@ -3,6 +3,8 @@
 
 #include <map>
 #include <memory>
+#include <set>
+#include <stack>
 #include <string>
 #include <vector>
 #include <Physics/Positron.h>
@@ -17,7 +19,7 @@ class SourceList
 {
 public:
     SourceList();
-    Source * Decay();
+    NuclearDecay Decay();
     void AddSource(std::unique_ptr<Source> s);
     bool SetCurIsotope(const std::string & iso);
     void SetSimulationTime(double time);
@@ -32,6 +34,10 @@ public:
     void AdjustTimeForSplit(int idx, int n);
     void BuildMaterialStacks(const SceneDescription & scene,
                              GammaMaterial const * default_material);
+    GammaMaterial const & GetSourceMaterial(size_t idx) const;
+    std::stack<GammaMaterial const *> GetUpdatedStack(size_t idx,
+                                                      const VectorR3 & pos,
+                                                      const SceneDescription & scene) const;
 
 private:
     double ExpectedDecays(double start_time, double sim_time) const;
@@ -43,6 +49,8 @@ private:
     double SearchSplitTime(double start_time, double full_sim_time,
                            double split_start, double no_photons,
                            double tol) const;
+
+    std::stack<GammaMaterial const *> GetSourceMaterialStack(size_t idx) const;
     std::vector <std::unique_ptr<Source>> list;
     std::vector <std::unique_ptr<Source>> neg_list;
     double CalculateTime();
@@ -51,9 +59,18 @@ private:
     std::map<std::string, Positron> valid_positrons;
     std::string current_isotope;
     double simulation_time;
-    std::map<double, size_t> decay_list;
-    void AddNextDecay(size_t source_idx, double base_time);
-    void GetNextDecay(size_t & source_idx, double & time);
+    struct DecayInfo {
+        double time;
+        size_t source_idx;
+        VectorR3 position;
+        int decay_number;
+        friend bool operator<(const DecayInfo & lhs, const DecayInfo & rhs) {
+            return (lhs.time < rhs.time);
+        }
+    };
+    std::set<DecayInfo> decay_list;
+    void AddNextDecay(DecayInfo base_info);
+    DecayInfo GetNextDecay();
     bool simulate_isotope_half_life;
     double start_time;
 };

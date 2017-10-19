@@ -10,8 +10,8 @@ public:
     AnnulusCylinderSource();
     AnnulusCylinderSource(const VectorR3 & position, double radius, VectorR3 L,
                           double activity);
-    virtual VectorR3 Decay(int photon_number, double time);
-    virtual bool Inside(const VectorR3 & pos) const;
+    VectorR3 Decay() override;
+    bool Inside(const VectorR3 & pos) const override;
 
 private:
     double radius;

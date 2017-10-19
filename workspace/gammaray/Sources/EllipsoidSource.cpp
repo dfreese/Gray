@@ -24,27 +24,18 @@ EllipsoidSource::EllipsoidSource(const VectorR3 &center, const VectorR3 &a1,
     SetAxis(a1, a2);
 }
 
-VectorR3 EllipsoidSource::Decay(int photon_number, double time)
-{
-
-    //FIXME: Sources are not rotating -- FIXED 01-13-2020 AVDB
-    //FIXME: Inside is not rotating -- BUG PDO
-
+VectorR3 EllipsoidSource::Decay() {
+    const double r1sq = radius1*radius1;
+    const double r2sq = radius2*radius2;
+    const double r3sq = radius3*radius3;
     VectorR3 p;
-    double r1sq = radius1*radius1;
-    double r2sq = radius2*radius2;
-    double r3sq = radius3*radius3;
-
     // ellipsoid test
     do {
         p.x = (1.0 - 2.0*Random::Uniform())*radius1;
         p.y = (1.0 - 2.0*Random::Uniform())*radius2;
         p.z = (1.0 - 2.0*Random::Uniform())*radius3;
     } while ( (p.x*p.x/r1sq + p.y*p.y/r2sq + p.z*p.z/r3sq) > 1 );
-
-    VectorR3 roted = local_to_global * p;
-    isotope->Decay(photon_number, time, source_num, roted);
-    return(roted);
+    return(local_to_global * p);
 }
 
 void EllipsoidSource::SetRadius(double r1, double r2, double r3)

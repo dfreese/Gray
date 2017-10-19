@@ -12,9 +12,8 @@ public:
     RectSource();
     RectSource(const VectorR3 &pos, const VectorR3 &sz,
                const VectorR3 & orientation, double act);
-
-    virtual VectorR3 Decay(int photon_number, double time);
-    bool virtual Inside(const VectorR3 & pos) const;
+    VectorR3 Decay() override;
+    bool Inside(const VectorR3 & pos) const override;
 private:
     const VectorR3 size;
     const RigidMapR3 local_to_global;

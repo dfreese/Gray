@@ -9,8 +9,9 @@ public:
     Positron() = default;
     Positron(double acolinearity_deg_fwhm, double half_life,
              double gamma_decay_energy_mev, double positron_emis_prob);
-    virtual void Decay(int photon_number, double time, int src_id,
-                       const VectorR3 & position);
+    NuclearDecay Decay(int photon_number, double time, int src_id,
+                       const VectorR3 & position) override;
+    double ExpectedNoPhotons() const override;
     void SetPositronRange(double c, double k1, double k2, double max);
     void SetPositronRange(double fwhm_mm, double max_mm);
 
@@ -22,7 +23,6 @@ private:
     double positronC = 0;
     double positronK1 = 0;
     double positronK2 = 0;
-    virtual double _ExpectedNoPhotons() const;
 
     double acolinearity = 0;
     double gamma_decay_energy = 0;

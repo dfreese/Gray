@@ -13,16 +13,8 @@ SphereSource::SphereSource(const VectorR3 &p, double rad, double act) :
 {
 }
 
-VectorR3 SphereSource::Decay(int photon_number, double time)
-{
-    VectorR3 pos = Random::UniformSphereFilled() * radius + position;
-    isotope->Decay(photon_number, time, source_num, pos);
-    return(pos);
-}
-
-void SphereSource::SetRadius(double r)
-{
-    radius = r;
+VectorR3 SphereSource::Decay() {
+    return(Random::UniformSphereFilled() * radius + position);
 }
 
 bool SphereSource::Inside(const VectorR3 & pos) const

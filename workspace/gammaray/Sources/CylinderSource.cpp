@@ -16,11 +16,8 @@ CylinderSource::CylinderSource(const VectorR3 &p, double rad, VectorR3 L, double
     SetAxis(L.MakeUnit());
 }
 
-VectorR3 CylinderSource::Decay(int photon_number, double time)
-{
-    VectorR3 positron = local_to_global * Random::UniformCylinder(length, radius);
-    isotope->Decay(photon_number, time, source_num, positron);
-    return(positron);
+VectorR3 CylinderSource::Decay() {
+    return(local_to_global * Random::UniformCylinder(length, radius));
 }
 
 void CylinderSource::SetRadius(double r)

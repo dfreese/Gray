@@ -10,8 +10,8 @@ class EllipticCylinderSource : public Source
 public:
     EllipticCylinderSource();
     EllipticCylinderSource(const VectorR3 &pos, double radius1, double radius2, VectorR3 &L, double act);
-    virtual VectorR3 Decay(int photon_number, double time);
-    bool virtual Inside(const VectorR3 & pos) const;
+    VectorR3 Decay() override;
+    bool Inside(const VectorR3 & pos) const override;
     void SetRadius(double r1, double r2);
     void SetAxis(VectorR3 &L);
 

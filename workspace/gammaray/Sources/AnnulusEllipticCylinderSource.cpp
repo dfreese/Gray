@@ -229,9 +229,7 @@ double AnnulusEllipticCylinderSource::IncompleteEllipticE(double phi, double m)
     return result;
 }
 
-
-VectorR3 AnnulusEllipticCylinderSource::Decay(int photon_number, double time)
-{
+VectorR3 AnnulusEllipticCylinderSource::Decay() {
     double C = circ[circ.size()-1];
     double C_uniform = C * Random::Uniform();
     double phi = InverseEllipticE(C_uniform);
@@ -243,10 +241,7 @@ VectorR3 AnnulusEllipticCylinderSource::Decay(int photon_number, double time)
     positron.x = radius*cos(phi);
     positron.y = radius*sin(phi);
     positron.z = length * (0.5 - Random::Uniform());
-
-    VectorR3 roted = local_to_global * positron;
-    isotope->Decay(photon_number, time, source_num, roted);
-    return(roted);
+    return(local_to_global * positron);
 }
 
 void AnnulusEllipticCylinderSource::SetRadius(double r1, double r2)

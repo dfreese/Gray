@@ -28,16 +28,17 @@ public:
     {
     }
 
-    Source(const VectorR3 & pos, double act) :
+    Source(const VectorR3 & pos, double activity_ucui) :
         isotope(nullptr),
-        activity(act),
+        activity(activity_ucui),
         negative(false),
         source_num(0),
         position(pos)
     {
-        if (act < 0.0) {
+        if (activity < 0.0) {
             negative = true;
         } else {
+            activity *= Physics::decays_per_microcurie;
             negative = false;
         }
     }
@@ -83,16 +84,8 @@ public:
         return isotope.get();
     }
 
-    void Reset() {
-        isotope->Reset();
-    }
-
-    void ConvertActivityMicroCuireToBq() {
-        activity *= Physics::decays_per_microcurie;
-    }
-
     virtual bool Inside(const VectorR3 &pos) const = 0;
-    virtual VectorR3 Decay(int photon_number, double time) = 0;
+    virtual VectorR3 Decay() = 0;
 
 protected:
     std::unique_ptr<Isotope> isotope;
