@@ -1,10 +1,9 @@
 #ifndef NUCLEARDECAY_H
 #define NUCLEARDECAY_H
 
-#include <VrMath/LinearR3.h>
 #include <stack>
-
-class Photon;
+#include <Physics/Photon.h>
+#include <VrMath/LinearR3.h>
 
 class NuclearDecay
 {
@@ -13,7 +12,7 @@ public:
     virtual void Decay(int photon_number, double time, int src_id,
                        const VectorR3 & position) = 0;
     virtual void Reset();
-    Photon * NextPhoton();
+    Photon NextPhoton();
     bool IsEmpty() const;
     double GetEnergy() const;
     int GetDecayNumber() const;
@@ -22,7 +21,7 @@ public:
     double GetTime() const;
 
 protected:
-    void AddPhoton(Photon * p);
+    void AddPhoton(Photon && p);
     
     double energy;
     int decay_number;
@@ -31,7 +30,7 @@ protected:
     double time;
 
 private:
-    std::stack<Photon *> daughter;
+    std::stack<Photon> daughter;
 };
 
 #endif /* NUCLEARDECAY_H */

@@ -1,6 +1,7 @@
 #include <Physics/BeamDecay.h>
-#include <Random/Random.h>
+#include <Physics/Photon.h>
 #include <Physics/Physics.h>
+#include <Random/Random.h>
 
 BeamDecay::BeamDecay() :
     angle(0),
@@ -30,11 +31,8 @@ void BeamDecay::Decay(int photon_number, double time, int src_id,
     } else {
         dir = axis;
     }
-
-    blue = Photon(position, dir, Physics::energy_511,
-                  time, photon_number, Photon::P_BLUE, src_id);
-    red = Photon(position, dir.Negate(), Physics::energy_511,
-                 time, photon_number, Photon::P_RED, src_id);
-    AddPhoton(&blue);
-    AddPhoton(&red);
+    this->AddPhoton(Photon(position, dir, Physics::energy_511,
+                           time, photon_number, Photon::P_BLUE, src_id));
+    this->AddPhoton(Photon(position, dir.Negate(), Physics::energy_511,
+                           time, photon_number, Photon::P_RED, src_id));
 }

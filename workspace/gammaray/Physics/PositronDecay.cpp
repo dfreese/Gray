@@ -1,4 +1,5 @@
 #include <Physics/PositronDecay.h>
+#include <Physics/Photon.h>
 #include <Physics/Physics.h>
 #include <Random/Random.h>
 #include <Random/Transform.h>
@@ -52,24 +53,20 @@ void PositronDecay::Decay(int photon_number, double time, int src_id,
         // separately
         // TODO: correctly set the time on the gamma decay, based on the
         // lifetime of the intermediate decay state.
-        yellow = Photon(position, Random::UniformSphere(), gamma_decay_energy,
-                        time, photon_number, Photon::P_YELLOW, src_id);
-        AddPhoton(&yellow);
+        this->AddPhoton(Photon(position, Random::UniformSphere(), gamma_decay_energy,
+                               time, photon_number, Photon::P_YELLOW, src_id));
     }
 
     // Check to see if a Positron was emitted with the gamma or not.
     if (Random::Selection(positron_emission_prob)) {
-        blue = Photon(anni_position, Random::UniformSphere(), Physics::energy_511,
-                      time, photon_number, Photon::P_BLUE, src_id);
-
-
-        red = Photon(anni_position,
-                     Random::Acolinearity(blue.GetDir(), acolinearity),
-                     Physics::energy_511, time, photon_number, Photon::P_RED,
-                     src_id);
-
-        AddPhoton(&blue);
-        AddPhoton(&red);
+        const VectorR3 dir = Random::UniformSphere();
+        this->AddPhoton(Photon(anni_position, dir,
+                               Physics::energy_511, time, photon_number,
+                               Photon::P_BLUE, src_id));
+        this->AddPhoton(Photon(anni_position,
+                               Random::Acolinearity(dir, acolinearity),
+                               Physics::energy_511, time, photon_number,
+                               Photon::P_RED, src_id));
     }
 }
 

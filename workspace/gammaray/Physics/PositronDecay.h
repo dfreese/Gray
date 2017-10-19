@@ -2,7 +2,6 @@
 #define GAMMAPOSITRONDECAY_H
 
 #include <Physics/NuclearDecay.h>
-#include <Physics/Photon.h>
 
 class PositronDecay : public NuclearDecay
 {
@@ -23,11 +22,6 @@ private:
     double gamma_decay_energy;
     double positron_emission_prob;
     bool emit_gamma;
-    // TODO: evaluate creating these versus having it as a part of the class.
-    // This makes it impossible to parallelize the raytracing of the photons.
-    Photon blue;
-    Photon red;
-    Photon yellow;
 };
 
 #endif

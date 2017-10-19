@@ -2,7 +2,6 @@
 #define BEAMDECAY_H
 
 #include <Physics/NuclearDecay.h>
-#include <Physics/Photon.h>
 #include <VrMath/LinearR3.h>
 
 class BeamDecay : public NuclearDecay
@@ -14,10 +13,6 @@ public:
                        const VectorR3 & position);
 
 private:
-    // TODO: evaluate creating this versus having it as a part of the class.
-    // This makes it impossible to parallelize the raytracing of the photons.
-    Photon blue;
-    Photon red;
     double angle;
     VectorR3 axis;
 };

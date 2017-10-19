@@ -2,7 +2,6 @@
 #define GAMMADECAY_H
 
 #include <Physics/NuclearDecay.h>
-#include <Physics/Photon.h>
 
 class GammaDecay : public NuclearDecay
 {
@@ -15,9 +14,6 @@ public:
 
 protected:
     double energy;
-    // TODO: evaluate creating this versus having it as a part of the class.
-    // This makes it impossible to parallelize the raytracing of the photons.
-    Photon gamma;
 };
 
 #endif /* GAMMADECAY_H */
