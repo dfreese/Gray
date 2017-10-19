@@ -55,6 +55,7 @@ public:
     static constexpr double speed_of_light_cmpers = 29979245800.0;
     static constexpr double inverse_speed_of_light = (1.0 / speed_of_light_cmpers);
     static constexpr double energy_511 = 0.510998903;
+    static constexpr double decays_per_microcurie = 37.0e3;
 
     // A class for static initialization of the dsigma_max values as a function
     // of energy

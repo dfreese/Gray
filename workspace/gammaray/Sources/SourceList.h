@@ -50,8 +50,6 @@ private:
     int decay_number;
     std::map<std::string, Positron> valid_positrons;
     std::string current_isotope;
-    // a microcurie is 37kevents/second
-    const double microCurie = 37.0e3;
     double simulation_time;
     std::map<double, size_t> decay_list;
     void AddNextDecay(size_t source_idx, double base_time);

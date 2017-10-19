@@ -12,7 +12,7 @@
 #include <VrMath/MathMisc.h>
 #include <VrMath/LinearR3.h>
 #include <Physics/Isotope.h>
-#include <Physics/Photon.h>
+#include <Physics/Physics.h>
 
 class GammaMaterial;
 
@@ -85,6 +85,10 @@ public:
 
     void Reset() {
         isotope->Reset();
+    }
+
+    void ConvertActivityMicroCuireToBq() {
+        activity *= Physics::decays_per_microcurie;
     }
 
     virtual bool Inside(const VectorR3 &pos) const = 0;

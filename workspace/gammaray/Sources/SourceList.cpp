@@ -2,6 +2,7 @@
 #include <Random/Random.h>
 #include <Physics/Beam.h>
 #include <Physics/Positron.h>
+#include <Physics/Physics.h>
 #include <Sources/BeamPointSource.h>
 #include <Sources/VectorSource.h>
 #include <Graphics/VisiblePoint.h>
@@ -25,7 +26,6 @@ SourceList::SourceList() :
 void SourceList::AddSource(std::unique_ptr<Source> s)
 {
     std::unique_ptr<Isotope> isotope;
-
     // BeamPointSource requires a beam isotope, so override the current isotope
     // setting to make sure that is given.
     BeamPointSource * beam_pt_src = dynamic_cast<BeamPointSource *>(s.get());
@@ -51,6 +51,7 @@ void SourceList::AddSource(std::unique_ptr<Source> s)
         s->SetSourceNum(static_cast<int>(neg_list.size()) - 1);
         neg_list.push_back(std::move(s));
     } else {
+        s->ConvertActivityMicroCuireToBq();
         s->SetSourceNum(static_cast<int>(list.size()));
         list.push_back(std::move(s));
     }
@@ -85,7 +86,7 @@ double SourceList::GetEndTime() const {
 void SourceList::AddNextDecay(size_t source_idx, double base_time) {
     // Calculating the next source decay time
     auto & source = list[source_idx];
-    double source_activity_bq = source->GetActivity() * microCurie;
+    double source_activity_bq = source->GetActivity();
     if (simulate_isotope_half_life) {
         Isotope * isotope = source->GetIsotope();
         source_activity_bq *= isotope->FractionRemaining(base_time);
