@@ -1,6 +1,7 @@
 #include <Physics/Positron.h>
 #include <Physics/Physics.h>
 #include <Random/Random.h>
+#include <Random/Transform.h>
 
 using namespace std;
 
@@ -11,34 +12,36 @@ namespace {
 
 Positron::Positron() :
     Isotope(),
-    p(),
     use_positron_dbexp(false),
-    use_positron_gauss(false)
+    use_positron_gauss(false),
+    acolinearity(0),
+    gamma_decay_energy(0),
+    positron_emission_prob(1.0),
+    emit_gamma(false)
 {
 }
 
 
 Positron::Positron(double acolinearity_deg_fwhm, double half_life) :
-    Isotope(half_life),
-    p(acolinearity_deg_fwhm),
-    use_positron_dbexp(false),
-    use_positron_gauss(false)
+    Positron(acolinearity_deg_fwhm, half_life, 1.0, 0)
 {
 }
 
 Positron::Positron(double acolinearity_deg_fwhm, double half_life,
                    double positron_emis_prob) :
-    Isotope(half_life),
-    p(acolinearity_deg_fwhm, positron_emis_prob),
-    use_positron_dbexp(false),
-    use_positron_gauss(false)
+    Positron(acolinearity_deg_fwhm, half_life, positron_emis_prob, 0)
 {
 }
 
 Positron::Positron(double acolinearity_deg_fwhm, double half_life,
                    double positron_emis_prob, double gamma_decay_energy_mev) :
     Isotope(half_life),
-    p(acolinearity_deg_fwhm, positron_emis_prob, gamma_decay_energy_mev)
+    use_positron_dbexp(false),
+    use_positron_gauss(false),
+    acolinearity(acolinearity_deg_fwhm / 180.0 * M_PI * Transform::fwhm_to_sigma),
+    gamma_decay_energy(gamma_decay_energy_mev),
+    positron_emission_prob(positron_emis_prob),
+    emit_gamma(gamma_decay_energy_mev > 0)
 {
 }
 
@@ -62,26 +65,26 @@ void Positron::Decay(int photon_number, double time, int src_id,
     } else {
         anni_position = position;
     }
-    p.Decay(photon_number, time, src_id, position);
+    // TODO: log the positron annihilation and nuclear decay positions
+    // separately
+    p.Decay(photon_number, time, src_id, anni_position);
 
-    if (p.EmitsGamma()) {
-        // TODO: log the positron annihilation and nuclear decay positions
-        // separately
+    if (emit_gamma) {
         // TODO: correctly set the time on the gamma decay, based on the
         // lifetime of the intermediate decay state.
         p.AddPhoton(Photon(position, Random::UniformSphere(),
-                           p.GammaDecayEnergy(), time, photon_number,
+                           gamma_decay_energy, time, photon_number,
                            Photon::P_YELLOW, src_id));
     }
 
     // Check to see if a Positron was emitted with the gamma or not.
-    if (Random::Selection(p.PositronEmissionProb())) {
+    if (Random::Selection(positron_emission_prob)) {
         const VectorR3 dir = Random::UniformSphere();
         p.AddPhoton(Photon(anni_position, dir,
                            Physics::energy_511, time, photon_number,
                            Photon::P_BLUE, src_id));
         p.AddPhoton(Photon(anni_position,
-                           Random::Acolinearity(dir, p.Acolinearity()),
+                           Random::Acolinearity(dir, acolinearity),
                            Physics::energy_511, time, photon_number,
                            Photon::P_RED, src_id));
     }
@@ -144,8 +147,8 @@ VectorR3 Positron::PositronRangeGauss(const VectorR3 & p, double positronFWHM,
 }
 
 double Positron::_ExpectedNoPhotons() const {
-    double expected = 2.0 * p.PositronEmissionProb();
-    if (p.EmitsGamma()) {
+    double expected = 2.0 * positron_emission_prob;
+    if (emit_gamma) {
         expected += 1.0;
     }
     return(expected);

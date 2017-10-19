@@ -36,6 +36,11 @@ private:
     static VectorR3 PositronRangeGauss(const VectorR3 & p, double positronFWHM,
                                        double positronMaxRange);
     virtual double _ExpectedNoPhotons() const;
+
+    double acolinearity;
+    double gamma_decay_energy;
+    double positron_emission_prob;
+    bool emit_gamma;
 };
 
 #endif /* POSITRON_H */
