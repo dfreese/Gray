@@ -2,7 +2,6 @@
 #include <Random/Random.h>
 #include <Physics/Beam.h>
 #include <Physics/Positron.h>
-#include <Physics/PositronDecay.h>
 #include <Sources/BeamPointSource.h>
 #include <Sources/VectorSource.h>
 #include <Graphics/VisiblePoint.h>

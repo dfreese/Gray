@@ -45,15 +45,9 @@ Positron::Positron(double acolinearity_deg_fwhm, double half_life,
 {
 }
 
-void Positron::Reset() {
-    p.Reset();
-    Isotope::Reset();
-}
-
 void Positron::Decay(int photon_number, double time, int src_id,
                      const VectorR3 & position)
 {
-    AddNuclearDecay(&p);
     VectorR3 anni_position;
     if (use_positron_dbexp) {
         anni_position = PositronRangeLevin(position, positronC,
@@ -67,7 +61,7 @@ void Positron::Decay(int photon_number, double time, int src_id,
     }
     // TODO: log the positron annihilation and nuclear decay positions
     // separately
-    p.Decay(photon_number, time, src_id, anni_position);
+    NuclearDecay p(photon_number, time, src_id, anni_position, 0.120);
 
     if (emit_gamma) {
         // TODO: correctly set the time on the gamma decay, based on the
@@ -88,6 +82,8 @@ void Positron::Decay(int photon_number, double time, int src_id,
                            Physics::energy_511, time, photon_number,
                            Photon::P_RED, src_id));
     }
+
+    this->AddNuclearDecay(std::move(p));
 }
 
 void Positron::SetPositronRange(double c, double k1, double k2, double max) {

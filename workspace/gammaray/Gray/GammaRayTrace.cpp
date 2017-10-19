@@ -225,14 +225,14 @@ void GammaRayTrace::TraceSources(std::vector<Interaction> & interactions,
         }
         Isotope * isotope = source->GetIsotope();
         while(!isotope->IsEmpty()) {
-            NuclearDecay * decay = isotope->NextNuclearDecay();
+            NuclearDecay decay = isotope->NextNuclearDecay();
             stats.decays++;
             if (log_nuclear_decays) {
                 interactions.push_back(
-                        Physics::NuclearDecay(*decay, *source->GetMaterialStack().top()));
+                        Physics::NuclearDecay(decay, *source->GetMaterialStack().top()));
             }
-            while (!decay->IsEmpty()) {
-                Photon photon = decay->NextPhoton();
+            while (!decay.IsEmpty()) {
+                Photon photon = decay.NextPhoton();
                 stats.photons++;
                 std::stack<GammaMaterial const *> mat_stack(source->GetMaterialStack());
                 if (!UpdateStack(source->GetPosition(), photon.GetPos(), mat_stack)) {

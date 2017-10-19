@@ -12,9 +12,9 @@ Isotope::Isotope(double half_life_s) :
 {
 }
 
-NuclearDecay * Isotope::NextNuclearDecay()
+NuclearDecay Isotope::NextNuclearDecay()
 {
-    NuclearDecay * val = daughter.top();
+    NuclearDecay val = daughter.top();
     daughter.pop();
     return val;
 }
@@ -24,7 +24,7 @@ bool Isotope::IsEmpty() const
     return(daughter.empty());
 }
 
-void Isotope::AddNuclearDecay(NuclearDecay * nd)
+void Isotope::AddNuclearDecay(NuclearDecay && nd)
 {
     daughter.push(nd);
 }

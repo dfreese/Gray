@@ -65,8 +65,6 @@ add_library(gammaray
     Output/Output.h
     Physics/Beam.cpp
     Physics/Beam.h
-    Physics/GammaDecay.cpp
-    Physics/GammaDecay.h
     Physics/GammaStats.cpp
     Physics/GammaStats.h
     Physics/Interaction.cpp
@@ -75,14 +73,10 @@ add_library(gammaray
     Physics/Isotope.h
     Physics/NuclearDecay.cpp
     Physics/NuclearDecay.h
-    Physics/BeamDecay.cpp
-    Physics/BeamDecay.h
     Physics/Photon.cpp
     Physics/Photon.h
     Physics/Positron.cpp
     Physics/Positron.h
-    Physics/PositronDecay.cpp
-    Physics/PositronDecay.h
     Physics/Physics.cpp
     Physics/Physics.h
     Pipeline/blurprocess.h

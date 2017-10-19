@@ -8,10 +8,9 @@
 class NuclearDecay
 {
 public:
-    NuclearDecay();
-    virtual void Decay(int photon_number, double time, int src_id,
-                       const VectorR3 & position) = 0;
-    virtual void Reset();
+    NuclearDecay() = default;
+    NuclearDecay(int decay_number, double time, int src_id,
+                 const VectorR3 & position, double energy);
     Photon NextPhoton();
     bool IsEmpty() const;
     double GetEnergy() const;
@@ -21,14 +20,12 @@ public:
     double GetTime() const;
     void AddPhoton(Photon && p);
 
-protected:
-    double energy;
-    int decay_number;
-    int src_id;
-    VectorR3 position;
-    double time;
-
 private:
+    double energy = 0;
+    int decay_number = 0;
+    int src_id = 0;
+    VectorR3 position = {0, 0, 0};
+    double time = 0;
     std::stack<Photon> daughter;
 };
 

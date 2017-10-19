@@ -1,13 +1,15 @@
 #include <Physics/NuclearDecay.h>
 #include <Random/Random.h>
 
-NuclearDecay::NuclearDecay() :
-    energy(0),
-    decay_number(0),
-    src_id(0),
-    position(0, 0, 0),
-    time(0)
+NuclearDecay::NuclearDecay(int decay_number, double time, int src_id,
+                           const VectorR3 & position, double energy) :
+    energy(energy),
+    decay_number(decay_number),
+    src_id(src_id),
+    position(position),
+    time(time)
 {
+
 }
 
 Photon NuclearDecay::NextPhoton()
@@ -45,10 +47,4 @@ VectorR3 NuclearDecay::GetPosition() const {
 
 double NuclearDecay::GetTime() const {
     return(time);
-}
-
-void NuclearDecay::Reset() {
-    while (!daughter.empty()) {
-        daughter.pop();
-    }
 }

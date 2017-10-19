@@ -16,18 +16,18 @@ public:
     virtual void Decay(int photon_number, double time, int src_id,
                        const VectorR3 & position) = 0;
     virtual void Reset();
-    NuclearDecay * NextNuclearDecay();
+    NuclearDecay NextNuclearDecay();
     bool IsEmpty() const;
     double GetHalfLife() const;
     double FractionRemaining(double time) const;
     double ExpectedNoPhotons() const;
 
 protected:
-    void AddNuclearDecay(NuclearDecay * nd);
+    void AddNuclearDecay(NuclearDecay && nd);
 
 private:
     double half_life;
-    std::stack<NuclearDecay*> daughter;
+    std::stack<NuclearDecay> daughter;
     virtual double _ExpectedNoPhotons() const = 0;
 };
 
