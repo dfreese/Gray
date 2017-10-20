@@ -13,16 +13,18 @@ public:
     static void Seed(unsigned long seed);
     static bool SeedSet();
     static void Seed();
+    static void SeedDefault();
     static unsigned long GetSeed();
     static void RankReseed(int rank);
+    static unsigned long Int();
     static double Uniform();
     static double Gaussian();
     static double Exponential(const double lambda);
+    static long Poisson(double lambda);
     static VectorR3 UniformSphere();
     static VectorR3 UniformSphereFilled();
     static VectorR3 Deflection(const VectorR3 & ref, double angle);
     static VectorR3 Acolinearity(const VectorR3 & ref, double radians);
-    static long Poisson(double lambda);
     static VectorR3 UniformCylinder(double height, double radius);
     static VectorR3 UniformAnnulusCylinder(double height, double radius);
     static VectorR3 UniformRectangle(const VectorR3 & size);
@@ -38,11 +40,10 @@ public:
                                            double max);
     static double TruncatedGaussian(double sigma, double max);
 private:
-    static std::mt19937 generator;
-    static std::normal_distribution<double> normal_distribution;
-    static std::uniform_real_distribution<double> uniform_distribution;
-    static bool seed_set;
-    static unsigned long seed_used;
+    static std::mt19937 & generator();
+    static std::normal_distribution<double> & normal_distribution();
+    static bool & seed_set();
+    static unsigned long & seed_used();
 };
 
 #endif /* RANDOM_H */

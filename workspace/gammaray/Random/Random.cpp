@@ -12,31 +12,61 @@
 static_assert(sizeof(void*) == 8,
               "Only 64bit compilers are supported at this time");
 
-std::mt19937 Random::generator;
-std::normal_distribution<double> Random::normal_distribution;
-std::uniform_real_distribution<double> Random::uniform_distribution;
-bool Random::seed_set = false;
-unsigned long Random::seed_used = 0;
+std::mt19937 & Random::generator() {
+    static std::mt19937 * generator = new std::mt19937();
+    return (*generator);
+}
+
+/*!
+ * Keep the normal distribution as a static member, rather than a local
+ * variable as most implementations of normal distributions generate two
+ * numbers, one which can be saved for later calls.
+ */
+std::normal_distribution<double> & Random::normal_distribution() {
+    static auto * normal = new std::normal_distribution<double>();
+    return (*normal);
+}
+
+bool & Random::seed_set() {
+    static bool * seed_set = new bool(false);
+    return (*seed_set);
+}
+
+unsigned long & Random::seed_used() {
+    static auto * seed_used = new unsigned long(std::mt19937::default_seed);
+    return (*seed_used);
+}
+
+unsigned long Random::Int() {
+    return(generator()());
+}
 
 double Random::Uniform() {
-    return(uniform_distribution(generator));
+    std::uniform_real_distribution<double> uniform;
+    return(uniform(generator()));
 }
 
 double Random::Gaussian() {
-    return(normal_distribution(generator));
+    return(normal_distribution()(generator()));
 }
 
 double Random::Exponential(const double lambda)
 {
     std::exponential_distribution<double> exponential_distribution(lambda);
-    return(exponential_distribution(generator));
+    return(exponential_distribution(generator()));
+}
+
+long Random::Poisson(double lambda)
+{
+    std::poisson_distribution<long> poisson_distribution(lambda);
+    return(poisson_distribution(generator()));
 }
 
 void Random::Seed(unsigned long seed)
 {
-    generator.seed(seed);
-    seed_set = true;
-    seed_used = seed;
+    generator().seed(seed);
+    seed_set() = true;
+    seed_used() = seed;
 }
 
 void Random::Seed()
@@ -45,21 +75,20 @@ void Random::Seed()
     Seed(seed);
 }
 
+void Random::SeedDefault() {
+    Seed(std::mt19937::default_seed);
+}
+
 unsigned long Random::GetSeed() {
-    return(seed_used);
+    return(seed_used());
 }
 
 bool Random::SeedSet() {
-    return(seed_set);
+    return(seed_set());
 }
 
 void Random::RankReseed(int rank) {
-    std::uniform_int_distribution<unsigned int> dist;
-    if (rank > 0) {
-        generator.discard(rank);
-        unsigned long new_seed = dist(generator);
-        Seed(new_seed);
-    }
+    Seed(GetSeed() + rank);
 }
 
 VectorR3 Random::UniformSphere()
@@ -144,12 +173,6 @@ bool Random::Selection(double probability) {
     } else {
         return (Transform::Selection(probability, Random::Uniform()));
     }
-}
-
-long Random::Poisson(double lambda)
-{
-    std::poisson_distribution<long> poisson_distribution(lambda);
-    return(poisson_distribution(generator));
 }
 
 double Random::LevinDoubleExp(double c, double k1, double k2) {
