@@ -22,7 +22,7 @@ TEST_F(VectorSourceTest, InsideAtOrigin) {
 }
 
 TEST_F(VectorSourceTest, InsideOnEdge) {
-    EXPECT_TRUE(source->Inside({0, 0, -1}));
+    EXPECT_TRUE(source->Inside({0, 0, -1 + 1e-6}));
 }
 
 TEST_F(VectorSourceTest, OutsideOnEdge) {
