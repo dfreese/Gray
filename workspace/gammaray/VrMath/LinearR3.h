@@ -45,8 +45,8 @@
 #ifndef LINEAR_R3_H
 #define LINEAR_R3_H
 
-#include <math.h>
-#include <assert.h>
+#include <cmath>
+#include <cassert>
 #include <iostream>
 #include <VrMath/MathMisc.h>
 

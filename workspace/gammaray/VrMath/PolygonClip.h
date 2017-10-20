@@ -24,8 +24,6 @@
 #ifndef POLYGON_CLIP_H
 #define POLYGON_CLIP_H
 
-#include <assert.h>
-
 class VectorR3;
 
 // Routine for clipping a convex polygon against a plane
@@ -47,6 +45,10 @@ bool ClipConvexPolygonAgainstPlane( int *numVerts, VectorR3 vertArray[],
                                     const VectorR3& PlaneNormal,
                                     double PlaneConstant,
                                     int *numNewVerts);
+
+bool CalcBoundingBox(int numPoints, const VectorR3* vertArray,
+                     VectorR3* extentsMin, VectorR3* extentsMax);
+
 
 // Routine for clipping a convex polygon against a slab (an infinite
 //		region bounded by two parallel planes.
@@ -94,102 +96,5 @@ inline bool ClipConvexPolygonAgainstPlane(
     return ClipConvexPolygonAgainstPlane( numVerts, vertArray, PlaneNormal, PlaneConstant,
                                           &numNewVerts );
 }
-
-// RemoveIntervalFromListCircular:
-//     Removes all entries from list[i] to list[j-1], where the
-//		list is circular.  i = firstRemove,  j = firstKeep
-//	   It is permitted for firstRemove to equal firstKeep: in this
-//		case, no entries are discarded.
-//     Optionally adds up to two new entries.  If entries are added,
-//     it is assumed there is enough room for them in the list.
-//	   Returns the index of the first added item if any, or, if no item added,
-//		returns the index of the first kept item.
-//     The "addAtFirst" item (if exists) is added at the point where
-//		the removal of items starts.
-//     The "addAtLast" item (if exists) is added at the point where
-//		the removal of items ends.  That is "addAtFirst" is added before
-//		"addAtLast".
-template <class T>
-long RemoveIntervalFromListCircular( T list[], long listLen, long firstRemove, long firstKeep,
-                                     int addAtFirstFlag, const T& addAtFirst,
-                                     int addAtLastFlag, const T& addAtLast );
-
-
-
-// *************************************************************
-// RemoveIntervalFromListCircular
-//     Removes all entries from list[i] to list[j-1], where the
-//		list is circular.   i = firstRemove,  j = firstKeep
-//	   It is permitted for firstRemove to equal firstKeep: in this
-//		case, no entries are discarded.
-//     Optionally adds up to two new entries.  If entries are added,
-//     it is assumed there is enough room for them in the list.
-//	   Returns the index of the first added item, or, if no item added,
-//		returns the item after the last deleted item.
-//     The "addAtFirst" item (if exists) is added at the point where
-//		the removal of items starts.
-//     The "addAtLast" item (if exists) is added at the point where
-//		the removal of items ends.  That is "addAtFirst" is added before
-//		"addAtLast".
-// Has to be inlined since uses templates
-// *************************************************************
-template <class T>
-long RemoveIntervalFromListCircular( T list[], long listLen, long firstRemove, long firstKeep,
-                                     int addAtFirstFlag, const T& addAtFirst,
-                                     int addAtLastFlag, const T& addAtLast )
-{
-    assert (addAtFirstFlag==0 || addAtFirstFlag==1);
-    assert (addAtLastFlag==0 || addAtLastFlag==1);
-
-    // Number of new verts to add
-    int numNew = addAtFirstFlag+addAtLastFlag;
-    long numLost = firstKeep - firstRemove;
-
-    if ( numLost<0 ) {			// If the last entry in the list is among the removed
-        listLen = firstRemove;	// Automatically discard ends
-        firstRemove = 0;
-        numLost = firstKeep;
-    }
-
-    long newItemIndex;	// Index to put the "new" items.
-    T* newItemPtr;		// Position to put the "new" items.
-
-    if ( firstKeep==0 ) {
-        newItemIndex = listLen;
-        newItemPtr = list+newItemIndex;		// Just put them at the end
-    } else {
-        newItemIndex = firstRemove;
-        newItemPtr = list+newItemIndex;
-        long slideAmt = numNew - (firstKeep - firstRemove);
-        if ( slideAmt>0 ) {
-            // Need to slide up
-            T* fromPtr = list + (listLen-1);
-            T* toPtr = fromPtr + slideAmt;
-            for ( long i=listLen-firstKeep; i>0; i-- ) {
-                *(toPtr--) = *(fromPtr--);
-            }
-        } else if ( slideAmt<0 ) {
-            // Need to slide down
-            T* toPtr = newItemPtr + numNew;
-            T* fromPtr = list + firstKeep;
-            for ( long i=listLen-firstKeep; i>0; i-- ) {
-                *(toPtr++) = *(fromPtr++);
-            }
-        }
-    }
-
-    // Add 0, 1, or 2 new verts for exiting/entering
-    if ( addAtFirstFlag!=0 ) {
-        *(newItemPtr++) = addAtFirst;
-    }
-    if ( addAtLastFlag!=0 ) {
-        *(newItemPtr++) = addAtLast;
-    }
-
-    return newItemIndex%(listLen+addAtLastFlag+addAtFirstFlag);
-}
-
-
-
 
 #endif		// POLYGON_CLIP_H

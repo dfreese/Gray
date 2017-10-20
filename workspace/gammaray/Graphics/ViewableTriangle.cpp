@@ -19,8 +19,8 @@
  */
 
 #include <Graphics/ViewableTriangle.h>
-#include <Graphics/Extents.h>
 #include <VrMath/Aabb.h>
+#include <VrMath/PolygonClip.h>
 
 void ViewableTriangle::PreCalcInfo()
 {
@@ -132,8 +132,32 @@ void ViewableTriangle::CalcBoundingPlanes( const VectorR3& u, double *minDot, do
 
 bool ViewableTriangle::CalcExtentsInBox( const AABB& boundingAABB, AABB& retAABB ) const
 {
-    return ( ::CalcExtentsInBox( *this, boundingAABB.GetBoxMin(), boundingAABB.GetBoxMax(),
-                                 &(retAABB.GetBoxMin()), &(retAABB.GetBoxMax()) ) );
+    VectorR3 VertArray[3];
+    const VectorR3 & boxBoundMin = boundingAABB.GetBoxMin();
+    const VectorR3 & boxBoundMax = boundingAABB.GetBoxMax();
+    VertArray[0] = GetVertexA();
+    VertArray[1] = GetVertexB();
+    VertArray[2] = GetVertexC();
+
+    int numClippedVerts = ClipConvexPolygonAgainstBoundingBox(3, VertArray,
+                                                              GetNormal(),
+                                                              boxBoundMin,
+                                                              boxBoundMax );
+    if ( numClippedVerts == 0 ) {
+        return false;
+    }
+    VectorR3 * extentsMin = &retAABB.GetBoxMin();
+    VectorR3 * extentsMax = &retAABB.GetBoxMax();
+    CalcBoundingBox( numClippedVerts, VertArray, extentsMin, extentsMax );
+
+    // Next six lines to avoid roundoff errors putting extents outside the bounding box
+    ClampRange( &extentsMin->x, boxBoundMin.x, boxBoundMax.x );
+    ClampRange( &extentsMin->y, boxBoundMin.y, boxBoundMax.y );
+    ClampRange( &extentsMin->z, boxBoundMin.z, boxBoundMax.z );
+    ClampRange( &extentsMax->x, boxBoundMin.x, boxBoundMax.x );
+    ClampRange( &extentsMax->y, boxBoundMin.y, boxBoundMax.y );
+    ClampRange( &extentsMax->z, boxBoundMin.z, boxBoundMax.z );
+    return true;
 }
 
 bool ViewableTriangle::CalcPartials( const VisiblePoint& visPoint,

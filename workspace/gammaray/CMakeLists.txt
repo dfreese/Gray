@@ -3,8 +3,6 @@ add_library(gammaray
     Graphics/CameraView.h
     Graphics/DirectLight.cpp
     Graphics/DirectLight.h
-    Graphics/Extents.cpp
-    Graphics/Extents.h
     Graphics/Light.h
     Graphics/Material.cpp
     Graphics/Material.h
@@ -124,8 +122,6 @@ add_library(gammaray
     VrMath/LinearR4.cpp
     VrMath/LinearR4.h
     VrMath/MathMisc.h
-    VrMath/Parallelepiped.cpp
-    VrMath/Parallelepiped.h
     VrMath/PolygonClip.cpp
     VrMath/PolygonClip.h
     VrMath/PolynomialRC.cpp

@@ -24,7 +24,6 @@
 #include <vector>
 #include <Graphics/ViewableBase.h>
 #include <Graphics/Material.h>
-#include <VrMath/Parallelepiped.h>
 #include <VrMath/LinearR2.h>
 #include <VrMath/LinearR3.h>
 #include <VrMath/LinearR4.h>
@@ -189,7 +188,6 @@ protected:
     double MinDotC, MaxDotC;
     double MinDotA, MaxDotA;
     double MinDotB, MaxDotB;
-    Parallelepiped BoundingPpd;	// Bounding parallelepiped (redundantly specified)
 
     bool BoundingPpdBad;
 

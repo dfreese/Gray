@@ -19,7 +19,6 @@
  */
 
 #include <Graphics/ViewableSphere.h>
-#include <Graphics/Extents.h>
 #include <VrMath/Aabb.h>
 #include <VrMath/MathMisc.h>
 
@@ -218,8 +217,112 @@ bool ViewableSphere::CalcPartials( const VisiblePoint& visPoint,
     return true;
 }
 
+namespace {
+
+// CalcMinMaxSquares
+//  Input values: valMin and valMax where valMin <= valMax
+//  Returns the values  Min{ x*x :  x \in [valMin, valMax] }
+//                 and  Max{ x*x :  x \in [valMin, valMax] }
+void CalcMinMaxSquares( double valMin, double valMax, double* valSqMin, double* valSqMax )
+{
+    assert ( valMin<=valMax );
+    if ( valMin<0.0 && valMax>0.0 ) {
+        *valSqMin = 0.0;
+        *valSqMax = ( valMax > -valMin ) ? Square(valMax) : Square(valMin);
+    } else {
+        *valSqMin = Square(valMin);
+        *valSqMax = Square(valMax);
+        if ( (*valSqMin)>(*valSqMax) ) {
+            double temp = *valSqMin;
+            *valSqMin = *valSqMax;
+            *valSqMax = temp;
+        }
+    }
+}
+
+// CalcExtentsHelpForSphere
+//    Helper routine for CalcExtentsInBox( ViewableSphere& ...)
+//        Returns false if extent in box is empty.
+inline bool CalcExtentsHelpForSphere( double boxMin, double boxMax,
+                                     double radiusSq, double otherSqMin, double otherSqMax,
+                                     double* minExtent, double* maxExtent )
+{
+    double maxSq = radiusSq - otherSqMin;
+    double maxPos;                        // Max x value (always positive)
+    if ( maxSq<0.0 ) {
+        return false;
+    } else {
+        maxPos = sqrt(maxSq);
+    }
+    double minSq = radiusSq - otherSqMax;
+    double minPos = (minSq > 0.0) ? sqrt(minSq) : 0.0;
+
+    // minPos and maxPos are the min/max possible positive values
+    //    I.e., permissible values are from [-maxPos,-minPos]\cup [minPos,maxPos].
+    //    This now needs to be intersected with [boxMin, boxMax]
+    if ( maxPos<=boxMin || (-maxPos)>=boxMax ) {
+        return false;        // Test uses <= to ignore single points of intersectio
+    }
+    if ( boxMin<(-minPos) ) {
+        *minExtent = std::max(boxMin,-maxPos);
+        if ( boxMax>minPos ) {
+            *maxExtent = std::min(boxMax,maxPos);
+        } else {
+            *maxExtent = std::min(boxMax,-minPos);
+        }
+        return true;
+    } else if ( boxMax>minPos ) {
+        *minExtent = std::max(boxMin,minPos);
+        *maxExtent = std::min(boxMax,maxPos);
+        return true;
+    } else {
+        return false;
+    }
+}
+
+}
+
+/*!
+ * Zero area intersections are ignored, e.g. where the sphere is tangent to the
+ * face of a cube or intersects a corner.
+ */
 bool ViewableSphere::CalcExtentsInBox( const AABB& boundingAABB, AABB& retAABB ) const
 {
-    return( ::CalcExtentsInBox( *this, boundingAABB.GetBoxMin(), boundingAABB.GetBoxMax(),
-                                &(retAABB.GetBoxMin()), &(retAABB.GetBoxMax()) ) );
+    const VectorR3& center = GetCenter();
+
+    // Get min and max relative to center of sphere
+    const VectorR3 & boxBoundMin = boundingAABB.GetBoxMin();
+    const VectorR3 & boxBoundMax = boundingAABB.GetBoxMax();
+    VectorR3 min = boxBoundMin;
+    min -= center;
+    VectorR3 max = boxBoundMax;
+    max -= center;
+
+    double xSqMin, xSqMax;
+    double ySqMin, ySqMax;
+    double zSqMin, zSqMax;
+    CalcMinMaxSquares( min.x, max.x, &xSqMin, &xSqMax );
+    CalcMinMaxSquares( min.y, max.y, &ySqMin, &ySqMax );
+    CalcMinMaxSquares( min.z, max.z, &zSqMin, &zSqMax );
+
+    VectorR3 * extentsMin = &retAABB.GetBoxMin();
+    VectorR3 * extentsMax = &retAABB.GetBoxMax();
+
+    double radiusSq = Square(GetRadius());        // Square of the radius
+    if ( !CalcExtentsHelpForSphere( min.x, max.x, radiusSq, ySqMin+zSqMin, ySqMax+zSqMax,
+                                   &(extentsMin->x), &(extentsMax->x) ) ) {
+        return false;
+    }
+    if ( !CalcExtentsHelpForSphere( min.y, max.y, radiusSq, xSqMin+zSqMin, xSqMax+zSqMax,
+                                   &(extentsMin->y), &(extentsMax->y) ) ) {
+        return false;
+    }
+    if ( !CalcExtentsHelpForSphere( min.z, max.z, radiusSq, xSqMin+ySqMin, xSqMax+ySqMax,
+                                   &(extentsMin->z), &(extentsMax->z) ) ) {
+        return false;
+    }
+
+    *extentsMin += center;
+    *extentsMax += center;
+    return true;
 }

@@ -19,8 +19,8 @@
  */
 
 #include <Graphics/ViewableParallelepiped.h>
-#include <Graphics/Extents.h>
 #include <VrMath/Aabb.h>
+#include <VrMath/PolygonClip.h>
 
 void ViewableParallelepiped::CalcPlaneInfo()
 {
@@ -316,8 +316,84 @@ void ViewableParallelepiped::CalcBoundingPlanes( const VectorR3& u,
 
 bool ViewableParallelepiped::CalcExtentsInBox( const AABB& boundingAABB, AABB& retAABB ) const
 {
-    return( ::CalcExtentsInBox( *this, boundingAABB.GetBoxMin(), boundingAABB.GetBoxMax(),
-                                &(retAABB.GetBoxMin()), &(retAABB.GetBoxMax()) ) );
+    const VectorR3 boxBoundMin = boundingAABB.GetBoxMin();
+    const VectorR3 boxBoundMax = boundingAABB.GetBoxMax();
+    VectorR3 VertArray[60];
+    VectorR3 deltaAB = GetVertexB();
+    VectorR3 deltaAC = GetVertexC();
+    VectorR3 deltaAD = GetVertexD();
+    const VectorR3& vertexA = GetVertexA();
+    deltaAB -= vertexA;
+    deltaAC -= vertexA;
+    deltaAD -= vertexA;
+
+    int baseCount = 0;
+
+    // Front face
+    VertArray[baseCount+0] = GetVertexA();
+    VertArray[baseCount+1] = GetVertexB();
+    VertArray[baseCount+2] = GetVertexC() + deltaAB;
+    VertArray[baseCount+3] = GetVertexC();
+    baseCount += ClipConvexPolygonAgainstBoundingBox(4, &(VertArray[baseCount]),
+                                                     GetNormalABC(),
+                                                     boxBoundMin, boxBoundMax);
+    // Back face
+    VertArray[baseCount+0] = GetVertexA() + deltaAD;
+    VertArray[baseCount+1] = GetVertexB() + deltaAD;
+    VertArray[baseCount+2] = GetVertexC() + deltaAB + deltaAD;
+    VertArray[baseCount+3] = GetVertexC() + deltaAD;
+    baseCount += ClipConvexPolygonAgainstBoundingBox(4, &(VertArray[baseCount]),
+                                                     GetNormalABC(),
+                                                     boxBoundMin, boxBoundMax);
+    // Left face
+    VertArray[baseCount+0] = GetVertexA();
+    VertArray[baseCount+1] = GetVertexC();
+    VertArray[baseCount+2] = GetVertexD() + deltaAC;
+    VertArray[baseCount+3] = GetVertexD();
+    baseCount += ClipConvexPolygonAgainstBoundingBox(4, &(VertArray[baseCount]),
+                                                     GetNormalABC(),
+                                                     boxBoundMin, boxBoundMax);
+    // Right face
+    VertArray[baseCount+0] = GetVertexA() + deltaAB;
+    VertArray[baseCount+1] = GetVertexC() + deltaAB;
+    VertArray[baseCount+2] = GetVertexD() + deltaAC + deltaAB;
+    VertArray[baseCount+3] = GetVertexD() + deltaAB;
+    baseCount += ClipConvexPolygonAgainstBoundingBox(4, &(VertArray[baseCount]),
+                                                     GetNormalABC(),
+                                                     boxBoundMin, boxBoundMax);
+    // Bottom face
+    VertArray[baseCount+0] = GetVertexA();
+    VertArray[baseCount+1] = GetVertexB();
+    VertArray[baseCount+2] = GetVertexD() + deltaAB;
+    VertArray[baseCount+3] = GetVertexD();
+    baseCount += ClipConvexPolygonAgainstBoundingBox(4, &(VertArray[baseCount]),
+                                                     GetNormalABC(),
+                                                     boxBoundMin, boxBoundMax);
+    // Top face
+    VertArray[baseCount+0] = GetVertexA() + deltaAC;
+    VertArray[baseCount+1] = GetVertexB() + deltaAC;
+    VertArray[baseCount+2] = GetVertexD() + deltaAB + deltaAC;
+    VertArray[baseCount+3] = GetVertexD() + deltaAC;
+    baseCount += ClipConvexPolygonAgainstBoundingBox(4, &(VertArray[baseCount]),
+                                                     GetNormalABC(),
+                                                     boxBoundMin, boxBoundMax);
+
+    int numClippedVerts = baseCount;
+    if ( numClippedVerts == 0 ) {
+        return false;
+    }
+    VectorR3 * extentsMin = &retAABB.GetBoxMin();
+    VectorR3 * extentsMax = &retAABB.GetBoxMax();
+    CalcBoundingBox(numClippedVerts, VertArray, extentsMin, extentsMax);
+
+    // Next six lines to avoid roundoff errors putting extents outside the bounding box
+    ClampRange( &extentsMin->x, boxBoundMin.x, boxBoundMax.x );
+    ClampRange( &extentsMin->y, boxBoundMin.y, boxBoundMax.y );
+    ClampRange( &extentsMin->z, boxBoundMin.z, boxBoundMax.z );
+    ClampRange( &extentsMax->x, boxBoundMin.x, boxBoundMax.x );
+    ClampRange( &extentsMax->y, boxBoundMin.y, boxBoundMax.y );
+    ClampRange( &extentsMax->z, boxBoundMin.z, boxBoundMax.z );
+    return true;
 }
 
 bool ViewableParallelepiped::QuickIntersectTest(

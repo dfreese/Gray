@@ -19,8 +19,8 @@
  */
 
 #include <Graphics/ViewableParallelogram.h>
-#include <Graphics/Extents.h>
 #include <VrMath/Aabb.h>
+#include <VrMath/PolygonClip.h>
 
 // Precalculations for intersection testing speed
 void ViewableParallelogram::PreCalcInfo()
@@ -138,6 +138,32 @@ void ViewableParallelogram::CalcBoundingPlanes( const VectorR3& u,
 
 bool ViewableParallelogram::CalcExtentsInBox( const AABB& boundingAABB, AABB& retAABB ) const
 {
-    return( ::CalcExtentsInBox( *this, boundingAABB.GetBoxMin(), boundingAABB.GetBoxMax(),
-                                &(retAABB.GetBoxMin()), &(retAABB.GetBoxMax()) ) );
+    VectorR3 VertArray[60];
+    VertArray[0] = GetVertexA();
+    VertArray[1] = GetVertexB();
+    VertArray[2] = GetVertexC();
+    VertArray[3] = GetVertexD();
+
+    const VectorR3 & boxBoundMin = boundingAABB.GetBoxMin();
+    const VectorR3 & boxBoundMax = boundingAABB.GetBoxMax();
+    int numClippedVerts = ClipConvexPolygonAgainstBoundingBox(4, VertArray,
+                                                              GetNormal(),
+                                                              boxBoundMin,
+                                                              boxBoundMax );
+    if ( numClippedVerts == 0 ) {
+        return (false);
+    }
+
+    VectorR3 * extentsMin = &retAABB.GetBoxMin();
+    VectorR3 * extentsMax = &retAABB.GetBoxMax();
+    CalcBoundingBox( numClippedVerts, VertArray, extentsMin, extentsMax );
+
+    // Next six lines to avoid roundoff errors putting extents outside the bounding box
+    ClampRange( &extentsMin->x, boxBoundMin.x, boxBoundMax.x );
+    ClampRange( &extentsMin->y, boxBoundMin.y, boxBoundMax.y );
+    ClampRange( &extentsMin->z, boxBoundMin.z, boxBoundMax.z );
+    ClampRange( &extentsMax->x, boxBoundMin.x, boxBoundMax.x );
+    ClampRange( &extentsMax->y, boxBoundMin.y, boxBoundMax.y );
+    ClampRange( &extentsMax->z, boxBoundMin.z, boxBoundMax.z );
+    return (true);
 }
