@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 #include <algorithm>
+#include <numeric>
 #include "Math/Math.h"
-#include "Random/Random.h"
 
 class InterpolateTest : public ::testing::Test {
 public:
