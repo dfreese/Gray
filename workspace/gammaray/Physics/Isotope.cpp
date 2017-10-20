@@ -1,6 +1,5 @@
 #include <Physics/Isotope.h>
 #include <cmath>
-#include <limits>
 
 Isotope::Isotope(double half_life_s) :
     half_life(half_life_s)

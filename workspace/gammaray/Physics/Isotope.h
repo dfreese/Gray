@@ -1,6 +1,7 @@
 #ifndef ISOTOPE_H
 #define ISOTOPE_H
 
+#include <limits>
 #include <map>
 #include <stack>
 #include <string>
