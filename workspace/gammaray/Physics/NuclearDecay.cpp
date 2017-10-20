@@ -12,21 +12,17 @@ NuclearDecay::NuclearDecay(int decay_number, double time, int src_id,
 
 }
 
-Photon NuclearDecay::NextPhoton()
-{
-    Photon val = daughter.top();
-    daughter.pop();
-    return (val);
+std::vector<Photon>::reverse_iterator NuclearDecay::begin() {
+    return (photons.rbegin());
 }
 
-bool NuclearDecay::IsEmpty() const
-{
-    return(daughter.empty());
+std::vector<Photon>::reverse_iterator NuclearDecay::end() {
+    return (photons.rend());
 }
 
 void NuclearDecay::AddPhoton(Photon && p)
 {
-    daughter.push(p);
+    photons.push_back(p);
 }
 
 double NuclearDecay::GetEnergy() const {

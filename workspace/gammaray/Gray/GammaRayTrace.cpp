@@ -168,8 +168,7 @@ void GammaRayTrace::TraceDecay(NuclearDecay & decay,
         interactions.push_back(
                 Physics::NuclearDecay(decay, sources.GetSourceMaterial(src_id)));
     }
-    while (!decay.IsEmpty()) {
-        Photon photon = decay.NextPhoton();
+    for (Photon & photon: decay) {
         stats.photons++;
         TracePhoton(photon, interactions,
                     sources.GetUpdatedStack(src_id, photon.GetPos(), scene));

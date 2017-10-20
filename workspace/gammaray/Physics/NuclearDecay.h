@@ -1,7 +1,7 @@
 #ifndef NUCLEARDECAY_H
 #define NUCLEARDECAY_H
 
-#include <stack>
+#include <vector>
 #include <Physics/Photon.h>
 #include <VrMath/LinearR3.h>
 
@@ -19,6 +19,8 @@ public:
     VectorR3 GetPosition() const;
     double GetTime() const;
     void AddPhoton(Photon && p);
+    std::vector<Photon>::reverse_iterator begin();
+    std::vector<Photon>::reverse_iterator end();
 
 private:
     double energy = 0;
@@ -26,7 +28,7 @@ private:
     int src_id = 0;
     VectorR3 position = {0, 0, 0};
     double time = 0;
-    std::stack<Photon> daughter;
+    std::vector<Photon> photons;
 };
 
 #endif /* NUCLEARDECAY_H */
