@@ -22,13 +22,12 @@ void Simulation::SetupSeed(const Config & config) {
 }
 
 void Simulation::SetupSources(const Config & config, SourceList & sources,
-                              SceneDescription & scene,
-                              GammaMaterial const * const default_material)
+                              SceneDescription & scene)
 {
     sources.SetSimulationTime(config.get_time());
     sources.SetStartTime(config.get_start_time());
     Mpi::AdjustSimTime(sources);
-    sources.BuildMaterialStacks(scene, default_material);
+    sources.BuildMaterialStacks(scene);
     sources.InitSources();
 }
 
@@ -69,8 +68,7 @@ void Simulation::RunSim(const Config & config, SourceList & sources,
                         const SceneDescription & scene,
                         Output & output_hits, Output & output_singles,
                         std::vector<Output> & outputs_coinc,
-                        InteractionStream & singles_stream,
-                        GammaMaterial* default_material)
+                        InteractionStream & singles_stream)
 {
     bool print_prog_bar = !Mpi::Enabled();
     const long num_chars = 70;

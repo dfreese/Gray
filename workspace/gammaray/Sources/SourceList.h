@@ -32,8 +32,7 @@ public:
     void InitSources();
     bool LoadIsotopes(const std::string & filename);
     void AdjustTimeForSplit(int idx, int n);
-    void BuildMaterialStacks(const SceneDescription & scene,
-                             GammaMaterial const * default_material);
+    void BuildMaterialStacks(const SceneDescription & scene);
     GammaMaterial const & GetSourceMaterial(size_t idx) const;
     std::stack<GammaMaterial const *> GetUpdatedStack(size_t idx,
                                                       const VectorR3 & pos,

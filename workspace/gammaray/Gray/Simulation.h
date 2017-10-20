@@ -14,8 +14,7 @@ class Simulation {
 public:
     static void SetupSeed(const Config & config);
     static void SetupSources(const Config & config, SourceList & sources,
-                             SceneDescription & scene,
-                             GammaMaterial const * const default_material);
+                             SceneDescription & scene);
     static int SetupOutput(const Config & config, Output & output_hits,
                            Output & output_singles,
                            std::vector<Output> & outputs_coinc);
@@ -24,8 +23,7 @@ public:
                        const SceneDescription & scene,
                        Output & output_hits, Output & output_singles,
                        std::vector<Output> & outputs_coinc,
-                       InteractionStream & singles_stream,
-                       GammaMaterial* default_material);
+                       InteractionStream & singles_stream);
 };
 
 #endif // SIMULATION_H_

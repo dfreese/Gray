@@ -258,12 +258,13 @@ void SourceList::InitSources() {
     }
 }
 
-void SourceList::BuildMaterialStacks(const SceneDescription & scene,
-                                     GammaMaterial const * default_material)
-{
-    VectorR3 dir;
-    dir.SetUnitX();
+void SourceList::BuildMaterialStacks(const SceneDescription & scene) {
+    const VectorR3 dir(1, 0, 0);
 
+    // Use the first material listed in Gray_Materials as the default material
+    // in the world.
+    GammaMaterial const * const default_material(
+            static_cast<GammaMaterial const * const>(&scene.GetMaterial(0)));
     for (auto & source: list) {
         stack<GammaMaterial const *> materials;
         stack<bool> front_face;
@@ -276,7 +277,7 @@ void SourceList::BuildMaterialStacks(const SceneDescription & scene,
                 dir, hit_dist, point);
 
         while (obj_num >= 0) {
-            materials.push(dynamic_cast<GammaMaterial const *>(&point.GetMaterial()));
+            materials.push(static_cast<GammaMaterial const *>(&point.GetMaterial()));
             if (point.IsFrontFacing()) {
                 front_face.push(true);
             } else {

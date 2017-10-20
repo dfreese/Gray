@@ -105,13 +105,11 @@ int gray(int argc, char ** argv)
     if (setup_status < 0) {
         return(4);
     }
-    GammaMaterial * default_material = dynamic_cast<GammaMaterial*>(&scene.GetMaterial(0));
-    Simulation::SetupSources(config, sources, scene, default_material);
+    Simulation::SetupSources(config, sources, scene);
 
     clock_t setup_time = clock();
     Simulation::RunSim(config, sources, scene, output_hits,
-                       output_singles, outputs_coinc, singles_stream,
-                       default_material);
+                       output_singles, outputs_coinc, singles_stream);
 
     clock_t end_time = clock();
     double setup_time_sec =  double(setup_time - start_time) / CLOCKS_PER_SEC;
