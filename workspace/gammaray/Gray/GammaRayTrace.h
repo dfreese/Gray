@@ -4,6 +4,7 @@
 #include <vector>
 #include <ostream>
 #include <stack>
+#include <Physics/NuclearDecay.h>
 
 class GammaMaterial;
 class Interaction;
@@ -42,13 +43,13 @@ public:
 
 
     const TraceStats & statistics() const;
-    void TraceSources(std::vector<Interaction> & interactions,
-                      size_t soft_max_interactions);
+    void TraceDecay(NuclearDecay & decay,
+                    std::vector<Interaction> & interactions) const;
 
 private:
     void TracePhoton(Photon &photon,
                      std::vector<Interaction> & interactions,
-                     std::stack<GammaMaterial const *> MatStack);
+                     std::stack<GammaMaterial const *> MatStack) const;
 
     SourceList & sources;
     const SceneDescription & scene;
@@ -56,7 +57,7 @@ private:
     bool log_nonsensitive;
     bool log_nointeractions;
     bool log_errors;
-    TraceStats stats;
+    mutable TraceStats stats;
     int max_trace_depth;
 };
 

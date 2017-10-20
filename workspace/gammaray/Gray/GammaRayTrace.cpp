@@ -32,7 +32,7 @@ GammaRayTrace::GammaRayTrace(SourceList & source_list,
 void GammaRayTrace::TracePhoton(
         Photon &photon,
         std::vector<Interaction> & interactions,
-        std::stack<GammaMaterial const *> MatStack)
+        std::stack<GammaMaterial const *> MatStack) const
 {
     for (int trace_depth = 0; trace_depth < max_trace_depth; trace_depth++) {
         if (MatStack.empty()) {
@@ -159,27 +159,20 @@ void GammaRayTrace::TracePhoton(
     return;
 }
 
-void GammaRayTrace::TraceSources(std::vector<Interaction> & interactions,
-                                 size_t soft_max_interactions)
+void GammaRayTrace::TraceDecay(NuclearDecay & decay,
+                               std::vector<Interaction> & interactions) const
 {
-    while (sources.GetTime() < sources.GetEndTime()) {
-        NuclearDecay decay = sources.Decay();
-        stats.decays++;
-        int src_id = decay.GetSourceId();
-        if (log_nuclear_decays) {
-            interactions.push_back(
-                    Physics::NuclearDecay(decay, sources.GetSourceMaterial(src_id)));
-        }
-        while (!decay.IsEmpty()) {
-            Photon photon = decay.NextPhoton();
-            stats.photons++;
-            TracePhoton(photon, interactions,
-                        sources.GetUpdatedStack(src_id, photon.GetPos(), scene));
-        }
-
-        if (interactions.size() >= soft_max_interactions) {
-            return;
-        }
+    stats.decays++;
+    int src_id = decay.GetSourceId();
+    if (log_nuclear_decays) {
+        interactions.push_back(
+                Physics::NuclearDecay(decay, sources.GetSourceMaterial(src_id)));
+    }
+    while (!decay.IsEmpty()) {
+        Photon photon = decay.NextPhoton();
+        stats.photons++;
+        TracePhoton(photon, interactions,
+                    sources.GetUpdatedStack(src_id, photon.GetPos(), scene));
     }
 }
 

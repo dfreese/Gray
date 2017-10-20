@@ -88,7 +88,13 @@ void Simulation::RunSim(const Config & config, SourceList & sources,
     const size_t interactions_soft_max = 100000;
     singles_stream.get_buffer().reserve(interactions_soft_max + 50);
     while (sources.GetTime() < sources.GetEndTime()) {
-        ray_tracer.TraceSources(singles_stream.get_buffer(), interactions_soft_max);
+        while (sources.GetTime() < sources.GetEndTime()) {
+            NuclearDecay decay = sources.Decay();
+            ray_tracer.TraceDecay(decay, singles_stream.get_buffer());
+            if (interactions_soft_max < singles_stream.get_buffer().size()) {
+                break;
+            }
+        }
         singles_stream.process_hits();
         if (config.get_log_hits()) {
             output_hits.LogHits(singles_stream.hits_begin(), singles_stream.hits_end());
