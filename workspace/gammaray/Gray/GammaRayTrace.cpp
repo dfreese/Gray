@@ -12,9 +12,6 @@
 #include <Sources/SourceList.h>
 #include <stack>
 
-
-const double GammaRayTrace::Epsilon = 1e-10;
-
 GammaRayTrace::GammaRayTrace(SourceList & source_list,
                              const SceneDescription & scene,
                              bool log_nuclear_decays_inter,
@@ -101,7 +98,7 @@ void GammaRayTrace::TracePhoton(
                     throw(runtime_error("Material has no face"));
                 }
                 // Make sure not to hit same place in kdtree
-                photon.AddPos(photon.GetDir() * Epsilon);
+                photon.AddPos(photon.GetDir() * SceneDescription::ray_trace_epsilon);
                 break;
             }
             case Physics::PHOTOELECTRIC: {

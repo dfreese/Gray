@@ -154,6 +154,8 @@ public:
     long SeekIntersection(const VectorR3& pos, const VectorR3& direction,
                           double & hitDist, VisiblePoint& returnedPoint) const;
     bool TestOverlap() const;
+    static constexpr double ray_trace_epsilon = 1e-10;
+
 private:
 
     bool TestOverlapSingle(VectorR3 & start, const VectorR3 & dir) const;

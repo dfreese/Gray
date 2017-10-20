@@ -271,8 +271,9 @@ void SourceList::BuildMaterialStacks(const SceneDescription & scene,
         point.SetPosition(source->GetPosition());
 
         double hit_dist = DBL_MAX;
-        long obj_num = scene.SeekIntersection(point.GetPosition() + dir * 1e-10,
-                                             dir, hit_dist, point);
+        long obj_num = scene.SeekIntersection(
+                point.GetPosition() + dir * SceneDescription::ray_trace_epsilon,
+                dir, hit_dist, point);
 
         while (obj_num >= 0) {
             materials.push(dynamic_cast<GammaMaterial const *>(&point.GetMaterial()));
@@ -282,8 +283,9 @@ void SourceList::BuildMaterialStacks(const SceneDescription & scene,
                 front_face.push(false);
             }
             hit_dist = DBL_MAX;
-            obj_num = scene.SeekIntersection(point.GetPosition() + dir * 1e-10,
-                                            dir, hit_dist, point);
+            obj_num = scene.SeekIntersection(
+                    point.GetPosition() + dir * SceneDescription::ray_trace_epsilon,
+                    dir, hit_dist, point);
         }
 
         stack<GammaMaterial const *> true_materials;
@@ -346,7 +348,7 @@ std::stack<GammaMaterial const *> SourceList::GetUpdatedStack(
     point.SetPosition(src_pos);
     while (scene.SeekIntersection(point.GetPosition() + 1e-10 * dir, dir, dist, point) >= 0)
     {
-        remaining_dist -= dist + 1e-10;
+        remaining_dist -= dist + SceneDescription::ray_trace_epsilon;
         dist = remaining_dist;
         if (point.IsFrontFacing()) {
             // Front face means we are entering a material.

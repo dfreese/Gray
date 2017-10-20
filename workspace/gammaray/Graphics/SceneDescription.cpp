@@ -180,7 +180,6 @@ long SceneDescription::SeekIntersection(const VectorR3& pos,
 
 bool SceneDescription::TestOverlapSingle(VectorR3 & start, const VectorR3 & dir) const {
     std::stack<MaterialBase const *> mat_stack;
-    const double epsilon = 1.0e-10;
     // Start by looking as far as possible in SeekIntersection
     double hit_dist = DBL_MAX;
     VisiblePoint point;
@@ -189,7 +188,7 @@ bool SceneDescription::TestOverlapSingle(VectorR3 & start, const VectorR3 & dir)
     while (SeekIntersection(start, dir, hit_dist, point) >= 0) {
         // Move the point to where we hit, plus an epsilon to make sure we don't
         // hit the same place again.
-        start += (hit_dist + epsilon) * dir;
+        start += (hit_dist + ray_trace_epsilon) * dir;
         if (point.IsFrontFacing()) {
             // Front face means we are entering a material.
             mat_stack.push(&point.GetMaterial());

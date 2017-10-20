@@ -50,8 +50,6 @@ private:
                      std::vector<Interaction> & interactions,
                      std::stack<GammaMaterial const *> MatStack);
 
-    static const double Epsilon;
-
     SourceList & sources;
     const SceneDescription & scene;
     bool log_nuclear_decays;
