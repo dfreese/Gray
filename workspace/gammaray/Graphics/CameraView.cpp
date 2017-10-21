@@ -19,6 +19,8 @@
  */
 
 #include <Graphics/CameraView.h>
+#include <cassert>
+#include <VrMath/LinearR3.h>
 
 void CameraView::CalcScreenCenter()
 {

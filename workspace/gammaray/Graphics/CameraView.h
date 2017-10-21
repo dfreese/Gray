@@ -20,10 +20,9 @@
 
 #ifndef CAMERA_VIEW_H
 #define CAMERA_VIEW_H
+#include <Graphics/View.h>
 
 class VectorR3;
-#include "DirectLight.h"	// Has the class definition of View.
-
 // A camera view is a view plus information about the directions
 // to the pixels.
 

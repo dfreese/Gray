@@ -1,8 +1,6 @@
 add_library(gammaray
     Graphics/CameraView.cpp
     Graphics/CameraView.h
-    Graphics/DirectLight.cpp
-    Graphics/DirectLight.h
     Graphics/Light.h
     Graphics/Material.cpp
     Graphics/Material.h
