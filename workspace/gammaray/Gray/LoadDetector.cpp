@@ -616,13 +616,13 @@ bool LoadDetector::Load(const std::string & filename,
                 print_parse_error(line);
                 return(false);
             }
-            ViewableEllipsoid *ve = new ViewableEllipsoid();
+            std::unique_ptr<ViewableEllipsoid> ve(new ViewableEllipsoid());
             ve->SetCenter(center);
             ve->SetAxes(axis1, axis2);
             ve->SetRadii(radius3, radius2, radius1);
             ve->SetMaterial(curMaterial);
-            TransformWithRigid(ve,MatrixStack.top());
-            theScene.AddViewable(ve);
+            TransformWithRigid(ve.get(), MatrixStack.top());
+            theScene.AddViewable(std::move(ve));
         } else if (command == "ellipsoid_src") {
             VectorR3 center;
             VectorR3 axis1;
@@ -661,14 +661,14 @@ bool LoadDetector::Load(const std::string & filename,
                 print_parse_error(line);
                 return(false);
             }
-            ViewableCylinder *vc = new ViewableCylinder();
+            std::unique_ptr<ViewableCylinder> vc(new ViewableCylinder());
             vc->SetCenterAxis(axis);
             vc->SetCenter(center);
             vc->SetRadii(radius2,radius1);
             vc->SetHeight(height);
             vc->SetMaterial(curMaterial);
-            TransformWithRigid(vc,MatrixStack.top());
-            theScene.AddViewable(vc);
+            TransformWithRigid(vc.get(),MatrixStack.top());
+            theScene.AddViewable(std::move(vc));
         } else if (command == "elliptic_cyl_src") {
             VectorR3 center;
             VectorR3 axis;
@@ -771,10 +771,10 @@ bool LoadDetector::Load(const std::string & filename,
                 print_parse_error(line);
                 return(false);
             }
-            ViewableSphere * s = new ViewableSphere(position, radius);
+            std::unique_ptr<ViewableSphere> s(new ViewableSphere(position, radius));
             s->SetMaterial(curMaterial);
-            TransformWithRigid(s,MatrixStack.top());
-            theScene.AddViewable(s);
+            TransformWithRigid(s.get(),MatrixStack.top());
+            theScene.AddViewable(std::move(s));
         } else if (command == "beam") {
             // beam pos_x pos_y pos_z axis_x axis_y axis_z angle activity
             // Beam source
@@ -927,14 +927,14 @@ bool LoadDetector::Load(const std::string & filename,
                 print_parse_error(line);
                 return(false);
             }
-            ViewableCylinder *vc = new ViewableCylinder();
+            std::unique_ptr<ViewableCylinder> vc(new ViewableCylinder());
             vc->SetRadius(radius);
             vc->SetCenterAxis(axis);
             vc->SetCenter(center);
             vc->SetHeight(height);
             vc->SetMaterial(curMaterial);
-            TransformWithRigid(vc,MatrixStack.top());
-            theScene.AddViewable(vc);
+            TransformWithRigid(vc.get(), MatrixStack.top());
+            theScene.AddViewable(std::move(vc));
         } else if (command == "cyl_src") {
             VectorR3 center;
             VectorR3 axis;
@@ -968,12 +968,12 @@ bool LoadDetector::Load(const std::string & filename,
                 print_parse_error(line);
                 return(false);
             }
-            Light * aLight = new Light();
+            std::unique_ptr<Light> aLight(new Light());
             aLight->SetPosition(lightPos);
             if (scanCode == 6) {
                 aLight->SetColor(lightColor);
             }
-            theScene.AddLight(aLight);
+            theScene.AddLight(std::move(aLight));
         } else if (command == "t") {
             // translate
             VectorR3 trans;
@@ -1242,7 +1242,7 @@ void LoadDetector::ProcessDetector(const VectorR3 & detCenter,
                                    SceneDescription & scene,
                                    const RigidMapR3 & current_matrix)
 {
-    ViewableParallelepiped * vp = new ViewableParallelepiped();
+    std::unique_ptr<ViewableParallelepiped> vp(new ViewableParallelepiped());
     vp->SetMaterialFront(curMaterial);
     vp->SetMaterialBack(curMaterial);
     vp->SetDetectorId(id);
@@ -1268,8 +1268,8 @@ void LoadDetector::ProcessDetector(const VectorR3 & detCenter,
     vd.z -= half_sz.z;
 
     vp->SetVertices(va, vb, vc, vd);
-    TransformWithRigid(vp, current_matrix);
-    scene.AddViewable(vp);
+    TransformWithRigid(vp.get(), current_matrix);
+    scene.AddViewable(std::move(vp));
 }
 
 void LoadDetector::SetCameraViewInfo(CameraView& theView,
@@ -1327,19 +1327,19 @@ bool LoadDetector::ProcessFaceDFF(int numVerts,
 
         thisVert *= polygonScale;
 
-        ViewableTriangle* vt = new ViewableTriangle();
+        std::unique_ptr<ViewableTriangle> vt(new ViewableTriangle());
         vt->SetDetectorId(det_id);
         vt->Init( firstVert, prevVert, thisVert );
         vt->SetMaterialFront( curMaterial );
         vt->SetMaterialBack( curMaterial );
-        TransformWithRigid(vt, current_matrix);
+        TransformWithRigid(vt.get(), current_matrix);
 
         if (parse_VectorSource) {
             vt->SetSrcId(1);
         } else {
             vt->SetSrcId(0);
         }
-        scene.AddViewable(vt);
+        scene.AddViewable(std::move(vt));
         prevVert = thisVert;
     }
     return true;

@@ -23,46 +23,19 @@
 #include <iostream>
 #include <stack>
 
-
-SceneDescription::SceneDescription()
+void SceneDescription::AddLight(std::unique_ptr<Light> newLight)
 {
-    TheBackgroundColor.Set( 0.0, 0.0, 0.0 );
-    TheGlobalAmbientLight.SetZero();
-    ScreenRegistered = false;
+    LightArray.push_back(std::move(newLight));
 }
 
-int SceneDescription::AddLight( Light* newLight )
-{
-    int index = (int)LightArray.size();
-    LightArray.push_back(newLight);
-    return index;
-}
-
-int SceneDescription::AddMaterial(MaterialBase * newMaterial )
-{
+void SceneDescription::AddMaterial(std::unique_ptr<MaterialBase> newMaterial) {
     int index = (int)MaterialArray.size();
-    MaterialArray.push_back(newMaterial);
     material_names_map[newMaterial->GetName()] = index;
-    return index;
+    MaterialArray.push_back(std::move(newMaterial));
 }
 
-int SceneDescription::AddViewable( ViewableBase* newViewable )
-{
-    int index = (int)ViewableArray.size();
-    ViewableArray.push_back(newViewable);
-    return index;
-}
-
-void SceneDescription::DeleteAll()
-{
-    DeleteAllLights();
-    DeleteAllMaterials();
-    DeleteAllViewables();
-}
-
-SceneDescription::~SceneDescription()
-{
-    DeleteAll();
+void SceneDescription::AddViewable(std::unique_ptr<ViewableBase> newViewable) {
+    ViewableArray.push_back(std::move(newViewable));
 }
 
 // Once you have set up an initial CameraView, you can call RegisterCameraView.
@@ -88,30 +61,6 @@ void SceneDescription::CalcNewScreenDims( float aspectRatio )
             // Match up widths
             CameraAndViewer.SetScreenDimensions( RegisteredScreenWidth, RegisteredScreenWidth/aspectRatio );
         }
-    }
-}
-
-void SceneDescription::DeleteAllLights()
-{
-    while (!LightArray.empty()) {
-        delete LightArray.back();
-        LightArray.pop_back();
-    }
-}
-
-void SceneDescription::DeleteAllMaterials()
-{
-    while (!MaterialArray.empty()) {
-        delete MaterialArray.back();
-        MaterialArray.pop_back();
-    }
-}
-
-void SceneDescription::DeleteAllViewables()
-{
-    while (!ViewableArray.empty()) {
-        delete ViewableArray.back();
-        ViewableArray.pop_back();
     }
 }
 

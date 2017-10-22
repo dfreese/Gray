@@ -1,7 +1,8 @@
 #include <Gray/LoadMaterials.h>
-#include <iostream>
-#include <sstream>
 #include <fstream>
+#include <iostream>
+#include <memory>
+#include <sstream>
 #include <vector>
 #include <Gray/GammaMaterial.h>
 #include <Graphics/SceneDescription.h>
@@ -66,10 +67,10 @@ bool LoadMaterials::LoadPhysicsFiles(SceneDescription& theScene,
 
     int numMaterialLoaded = 0;
     for (size_t i = 0; i < material_names.size(); i++) {
-        GammaMaterial * mat = new GammaMaterial();
+        std::unique_ptr<GammaMaterial> mat(new GammaMaterial());
         std::string material_filename = include_location + "/" +
                                         material_names[i] + ".dat";
-        dynamic_cast<Material*>(mat)->SetName(material_names[i]);
+        static_cast<Material*>(mat.get())->SetName(material_names[i]);
         mat->SetFileName(material_filename);
         mat->SetMaterialType(static_cast<int>(i));
         if (!mat->Load()) {
@@ -80,7 +81,7 @@ bool LoadMaterials::LoadPhysicsFiles(SceneDescription& theScene,
             mat->DisableInteractions();
         }
         numMaterialLoaded++;
-        theScene.AddMaterial(mat);
+        theScene.AddMaterial(std::move(mat));
     }
     return(true);
 }

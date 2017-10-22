@@ -2,6 +2,7 @@
 #define SCENE_DESCRIPTION_H
 
 #include <map>
+#include <memory>
 #include <vector>
 #include <VrMath/LinearR3.h>
 #include <Graphics/CameraView.h>
@@ -14,9 +15,7 @@ class SceneDescription
 {
 
 public:
-
-    SceneDescription();
-    ~SceneDescription();
+    SceneDescription() = default;
 
     void SetBackGroundColor( float* color )
     {
@@ -87,13 +86,7 @@ public:
     {
         return LightArray.size();
     }
-    Light* NewLight()
-    {
-        Light * light = new Light();
-        LightArray.push_back(light);
-        return(light);
-    }
-    int AddLight( Light* newLight );
+    void AddLight( std::unique_ptr<Light> newLight );
     Light& GetLight(size_t i)
     {
         return *LightArray[i];
@@ -107,7 +100,7 @@ public:
     {
         return MaterialArray.size();
     }
-    int AddMaterial( MaterialBase * newMaterial );
+    void AddMaterial(std::unique_ptr<MaterialBase> newMaterial);
     MaterialBase& GetMaterial( int i )
     {
         return *MaterialArray[i];
@@ -121,7 +114,7 @@ public:
     {
         return ViewableArray.size();
     }
-    int AddViewable( ViewableBase* newViewable );
+    void AddViewable(std::unique_ptr<ViewableBase> newViewable);
     ViewableBase& GetViewable(size_t i )
     {
         return *ViewableArray[i];
@@ -129,9 +122,6 @@ public:
     const ViewableBase& GetViewable(size_t i ) const
     {
         return *ViewableArray[i];
-    }
-    const std::vector<ViewableBase*> & GetViewableArray() const {
-        return(ViewableArray);
     }
     int GetMaterialIndex(const std::string & name) {
         if (material_names_map.count(name)) {
@@ -143,11 +133,6 @@ public:
 
     AABB GetExtents() const;
     double GetMaxDistance() const;
-
-    void DeleteAllLights();
-    void DeleteAllMaterials();
-    void DeleteAllViewables();
-    void DeleteAll();
 
     void BuildTree(bool use_double_recurse_split, double object_cost);
 
@@ -163,17 +148,17 @@ private:
                                const VectorR3 & direction,
                                double & retStopDistance,
                                VisiblePoint & visible_point_return_ptr) const;
-    VectorR3 TheGlobalAmbientLight;
-    VectorR3 TheBackgroundColor;
+    VectorR3 TheGlobalAmbientLight = VectorR3(0, 0, 0);
+    VectorR3 TheBackgroundColor = VectorR3(0, 0, 0);
 
     CameraView CameraAndViewer;
     double RegisteredScreenWidth;
     double RegisteredScreenHeight;
-    bool ScreenRegistered;
+    bool ScreenRegistered = false;
 
-    std::vector<Light*> LightArray;
-    std::vector<MaterialBase*> MaterialArray;
-    std::vector<ViewableBase*> ViewableArray;
+    std::vector<std::unique_ptr<Light>> LightArray;
+    std::vector<std::unique_ptr<MaterialBase>> MaterialArray;
+    std::vector<std::unique_ptr<ViewableBase>> ViewableArray;
     std::map<std::string, int> material_names_map;
     KdTree kd_tree;
 };

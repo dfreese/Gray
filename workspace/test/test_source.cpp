@@ -12,7 +12,8 @@ protected:
         unique_ptr<SceneDescription> scene(new SceneDescription());
         // While we only use triangles in gray with VectorSource, any viewable
         // type is supported.
-        scene->AddViewable(new ViewableSphere({0,0,0}, 1));
+        std::unique_ptr<ViewableSphere> sphere(new ViewableSphere({0,0,0}, 1));
+        scene->AddViewable(std::move(sphere));
         source = unique_ptr<VectorSource>(new VectorSource(1.0, std::move(scene)));
     }
 };

@@ -195,58 +195,51 @@ void GlutRenderer::InitRendering()
     glEnable( GL_DEPTH_TEST );
 }
 
-void GlutRenderer::RenderViewables(const std::vector<ViewableBase*> & viewables)
-{
-    for (auto ptr: viewables) {
-        RenderViewable(ptr);
-    }
-}
-
-void GlutRenderer::RenderViewable(ViewableBase * ptr)
+void GlutRenderer::RenderViewable(ViewableBase const * const ptr)
 {
     // Hack this with a bunch of dynamic casts, as we hadn't stored them as
     // different types in the scene class as we should have.
-    ViewableBezierSet * bez_ptr = dynamic_cast<ViewableBezierSet*>(ptr);
+    ViewableBezierSet const * const bez_ptr = dynamic_cast<ViewableBezierSet const * const>(ptr);
     if (bez_ptr) {
         RenderViewableBezierSet(*bez_ptr);
         return;
     }
-    ViewableCone * con_ptr = dynamic_cast<ViewableCone*>(ptr);
+    ViewableCone const * const con_ptr = dynamic_cast<ViewableCone const * const>(ptr);
     if (con_ptr) {
         RenderViewableCone(*con_ptr);
         return;
     }
-    ViewableCylinder * cyl_ptr = dynamic_cast<ViewableCylinder*>(ptr);
+    ViewableCylinder const * const cyl_ptr = dynamic_cast<ViewableCylinder const * const>(ptr);
     if (cyl_ptr) {
         RenderViewableCylinder(*cyl_ptr);
         return;
     }
-    ViewableEllipsoid * elp_ptr = dynamic_cast<ViewableEllipsoid*>(ptr);
+    ViewableEllipsoid const * const elp_ptr = dynamic_cast<ViewableEllipsoid const * const>(ptr);
     if (elp_ptr) {
         RenderViewableEllipsoid(*elp_ptr);
         return;
     }
-    ViewableParallelepiped * plp_ptr = dynamic_cast<ViewableParallelepiped*>(ptr);
+    ViewableParallelepiped const * const plp_ptr = dynamic_cast<ViewableParallelepiped const * const>(ptr);
     if (plp_ptr) {
         RenderViewableParallelepiped(*plp_ptr);
         return;
     }
-    ViewableParallelogram * plg_ptr = dynamic_cast<ViewableParallelogram*>(ptr);
+    ViewableParallelogram const * const plg_ptr = dynamic_cast<ViewableParallelogram const * const>(ptr);
     if (plg_ptr) {
         RenderViewableParallelogram(*plg_ptr);
         return;
     }
-    ViewableSphere * sph_ptr = dynamic_cast<ViewableSphere*>(ptr);
+    ViewableSphere const * const sph_ptr = dynamic_cast<ViewableSphere const * const>(ptr);
     if (sph_ptr) {
         RenderViewableSphere(*sph_ptr);
         return;
     }
-    ViewableTorus * trs_ptr = dynamic_cast<ViewableTorus*>(ptr);
+    ViewableTorus const * const trs_ptr = dynamic_cast<ViewableTorus const * const>(ptr);
     if (trs_ptr) {
         RenderViewableTorus(*trs_ptr);
         return;
     }
-    ViewableTriangle * trg_ptr = dynamic_cast<ViewableTriangle*>(ptr);
+    ViewableTriangle const * const trg_ptr = dynamic_cast<ViewableTriangle const * const>(ptr);
     if (trg_ptr) {
         RenderViewableTriangle(*trg_ptr);
         return;
@@ -735,7 +728,9 @@ void GlutRenderer::InitLightsAndView(const SceneDescription & scene)
 }
 
 void GlutRenderer::RenderViewables(const SceneDescription & scene) {
-    RenderViewables(scene.GetViewableArray());
+    for (size_t ii = 0; ii < scene.NumViewables(); ++ii) {
+        RenderViewable(&scene.GetViewable(ii));
+    }
 }
 
 void GlutRenderer::RenderScene( const SceneDescription& scene ) {

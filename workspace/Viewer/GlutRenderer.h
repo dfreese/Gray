@@ -84,8 +84,7 @@ public:
     void SetBackgroundColor( double backRed, double backGreen, double backBlue );
 
     bool AddLight( const Light& light );			// Returns false if quota of lights exceeded
-    void RenderViewable(ViewableBase * ptr);
-    void RenderViewables(const std::vector<ViewableBase*> & viewables);
+    void RenderViewable(ViewableBase const * const ptr);
     void RenderViewables(const SceneDescription & scene);
     void FinishRendering();
     void InitLightsAndView(const SceneDescription & scene);
