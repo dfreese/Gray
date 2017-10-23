@@ -132,7 +132,7 @@ void ViewableTriangle::CalcBoundingPlanes( const VectorR3& u, double *minDot, do
 
 bool ViewableTriangle::CalcExtentsInBox( const AABB& boundingAABB, AABB& retAABB ) const
 {
-    VectorR3 VertArray[3];
+    VectorR3 VertArray[60];
     const VectorR3 & boxBoundMin = boundingAABB.GetBoxMin();
     const VectorR3 & boxBoundMax = boundingAABB.GetBoxMax();
     VertArray[0] = GetVertexA();
