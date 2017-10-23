@@ -70,6 +70,7 @@ VectorR3 Transform::Deflection(const VectorR3 & ref,
     // using original ref axis rotate ret around by phi
     rotation.Set(ref, phi);
     rotation.Transform(&ret);
+    ret.ReNormalize();
     return (ret);
 }
 

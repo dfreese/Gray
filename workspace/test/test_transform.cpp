@@ -20,7 +20,7 @@ TEST(DeflectionTest, CorrectAngle) {
         // get the cos of the angle between the vectors from the dot product
         double cal_angle = unit_z ^ ret;
         EXPECT_DOUBLE_EQ(ret.Norm(), 1.0);
-        EXPECT_EQ(cal_angle, std::cos(angle));
+        EXPECT_LT(std::abs(cal_angle - std::cos(angle)), 1e-6);
     }
 }
 
@@ -49,7 +49,7 @@ TEST(AcolinearityTest, CorrectAngle) {
         // get the cos of the angle between the vectors from the dot product
         double cal_angle = unit_z ^ ret.Negate();
         EXPECT_DOUBLE_EQ(ret.Norm(), 1.0);
-        EXPECT_EQ(cal_angle, std::cos(angle));
+        EXPECT_LT(std::abs(cal_angle - std::cos(angle)), 1e-6);
     }
 }
 
@@ -70,7 +70,7 @@ TEST(AcolinearityTest, GaussScaling) {
         // get the cos of the angle between the vectors from the dot product
         double cal_angle = unit_z ^ ret.Negate();
         EXPECT_DOUBLE_EQ(ret.Norm(), 1.0);
-        EXPECT_EQ(cal_angle, std::cos(gauss_variable));
+        EXPECT_LT(std::abs(cal_angle - std::cos(gauss_variable)), 1e-6);
     }
 }
 
