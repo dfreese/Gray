@@ -274,6 +274,24 @@ public:
 
 };
 
+// Specialize std::hash for VectorR3
+namespace std
+{
+    template<> struct hash<VectorR3>
+    {
+        typedef VectorR3 argument_type;
+        typedef std::size_t result_type;
+        result_type operator()(argument_type const& s) const noexcept
+        {
+            result_type const h1 ( std::hash<double>{}(s.x) );
+            result_type const h2 ( std::hash<double>{}(s.y) );
+            result_type const h3 ( std::hash<double>{}(s.z) );
+            return h1 ^ (h2 << 1) ^ (h3 << 2);
+        }
+    };
+}
+
+
 inline VectorR3 operator+( const VectorR3& u, const VectorR3& v );
 inline VectorR3 operator-( const VectorR3& u, const VectorR3& v );
 inline VectorR3 operator*( const VectorR3& u, double m);

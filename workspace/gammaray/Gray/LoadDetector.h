@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <Graphics/ViewableTriangle.h>
 
 class Config;
 class CameraView;
@@ -23,6 +24,12 @@ public:
                      Config & config,
                      DetectorArray & detector_array);
     static bool LoadConfig(const std::string & filename, Config & config);
+    static std::vector<ViewableTriangle> MakeAnnulusCylinder(
+            const VectorR3 & center, const VectorR3 & axis,
+            double radius_inner, double radius_outer, double width,
+            int det_id, MaterialBase * material);
+    static std::vector<ViewableTriangle> MakeAnnulusCylinder(
+            double radius_inner, double radius_outer, double width);
 private:
     static bool ReadVertexR3(VectorR3& vert, const std::string & line);
     static void ProcessDetector(const VectorR3 & detCenter,
@@ -50,7 +57,8 @@ private:
                                     const std::string & args,
                                     const std::string & file_dir,
                                     Config & config);
-
+    static int IncrementDetector(const RigidMapR3 & current_matrix,
+                                 DetectorArray & detector_array);
 };
 
 

@@ -265,6 +265,13 @@ cyl [center xyz] [axis xyz] [radius] [height]
 Creates a cylinder of given radius and center, with the top circle facing
 towards axis.
 
+### ann_cyl
+
+ann_cyl [center xyz] [axis xyz] [inner radius] [outer radius] [height]
+
+Creates an annulus cylinder (hollow) of given inner and outer radius and center,
+with the top circle facing towards axis.
+
 ### k
 
 k [center xyz] [size xyz]

@@ -586,18 +586,7 @@ bool LoadDetector::Load(const std::string & filename,
                 return(false);
             }
         } else if (command == "increment") {
-            VectorR3 StartPos;
-            VectorR3 UnitSize;
-            StartPos.x = 0.0;
-            StartPos.y = 0.0;
-            StartPos.z = 0.0;
-            UnitSize.x = 1.0;
-            UnitSize.y = 1.0;
-            UnitSize.z = 1.0;
-
-            polygon_det_id = detector_array.AddDetector(StartPos, UnitSize,
-                                                        MatrixStack.top(),
-                                                        0, 0, 0, 0);
+            polygon_det_id = IncrementDetector(MatrixStack.top(), detector_array);
         } else if (command == "ellipsoid") {
             VectorR3 center;
             VectorR3 axis1;
@@ -957,6 +946,33 @@ bool LoadDetector::Load(const std::string & filename,
             std::unique_ptr<Source> cyl(new CylinderSource(center, radius, axis,
                                                            actScale*activity));
             sources.AddSource(std::move(cyl));
+        } else if (command == "ann_cyl") {
+            VectorR3 center;
+            VectorR3 axis;
+            double inner_radius;
+            double outer_radius;
+            double height;
+            int scanCode = sscanf(args.c_str(),
+                                  "%lf %lf %lf %lf %lf %lf %lf %lf %lf",
+                                  &(center.x), &(center.y), &(center.z),
+                                  &(axis.x), &(axis.y), &(axis.z),
+                                  &inner_radius, &outer_radius, &height);
+            if (scanCode != 9) {
+                print_parse_error(line);
+                return(false);
+            }
+            int det_id = -1;
+            if (curMaterial->log_material) {
+                det_id = IncrementDetector(MatrixStack.top(), detector_array);
+            }
+            auto pieces = MakeAnnulusCylinder(center, axis, inner_radius,
+                                              outer_radius, height, det_id,
+                                              curMaterial);
+            for (const auto & triangle: pieces) {
+                std::unique_ptr<ViewableTriangle> vc(new ViewableTriangle(triangle));
+                TransformWithRigid(vc.get(), MatrixStack.top());
+                theScene.AddViewable(std::move(vc));
+            }
         } else if (command == "l") {
             // light
             VectorR3 lightPos, lightColor;
@@ -1364,4 +1380,104 @@ std::string LoadDetector::ScanForSecondField(const std::string & inbuf)
         return("");
     }
     return (inbuf.substr(white_space));
+}
+
+/*!
+ * Creates an annulus cylinder at a given point and orientation by constructing
+ * an annulus at the origin, oriented along the z axis, using
+ * MakeAnnulusCylinder and rotating and transforming it to using
+ * RefAxisPlusTransToMap.
+ */
+std::vector<ViewableTriangle> LoadDetector::MakeAnnulusCylinder(
+        const VectorR3 & center, const VectorR3 & axis,
+        double radius_inner, double radius_outer, double width,
+        int det_id, MaterialBase * material)
+{
+    RigidMapR3 transform = RefAxisPlusTransToMap(axis, center);
+    auto pieces = MakeAnnulusCylinder(radius_inner, radius_outer, width);
+    for (auto & triangle: pieces) {
+        TransformWithRigid(&triangle, transform);
+        triangle.SetDetectorId(det_id);
+        triangle.SetMaterial(material);
+    }
+    return (pieces);
+}
+
+/*!
+ * Construct a set of triangles that mimics an annulus cylinder by rotating a
+ * set of four points with the appropriate width, translated in y, and rotating
+ * them a given angle around the z axis.  Enforces that points to a double
+ * precision are used exactly for each rotated set of points.
+ *
+ * Triangles are then constructed between the rotated points and the previous
+ * set of four points to make four faces of points that enclose one section of
+ * the cylindrical annulus.  Current two triangles are constructed per face,
+ * with four faces per section, and 100 sections used for the full annulus,
+ * regardless of size or shape
+ *
+ * \param radius_inner
+ * \param radius_outer
+ * \param width
+ * \returns vector of 800 ViewableTriangles that create the annulus.
+ */
+std::vector<ViewableTriangle> LoadDetector::MakeAnnulusCylinder(
+        double radius_inner, double radius_outer, double width)
+{
+    constexpr int no_sections = 100;
+    constexpr double theta_step = M_PI * (2.0 / no_sections);
+    std::vector<ViewableTriangle> pieces;
+    const double pos_z = width / 2;
+    const double neg_z = width / -2;
+
+    for (int idx = 0; idx < no_sections; ++idx) {
+        // rotate around the neg z axis to the {idx}th step of {no_sections}
+        const double theta_curr = idx * theta_step;
+        const double theta_next = ((idx + 1) % no_sections) * theta_step;
+        const double x_curr = std::cos(theta_curr);
+        const double y_curr = std::sin(theta_curr);
+        const double x_next = std::cos(theta_next);
+        const double y_next = std::sin(theta_next);
+
+        const VectorR3 pos_out(radius_outer * x_curr, radius_outer * y_curr, pos_z);
+        const VectorR3 neg_out(radius_outer * x_curr, radius_outer * y_curr, neg_z);
+        const VectorR3 pos_in(radius_inner * x_curr, radius_inner * y_curr, pos_z);
+        const VectorR3 neg_in(radius_inner * x_curr, radius_inner * y_curr, neg_z);
+
+        const VectorR3 next_pos_out(radius_outer * x_next, radius_outer * y_next, pos_z);
+        const VectorR3 next_neg_out(radius_outer * x_next, radius_outer * y_next, neg_z);
+        const VectorR3 next_pos_in(radius_inner * x_next, radius_inner * y_next, pos_z);
+        const VectorR3 next_neg_in(radius_inner * x_next, radius_inner * y_next, neg_z);
+
+
+        // Create a all four faces, with two triangles each.
+        // Top Outside
+        pieces.push_back({neg_out, next_neg_out, next_pos_out});
+        pieces.push_back({next_pos_out, pos_out, neg_out});
+        // Positive Side
+        pieces.push_back({pos_out, next_pos_out, next_pos_in});
+        pieces.push_back({next_pos_in, pos_in, pos_out});
+        // Bottom Inside
+        pieces.push_back({pos_in, next_pos_in, next_neg_in});
+        pieces.push_back({next_neg_in, neg_in, pos_in});
+        // Negative Side
+        pieces.push_back({neg_in, next_neg_in, next_neg_out});
+        pieces.push_back({next_neg_out, neg_out, neg_in});
+    }
+    return (pieces);
+}
+
+int LoadDetector::IncrementDetector(const RigidMapR3 & current_matrix,
+                                     DetectorArray & detector_array)
+{
+    VectorR3 StartPos;
+    VectorR3 UnitSize;
+    StartPos.x = 0.0;
+    StartPos.y = 0.0;
+    StartPos.z = 0.0;
+    UnitSize.x = 1.0;
+    UnitSize.y = 1.0;
+    UnitSize.z = 1.0;
+
+    return (detector_array.AddDetector(StartPos, UnitSize, current_matrix,
+                                       0, 0, 0, 0));
 }

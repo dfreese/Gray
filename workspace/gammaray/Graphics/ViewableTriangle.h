@@ -28,7 +28,16 @@ class ViewableTriangle : public ViewableBase
 {
 
 public:
-    ViewableTriangle();
+    ViewableTriangle() = default;
+    ViewableTriangle(const VectorR3& VertexA,
+                     const VectorR3& VertexB,
+                     const VectorR3& VertexC) :
+        VertexA(VertexA),
+        VertexB(VertexB),
+        VertexC(VertexC)
+    {
+        PreCalcInfo();
+    }
 
     // Three vertices in counter-clockwise order.
     void Init( const double* vertexpositions);
@@ -87,10 +96,6 @@ protected:
 
     void PreCalcInfo();				// Precalculations for intersection testing speed
 };
-
-inline ViewableTriangle::ViewableTriangle()
-{
-}
 
 inline void ViewableTriangle::Init( const double* v )
 {
