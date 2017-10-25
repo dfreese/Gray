@@ -1430,7 +1430,7 @@ std::vector<ViewableTriangle> LoadDetector::MakeAnnulusCylinder(
     const double neg_z = width / -2;
 
     for (int idx = 0; idx < no_sections; ++idx) {
-        // rotate around the neg z axis to the {idx}th step of {no_sections}
+        // rotate around the z axis to the {idx}th step of {no_sections}
         const double theta_curr = idx * theta_step;
         const double theta_next = ((idx + 1) % no_sections) * theta_step;
         const double x_curr = std::cos(theta_curr);
