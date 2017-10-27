@@ -6,8 +6,8 @@ if (MPI_CXX_FOUND)
     target_link_libraries(gray-mpi gammaray)
 
     add_custom_command(TARGET gray-mpi POST_BUILD 
-        COMMAND "${CMAKE_COMMAND}" -E copy  "$<TARGET_FILE:gray-mpi>" "../../bin/")
+        COMMAND "${CMAKE_COMMAND}" -E copy  "$<TARGET_FILE:gray-mpi>" "${CMAKE_SOURCE_DIR}/../bin/")
 endif (MPI_CXX_FOUND)
 
 add_custom_command(TARGET gray POST_BUILD 
-    COMMAND "${CMAKE_COMMAND}" -E copy  "$<TARGET_FILE:gray>" "../../bin/")
+    COMMAND "${CMAKE_COMMAND}" -E copy  "$<TARGET_FILE:gray>" "${CMAKE_SOURCE_DIR}/../bin/")
