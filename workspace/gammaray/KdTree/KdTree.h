@@ -34,6 +34,7 @@
 #define KDTREE_H
 
 #include <algorithm>
+#include <functional>
 #include <vector>
 #include <VrMath/Aabb.h>
 
