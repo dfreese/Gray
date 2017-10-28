@@ -1,7 +1,16 @@
-import urllib
 import re
 
 _NIST_XCOM_FORM = 'https://physics.nist.gov/cgi-bin/Xcom/data.pl'
+
+# See https://stackoverflow.com/a/17510727/2465202 for more information
+try:
+    # For Python 3.0 and later
+    from urllib.request import urlopen
+    from urllib.parse import urlencode
+except ImportError:
+    # Fall back to Python 2's urllib2
+    from urllib import urlopen
+    from urllib import urlencode
 
 def compound(formula, energies_mev=None, standard_grid=False, window_min=0.001,
              window_max=100000, return_energies=False, return_scatter=True,
@@ -64,8 +73,8 @@ def compound(formula, energies_mev=None, standard_grid=False, window_min=0.001,
         postdict['Output'] = 'on'
         return_energies = True
 
-    postdata = urllib.urlencode(postdict)
-    xcom_url = urllib.urlopen(_NIST_XCOM_FORM, postdata)
+    postdata = urlencode(postdict).encode("utf-8")
+    xcom_url = urlopen(_NIST_XCOM_FORM, postdata)
     xcom_data = xcom_url.read().splitlines()
 
     energies = []

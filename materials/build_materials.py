@@ -2,15 +2,22 @@
 
 import os
 import sys
-import urllib2
 import eadl
 import xcom
 import materials
 
+# See https://stackoverflow.com/a/17510727/2465202 for more information
+try:
+    # For Python 3.0 and later
+    from urllib.request import build_opener
+except ImportError:
+    # Fall back to Python 2's urllib2
+    from urllib2 import build_opener
+
 def usage():
-    print 'build_materials (materials file) (export directory)'
-    print 'current directory is used if no export directory is specified'
-    print 'Gray_Materials.txt in the current directory is used if not specified'
+    print('build_materials (materials file) (export directory)')
+    print('current directory is used if no export directory is specified')
+    print('Gray_Materials.txt in the current directory is used if not specified')
 
 def retreive_dataset(filename, url):
     """
@@ -20,7 +27,7 @@ def retreive_dataset(filename, url):
     Downloading based on this one:
         http://stackoverflow.com/a/22721/2465202
     """
-    opener = urllib2.build_opener()
+    opener = build_opener()
     opener.addheaders = [('User-Agent', 'Mozilla/5.0')]
     remote_fid = opener.open(url)
     with open(filename, 'w') as local_fid:
@@ -33,7 +40,7 @@ def check_dataset(filename=None, url=None):
     then use retreive_dataset() to grab it.
     """
     try:
-        with open(filename, 'r') as fid:
+        with open(filename, 'r'):
             exists = True
     except IOError:
         exists = False
@@ -70,7 +77,7 @@ if include_xray_escapes:
     elements.read(epdl_file)
     mat_emis_probs = eadl.full_material_emission_probs(gray_mats, elements)
 
-for name, data in gray_mats.iteritems():
+for name, data in gray_mats.items():
     # We grab 11keV to 511keV in steps of 10keV, plus the standard grid
     # which will have all of the important transitions
     energies_mev = [0.011 + x * 0.010 for x in range(51)]
@@ -81,7 +88,7 @@ for name, data in gray_mats.iteritems():
         emis_probs = mat_emis_probs[name]
     with open(name + '.dat', 'w') as out_fid:
         # Print out the scattering and absorption values first
-        print >>out_fid, '%d' % len(energy)
+        out_fid.write('{}\n'.format(len(energy)))
         last_e = 0.0
         for e, ics, cs, pe in zip(energy, incoh_scat, coh_scat, photoelec):
             if e == last_e:
@@ -90,15 +97,16 @@ for name, data in gray_mats.iteritems():
                 # interpolation doesn't choke.
                 e += 0.0000025
             last_e = e
-            print >>out_fid, '%15.9f   %15.9f   %15.9f   %15.9f' % (
+            out_fid.write('{0:15.9f}   {1:15.9f}   {2:15.9f}   {3:15.9f}\n'.format(
                 e, pe * data['density'], ics * data['density'],
-                cs * data['density'])
+                cs * data['density']))
         # Then add on the flourescent emission
         if mat_emis_probs is not None:
-            no_emissions = sum((len(d.keys()) for d in emis_probs.itervalues()))
+            no_emissions = sum((len(d.keys()) for d in emis_probs.values()))
             print >>out_fid, '%d' % no_emissions
             for bind_e in sorted(emis_probs):
                 b_dict = emis_probs[bind_e]
                 for e in sorted(b_dict):
                     p = b_dict[e]
-                    print >>out_fid, '%15.9f   %15.9f   %15.9f' % (bind_e, e, p)
+                    out_fid.write('{0:15.9f}   {1:15.9f}   {2:15.9f}\n'.format(
+                        bind_e, e, p))
