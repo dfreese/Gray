@@ -23,7 +23,7 @@ public:
     static long Poisson(double lambda);
     static VectorR3 UniformSphere();
     static VectorR3 UniformSphereFilled();
-    static VectorR3 Deflection(const VectorR3 & ref, double angle);
+    static VectorR3 Deflection(const VectorR3 & ref, const double costheta);
     static VectorR3 Acolinearity(const VectorR3 & ref, double radians);
     static VectorR3 UniformCylinder(double height, double radius);
     static VectorR3 UniformAnnulusCylinder(double height, double radius);

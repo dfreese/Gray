@@ -107,9 +107,9 @@ VectorR3 Random::UniformSphereFilled()
  * Returns a vector deflected from the current direction at an angle of theta
  * radians.  The phi angle around the reference vector is uniformly sampled.
  */
-VectorR3 Random::Deflection(const VectorR3 & ref, double theta)
+VectorR3 Random::Deflection(const VectorR3 & ref, const double costheta)
 {
-    return (Transform::Deflection(ref, theta, Random::Uniform()));
+    return (Transform::Deflection(ref, costheta, Random::Uniform()));
 }
 
 VectorR3 Random::Acolinearity(const VectorR3 & ref, double radians)

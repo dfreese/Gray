@@ -49,7 +49,7 @@ VectorR3 Transform::UniformSphereFilled(double theta_rand_uniform,
  * is uniform 360 degrees around the reference vector.
  */
 VectorR3 Transform::Deflection(const VectorR3 & ref,
-                               const double theta,
+                               const double costheta,
                                double deflection_dir_rand_uniform)
 {
     // Phi: Angle around central axis any of 360 degrees in a circle
@@ -64,7 +64,8 @@ VectorR3 Transform::Deflection(const VectorR3 & ref,
     // Generate deflection angle away from the reference photon using our
     // rotation map
     RotationMapR3 rotation;
-    rotation.Set(rot_axis, theta);
+    const double sintheta = sqrt(1.0 - costheta * costheta);
+    rotation.Set(rot_axis, sintheta, costheta);
     rotation.Transform(&ret);
 
     // using original ref axis rotate ret around by phi
@@ -97,7 +98,8 @@ VectorR3 Transform::Acolinearity(const VectorR3 & ref,
 {
     // Generate a gaussian with std of std_radians
     const double theta = (deflection_angle_gaussian_rand * std_radians);
-    VectorR3 ret = Transform::Deflection(ref, theta, deflection_dir_rand_uniform);
+    VectorR3 ret = Transform::Deflection(ref, std::cos(theta),
+                                         deflection_dir_rand_uniform);
 
     // Negate the vector to send it (roughly) off in the opposite direction
     ret.Negate();

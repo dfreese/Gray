@@ -114,14 +114,26 @@ std::vector<double> Math::linspace(double start, double end, int no_points)
 {
     // Minus one on the number of points because we include the end point.
     double step = (end - start) / (no_points - 1);
-    double val = start;
     std::vector<double> ret(no_points);
+    int n = 0;
     for (double & ret_val: ret) {
-        ret_val = val;
-        val += step;
+        ret_val = start + n * step;
+        n++;
     }
     return (ret);
 }
+
+/*!
+ *
+ */
+std::vector<double> Math::cos_space(int no_points)
+{
+    std::vector<double> ret(linspace(0, M_PI, no_points));
+    std::transform(ret.begin(), ret.end(), ret.begin(),
+                   [](double theta) { return (std::cos(theta)); });
+    return (ret);
+}
+
 
 /*!
  * Performs the trapezoidal approximation to an integral on x and y.  It

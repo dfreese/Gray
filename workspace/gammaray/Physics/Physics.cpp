@@ -202,8 +202,9 @@ Physics::KleinNishina::KleinNishina() :
     energy_idx({
         0.0, 0.010, 0.030, 0.050, 0.100, 0.200, 0.300, 0.400, 0.500, 0.600,
         0.700, 0.900, 1.100, 1.300, 1.500}),
-    theta_idx(Math::linspace(0, M_PI, 50)),
-    scatter_cdfs(create_scatter_cdfs(energy_idx, theta_idx))
+    // Go from -1 to 1 linear in theta
+    costheta_idx(Math::cos_space(50)),
+    scatter_cdfs(create_scatter_cdfs(energy_idx, costheta_idx))
 {
 }
 
@@ -216,41 +217,43 @@ Physics::KleinNishina::KleinNishina() :
  * https://en.wikipedia.org/wiki/Klein–Nishina_formula
  *
  */
-double Physics::KleinNishina::dsigma(double theta, double energy_mev,
-                                         double & prob_e_theta)
+double Physics::KleinNishina::dsigma(const double costheta,
+                                     const double energy_mev)
 {
-    double alpha = energy_mev / Physics::energy_511;
-    double cs = cos(theta);
-    double ss = sin(theta);
-    prob_e_theta = 1. / (1. + alpha * (1. - cs));
-    double sigma = ss * prob_e_theta * prob_e_theta * (prob_e_theta +
-                                                       (1./ prob_e_theta) -
-                                                       ss * ss);
+    const double alpha = energy_mev / Physics::energy_511;
+    const double ss2 = 1.0 - costheta * costheta;
+    const double ss = std::sqrt(ss2);
+    const double prob_e_theta = 1. / (1. + alpha * (1. - costheta));
+    const double sigma = (ss * prob_e_theta * prob_e_theta *
+                          (prob_e_theta + (1./ prob_e_theta) - ss2));
     return(sigma);
 }
 
 
 double Physics::KleinNishina::scatter_angle(double energy, double rand_uniform)
 {
-    return (Math::interpolate_y_2d(energy_idx, theta_idx, scatter_cdfs,
+    return (Math::interpolate_y_2d(energy_idx, costheta_idx, scatter_cdfs,
                                    energy, rand_uniform));
 }
 
 std::vector<std::vector<double>> Physics::KleinNishina::create_scatter_cdfs(
         const std::vector<double> & energies,
-        const std::vector<double> & thetas)
+        const std::vector<double> & costhetas)
 {
     std::vector<std::vector<double>> scatter_cdfs(
-            energies.size(), std::vector<double>(thetas.size()));
+            energies.size(), std::vector<double>(costhetas.size()));
 
     for (size_t ii = 0; ii < energies.size(); ++ii) {
         const double energy = energies[ii];
         auto & energy_cdf = scatter_cdfs[ii];
-        std::transform(thetas.begin(), thetas.end(), energy_cdf.begin(),
-           [&energy](double theta) {
-               double drop;
-               return (Physics::KleinNishina::dsigma(theta, energy, drop));
+        std::transform(costhetas.begin(), costhetas.end(), energy_cdf.begin(),
+           [&energy](double costheta) {
+               return (Physics::KleinNishina::dsigma(costheta, energy));
            });
+        // Integrate in theta space, not cos(theta).
+        std::vector<double> thetas(costhetas.size());
+        std::transform(costhetas.begin(), costhetas.end(), thetas.begin(),
+               [](double theta) { return (std::acos(theta)); });
         energy_cdf = Math::pdf_to_cdf(thetas, energy_cdf);
     }
 
@@ -316,19 +319,19 @@ Physics::INTER_TYPE Physics::InteractionType(
     }
 }
 
-double Physics::KleinNishinaEnergy(double energy, double theta)
+double Physics::KleinNishinaEnergy(const double energy, const double costheta)
 {
-    return(energy / (1.0 + (energy / Physics::energy_511) * (1. - cos(theta))));
+    return(energy / (1.0 + (energy / Physics::energy_511) * (1. - costheta)));
 }
 
 void Physics::ComptonScatter(Photon &p, double & deposit)
 {
-    const double theta = klein_nishina.scatter_angle(p.GetEnergy(), Random::Uniform());
+    const double costheta = klein_nishina.scatter_angle(p.GetEnergy(), Random::Uniform());
     // After collision the photon loses some energy to the electron
     deposit = p.GetEnergy();
-    p.SetEnergy(KleinNishinaEnergy(p.GetEnergy(), theta));
+    p.SetEnergy(KleinNishinaEnergy(p.GetEnergy(), costheta));
     deposit -= p.GetEnergy();
-    p.SetDir(Random::Deflection(p.GetDir(), theta));
+    p.SetDir(Random::Deflection(p.GetDir(),costheta));
     p.SetScatterCompton();
 }
 
@@ -360,7 +363,7 @@ double Physics::RayleighAngle() {
 void Physics::RayleighScatter(Photon &p)
 {
     const double theta = RayleighAngle();
-    p.SetDir(Random::Deflection(p.GetDir(), theta));
+    p.SetDir(Random::Deflection(p.GetDir(), std::cos(theta)));
     // If the photon scatters on a non-detector, it is a scatter, checked
     // inside SetScatter
     p.SetScatterRayleigh();

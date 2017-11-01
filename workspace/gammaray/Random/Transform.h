@@ -9,7 +9,7 @@ namespace Transform {
                                  double cos_phi_rand_uniform,
                                  double r_cubed_rand_uniform);
     VectorR3 Deflection(const VectorR3 & ref,
-                        const double theta,
+                        const double costheta,
                         double deflection_dir_rand_uniform);
     VectorR3 Acolinearity(const VectorR3 & ref, double std_radians,
                           double deflection_dir_rand_uniform,

@@ -47,8 +47,7 @@ public:
                                       const GammaStats & mat_gamma_prop,
                                       double & deposit);
     static void ComptonScatter(Photon &p, double & deposit);
-    static double KleinNishinaAngle(double energy, double & prob_e_theta);
-    static double KleinNishinaEnergy(double energy, double theta);
+    static double KleinNishinaEnergy(const double energy, const double theta);
     static bool XrayEscape(Photon &p, const GammaStats & mat_gamma_prop,
                            double & deposit);
     static void RayleighScatter(Photon &p);
@@ -62,15 +61,14 @@ public:
     class KleinNishina {
     public:
         KleinNishina();
-        static double dsigma(double theta, double energy_mev,
-                             double & prob_e_theta);
+        static double dsigma(const double costheta, const double energy_mev);
         static std::vector<std::vector<double>> create_scatter_cdfs(
                 const std::vector<double> & energies,
                 const std::vector<double> & thetas);
         double scatter_angle(double energy, double rand_uniform);
     private:
         std::vector<double> energy_idx;
-        std::vector<double> theta_idx;
+        std::vector<double> costheta_idx;
         std::vector<std::vector<double>> scatter_cdfs;
     };
 
