@@ -181,4 +181,14 @@ TEST(PdfToCdfTest, Scaling) {
     EXPECT_TRUE(std::equal(result1.begin(), result1.end(), result2.begin()));
 }
 
+class InterpolateEdgeTest : public ::testing::Test {
+public:
+    const std::vector<double> x = {0.0, 0.1, 0.2, 0.3, 0.3, 0.5, 0.6, 0.7};
+    const std::vector<double> y = {10.0, 9.0, 8.0, 7.0, 11.0, 10.0, 9.0, 8.0};
+};
+
+TEST_F(InterpolateEdgeTest, Edge) {
+    EXPECT_NEAR(Math::interpolate(x, y, 0.299), y[3], 1e-2);
+    EXPECT_NEAR(Math::interpolate(x, y, 0.3), y[4], 1e-2);
+}
 

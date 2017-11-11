@@ -80,23 +80,16 @@ if include_xray_escapes:
 for name, data in gray_mats.items():
     # We grab 11keV to 511keV in steps of 10keV, plus the standard grid
     # which will have all of the important transitions
-    energies_mev = [0.011 + x * 0.010 for x in range(51)]
+    energies_mev = [0.001 + x * 0.010 for x in range(52)]
     energy, coh_scat, incoh_scat, photoelec = xcom.compound(data['formula'],
-        energies_mev=energies_mev, standard_grid=True, window_min=0.011,
+        energies_mev=energies_mev, standard_grid=True, window_min=0.001,
         window_max=1.5)
     if mat_emis_probs is not None:
         emis_probs = mat_emis_probs[name]
     with open(name + '.dat', 'w') as out_fid:
         # Print out the scattering and absorption values first
         out_fid.write('{}\n'.format(len(energy)))
-        last_e = 0.0
         for e, ics, cs, pe in zip(energy, incoh_scat, coh_scat, photoelec):
-            if e == last_e:
-                # If we've come across a transition, we add a small offset
-                # to the following edge to make sure Gray's linear
-                # interpolation doesn't choke.
-                e += 0.0000025
-            last_e = e
             out_fid.write('{0:15.9f}   {1:15.9f}   {2:15.9f}   {3:15.9f}\n'.format(
                 e, pe * data['density'], ics * data['density'],
                 cs * data['density']))
