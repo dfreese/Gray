@@ -11,10 +11,8 @@ public:
     GammaStats();
     void SetName(const std::string & n);
     void SetFileName(const std::string & n);
-    void SetSize(int s);
     void SetMaterialType(int s);
     bool Load();
-    int GetIndex(double e) const;
     int GetMaterial() const;
     void GetInteractionProbs(double e, double & pe, double & comp,
                              double & ray) const;
@@ -28,15 +26,17 @@ public:
     double GetXrayBindEnergyScale(double energy) const;
 
 private:
-
-    int search(double e, int b_idx, int s_idx) const;
-
+    size_t GetIndex(double e) const;
     std::string name;
     std::string filename;
     std::vector<double> energy;
     std::vector<double> photoelectric;
     std::vector<double> compton;
     std::vector<double> rayleigh;
+    std::vector<double> log_energy;
+    std::vector<double> log_photoelectric;
+    std::vector<double> log_compton;
+    std::vector<double> log_rayleigh;
     std::vector<double> xray_binding_energy;
     std::vector<double> xray_emission_energy;
     std::vector<double> xray_emission_prob;
@@ -46,10 +46,10 @@ private:
     std::vector<double> xray_binding_enery_scale;
 
     // cache for energy lookup
-    double cache_energy;
-    int cache_idx;
+    mutable double cache_energy_min;
+    mutable double cache_energy_max;
+    mutable size_t cache_idx;
 
-    int size;
     int num_escape;
     int material;
 };

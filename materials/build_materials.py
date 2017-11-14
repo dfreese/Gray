@@ -78,12 +78,8 @@ if include_xray_escapes:
     mat_emis_probs = eadl.full_material_emission_probs(gray_mats, elements)
 
 for name, data in gray_mats.items():
-    # We grab 11keV to 511keV in steps of 10keV, plus the standard grid
-    # which will have all of the important transitions
-    energies_mev = [0.001 + x * 0.010 for x in range(52)]
     energy, coh_scat, incoh_scat, photoelec = xcom.compound(data['formula'],
-        energies_mev=energies_mev, standard_grid=True, window_min=0.001,
-        window_max=1.5)
+        standard_grid=True, window_min=0.001, window_max=1.5)
     if mat_emis_probs is not None:
         emis_probs = mat_emis_probs[name]
     with open(name + '.dat', 'w') as out_fid:

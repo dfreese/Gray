@@ -7,6 +7,15 @@ namespace Math {
     double interpolate(const std::vector<double> & x,
                        const std::vector<double> & y,
                        double x_value);
+    double interpolate(const std::vector<double> & x,
+                       const std::vector<double> & y,
+                       double x_value, size_t idx);
+    double loglog_interpolate(const std::vector<double> & x,
+                              const std::vector<double> & y,
+                              double x_value);
+    double loglog_interpolate(const std::vector<double> & x,
+                              const std::vector<double> & y,
+                              double x_value, size_t idx);
     double interpolate_2d(const std::vector<double> & x,
                           const std::vector<double> & y,
                           const std::vector<std::vector<double>> & z,

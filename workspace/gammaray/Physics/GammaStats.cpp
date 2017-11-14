@@ -1,20 +1,22 @@
 #include <Physics/GammaStats.h>
+#include <cmath>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+#include <Math/Math.h>
 
 using namespace std;
 
-GammaStats::GammaStats()
+GammaStats::GammaStats() :
+    log_material(false),
+    enable_interactions(true),
+    cache_energy_min(-1),
+    cache_energy_max(-1),
+    cache_idx(0),
+    num_escape(0),
+    material(-1)
 {
-    size = 0;
-    cache_idx = -1;
-    cache_energy = -1.0;
-    log_material = false;
-    enable_interactions = true;
-    num_escape = 0;
-    material = -1;
 }
 
 void GammaStats::SetName(const std::string & n)
@@ -48,43 +50,25 @@ void GammaStats::DisableInteractions()
     enable_interactions = false;
 }
 
-void GammaStats::SetSize(int s)
+size_t GammaStats::GetIndex(double e) const
 {
-    size = s;
-    energy.clear();
-    energy.resize(s, -1);
-    photoelectric.clear();
-    photoelectric.resize(s, -1);
-    compton.clear();
-    compton.resize(s, -1);
-    rayleigh.clear();
-    rayleigh.resize(s, -1);
-}
-
-int GammaStats::search(double e, int b_idx, int s_idx) const
-{
-    if (b_idx == s_idx) {
-        return b_idx;
-    }
-    int idx = (int)(((b_idx) + (s_idx))/2);
-    if (energy[idx] < e) {
-        return search(e,idx+1,s_idx);
-    } else {
-        return search(e,b_idx,idx);
-    }
-}
-
-int GammaStats::GetIndex(double e) const
-{
-
-    if (cache_energy == e) {
+    if ((cache_energy_min >= e) && (cache_energy_max < e)) {
         return cache_idx;
     }
-
-    // binary search the sorted list of energies for the index
-    // And override the const of the function to store the cache of the value.
-    const_cast<GammaStats*>(this)->cache_idx = search(e, 0, size-1);
-    const_cast<GammaStats*>(this)->cache_energy = e;
+    // binary search the sorted list of energies for the index.  This
+    // intentionally searches in the same way Math::linear_interpolate does.
+    cache_idx = (std::upper_bound(energy.begin(), energy.end(), e) -
+                 energy.begin());
+    if (cache_idx == energy.size()) {
+        cache_energy_max = energy.back();
+    } else {
+        cache_energy_max = energy[cache_idx];
+    }
+    if (cache_idx == 0) {
+        cache_energy_min = energy.front();
+    } else {
+        cache_energy_min = energy[cache_idx - 1];
+    }
     return cache_idx;
 }
 
@@ -106,7 +90,15 @@ bool GammaStats::Load()
         return(false);
     }
 
-    SetSize(no_points);
+    energy.clear();
+    energy.resize(no_points, -1);
+    photoelectric.clear();
+    photoelectric.resize(no_points, -1);
+    compton.clear();
+    compton.resize(no_points, -1);
+    rayleigh.clear();
+    rayleigh.resize(no_points, -1);
+
     for (int i = 0; i < no_points; i++) {
         string pt_line;
         getline(infile, pt_line);
@@ -123,6 +115,23 @@ bool GammaStats::Load()
             return(false);
         }
     }
+
+    log_energy.resize(no_points);
+    log_photoelectric.resize(no_points);
+    log_compton.resize(no_points);
+    log_rayleigh.resize(no_points);
+
+    auto log_func = [](double & val) { return (std::log(val)); };
+    std::transform(energy.begin(), energy.end(),
+                   log_energy.begin(), log_func);
+    std::transform(photoelectric.begin(), photoelectric.end(),
+                   log_photoelectric.begin(), log_func);
+    std::transform(compton.begin(), compton.end(),
+                   log_compton.begin(), log_func);
+    std::transform(rayleigh.begin(), rayleigh.end(),
+                   log_rayleigh.begin(), log_func);
+
+
 
     getline(infile, line);
     if (!line.empty()) {
@@ -202,21 +211,11 @@ bool GammaStats::Load()
 void GammaStats::GetInteractionProbs(double e, double & pe, double & comp,
                                      double & ray) const
 {
-    int idx = GetIndex(e);
-    if (idx == 0) {
-        pe = photoelectric[0];
-        comp = compton[0];
-        ray = rayleigh[0];
-    } else {
-        double delta = energy[idx] - energy[idx-1];
-        double alpha = (e - energy[idx-1])/delta;
-        if (alpha > 1.0) {
-            alpha = 1.0;
-        }
-        pe = (1.0 - alpha) * photoelectric[idx - 1] + alpha * photoelectric[idx];
-        comp = (1.0 - alpha) * compton[idx - 1] + alpha * compton[idx];
-        ray = (1.0 - alpha) * rayleigh[idx - 1] + alpha * rayleigh[idx];
-    }
+    size_t idx = GetIndex(e);
+    const double log_e = std::log(e);
+    pe = std::exp(Math::interpolate(log_energy, log_photoelectric, log_e, idx));
+    comp = std::exp(Math::interpolate(log_energy, log_compton, log_e, idx));
+    ray = std::exp(Math::interpolate(log_energy, log_rayleigh, log_e, idx));
 }
 
 const std::vector<double> & GammaStats::GetXrayEmissionEnergies() const {

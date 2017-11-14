@@ -36,6 +36,69 @@ double Math::interpolate(const std::vector<double> & x,
     return(dsigma_max);
 }
 
+double Math::interpolate(const std::vector<double> & x,
+                         const std::vector<double> & y,
+                         double x_value, size_t idx)
+{
+    if (idx == 0) {
+        return(y.front());
+    } else if (idx == x.size()) {
+        return(y.back());
+    }
+    double delta = x[idx] - x[idx - 1];
+    double alpha = (x_value - x[idx - 1]) / delta;
+    if (alpha > 1.0) {
+        alpha = 1.0;
+    }
+    double dsigma_max = ((1.0 - alpha) * y[idx - 1] + alpha * y[idx]);
+    return(dsigma_max);
+}
+
+double Math::loglog_interpolate(const std::vector<double> & x,
+                                const std::vector<double> & y,
+                                double x_value)
+{
+    size_t idx = std::upper_bound(x.begin(), x.end(), x_value) - x.begin();
+
+    if (idx == 0) {
+        return(y.front());
+    } else if (idx == x.size()) {
+        return(y.back());
+    }
+    const double e1 = x[idx - 1];
+    const double e2 = x[idx];
+    const double d1 = y[idx - 1];
+    const double d2 = y[idx];
+
+    double value = (std::log(d1) +
+                    (std::log(d2 / d1)/std::log(e2 / e1) *
+                     std::log(x_value / e1)));
+    value = std::exp(value);
+    return (value);
+}
+
+double Math::loglog_interpolate(const std::vector<double> & x,
+                                const std::vector<double> & y,
+                                double x_value, size_t idx)
+{
+    if (idx == 0) {
+        return(y.front());
+    } else if (idx == x.size()) {
+        return(y.back());
+    }
+    const double e1 = x[idx - 1];
+    const double e2 = x[idx];
+    const double d1 = y[idx - 1];
+    const double d2 = y[idx];
+
+    double value = (std::log10(d1) +
+                    (std::log10(d2 / d1)/std::log10(e2 / e1) *
+                     std::log10(x_value / e1)));
+    value = std::pow(10.,value);
+    return (value);
+}
+
+
 /*!
  * For a given set of x, y, and z perform piecewise linear interpolation
  * between the z values for a specified x and y.  If x_value or y_value is
