@@ -16,7 +16,12 @@ public:
     int GetMaterial() const;
     void GetInteractionProbs(double e, double & pe, double & comp,
                              double & ray) const;
-    bool log_material;
+    bool LogMaterial() const {
+        return (log_material);
+    }
+    void SetLogMaterial(bool val) {
+        log_material = val;
+    }
     bool InteractionsEnabled() const;
     void DisableInteractions();
     std::string GetName() const;
@@ -54,6 +59,7 @@ private:
     int material;
 
     bool enable_interactions;
+    bool log_material;
 };
 
 #endif

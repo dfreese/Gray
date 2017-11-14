@@ -76,7 +76,7 @@ bool LoadMaterials::LoadPhysicsFiles(SceneDescription& theScene,
         if (!mat->Load()) {
             return(false);
         }
-        mat->log_material = material_sensitivities[i];
+        mat->SetLogMaterial(material_sensitivities[i]);
         if (i == 0) { // First material is default material
             mat->DisableInteractions();
         }

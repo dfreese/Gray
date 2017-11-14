@@ -9,13 +9,13 @@
 using namespace std;
 
 GammaStats::GammaStats() :
-    log_material(false),
     cache_energy_min(-1),
     cache_energy_max(-1),
     cache_idx(0),
     num_escape(0),
     material(-1),
-    enable_interactions(true)
+    enable_interactions(true),
+    log_material(false)
 {
 }
 
