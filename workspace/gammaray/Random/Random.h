@@ -15,7 +15,6 @@ public:
     static void Seed();
     static void SeedDefault();
     static unsigned long GetSeed();
-    static void RankReseed(int rank);
     static unsigned long Int();
     static double Uniform();
     static double Gaussian();

@@ -87,10 +87,6 @@ bool Random::SeedSet() {
     return(seed_set());
 }
 
-void Random::RankReseed(int rank) {
-    Seed(GetSeed() + rank);
-}
-
 VectorR3 Random::UniformSphere()
 {
     return (Transform::UniformSphere(Random::Uniform(), Random::Uniform()));
