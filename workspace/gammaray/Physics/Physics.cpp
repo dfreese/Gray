@@ -273,7 +273,7 @@ Physics::INTER_TYPE Physics::InteractionType(
         const GammaStats & mat_gamma_prop,
         double & deposit)
 {
-    if (!mat_gamma_prop.enable_interactions) {
+    if (!mat_gamma_prop.InteractionsEnabled()) {
         // move photon to interaction point, or exit point of material
         photon.AddPos(dist * photon.GetDir());
         photon.AddTime(dist * inverse_speed_of_light);
@@ -293,7 +293,7 @@ Physics::INTER_TYPE Physics::InteractionType(
     // move photon to interaction point, or exit point of material
     photon.AddPos(dist * photon.GetDir());
     photon.AddTime(dist * inverse_speed_of_light);
-    if (dist < rand_dist || !mat_gamma_prop.enable_interactions) {
+    if (dist < rand_dist) {
         return(NO_INTERACTION);
     }
 

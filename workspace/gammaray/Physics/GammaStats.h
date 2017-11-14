@@ -17,7 +17,7 @@ public:
     void GetInteractionProbs(double e, double & pe, double & comp,
                              double & ray) const;
     bool log_material;
-    bool enable_interactions;
+    bool InteractionsEnabled() const;
     void DisableInteractions();
     std::string GetName() const;
     const std::vector<double> & GetXrayEmissionEnergies() const;
@@ -52,6 +52,8 @@ private:
 
     int num_escape;
     int material;
+
+    bool enable_interactions;
 };
 
 #endif

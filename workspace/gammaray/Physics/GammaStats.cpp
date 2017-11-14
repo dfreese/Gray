@@ -10,12 +10,12 @@ using namespace std;
 
 GammaStats::GammaStats() :
     log_material(false),
-    enable_interactions(true),
     cache_energy_min(-1),
     cache_energy_max(-1),
     cache_idx(0),
     num_escape(0),
-    material(-1)
+    material(-1),
+    enable_interactions(true)
 {
 }
 
@@ -43,6 +43,10 @@ int GammaStats::GetMaterial() const
 std::string GammaStats::GetName() const
 {
     return name;
+}
+
+bool GammaStats::InteractionsEnabled() const {
+    return (enable_interactions);
 }
 
 void GammaStats::DisableInteractions()
