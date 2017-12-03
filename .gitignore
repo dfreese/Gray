@@ -9,6 +9,8 @@ CMakeScripts
 /materials/*.dat
 /materials/eadl.all
 /materials/epdl97.all
+/materials/GrayPhysics.json
+/materials/epdl/epdl.all
 /neg_sphere.dat
 /neg_sphere_singles.dat
 /neg_sphere_coinc.dat
