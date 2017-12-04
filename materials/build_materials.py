@@ -5,6 +5,7 @@ import json
 import os
 import sys
 import epdl
+import isotopes
 
 def usage():
     print('build_materials (materials file) (export directory)\n'
@@ -23,6 +24,7 @@ def md5sum(filename):
 # the current directory.
 gray_include_dir = os.getenv('GRAY_INCLUDE', '.')
 materials_file = gray_include_dir + '/GrayMaterials.db'
+isotopes_file = gray_include_dir + '/Gray_Isotopes.txt'
 export_loc = gray_include_dir
 export_file = export_loc + '/GrayPhysics.json'
 
@@ -36,9 +38,11 @@ materials = epdl.gate_database_materials(materials_file, 0.001, 1.5)
 
 output = {}
 output['materials'] = {n: m.to_dict() for n, m in materials.items()}
+output['isotopes'] = isotopes.read_isotopes_file(isotopes_file)
 output['info'] = {
     'date_created': datetime.datetime.now().isoformat(),
     'materials_md5': md5sum(materials_file),
+    'isotopes_md5': md5sum(isotopes_file),
     }
 
 with open(export_file, 'w') as fid:
