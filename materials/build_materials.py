@@ -31,18 +31,24 @@ isotopes_file = os.path.join(gray_include_dir, 'GrayIsotopes.txt')
 sensitive_file = os.path.join(gray_include_dir, 'GraySensitive.txt')
 export_file = os.path.join(gray_include_dir, 'GrayPhysics.json')
 
+default_mat = 'Vacuum'
+
 materials = epdl.gate_database_materials(materials_file, 0.001, 1.5)
 sensitive_mats = sensitive.read_sensitive_file(sensitive_file)
 
 output = {}
 output['materials'] = {n: m.to_dict() for n, m in materials.items()}
 sensitive.mark_sensitve(output['materials'], sensitive_mats)
+output['materials'][default_mat]['default'] = True
 output['isotopes'] = isotopes.read_isotopes_file(isotopes_file)
 output['info'] = {
     'date_created': datetime.datetime.now().isoformat(),
     'materials_md5': md5sum(materials_file),
     'isotopes_md5': md5sum(isotopes_file),
     'sensitive_md5': md5sum(sensitive_file),
+    'density_unit': 'g/cm3',
+    'energy_unit': 'MeV',
+    'linear_atten_unit': '1/cm',
     }
 
 with open(export_file, 'w') as fid:
