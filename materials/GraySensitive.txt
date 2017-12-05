@@ -1,0 +1,17 @@
+# This file lists all of the materials within GrayMaterials.db that are
+# sensitive.  This means objects made of the material in Gray will be
+# considered a detector.
+Silicon
+Germanium
+Lutetium
+NaI
+BGO
+LSO
+GSO
+LuAP
+YAP
+Scinti-C9H10
+LuYAP-70
+LuYAP-80
+CZT
+LYSO

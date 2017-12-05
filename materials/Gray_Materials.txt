@@ -15,4 +15,3 @@ PEI             C37H24O6N2              1.27        1
 PCB             Si5O17Cu26C24H24BNaKZn  3.683       1
 polyethylene    CH2                     0.96        0
 plastic         C5H8O2                  1.18        0
-
