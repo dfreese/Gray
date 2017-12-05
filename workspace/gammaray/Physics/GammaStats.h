@@ -29,6 +29,23 @@ public:
     const std::vector<double> & GetXrayEmissionCumProb() const;
 
     double GetXrayBindEnergyScale(double energy) const;
+    double GetComptonScatterAngle(double energy) const;
+
+    // A class for static initialization of the dsigma_max values as a function
+    // of energy
+    class KleinNishina {
+    public:
+        KleinNishina();
+        static double dsigma(const double costheta, const double energy_mev);
+        static std::vector<std::vector<double>> create_scatter_cdfs(
+                const std::vector<double> & energies,
+                const std::vector<double> & thetas);
+        double scatter_angle(double energy, double rand_uniform) const;
+    private:
+        std::vector<double> energy_idx;
+        std::vector<double> costheta_idx;
+        std::vector<std::vector<double>> scatter_cdfs;
+    };
 
 private:
     size_t GetIndex(double e) const;
@@ -60,6 +77,8 @@ private:
 
     bool enable_interactions;
     bool log_material;
+
+    KleinNishina klein_nishina;
 };
 
 #endif

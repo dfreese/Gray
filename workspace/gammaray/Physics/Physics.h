@@ -46,7 +46,8 @@ public:
                                       double & dist,
                                       const GammaStats & mat_gamma_prop,
                                       double & deposit);
-    static void ComptonScatter(Photon &p, double & deposit);
+    static void ComptonScatter(Photon &p, double & deposit,
+                               const GammaStats & mat_prop);
     static double KleinNishinaEnergy(const double energy, const double theta);
     static bool XrayEscape(Photon &p, const GammaStats & mat_gamma_prop,
                            double & deposit);
@@ -56,24 +57,7 @@ public:
     static constexpr double energy_511 = 0.510998903;
     static constexpr double decays_per_microcurie = 37.0e3;
 
-    // A class for static initialization of the dsigma_max values as a function
-    // of energy
-    class KleinNishina {
-    public:
-        KleinNishina();
-        static double dsigma(const double costheta, const double energy_mev);
-        static std::vector<std::vector<double>> create_scatter_cdfs(
-                const std::vector<double> & energies,
-                const std::vector<double> & thetas);
-        double scatter_angle(double energy, double rand_uniform);
-    private:
-        std::vector<double> energy_idx;
-        std::vector<double> costheta_idx;
-        std::vector<std::vector<double>> scatter_cdfs;
-    };
-
 private:
-    static KleinNishina klein_nishina;
     static double RayleighProbability(double theta);
     static double RayleighAngle();
 };
