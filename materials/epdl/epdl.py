@@ -133,6 +133,7 @@ class EPDL(object):
         def __init__(self):
             self.z_eff = None
             self.atomic_weight = None
+            self.index = None
             self.density = None
             self.energy = None
             self.matten_rayl = None
@@ -149,6 +150,7 @@ class EPDL(object):
             data = {
                 'z_eff': self.z_eff,
                 'atomic_weight': self.atomic_weight,
+                'index': self.index,
                 'density': self.density,
                 'energy': tuple(self.energy),
                 'matten_rayl': tuple(self.matten_rayl),
@@ -468,4 +470,5 @@ def gate_database_materials(filename, energy_lo=None, energy_hi=None):
             epdl_data[name] = material_by_mass_fraction(
                 mat.elements, energy_lo, energy_hi)
         epdl_data[name].density = mat.density
+        epdl_data[name].index = mat.index
     return epdl_data

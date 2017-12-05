@@ -73,6 +73,7 @@ class Material(object):
             self.state = m.group(4)
 
         self.name = m.group(1)
+        self.index = -1
         self.density = parse_density_unit_str(m.group(2))
         self.no_elements = int(m.group(3))
 
@@ -126,6 +127,7 @@ class Database(object):
         # section of the database.
         self._materials = {}
         mat_start = None
+        mat_index = 0
         for idx in range(material_start, len(lines)):
             m = re.match(_material_line, remove_whitespace(lines[idx]))
             if m is not None:
@@ -135,11 +137,14 @@ class Database(object):
                     # the second material is found to process the first.
                     continue
                 mat = Material(lines[mat_start:idx])
+                mat.index = mat_index
+                mat_index += 1
                 self._materials[mat.name] = mat
                 mat_start = idx
         # Handle the last material found
         mat = Material(lines[mat_start:])
         self._materials[mat.name] = mat
+        mat.index = mat_index
 
         # Make sure all of the elements are described
         for material in self._materials.values():
