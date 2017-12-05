@@ -23,6 +23,8 @@ def md5sum(filename):
         hasher.update(buf)
     return hasher.hexdigest()
 
+# TODO: take these arguments from the command line
+# TODO: throw appropriate more appropriate errors if files are not found
 # Looks for the include GRAY_INCLUDE variable first, and if it's not set, use
 # the current directory.
 gray_include_dir = os.getenv('GRAY_INCLUDE', os.getcwd())
@@ -31,15 +33,16 @@ isotopes_file = os.path.join(gray_include_dir, 'GrayIsotopes.txt')
 sensitive_file = os.path.join(gray_include_dir, 'GraySensitive.txt')
 export_file = os.path.join(gray_include_dir, 'GrayPhysics.json')
 
-default_mat = 'Vacuum'
-
 materials = epdl.gate_database_materials(materials_file, 0.001, 1.5)
 sensitive_mats = sensitive.read_sensitive_file(sensitive_file)
 
 output = {}
+# TODO: allow default world material to be specified.
+output['defaults'] = {
+    'world_material': 'Vacuum',
+    }
 output['materials'] = {n: m.to_dict() for n, m in materials.items()}
 sensitive.mark_sensitve(output['materials'], sensitive_mats)
-output['materials'][default_mat]['default'] = True
 output['isotopes'] = isotopes.read_isotopes_file(isotopes_file)
 output['info'] = {
     'date_created': datetime.datetime.now().isoformat(),
