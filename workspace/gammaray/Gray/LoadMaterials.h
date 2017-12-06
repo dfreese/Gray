@@ -3,21 +3,18 @@
 
 #include <string>
 #include <vector>
+#include <json/json.h>
 
 class SceneDescription;
 
-class LoadMaterials
+namespace LoadMaterials
 {
-public:
-    // TODO: allow for adding of new materials from a file
-    static bool LoadPhysicsFiles(SceneDescription& theScene,
-                                 const std::string & materials_filename);
-    static bool LoadPhysicsJson(SceneDescription& scene,
-                                const std::string & materials_filename);
-private:
-    static bool ParseMaterialsFile(const std::string & matfilelocation,
-                                   std::vector<std::string> & material_names,
-                                   std::vector<bool> & material_sensitivities);
+std::vector<double> VectorizeArray(const Json::Value & array);
+bool LoadMaterialJson(SceneDescription& scene,
+                      const std::string & mat_name,
+                      const Json::Value & mat_info);
+bool LoadPhysicsJson(SceneDescription& scene,
+                     const std::string & materials_filename);
 };
 
 #endif
