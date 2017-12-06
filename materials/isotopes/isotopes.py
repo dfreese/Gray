@@ -1,6 +1,7 @@
 
 def read_isotopes(lines):
     ret = {}
+    default_set = False
     for line in lines:
         comment = line.find('#')
         if comment < 0:
@@ -16,6 +17,10 @@ def read_isotopes(lines):
                 'prompt_gamma_energy_mev': float(data[4]),
                 'model': data[5]
             }
+            if not default_set:
+                # Set the first isotope we find in the file to be the default
+                isotope['default'] = True
+                default_set = True
             if isotope['model'] == 'levin_exp':
                 isotope['prob_c'] = float(data[6])
                 isotope['k1'] = float(data[7])

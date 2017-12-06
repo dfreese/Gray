@@ -13,6 +13,7 @@
 #include <limits>
 #include <fstream>
 #include <sstream>
+#include <json/json.h>
 
 using namespace std;
 
@@ -373,92 +374,123 @@ std::stack<GammaMaterial const *> SourceList::GetUpdatedStack(
     return (mat_stack);
 }
 
-bool SourceList::LoadIsotopes(const std::string &filename) {
-    ifstream input(filename);
 
+bool SourceList::LoadIsotope(const std::string & iso_name,
+                             Json::Value isotope)
+{
+    auto required_vals = {
+        "acolinearity_deg_fwhm",
+        "half_life_s",
+        "model",
+        "positron_emiss_prob",
+        "prompt_gamma_energy_mev"
+    };
+    for (auto val : required_vals) {
+        if (isotope[val].isNull()) {
+            std::cerr << "Required key, \"" << val << "\" does not exist in "
+                      << iso_name << "\n";
+            return (false);
+        }
+    }
+    double acolinearity = isotope["acolinearity_deg_fwhm"].asDouble();
+    double half_life = isotope["half_life_s"].asDouble();
+    double positron_prob = isotope["positron_emiss_prob"].asDouble();
+    double gamma_energy = isotope["prompt_gamma_energy_mev"].asDouble();
+    std::string model = isotope["model"].asString();
+
+    if (half_life <= 0) {
+        half_life = std::numeric_limits<double>::infinity();
+    }
+
+    if ((positron_prob < 0) || (positron_prob > 1.0)) {
+        positron_prob = 1.0;
+    }
+    if (gamma_energy < 0) {
+        gamma_energy = 0;
+    }
+
+    valid_positrons[iso_name] = Positron(acolinearity, half_life,
+                                         positron_prob, gamma_energy);
+
+    Json::Value is_default = isotope["default"];
+    if (is_default.isBool()) {
+        current_isotope = iso_name;
+    }
+
+    if (model == "none") {
+        // Currently do nothing...
+    } else if (model == "gauss") {
+        Json::Value fwhm_mm_json = isotope["fwhm_mm"];
+        Json::Value max_mm_json = isotope["max_range_mm"];
+        if (!fwhm_mm_json.isDouble() || !max_mm_json.isDouble()) {
+            std::cerr << "gauss model requires \"fwhm_mm\" and"
+                      << "\"max_range_mm\" double values\n";
+            return (false);
+        }
+
+        double fwhm_mm = fwhm_mm_json.asDouble();
+        double max_mm = max_mm_json.asDouble();
+        valid_positrons[iso_name].SetPositronRange(fwhm_mm, max_mm);
+    } else if (model == "levin_exp") {
+        Json::Value c_json = isotope["prob_c"];
+        Json::Value k1_json = isotope["k1"];
+        Json::Value k2_json = isotope["k2"];
+        Json::Value max_mm_json = isotope["max_range_mm"];
+        if (!c_json.isDouble() || !k1_json.isDouble() ||
+            !k2_json.isDouble() || !max_mm_json.isDouble()) {
+            std::cerr << "levin_exp model requires \"prob_c\", "
+                         "\"k1\", \"k2\", and \"max_range_mm\" "
+                         "double values\n";
+            return (false);
+        }
+        double c = c_json.asDouble();
+        double k1 = k1_json.asDouble();
+        double k2 = k2_json.asDouble();
+        double max_mm = max_mm_json.asDouble();
+        valid_positrons[iso_name].SetPositronRange(c, k1, k2, max_mm);
+    } else {
+        std::cerr << "Unrecognized model, \"" << model << "\" for isotope \""
+                  << iso_name << "\"\n";
+        return (false);
+    }
+
+    return (true);
+}
+
+bool SourceList::LoadIsotopes(const std::string& physics_filename) {
+    Json::Value root;
+    Json::Reader reader;
+    std::ifstream input(physics_filename);
     if (!input) {
-        cerr << filename << " not found." << endl;
+        cerr << physics_filename << " not found." << endl;
         return(false);
     }
+    std::stringstream buffer;
+    buffer << input.rdbuf();
 
-    string line;
-    while (getline(input, line)) {
-        if (line.empty()) {
-            continue;
-        }
-        line = line.substr(0, line.find_first_of("#"));
-        // Ignore blank lines again after removing comments
-        if (line.empty()) {
-            continue;
-        }
-        string isotope_name;
-        double acolinearity;
-        double half_life;
-        double pos_emission_prob;
-        double gamma_emission_energy;
-        string positron_model;
+    bool status = reader.parse(buffer.str(), root,
+                               /*collect_comments=*/false);
+    if (!status) {
+        std::cerr << "Reading of Physics File, \""
+                  << physics_filename << "\" failed\n"
+                  << reader.getFormattedErrorMessages() << "\n";
+        return (false);
+    }
 
-        stringstream line_ss(line);
-        bool fail = false;
-        fail |= (line_ss >> isotope_name).fail();
-        fail |= (line_ss >> acolinearity).fail();
-        fail |= (line_ss >> half_life).fail();
-        fail |= (line_ss >> pos_emission_prob).fail();
-        fail |= (line_ss >> gamma_emission_energy).fail();
-        fail |= (line_ss >> positron_model).fail();
-        if (fail) {
-            return(false);
-        }
-        if (half_life <= 0) {
-            half_life = std::numeric_limits<double>::infinity();
-        }
+    Json::Value isotopes = root["isotopes"];
+    if (isotopes.isNull()) {
+        std::cerr << "Reading of Physics File, \""
+                  << physics_filename << "\" failed\n"
+                  << "Json file does not have \"isotopes\" member\n";
+        return (false);
+    }
 
-        if ((pos_emission_prob < 0) || (pos_emission_prob > 1.0)) {
-            pos_emission_prob = 1.0;
-        }
-        if (gamma_emission_energy < 0) {
-            gamma_emission_energy = 0;
-        }
-
-        valid_positrons[isotope_name] = Positron(acolinearity, half_life,
-                                                 pos_emission_prob,
-                                                 gamma_emission_energy);
-
-        if (positron_model == "none") {
-        } else if (positron_model == "gauss") {
-            double fwhm_mm;
-            double max_mm;
-            fail |= (line_ss >> fwhm_mm).fail();
-            fail |= (line_ss >> max_mm).fail();
-            if (fail) {
-                cerr << "Unable to parse gauss fwhm_mm or max_mm" << endl;
-                return(false);
-            }
-            valid_positrons[isotope_name].SetPositronRange(fwhm_mm, max_mm);
-        } else if (positron_model == "levin_exp") {
-            double c;
-            double k1;
-            double k2;
-            double max_mm;
-            fail |= (line_ss >> c).fail();
-            fail |= (line_ss >> k1).fail();
-            fail |= (line_ss >> k2).fail();
-            fail |= (line_ss >> max_mm).fail();
-            if (fail) {
-                cerr << "Unable to parse levin_exp options" << endl;
-                return(false);
-            }
-            valid_positrons[isotope_name].SetPositronRange(c, k1, k2, max_mm);
-        } else {
-            cerr << "unrecognized positron model: " << positron_model << endl;
-            return(false);
-        }
-
-        // Set the default isotope to the first one
-        if (current_isotope == "") {
-            current_isotope = isotope_name;
+    for (const std::string & iso_name : isotopes.getMemberNames ()) {
+        bool status = LoadIsotope(iso_name, isotopes[iso_name]);
+        if (!status) {
+            std::cerr << "Unable to load isotope, \"" << iso_name << "\"\n";
+            return (false);
         }
     }
-    input.close();
     return(true);
 }

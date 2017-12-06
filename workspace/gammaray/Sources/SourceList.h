@@ -9,6 +9,7 @@
 #include <vector>
 #include <Physics/Positron.h>
 #include <Sources/Source.h>
+#include <json/json.h>
 
 class Isotope;
 class VectorR3;
@@ -30,7 +31,7 @@ public:
     void SetSimulateIsotopeHalfLife(bool val);
     void SetStartTime(double val);
     void InitSources();
-    bool LoadIsotopes(const std::string & filename);
+    bool LoadIsotopes(const std::string& physics_filename);
     void AdjustTimeForSplit(int idx, int n);
     void BuildMaterialStacks(const SceneDescription & scene);
     GammaMaterial const & GetSourceMaterial(size_t idx) const;
@@ -72,6 +73,9 @@ private:
     DecayInfo GetNextDecay();
     bool simulate_isotope_half_life;
     double start_time;
+
+
+    bool LoadIsotope(const std::string& iso_name, Json::Value isotope);
 };
 
 #endif

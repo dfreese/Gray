@@ -31,10 +31,10 @@ int gray(int argc, char ** argv)
     DetectorArray detector_array;
     SceneDescription scene;
     SourceList sources;
-    if (!sources.LoadIsotopes(config.get_isotopes_filename())) {
-        cerr << "Unable to load isotopes file: \""
-        << config.get_isotopes_filename() << "\"\n"
-        << "Check GRAY_INCLUDE env variable or specify name with --iso"
+    if (!sources.LoadIsotopes(config.get_physics_filename())) {
+        cerr << "Unable to load physics file: \""
+        << config.get_physics_filename() << "\"\n"
+        << "Check GRAY_INCLUDE env variable or specify name with --phys"
         << endl;
         return(1);
     }
@@ -42,7 +42,7 @@ int gray(int argc, char ** argv)
     {
         cerr << "Unable to load physics file: \""
         << config.get_physics_filename() << "\"\n"
-        << "Check GRAY_INCLUDE env variable or specify name with --mat"
+        << "Check GRAY_INCLUDE env variable or specify name with --phys"
         << endl;
         return(1);
     }
