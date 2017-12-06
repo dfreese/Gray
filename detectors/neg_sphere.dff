@@ -14,20 +14,20 @@ l 17.0 0.0 0.0 1.0 1.0 1.0
 # Set colors for each of the materials
 # Color is 5 RGB pairs for the Ambient, Diffuse, Specular, Transmissive,
 # Reflective colors respectively, then one value for the index of refraction.
-m water
+m Water
 color 0.1 0.1 0.1  0.0 0.0 0.0 0.5 0.5 0.5 0.5 0.5 1.0 0.0 0.0 0.0 1.03
-m lso
+m LSO
 color 0.05 0.20 0.05  0.1 0.4 0.1  0.3 0.3 0.3  0.0 0.0 0.0  0.2 0.50 0.2 1.05
-m bgo
+m BGO
 color 0.3 0.3 0.05  0.6 0.6 0.1  0.3 0.3 0.3  0.0 0.0 0.0  0.5 0.5 0.1 1.05
-m tungsten
+m Tungsten
 color 0.05 0.05 0.05  0.05 0.05 0.05  0.0 0.0 0.0  0.0 0.0 0.0  0.1 0.1 0.1 1.05
-m lead
+m Lead
 color 0.05 0.05 0.05  0.05 0.05 0.05  0.0 0.0 0.0  0.0 0.0 0.0  0.1 0.1 0.1 1.05
 
 
 # create water cylinder
-m water
+m Water
 push
 t -2.0 0.0 0.0
 sphere 0.0 0.0 0.0 6.0
@@ -49,7 +49,7 @@ end_repeat
 
 # create 8 panels of LSO at 45 degree rotations
 begin_repeat rotate 8 45.0 0.0 0.0 1.0
-    m lso
+    m LSO
     array 0.0 -45.75 0.0 10 1 10 3.2 0.0 4.0 3.0 1.499 3.8
 end_repeat
 

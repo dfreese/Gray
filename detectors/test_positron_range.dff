@@ -2,7 +2,7 @@
 # positions
 time 1.0
 
-m water
+m Water
 color 0.1 0.1 0.1  0.0 0.0 0.0 0.5 0.5 0.5 0.5 0.5 1.0 0.0 0.0 0.0 1.03
 isotope F18
 sp_src 0.0 0.0 0.0 0.0001 10

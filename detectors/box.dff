@@ -13,11 +13,11 @@ l 0.0 20.0 -1.0 0.3 0.3 0.3
 l 0.0 -20.0 -1.0 0.3 0.3 0.3
 l 0.0 0.0 0.0 0.3 0.3 0.3
 # create water cylinder
-m 0
+m Water
 cyl_src 0.0 0.0 0.0 0.0 0.0 1.0 0.01 68 2.7027
 # set the simulation time to be 5 seconds
 time 10.0
-m bgo
+m BGO
 color 0.2 0.1 0.1  0.2 0.0 0.0 1.0 1.0 1.0 0.5 0.5 1.0 0.0 0.0 0.0 1.05
 push
 t -2.0 -5.0 0.0

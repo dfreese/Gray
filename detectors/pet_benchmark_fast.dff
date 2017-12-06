@@ -1,19 +1,19 @@
 # Set colors for each of the materials
 # Color is 5 RGB pairs for the Ambient, Diffuse, Specular, Transmissive,
 # Reflective colors respectively, then one value for the index of refraction.
-m water
+m Water
 color 0.1 0.1 0.1  0.0 0.0 0.0 0.5 0.5 0.5 0.5 0.5 1.0 0.0 0.0 0.0 1.03
-m lso
+m LSO
 color 0.05 0.20 0.05  0.1 0.4 0.1  0.3 0.3 0.3  0.0 0.0 0.0  0.2 0.50 0.2 1.05
-m bgo
+m BGO
 color 0.3 0.3 0.05  0.6 0.6 0.1  0.3 0.3 0.3  0.0 0.0 0.0  0.5 0.5 0.1 1.05
-m tungsten
+m Tungsten
 color 0.05 0.05 0.05  0.05 0.05 0.05  0.0 0.0 0.0  0.0 0.0 0.0  0.1 0.1 0.1 1.05
-m lead
+m Lead
 color 0.05 0.05 0.05  0.05 0.05 0.05  0.0 0.0 0.0  0.0 0.0 0.0  0.1 0.1 0.1 1.05
 
 # create water cylinder
-m water
+m Water
 cyl 0.0 0.0 0.0 0.0 0.0 1.0 10 70
 # create two cylindrical sources
 isotope F18
@@ -34,13 +34,13 @@ begin_repeat rotate 8 45.0 0.0 0.0 1.0
         # Block Repeats
         begin_repeat grid 1 5 5 0.0 1.6 2.0
             # LSO Crystal Layer
-            m lso
+            m LSO
             # place it at x = (44.0 + 2.5 - 0.75) for the head radius, module
             # translation and crystal layer translation respectively.
             k 45.75 0.0 0.0 1.49 1.5 1.9
 
             # BGO Crystal Layer
-            m bgo
+            m BGO
             # place it at x = (44.0 + 2.5 + 0.75) for the head radius, module
             # translation and crystal layer translation respectively.
             k 47.25 0.0 0.0 1.49 1.5 1.9
@@ -48,13 +48,13 @@ begin_repeat rotate 8 45.0 0.0 0.0 1.0
     end_repeat
 
     # Septa
-    m tungsten
+    m Tungsten
     # place it at x = (44.0 + 1.6) for the head radius, module
     # translation and crystal layer translation respectively.
     array 42.4 0.0 0.0 1 1 3 0.0 0.0 10.0 5.0 32.0 0.05
 
     # End Shielding
-    m lead
+    m Lead
     # center shielding at the head radius of x=44.0cm
     array 44.0 0.0 0.0 1 1 2 0.0 0.0 40.11 8.0 32.0 0.1
 end_repeat
