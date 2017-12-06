@@ -29,8 +29,6 @@ bool Config::ProcessCommandLine(int argc, char **argv, bool fail_without_scene)
         gray_include_env = string(include_cstr) + "/";
     }
 
-    materials_filename = gray_include_env + "Gray_Materials.txt";
-    isotopes_filename = gray_include_env + "GrayIsotopes.txt";
     physics_filename = gray_include_env + "GrayPhysics.json";
 
     // Arguments not requiring an input
@@ -85,10 +83,6 @@ bool Config::ProcessCommandLine(int argc, char **argv, bool fail_without_scene)
                 return(-1);
             }
             set_start_time(tmp_start_time);
-        } else if (argument == "--mat") {
-            materials_filename = following_argument;
-        } else if (argument == "--iso") {
-            isotopes_filename = following_argument;
         } else if (argument == "--phys") {
             physics_filename = following_argument;
         } else if ((argument == "--hits_format") || (argument == "-i")) {
@@ -166,8 +160,7 @@ void Config::usage() {
     << "  -t [time] : set length of time in for the simulation in seconds\n"
     << "  --seed [seed] : set the seed for the rand number generator\n"
     << "  --start [time] : set the start time in seconds\n"
-    << "  --mat [filename] : set Gray Materials file. default=$GRAY_INCLUDE/Gray_Materials.txt\n"
-    << "  --iso [filename] : set Gray Isotopes file. default=$GRAY_INCLUDE/Gray_Isotopes.txt\n"
+    << "  --phys [filename] : set Gray Physics file. default=$GRAY_INCLUDE/GrayPhysics.json\n"
     << "  -i or --hits_format [type] : hits output or input format default: var_ascii\n"
     << "  --singles_format [type] : default: var_ascii or input type\n"
     << "  --coinc_format [type] : default: var_ascii or input type\n"
@@ -395,14 +388,6 @@ void Config::set_sort_time(double val) {
 
 double Config::get_sort_time() const {
     return(sort_time);
-}
-
-std::string Config::get_materials_filename() const {
-    return(materials_filename);
-}
-
-std::string Config::get_isotopes_filename() const {
-    return(isotopes_filename);
 }
 
 std::string Config::get_physics_filename() const {

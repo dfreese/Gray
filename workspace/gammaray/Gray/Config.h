@@ -112,8 +112,6 @@ private:
     double sort_time = -1;
     bool sort_time_set = false;
     std::string gray_include_env;
-    std::string materials_filename;
-    std::string isotopes_filename;
     std::string physics_filename;
     Output::WriteFlags hits_var_output_write_flags;
     Output::WriteFlags singles_var_output_write_flags;
