@@ -38,13 +38,13 @@ int gray(int argc, char ** argv)
         << endl;
         return(1);
     }
-    if (!LoadMaterials::LoadPhysicsFiles(scene,
-                                         config.get_materials_filename()))
+    if (!LoadMaterials::LoadPhysicsJson(scene,
+                                         config.get_physics_filename()))
     {
-        cerr << "Unable to load materials file: \""
-             << config.get_materials_filename() << "\"\n"
-             << "Check GRAY_INCLUDE env variable or specify name with --mat"
-             << endl;
+        cerr << "Unable to load physics file: \""
+        << config.get_physics_filename() << "\"\n"
+        << "Check GRAY_INCLUDE env variable or specify name with --mat"
+        << endl;
         return(1);
     }
     if (!LoadDetector::Load(config.get_filename_scene(), scene, sources,

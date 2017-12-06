@@ -49,8 +49,6 @@ public:
     static void ComptonScatter(Photon &p, double & deposit,
                                const GammaStats & mat_prop);
     static double KleinNishinaEnergy(const double energy, const double theta);
-    static bool XrayEscape(Photon &p, const GammaStats & mat_gamma_prop,
-                           double & deposit);
     static void RayleighScatter(Photon &p);
     static constexpr double speed_of_light_cmpers = 29979245800.0;
     static constexpr double inverse_speed_of_light = (1.0 / speed_of_light_cmpers);

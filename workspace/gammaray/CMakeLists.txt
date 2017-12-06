@@ -128,6 +128,7 @@ add_library(gammaray
     VrMath/Quaternion.h
 )
 target_include_directories(gammaray PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(gammaray jsoncpp)
 
 if (MPI_CXX_FOUND)
     add_definitions(-DMPI_COMPILE_ENABLED)

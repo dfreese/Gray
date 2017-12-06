@@ -264,7 +264,7 @@ void SourceList::BuildMaterialStacks(const SceneDescription & scene) {
     // Use the first material listed in Gray_Materials as the default material
     // in the world.
     GammaMaterial const * const default_material(
-            static_cast<GammaMaterial const * const>(&scene.GetMaterial(0)));
+            static_cast<GammaMaterial const * const>(&scene.GetDefaultMaterial()));
     for (auto & source: list) {
         stack<GammaMaterial const *> materials;
         stack<bool> front_face;

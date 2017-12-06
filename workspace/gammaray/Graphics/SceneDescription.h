@@ -109,7 +109,28 @@ public:
     {
         return *MaterialArray[i];
     }
-
+    bool HasMaterial(const std::string & name) {
+        return (material_names_map.count(name));
+    }
+    MaterialBase& GetMaterial(const std::string & name)
+    {
+        int idx = GetMaterialIndex(name);
+        return *MaterialArray.at(idx);
+    }
+    const MaterialBase& GetMaterial(const std::string & name) const
+    {
+        int idx = GetMaterialIndex(name);
+        return *MaterialArray.at(idx);
+    }
+    void SetDefaultMaterial(const std::string & name) {
+        default_material = name;
+    }
+    MaterialBase& GetDefaultMaterial() {
+        return (GetMaterial(default_material));
+    }
+    const MaterialBase& GetDefaultMaterial() const {
+        return (GetMaterial(default_material));
+    }
     size_t NumViewables() const
     {
         return ViewableArray.size();
@@ -122,13 +143,6 @@ public:
     const ViewableBase& GetViewable(size_t i ) const
     {
         return *ViewableArray[i];
-    }
-    int GetMaterialIndex(const std::string & name) {
-        if (material_names_map.count(name)) {
-            return(material_names_map[name]);
-        } else {
-            return(-1);
-        }
     }
 
     AABB GetExtents() const;
@@ -143,6 +157,14 @@ public:
 
 private:
 
+    int GetMaterialIndex(const std::string & name) const {
+        auto iter = material_names_map.find(name);
+        if (iter == material_names_map.end()) {
+            return (-1);
+        } else {
+            return((*iter).second);
+        }
+    }
     bool TestOverlapSingle(VectorR3 & start, const VectorR3 & dir) const;
     bool intersection_callback(long objectNum, const VectorR3 & start_pos,
                                const VectorR3 & direction,
@@ -161,6 +183,7 @@ private:
     std::vector<std::unique_ptr<ViewableBase>> ViewableArray;
     std::map<std::string, int> material_names_map;
     KdTree kd_tree;
+    std::string default_material;
 };
 
 #endif // SCENE_DESCRIPTION_H

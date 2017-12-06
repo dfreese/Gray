@@ -26,12 +26,12 @@ bool Config::ProcessCommandLine(int argc, char **argv, bool fail_without_scene)
 
     char * include_cstr = getenv ("GRAY_INCLUDE");
     if (include_cstr) {
-        gray_include_env = string(include_cstr);
+        gray_include_env = string(include_cstr) + "/";
     }
 
-    materials_filename = gray_include_env + "/Gray_Materials.txt";
-    isotopes_filename = gray_include_env + "/Gray_Isotopes.txt";
-
+    materials_filename = gray_include_env + "Gray_Materials.txt";
+    isotopes_filename = gray_include_env + "GrayIsotopes.txt";
+    physics_filename = gray_include_env + "GrayPhysics.json";
 
     // Arguments not requiring an input
     for (int ix = 1; ix < argc; ix++) {
@@ -89,6 +89,8 @@ bool Config::ProcessCommandLine(int argc, char **argv, bool fail_without_scene)
             materials_filename = following_argument;
         } else if (argument == "--iso") {
             isotopes_filename = following_argument;
+        } else if (argument == "--phys") {
+            physics_filename = following_argument;
         } else if ((argument == "--hits_format") || (argument == "-i")) {
             if (!set_format_hits(following_argument)) {
                 cerr << "Invalid hits format: " << following_argument << endl;
@@ -395,13 +397,16 @@ double Config::get_sort_time() const {
     return(sort_time);
 }
 
-
 std::string Config::get_materials_filename() const {
     return(materials_filename);
 }
 
 std::string Config::get_isotopes_filename() const {
     return(isotopes_filename);
+}
+
+std::string Config::get_physics_filename() const {
+    return(physics_filename);
 }
 
 bool Config::set_hits_var_output_write_flags(const std::string & mask) {

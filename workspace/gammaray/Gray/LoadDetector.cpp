@@ -237,7 +237,8 @@ bool LoadDetector::Load(const std::string & filename,
     double vector_source_activity = -1;
     unique_ptr<SceneDescription> vector_source_scene;
     
-    GammaMaterial* curMaterial = dynamic_cast<GammaMaterial*>(&theScene.GetMaterial(0));
+    GammaMaterial * curMaterial = static_cast<GammaMaterial *>(
+            &theScene.GetDefaultMaterial());
 
     struct RepeatInfo {
         enum RepeatType {
@@ -1105,14 +1106,12 @@ bool LoadDetector::Load(const std::string & filename,
             no_polygon_lines_needed = numVerts;
             polygon_lines.clear();
         } else if (command == "m") {
-            // material index
-            int matIndex = theScene.GetMaterialIndex(args);
-            if (matIndex < 0) {
+            if (!theScene.HasMaterial(args)) {
                 print_parse_error(line);
                 cerr << "Invalid material: " << args << endl;
                 return(false);
             }
-            curMaterial = dynamic_cast<GammaMaterial*>(&theScene.GetMaterial(matIndex));
+            curMaterial = static_cast<GammaMaterial*>(&theScene.GetMaterial(args));
         } else if (command == "color") {
             VectorR3 ambient;
             VectorR3 diffuse;

@@ -40,6 +40,10 @@ public:
         Reset();
     }
 
+    Material(const std::string & name) : MaterialBase(name) {
+        Reset();
+    }
+
     void Reset();
 
     void SetShininess( double exponent );

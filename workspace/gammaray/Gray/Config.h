@@ -71,6 +71,7 @@ public:
     double get_sort_time() const;
     std::string get_materials_filename() const;
     std::string get_isotopes_filename() const;
+    std::string get_physics_filename() const;
     bool set_hits_var_output_write_flags(const std::string & mask);
     void set_hits_var_output_write_flags(const Output::WriteFlags & mask);
     Output::WriteFlags get_hits_var_output_write_flags() const;
@@ -113,6 +114,7 @@ private:
     std::string gray_include_env;
     std::string materials_filename;
     std::string isotopes_filename;
+    std::string physics_filename;
     Output::WriteFlags hits_var_output_write_flags;
     Output::WriteFlags singles_var_output_write_flags;
     Output::WriteFlags coinc_var_output_write_flags;

@@ -236,12 +236,7 @@ Physics::INTER_TYPE Physics::InteractionType(
     // double rand = (pe + compton + rayleigh) * Random::Uniform();
     double rand = (pe + compton) * Random::Uniform();
     if (rand <= pe) {
-        if (XrayEscape(photon, mat_gamma_prop, deposit)) {
-            // TODO: Get x-ray escape physics working again
-            return XRAY_ESCAPE;
-        } else {
-            return PHOTOELECTRIC;
-        }
+        return PHOTOELECTRIC;
     } else if (rand <= (pe + compton)) {
         // perform compton kinematics
         ComptonScatter(photon, deposit, mat_gamma_prop);
@@ -302,25 +297,4 @@ void Physics::RayleighScatter(Photon &p)
     // If the photon scatters on a non-detector, it is a scatter, checked
     // inside SetScatter
     p.SetScatterRayleigh();
-}
-
-bool Physics::XrayEscape(Photon &p, const GammaStats & mat_gamma_prop,
-                             double & deposit)
-{
-    const std::vector<double> & emit_e = mat_gamma_prop.GetXrayEmissionEnergies();
-    const std::vector<double> & prob_e = mat_gamma_prop.GetXrayEmissionCumProb();
-    double rand = Random::Uniform();
-    rand *= mat_gamma_prop.GetXrayBindEnergyScale(p.GetEnergy());
-    size_t idx = lower_bound(prob_e.begin(), prob_e.end(), rand) - prob_e.begin();
-    double xray_energy = emit_e[idx];
-    if (xray_energy == 0) {
-        return(false);
-    } else {
-        return(false);
-        deposit = p.GetEnergy() - xray_energy;
-        p.SetEnergy(xray_energy);
-        p.SetDir(Random::UniformSphere());
-        p.SetXrayFlouresence();
-        return(true);
-    }
 }

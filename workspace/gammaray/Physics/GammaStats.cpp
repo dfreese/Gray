@@ -11,14 +11,62 @@
 using namespace std;
 
 GammaStats::GammaStats() :
+    index(-1),
+    enable_interactions(true),
+    log_material(false),
     cache_energy_min(-1),
     cache_energy_max(-1),
-    cache_idx(0),
-    num_escape(0),
-    material(-1),
-    enable_interactions(true),
-    log_material(false)
+    cache_idx(0)
 {
+}
+
+GammaStats::GammaStats(
+    const std::string & name, int index,
+    double density, bool sensitive, std::vector<double> energy,
+    std::vector<double> matten_comp, std::vector<double> matten_phot,
+    std::vector<double> matten_rayl, std::vector<double> x,
+    std::vector<double> form_factor, std::vector<double> scattering_func) :
+        name(name),
+        index(index),
+        energy(energy),
+        photoelectric(matten_phot),
+        compton(matten_comp),
+        rayleigh(matten_rayl),
+        log_energy(energy.size()),
+        log_photoelectric(matten_phot.size()),
+        log_compton(matten_comp.size()),
+        log_rayleigh(matten_rayl.size()),
+        x(x),
+        form_factor(form_factor),
+        scattering_func(scattering_func),
+        enable_interactions(true),
+        log_material(sensitive),
+        cache_energy_min(-1),
+        cache_energy_max(-1),
+        cache_idx(0)
+{
+    // Convert the mass attenuation coefficient to a linear attenuation
+    // coefficient by multiplying by density.
+    std::transform(photoelectric.begin(), photoelectric.end(),
+                   photoelectric.begin(),
+                   std::bind1st(std::multiplies<double>(),density));
+    std::transform(compton.begin(), compton.end(),
+                   compton.begin(),
+                   std::bind1st(std::multiplies<double>(),density));
+    std::transform(rayleigh.begin(), rayleigh.end(),
+                   rayleigh.begin(),
+                   std::bind1st(std::multiplies<double>(),density));
+
+    // Cache the log values for log interpolation
+    auto log_func = [](double & val) { return (std::log(val)); };
+    std::transform(energy.begin(), energy.end(),
+                   log_energy.begin(), log_func);
+    std::transform(photoelectric.begin(), photoelectric.end(),
+                   log_photoelectric.begin(), log_func);
+    std::transform(compton.begin(), compton.end(),
+                   log_compton.begin(), log_func);
+    std::transform(rayleigh.begin(), rayleigh.end(),
+                   log_rayleigh.begin(), log_func);
 }
 
 void GammaStats::SetName(const std::string & n)
@@ -28,7 +76,7 @@ void GammaStats::SetName(const std::string & n)
 
 void GammaStats::SetMaterialType(int s)
 {
-    material=s;
+    index = s;
 }
 
 void GammaStats::SetFileName(const std::string & n)
@@ -39,7 +87,7 @@ void GammaStats::SetFileName(const std::string & n)
 
 int GammaStats::GetMaterial() const
 {
-    return material;
+    return index;
 }
 
 std::string GammaStats::GetName() const
@@ -136,81 +184,6 @@ bool GammaStats::Load()
                    log_compton.begin(), log_func);
     std::transform(rayleigh.begin(), rayleigh.end(),
                    log_rayleigh.begin(), log_func);
-
-
-
-    getline(infile, line);
-    if (!line.empty()) {
-        int xray_lines;
-        stringstream xray_lines_ss(line);
-        if ((xray_lines_ss >> xray_lines).fail()) {
-            cerr << "Error reading the number of xray escape lines" << endl;
-            return(false);
-        }
-
-        xray_binding_energy.resize(xray_lines);
-        xray_emission_energy.resize(xray_lines);
-        xray_emission_prob.resize(xray_lines);
-
-        for (int i = 0; i < xray_lines; i++) {
-            string pt_line;
-            getline(infile, pt_line);
-            stringstream pt_stream(pt_line);
-            bool line_fail = false;
-            line_fail |= (pt_stream >> xray_binding_energy[i]).fail();
-            line_fail |= (pt_stream >> xray_emission_energy[i]).fail();
-            line_fail |= (pt_stream >> xray_emission_prob[i]).fail();
-
-            if (line_fail) {
-                cerr << "Error reading file: " << filename << " on xray line: "
-                     << (i + 1) << endl;
-                return(false);
-            }
-        }
-    } else {
-        // If the Xray Escape Energies are not specified in the file, add in
-        // defaults that can be used.  This is equivalent to every file having
-        //
-        // 1
-        //   0.0   0.0   1.0
-        //
-        // At the end of every file
-        xray_binding_energy = vector<double>(1, 0.0);
-        xray_emission_energy = vector<double>(1, 0.0);
-        xray_emission_prob = vector<double>(1, 1.0);
-    }
-
-    xray_emission_cumprob = xray_emission_prob;
-    double cum_sum = 0;
-    for_each(xray_emission_cumprob.begin(), xray_emission_cumprob.end(),
-             [&cum_sum](double & val){cum_sum += val; val = cum_sum;});
-
-    // Hack to make sure all of the probabilities end up summing to 1.
-    double total = xray_emission_cumprob.back();
-    for_each(xray_emission_prob.begin(), xray_emission_prob.end(),
-             [&total](double & val){val /= total;});
-    for_each(xray_emission_cumprob.begin(), xray_emission_cumprob.end(),
-             [&total](double & val){val /= total;});
-    if (!is_sorted(xray_binding_energy.begin(), xray_binding_energy.end()))
-    {
-        cerr << "XRay Escape binding energies were not in acending order"
-        << endl;
-        return(false);
-    }
-
-    double cur_bind_e = xray_binding_energy.front();
-    for (size_t ii = 0; ii < xray_binding_energy.size(); ii++) {
-        double bind_e = xray_binding_energy[ii];
-        if (cur_bind_e != bind_e) {
-            xray_binding_enery_scale.push_back(xray_emission_cumprob[ii]);
-            unique_xray_binding_energy.push_back(cur_bind_e);
-            cur_bind_e = bind_e;
-        }
-    }
-    xray_binding_enery_scale.push_back(xray_emission_cumprob.back());
-    unique_xray_binding_energy.push_back(xray_binding_energy.back());
-
-
     return(true);
 }
 
@@ -222,21 +195,6 @@ void GammaStats::GetInteractionProbs(double e, double & pe, double & comp,
     pe = std::exp(Math::interpolate(log_energy, log_photoelectric, log_e, idx));
     comp = std::exp(Math::interpolate(log_energy, log_compton, log_e, idx));
     ray = std::exp(Math::interpolate(log_energy, log_rayleigh, log_e, idx));
-}
-
-const std::vector<double> & GammaStats::GetXrayEmissionEnergies() const {
-    return(xray_emission_energy);
-}
-
-const std::vector<double> & GammaStats::GetXrayEmissionCumProb() const {
-    return(xray_emission_cumprob);
-}
-
-double GammaStats::GetXrayBindEnergyScale(double energy) const {
-    auto it = upper_bound(unique_xray_binding_energy.begin(),
-                          unique_xray_binding_energy.end(), energy);
-    size_t idx = it - unique_xray_binding_energy.begin() - 1;
-    return(xray_binding_enery_scale[idx]);
 }
 
 double GammaStats::GetComptonScatterAngle(double energy) const {

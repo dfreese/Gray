@@ -34,8 +34,10 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
                  ${CMAKE_BINARY_DIR}/googletest-build)
 
+add_subdirectory(jsoncpp)
 add_subdirectory(gammaray)
 add_subdirectory(gray)
 add_subdirectory(daqmodel)
 add_subdirectory(Viewer)
 add_subdirectory(test)
+

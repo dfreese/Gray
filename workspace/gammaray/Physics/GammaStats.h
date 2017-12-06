@@ -9,6 +9,12 @@ class GammaStats
 public:
 
     GammaStats();
+    GammaStats(const std::string & name, int index,
+               double density, bool sensitive, std::vector<double> energy,
+               std::vector<double> matten_comp, std::vector<double> matten_phot,
+               std::vector<double> matten_rayl, std::vector<double> x,
+               std::vector<double> form_factor,
+               std::vector<double> scattering_func);
     void SetName(const std::string & n);
     void SetFileName(const std::string & n);
     void SetMaterialType(int s);
@@ -25,10 +31,6 @@ public:
     bool InteractionsEnabled() const;
     void DisableInteractions();
     std::string GetName() const;
-    const std::vector<double> & GetXrayEmissionEnergies() const;
-    const std::vector<double> & GetXrayEmissionCumProb() const;
-
-    double GetXrayBindEnergyScale(double energy) const;
     double GetComptonScatterAngle(double energy) const;
 
     // A class for static initialization of the dsigma_max values as a function
@@ -50,6 +52,7 @@ public:
 private:
     size_t GetIndex(double e) const;
     std::string name;
+    int index;
     std::string filename;
     std::vector<double> energy;
     std::vector<double> photoelectric;
@@ -59,26 +62,19 @@ private:
     std::vector<double> log_photoelectric;
     std::vector<double> log_compton;
     std::vector<double> log_rayleigh;
-    std::vector<double> xray_binding_energy;
-    std::vector<double> xray_emission_energy;
-    std::vector<double> xray_emission_prob;
-    std::vector<double> xray_emission_cumprob;
-
-    std::vector<double> unique_xray_binding_energy;
-    std::vector<double> xray_binding_enery_scale;
-
-    // cache for energy lookup
-    mutable double cache_energy_min;
-    mutable double cache_energy_max;
-    mutable size_t cache_idx;
-
-    int num_escape;
-    int material;
+    const std::vector<double> x;
+    const std::vector<double> form_factor;
+    const std::vector<double> scattering_func;
 
     bool enable_interactions;
     bool log_material;
 
     KleinNishina klein_nishina;
+
+    // cache for energy lookup
+    mutable double cache_energy_min;
+    mutable double cache_energy_max;
+    mutable size_t cache_idx;
 };
 
 #endif

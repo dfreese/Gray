@@ -43,7 +43,8 @@ class MaterialBase
 {
 
 public:
-    MaterialBase() {}
+    MaterialBase() = default;
+    MaterialBase(const std::string & name) : name(name) {}
     virtual ~MaterialBase() {};
     virtual bool IsReflective() const = 0;
     virtual bool IsTransmissive() const =0;
