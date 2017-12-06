@@ -38,8 +38,7 @@ int gray(int argc, char ** argv)
         << endl;
         return(1);
     }
-    if (!LoadMaterials::LoadPhysicsJson(scene,
-                                         config.get_physics_filename()))
+    if (!LoadMaterials::LoadPhysicsJson(scene, config.get_physics_filename()))
     {
         cerr << "Unable to load physics file: \""
         << config.get_physics_filename() << "\"\n"

@@ -37,10 +37,6 @@ materials = epdl.gate_database_materials(materials_file, 0.001, 1.5)
 sensitive_mats = sensitive.read_sensitive_file(sensitive_file)
 
 output = {}
-# TODO: allow default world material to be specified.
-output['defaults'] = {
-    'world_material': 'Vacuum',
-    }
 output['materials'] = {n: m.to_dict() for n, m in materials.items()}
 sensitive.mark_sensitve(output['materials'], sensitive_mats)
 output['isotopes'] = isotopes.read_isotopes_file(isotopes_file)

@@ -176,25 +176,22 @@ bool LoadMaterials::LoadPhysicsJson(SceneDescription& scene,
             return (false);
         }
     }
-    Json::Value def_mat = root["defaults"]["world_material"];
-    if (def_mat.isNull()) {
-        std::cerr << "Reading of Physics File, \""
-                  << physics_filename << "\" failed\n"
-                  << "Unable to load default material" << "\"\n";
-        return (false);
-    }
-    const std::string def_mat_name = def_mat.asString();
 
-    if (!scene.HasMaterial(def_mat_name)) {
-        std::cerr << "Default material, \""
-                  << def_mat_name << "\" is not valid\n";
-        return (false);
-    }
-
+    // Create a dummy material through which the photons can propogate without
+    // interacting.  This just makes the logic easier to propogate photons
+    // through space where there is no material.  If the user wants a
+    // background material, then they would need to create a box of that
+    // material.
+    // Perhaps look at allowing the default to be specified.
+    const std::string def_mat_name = "dummy_default_world_material";
+    std::unique_ptr<GammaMaterial> default_mat(new GammaMaterial(
+            def_mat_name, scene.NumMaterials(),
+            0.0, false, std::vector<double>(1, 0.0),
+            std::vector<double>(1, 0.0), std::vector<double>(1, 0.0),
+            std::vector<double>(1, 0.0), std::vector<double>(1, 0.0),
+            std::vector<double>(1, 0.0), std::vector<double>(1, 0.0)));
+    default_mat->DisableInteractions();
+    scene.AddMaterial(std::move(default_mat));
     scene.SetDefaultMaterial(def_mat_name);
-    // TODO: make blank world material that doesn't take interactions, so
-    // we don't just disable a material out from underneath the user....
-    static_cast<GammaMaterial&>(scene.GetDefaultMaterial()).DisableInteractions();
-
     return (true);
 }
