@@ -15,7 +15,7 @@
 
 class Config {
 public:
-    Config();
+    Config() = default;
     bool ProcessCommandLine(int argc, char **argv, bool fail_without_scene = false);
     static void usage();
 

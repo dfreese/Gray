@@ -13,10 +13,6 @@
 
 using namespace std;
 
-Config::Config()
-{
-}
-
 bool Config::ProcessCommandLine(int argc, char **argv, bool fail_without_scene)
 {
     if (argc == 1) {
