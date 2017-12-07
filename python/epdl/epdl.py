@@ -80,12 +80,12 @@ def check_dataset(filename=None, url=None):
     if not exists:
         retreive_dataset(filename, url)
 
-_END_OF_TABLE_LINE = ' ' * 71 + '1\r\n'
+_END_OF_TABLE_LINE = ' ' * 71 + '1'
 
 _BARN_CM = 1.0e-24
 _ALVOGADRO = 6.0221409e23
 
-_EPDL_URL = 'https://www-nds.iaea.org/epdl97/data/endfb6/epdl97/epdl97.all'
+_EPDL_URL = 'https://www-nds.iaea.org/epdl97/data/endl/epdl97/epdl97.all'
 
 class EPDL(object):
     class Element(object):
@@ -179,13 +179,21 @@ class EPDL(object):
         return self._elements[Z]
 
     @staticmethod
+    def _endf_float(string):
+        string = string.strip()
+        if string.startswith('-'):
+            return -1.0 * float(string[1:].replace('-', 'e-').replace('+', 'e+'))
+        else:
+            return float(string.replace('-', 'e-').replace('+', 'e+'))
+
+    @staticmethod
     def _read_table_elements(fid, start, no_lines):
         data = np.empty((no_lines, 2))
         fid.seek(start)
         for idx in range(no_lines):
             line = fid.readline()
-            data[idx, 0] = float(line[0:16])
-            data[idx, 1] = float(line[16:32])
+            data[idx, 0] = EPDL._endf_float(line[0:11])
+            data[idx, 1] = EPDL._endf_float(line[11:22])
         fid.readline() # Read out the end of section line
         return data
 
@@ -207,7 +215,7 @@ class EPDL(object):
 
             yi = int(line1[7:9].strip() or -1)
             yo = int(line1[10:12].strip() or -1)
-            atomic_weight = float(line1[13:24].strip() or -1.)
+            atomic_weight = EPDL._endf_float(line1[13:24].strip() or -1.)
             date = line1[25:31].strip()
             iflag = int(line1[31].strip() or 0)
 
@@ -217,13 +225,13 @@ class EPDL(object):
             rdesc = int(line2[0:2].strip() or -1)
             rprop = int(line2[2:5].strip() or -1)
             rmod = int(line2[5:8].strip() or -1)
-            x1 = int(float(line2[21:32].strip() or -1.))
+            x1 = int(EPDL._endf_float(line2[21:32].strip() or -1.))
 
             end_of_table_found = False
             table_lines = -1 # Don't count the end of the table
             while not end_of_table_found:
                 line = fid.readline()
-                end_of_table_found = (line == _END_OF_TABLE_LINE)
+                end_of_table_found = line.startswith(_END_OF_TABLE_LINE)
                 table_lines += 1
 
             table_file_end = fid.tell()
