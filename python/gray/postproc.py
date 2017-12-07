@@ -4,8 +4,11 @@ from gray.dtypes import (
     no_position_expanded_dtype,
     )
 
-SIGMA_TO_FWHM = 2.0 * np.sqrt(2.0 * np.log(2.0))
-FWHM_TO_SIGMA = 1.0 / SIGMA_TO_FWHM
+def sigma_to_fwhm():
+    return 2.0 * np.sqrt(2.0 * np.log(2.0))
+
+def fwhm_to_sigma():
+    return 1.0 / sigma_to_fwhm()
 
 def blur_energy(data, energy_res, ref_energy=None, copy=False):
     '''

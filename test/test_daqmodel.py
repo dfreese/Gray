@@ -4,9 +4,6 @@ import subprocess
 import tempfile
 import numpy as np
 
-_sigma_to_fwhm = 2.0 * np.sqrt(2.0 * np.log(2.0))
-_fwhm_to_sigma = 1.0 / _sigma_to_fwhm
-
 def _run_merge(filename, output_filename, map_filename, proc_filename,
                input_dtype, verbose, coinc_filenames=None):
     cmd = 'gray-daq -h %s -s %s -m %s -p %s' % (
@@ -274,14 +271,14 @@ def test_energy_blur_std():
     data['energy'][:] = ref_energy
     output = _create_and_run_merge(data, ('blur', 'energy', eres, 'at ' + str(ref_energy)))
     std_out = output['energy'].std()
-    eres_out = std_out * _sigma_to_fwhm / ref_energy
+    eres_out = std_out * gray.sigma_to_fwhm() / ref_energy
     assert(np.abs(eres - eres_out) / eres < 1e-2)
 
     energy = ref_energy / 2
     data['energy'][:] = energy
     output = _create_and_run_merge(data, ('blur', 'energy', eres, 'at ' + str(ref_energy)))
     std_out = output['energy'].std()
-    eres_out = std_out * _sigma_to_fwhm / energy
+    eres_out = std_out * gray.sigma_to_fwhm() / energy
     exp_eres = eres * np.sqrt(ref_energy) / np.sqrt(energy)
     assert(np.abs(exp_eres - eres_out) / exp_eres < 1e-2)
 
@@ -318,7 +315,7 @@ def test_time_blur_std():
     data = np.zeros(100000, dtype=gray.no_position_dtype)
 
     tres_sigma = 2.0
-    tres = tres_sigma * _sigma_to_fwhm
+    tres = tres_sigma * gray.sigma_to_fwhm()
 
     # Make sure the data is sorted and stays sorted by putting it more than
     # 3 fwhm apart.  Sort expects a partially, or mostly sorted input, so we

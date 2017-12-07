@@ -23,6 +23,8 @@ from postproc import (
     parse_log_word,
     collapse_detector_format,
     expand_detector_format,
+    sigma_to_fwhm,
+    fwhm_to_sigma,
 )
 from sensitive import (
     read_sensitive_file,
