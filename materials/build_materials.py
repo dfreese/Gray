@@ -5,8 +5,7 @@ import json
 import os
 import sys
 import epdl
-import isotopes
-import sensitive
+import gray
 
 def usage():
     print('build_materials.py:\n'
@@ -33,13 +32,13 @@ isotopes_file = os.path.join(gray_include_dir, 'GrayIsotopes.txt')
 sensitive_file = os.path.join(gray_include_dir, 'GraySensitive.txt')
 export_file = os.path.join(gray_include_dir, 'GrayPhysics.json')
 
-materials = epdl.gate_database_materials(materials_file, 0.001, 1.5)
-sensitive_mats = sensitive.read_sensitive_file(sensitive_file)
+materials = gray.database_epdl(materials_file, 0.001, 1.5)
+sensitive_mats = gray.read_sensitive_file(sensitive_file)
 
 output = {}
 output['materials'] = {n: m.to_dict() for n, m in materials.items()}
-sensitive.mark_sensitve(output['materials'], sensitive_mats)
-output['isotopes'] = isotopes.read_isotopes_file(isotopes_file)
+gray.mark_sensitve(output['materials'], sensitive_mats)
+output['isotopes'] = gray.read_isotopes_file(isotopes_file)
 output['info'] = {
     'date_created': datetime.datetime.now().isoformat(),
     'materials_md5': md5sum(materials_file),

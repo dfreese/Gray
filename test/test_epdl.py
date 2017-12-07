@@ -76,15 +76,3 @@ class TestEpdlMaterial(unittest.TestCase):
         # Not implemented currently
         self.assertIsNone(lso.anom_scat_fact_imag)
         self.assertIsNone(lso.anom_scat_fact_real)
-
-class TestDatabase(unittest.TestCase):
-    @classmethod
-    def setUpClass(self):
-        gate_file = os.path.join(os.path.dirname(__file__), 'GateMaterials.db')
-        self.data = epdl.gate_database_materials(gate_file, 0.001, 1.5)
-
-    def test_lso(self):
-        lso = self.data['LSO']
-        self.assertAlmostEqual(lso.z_eff, 56.5013547)
-        self.assertEqual(lso.energy[0], 0.001)
-        self.assertEqual(lso.energy[-1], 1.5)

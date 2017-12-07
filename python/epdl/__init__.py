@@ -11,5 +11,4 @@ from epdl import (
     convert_to_z,
     z_description_dict,
     formula_to_composition,
-    gate_database_materials,
     )

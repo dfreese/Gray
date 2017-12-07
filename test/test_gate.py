@@ -1,8 +1,8 @@
 import unittest
 import os
-from epdl.gate import (
+from gray.gate import (
     Element, Material, Database, parse_density_unit_str,
-    parse_density_molar_mass_str,
+    parse_density_molar_mass_str, database_epdl
     )
 
 _flourine_test_str = 'Fluorine:   S= F   ; Z=  9. ; A=  18.998 g/mole'
@@ -139,3 +139,15 @@ class TestDatabase(unittest.TestCase):
     def test_lso(self):
         self.assertEqual(
             self.data.material('LSO').elements, {8: 5, 14: 1, 71: 2})
+
+class TestDatabaseEPDLIntegration(unittest.TestCase):
+    @classmethod
+    def setUpClass(self):
+        gate_file = os.path.join(os.path.dirname(__file__), 'GateMaterials.db')
+        self.data = database_epdl(gate_file, 0.001, 1.5)
+
+    def test_lso(self):
+        lso = self.data['LSO']
+        self.assertAlmostEqual(lso.z_eff, 56.5013547)
+        self.assertEqual(lso.energy[0], 0.001)
+        self.assertEqual(lso.energy[-1], 1.5)

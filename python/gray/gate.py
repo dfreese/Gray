@@ -1,5 +1,6 @@
 import enum
 import re
+import gray
 
 def remove_whitespace(s):
     """
@@ -178,3 +179,22 @@ class Database(object):
     def values(self):
         for v in self._materials.values():
             yield v
+
+def database_epdl(filename, energy_lo=None, energy_hi=None):
+    '''
+    Uses gray.gate.Database and the epdl module to parse a GATE style materials
+    database and then generate the necessary information
+    '''
+    import epdl
+    data = gray.Database(filename)
+    epdl_data = {}
+    for name, mat in data.items():
+        if mat.description == gray.Material.DescType.Composition:
+            epdl_data[name] = epdl.material_by_composition(
+                mat.elements, energy_lo, energy_hi)
+        elif mat.description == gray.Material.DescType.MassFraction:
+            epdl_data[name] = epdl.material_by_mass_fraction(
+                mat.elements, energy_lo, energy_hi)
+        epdl_data[name].density = mat.density
+        epdl_data[name].index = mat.index
+    return epdl_data
