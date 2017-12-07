@@ -55,7 +55,7 @@ class TestMaterialBase(unittest.TestCase):
         self.assertEqual(self.data.no_elements, 3)
 
     def test_description(self):
-        self.assertEqual(self.data.description, Material.DescType.Composition)
+        self.assertEqual(self.data.description, 'composition')
 
     def test_elements(self):
         self.assertEqual(self.data.elements, {
@@ -75,7 +75,7 @@ class TestMaterialOther(unittest.TestCase):
 
     def test_mass_frac(self):
         mat = Material(_lso_massfrac_test_str)
-        self.assertEqual(mat.description, Material.DescType.MassFraction)
+        self.assertEqual(mat.description, 'massfraction')
 
 class TestDensityUnitParses(unittest.TestCase):
     def test_gcm3(self):

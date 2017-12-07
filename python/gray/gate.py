@@ -1,4 +1,3 @@
-import enum
 import re
 import gray
 
@@ -61,7 +60,6 @@ _material_line = re.compile('(.+):d=(.+);n=(.+)')
 _element_line = re.compile('\+el:name=(.+);([n,f])=(.+)')
 
 class Material(object):
-    DescType = enum.Enum('Description', 'Composition MassFraction')
     def __init__(self, lines):
         m = re.match(_material_line_state, remove_whitespace(lines[0]))
         if m is None:
@@ -90,15 +88,15 @@ class Material(object):
 
             if m.group(2) == 'n':
                 if self.description is None:
-                    self.description = Material.DescType.Composition
-                elif self.description is not Material.DescType.Composition:
+                    self.description = 'composition'
+                elif self.description != 'composition':
                     raise ValueError(
                         '{} description is not consistent'.format(self.name))
                 val = int(m.group(3))
             elif m.group(2) == 'f':
                 if self.description is None:
-                    self.description = Material.DescType.MassFraction
-                elif self.description is not Material.DescType.MassFraction:
+                    self.description = 'massfraction'
+                elif self.description != 'massfraction':
                     raise ValueError(
                         '{} description is not consistent'.format(self.name))
                 val = float(m.group(3))
@@ -189,10 +187,10 @@ def database_epdl(filename, energy_lo=None, energy_hi=None):
     data = gray.Database(filename)
     epdl_data = {}
     for name, mat in data.items():
-        if mat.description == gray.Material.DescType.Composition:
+        if mat.description == 'composition':
             epdl_data[name] = epdl.material_by_composition(
                 mat.elements, energy_lo, energy_hi)
-        elif mat.description == gray.Material.DescType.MassFraction:
+        elif mat.description == 'massfraction':
             epdl_data[name] = epdl.material_by_mass_fraction(
                 mat.elements, energy_lo, energy_hi)
         epdl_data[name].density = mat.density
