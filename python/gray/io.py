@@ -19,9 +19,9 @@ def write_variable_binary(filename, data):
 
 def load_detector_output(filename, full=False, expand=False):
     if full:
-        data = np.fromfile(filename, dtype=standard_dtype)
+        data = np.fromfile(filename, dtype=gray.standard_dtype)
     else:
-        data = np.fromfile(filename, dtype=no_position_dtype)
+        data = np.fromfile(filename, dtype=gray.no_position_dtype)
 
     if expand:
         return expand_detector_format(data, full)
