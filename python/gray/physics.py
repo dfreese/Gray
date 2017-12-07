@@ -45,18 +45,33 @@ def energy_to_inv_wavelength(energy_mev):
 def form_factor_x_param(energy_mev, theta):
     return np.sin(theta / 2.0) * energy_to_inv_wavelength(energy_mev)
 
-def rayleigh_cs(material_x, material_form_factor, energy_mev, theta):
+def form_factor_x_param_costheta(energy_mev, costheta):
+    return np.sqrt(0.5 * (1 - costheta)) * energy_to_inv_wavelength(energy_mev)
+
+def rayleigh_cs(material_x, material_form_factor, energy_mev, theta,
+                costheta=False):
     """Rayleigh Scattering cross section in cm**2 based on the EPDL form factor
     functions.  This neglects the anomalous scattering factors.
+
+    If costheta is true, theta is interpreted as cos(theta) rather than theta.
     """
-    x = form_factor_x_param(energy_mev, theta)
+    if costheta:
+        x = form_factor_x_param_costheta(energy_mev, theta)
+    else:
+        x = form_factor_x_param(energy_mev, theta)
     fx = np.interp(x, material_x, material_form_factor)
     return thompson_diff_cs(theta) * fx ** 2
 
-def compton_cs(material_x, material_scattering_func, energy_mev, theta):
+def compton_cs(material_x, material_scattering_func, energy_mev, theta,
+               costheta=False):
     """Compton Scattering cross section in cm**2 based on the EPDL scattering
     functions.
+
+    If costheta is true, theta is interpreted as cos(theta) rather than theta.
     """
-    x = form_factor_x_param(energy_mev, theta)
+    if costheta:
+        x = form_factor_x_param_costheta(energy_mev, theta)
+    else:
+        x = form_factor_x_param(energy_mev, theta)
     sx = np.interp(x, material_x, material_scattering_func)
     return klein_nishina_diff_cs(energy_mev, theta) * sx
