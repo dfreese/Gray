@@ -7,10 +7,8 @@ CMakeFiles
 CMakeCache.txt
 CMakeScripts
 /materials/*.dat
-/materials/eadl.all
-/materials/epdl97.all
+/python/epdl/epdl.all
 /materials/GrayPhysics.json
-/materials/epdl/epdl.all
 /neg_sphere.dat
 /neg_sphere_singles.dat
 /neg_sphere_coinc.dat
