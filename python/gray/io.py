@@ -10,7 +10,7 @@ def variable_field_mask(data):
 
 def write_variable_binary(filename, data):
     with open(filename, 'wb') as fid:
-        fields = np.array(variable_field_mask(data), dtype=np.int32)
+        fields = np.array(gray.variable_field_mask(data), dtype=np.int32)
         # Magic number, version number, no_fields, no_active, event size
         np.array((65531, 1, fields.size, fields.sum(), data.dtype.itemsize,),
                   dtype=np.int32).tofile(fid)
@@ -24,7 +24,7 @@ def load_detector_output(filename, full=False, expand=False):
         data = np.fromfile(filename, dtype=gray.no_position_dtype)
 
     if expand:
-        return expand_detector_format(data, full)
+        return gray.expand_detector_format(data, full)
     else:
         return data
 
