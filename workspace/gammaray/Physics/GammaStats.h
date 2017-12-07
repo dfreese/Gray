@@ -39,6 +39,8 @@ public:
     public:
         KleinNishina();
         static double dsigma(const double costheta, const double energy_mev);
+        static std::vector<double> dsigma(std::vector<double> costheta,
+                                          const double energy_mev);
         static std::vector<std::vector<double>> create_scatter_cdfs(
                 const std::vector<double> & energies,
                 const std::vector<double> & thetas);

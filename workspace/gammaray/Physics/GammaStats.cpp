@@ -236,6 +236,17 @@ double GammaStats::KleinNishina::dsigma(const double costheta,
     return(sigma);
 }
 
+std::vector<double> GammaStats::KleinNishina::dsigma(
+        std::vector<double> costhetas, const double energy_mev)
+{
+    std::vector<double> dsigma_dtheta(costhetas.size());
+    std::transform(costhetas.begin(), costhetas.end(), dsigma_dtheta.begin(),
+                   [&energy_mev](double costheta) {
+                       return (dsigma(costheta, energy_mev));
+                   });
+    return (dsigma_dtheta);
+}
+
 double GammaStats::KleinNishina::scatter_angle(
         double energy, double rand_uniform) const
 {
@@ -253,10 +264,8 @@ std::vector<std::vector<double>> GammaStats::KleinNishina::create_scatter_cdfs(
     for (size_t ii = 0; ii < energies.size(); ++ii) {
         const double energy = energies[ii];
         auto & energy_cdf = scatter_cdfs[ii];
-        std::transform(costhetas.begin(), costhetas.end(), energy_cdf.begin(),
-                       [&energy](double costheta) {
-                           return (KleinNishina::dsigma(costheta, energy));
-                       });
+        energy_cdf = dsigma(costhetas, energy);
+
         // Integrate in theta space, not cos(theta).
         std::vector<double> thetas(costhetas.size());
         std::transform(costhetas.begin(), costhetas.end(), thetas.begin(),
@@ -266,4 +275,3 @@ std::vector<std::vector<double>> GammaStats::KleinNishina::create_scatter_cdfs(
 
     return (scatter_cdfs);
 }
-
