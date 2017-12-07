@@ -39,3 +39,9 @@ from gate import (
     Material,
     database_epdl,
 )
+from physics import (
+    thompson_diff_cs,
+    klein_nishina_diff_cs,
+    rayleigh_cs,
+    compton_cs,
+)
