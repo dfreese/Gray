@@ -1,4 +1,5 @@
 import numpy as np
+import gray
 
 def variable_field_mask(data):
     '''
@@ -41,7 +42,7 @@ def load_variable_binary(filename):
         read_mask = np.fromfile(fid, dtype=np.int32, count=no_fields).astype(bool)
         if read_mask.sum() != no_active:
             RuntimeError('Number of active fields does not match header')
-        cur_dtype = create_variable_dtype(read_mask)
+        cur_dtype = gray.create_variable_dtype(read_mask)
         events = np.fromfile(fid, dtype=cur_dtype)
     return events
 
