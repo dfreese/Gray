@@ -2,35 +2,22 @@
 #include <Random/Random.h>
 
 CylinderSource::CylinderSource() :
-    Source(),
-    radius(1.0),
-    length(1.0),
-    axis(0.0, 0.0, 0.0)
+    CylinderSource({0, 0, 0}, 1.0, {0, 0, 1}, 0)
 {
 }
 
-CylinderSource::CylinderSource(const VectorR3 &p, double rad, VectorR3 L, double act) :
-    Source(p, act)
+CylinderSource::CylinderSource(const VectorR3 &p, double radius, VectorR3 L, double act) :
+    Source(p, act),
+    radius(radius),
+    length(L.Norm()),
+    axis(L.MakeUnit()),
+    local_to_global(RefAxisPlusTransToMap(axis, position)),
+    global_to_local(local_to_global.Inverse())
 {
-    SetRadius(rad);
-    SetAxis(L.MakeUnit());
 }
 
 VectorR3 CylinderSource::Decay() {
     return(local_to_global * Random::UniformCylinder(length, radius));
-}
-
-void CylinderSource::SetRadius(double r)
-{
-    radius = r;
-}
-
-void CylinderSource::SetAxis(VectorR3 L)
-{
-    length = L.Norm();
-    axis = L.MakeUnit();
-    local_to_global = RefAxisPlusTransToMap(axis, position);
-    global_to_local = local_to_global.Inverse();
 }
 
 bool CylinderSource::Inside(const VectorR3 & pos) const

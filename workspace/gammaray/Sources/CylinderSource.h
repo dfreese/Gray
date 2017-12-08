@@ -12,15 +12,13 @@ public:
     CylinderSource(const VectorR3 &pos, double radius, VectorR3 L, double act);
     VectorR3 Decay() override;
     bool Inside(const VectorR3 & pos) const override;
-    void SetRadius(double r);
-    void SetAxis(VectorR3 L);
 
 private:
-    double radius;
-    double length;
-    VectorR3 axis;
-    RigidMapR3 local_to_global;
-    RigidMapR3 global_to_local;
+    const double radius;
+    const double length;
+    const VectorR3 axis;
+    const RigidMapR3 local_to_global;
+    const RigidMapR3 global_to_local;
 };
 
 #endif /*CYLINDERSOURCE_H_*/
