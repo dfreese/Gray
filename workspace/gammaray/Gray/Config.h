@@ -53,11 +53,13 @@ public:
     bool get_log_any() const;
     void add_process_line(const std::string & line);
     std::vector<std::string> get_process_lines() const;
+    void set_log_nondepositing_inter(bool val);
     void set_log_nuclear_decays(bool val);
     void set_log_nonsensitive(bool val);
     void set_log_nointeraction(bool val);
     void set_log_errors(bool val);
     void set_log_all(bool val);
+    bool get_log_nondepositing_inter() const;
     bool get_log_nuclear_decays() const;
     bool get_log_nonsensitive() const;
     bool get_log_nointeraction() const;
@@ -99,6 +101,7 @@ private:
     Output::Format format_hits = Output::VARIABLE_ASCII;
     Output::Format format_singles = Output::VARIABLE_ASCII;
     Output::Format format_coinc = Output::VARIABLE_ASCII;
+    bool log_nondepositing_inter = false;
     bool log_nuclear_decays = false;
     bool log_nonsensitive = false;
     bool log_nointeraction = false;

@@ -14,12 +14,14 @@
 
 GammaRayTrace::GammaRayTrace(SourceList & source_list,
                              const SceneDescription & scene,
+                             bool log_nondepositing_inter,
                              bool log_nuclear_decays_inter,
                              bool log_nonsensitive_inter,
                              bool log_nointeractions_inter,
                              bool log_errors_inter) :
     sources(source_list),
     scene(scene),
+    log_nondepositing_inter(log_nondepositing_inter),
     log_nuclear_decays(log_nuclear_decays_inter),
     log_nonsensitive(log_nonsensitive_inter),
     log_nointeractions(log_nointeractions_inter),
@@ -135,7 +137,7 @@ void GammaRayTrace::TracePhoton(
                 break;
             }
             case Physics::RAYLEIGH: {
-                if (log_interact) {
+                if (log_nondepositing_inter & log_interact) {
                     interactions.push_back(Physics::Rayleigh(photon,
                                                              mat_gamma_prop));
                 }

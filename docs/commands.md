@@ -110,6 +110,14 @@ log_positron
 Has no options.  Tells gray to log positron decays and their locations in the
 hits file.
 
+### log_nondepositing
+
+log_nondepositing
+
+Has no options.  Tells gray to interactions in sensitive detectors that do not
+deposit energy.  This currently only causes Rayleigh scattering interactions
+to be logged in the hits file.
+
 ### log_nonsensitive
 
 log_nonsensitive

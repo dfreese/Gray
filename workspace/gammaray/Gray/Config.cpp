@@ -313,6 +313,10 @@ std::vector<std::string> Config::get_process_lines() const {
     return(process_lines);
 }
 
+void Config::set_log_nondepositing_inter(bool val) {
+    log_nondepositing_inter = val;
+}
+
 void Config::set_log_nuclear_decays(bool val) {
     log_nuclear_decays = val;
 }
@@ -331,6 +335,10 @@ void Config::set_log_errors(bool val) {
 
 void Config::set_log_all(bool val) {
     log_all = val;
+}
+
+bool Config::get_log_nondepositing_inter() const {
+    return(log_nondepositing_inter || log_all);
 }
 
 bool Config::get_log_nuclear_decays() const {

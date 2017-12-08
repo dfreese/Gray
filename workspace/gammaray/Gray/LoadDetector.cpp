@@ -158,6 +158,8 @@ bool LoadDetector::HandleConfigCommand(const std::string & command,
         config.set_seed(seed);
     } else if (command == "log_positron") {
         config.set_log_nuclear_decays(true);
+    } else if (command == "log_nondepositing") {
+        config.set_log_nondepositing_inter(true);
     } else if (command == "log_nonsensitive") {
         config.set_log_nonsensitive(true);
     } else if (command == "log_nointeraction") {

@@ -76,6 +76,7 @@ void Simulation::RunSim(const Config & config, SourceList & sources,
     int current_tick = 0;
 
     GammaRayTrace ray_tracer(sources, scene,
+                             config.get_log_nondepositing_inter(),
                              config.get_log_nuclear_decays(),
                              config.get_log_nonsensitive(),
                              config.get_log_nointeraction(),

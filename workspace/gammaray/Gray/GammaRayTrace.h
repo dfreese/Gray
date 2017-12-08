@@ -19,6 +19,7 @@ public:
 
     GammaRayTrace(SourceList & source_list,
                   const SceneDescription & scene,
+                  bool log_nondepositing_inter,
                   bool log_nuclear_decays_inter,
                   bool log_nonsensitive_inter,
                   bool log_nointeractions_inter,
@@ -53,6 +54,7 @@ private:
 
     SourceList & sources;
     const SceneDescription & scene;
+    bool log_nondepositing_inter;
     bool log_nuclear_decays;
     bool log_nonsensitive;
     bool log_nointeractions;
