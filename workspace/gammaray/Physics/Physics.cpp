@@ -105,7 +105,7 @@ Interaction Physics::Compton(const Photon & p, double deposit,
 }
 
 Interaction Physics::Rayleigh(const Photon & p,
-                                  const GammaStats & mat_gamma_prop)
+                              const GammaStats & mat_gamma_prop)
 {
     Interaction hit;
     hit.type = RAYLEIGH;
@@ -122,8 +122,8 @@ Interaction Physics::Rayleigh(const Photon & p,
     hit.scatter_rayleigh_phantom = p.GetScatterRayleighPhantom();
     hit.scatter_rayleigh_detector = p.GetScatterRayleighDetector();
     hit.xray_flouresence = p.GetXrayFlouresence();
-    // Process this in the DAQ if it was a sensitive interaction
-    hit.dropped = !mat_gamma_prop.LogMaterial();
+    // Always a zero energy interaction, so don't process this in the DAQ
+    hit.dropped = true;
     return(hit);
 }
 
