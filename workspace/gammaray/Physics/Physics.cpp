@@ -243,7 +243,7 @@ Physics::INTER_TYPE Physics::InteractionType(
         return COMPTON;
     } else {
         // perform rayleigh kinematics
-        RayleighScatter(photon);
+        RayleighScatter(photon, mat_gamma_prop);
         return RAYLEIGH;
     }
 }
@@ -265,35 +265,9 @@ void Physics::ComptonScatter(Photon &p, double & deposit,
     p.SetScatterCompton();
 }
 
-/*!
- * The pdf of rayleigh scattering as a function of theta, normalized to a max
- * of one so that it can be used with an accept/reject method.
- */
-double Physics::RayleighProbability(double theta) {
-    double cs = cos(theta);
-    return((1.0 - cs * cs) / 2.0);
-}
-
-/*!
- * Generates a random angle for Rayleigh Scattering based on an accept/reject
- * method using RayleighProbability.  Angle range is [0, pi].
- */
-double Physics::RayleighAngle() {
-
-    // FIXME: This implements Thompson scattering, not Rayleigh scattering
-    double theta;
-    do {
-        theta = M_PI * Random::Uniform();
-        // Keep generating an angle until we generate a select based on the
-        // normalized pdf.
-    } while (!Random::Selection(RayleighProbability(theta)));
-    return (theta);
-}
-
-void Physics::RayleighScatter(Photon &p)
-{
-    const double theta = RayleighAngle();
-    p.SetDir(Random::Deflection(p.GetDir(), std::cos(theta)));
+void Physics::RayleighScatter(Photon &p, const GammaStats & mat_prop) {
+    const double costheta = mat_prop.GetRayleighScatterAngle(p.GetEnergy());
+    p.SetDir(Random::Deflection(p.GetDir(), costheta));
     // If the photon scatters on a non-detector, it is a scatter, checked
     // inside SetScatter
     p.SetScatterRayleigh();

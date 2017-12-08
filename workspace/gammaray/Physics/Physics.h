@@ -49,15 +49,11 @@ public:
     static void ComptonScatter(Photon &p, double & deposit,
                                const GammaStats & mat_prop);
     static double KleinNishinaEnergy(const double energy, const double theta);
-    static void RayleighScatter(Photon &p);
+    static void RayleighScatter(Photon &p, const GammaStats & mat_prop);
     static constexpr double speed_of_light_cmpers = 29979245800.0;
     static constexpr double inverse_speed_of_light = (1.0 / speed_of_light_cmpers);
     static constexpr double energy_511 = 0.510998903;
     static constexpr double decays_per_microcurie = 37.0e3;
-
-private:
-    static double RayleighProbability(double theta);
-    static double RayleighAngle();
 };
 
 #endif // PHYSICS_H

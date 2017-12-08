@@ -32,9 +32,8 @@ public:
     void DisableInteractions();
     std::string GetName() const;
     double GetComptonScatterAngle(double energy) const;
+    double GetRayleighScatterAngle(double energy) const;
 
-    // A class for static initialization of the dsigma_max values as a function
-    // of energy
     class KleinNishina {
     public:
         KleinNishina();
@@ -82,6 +81,38 @@ public:
         std::vector<std::vector<double>> scatter_cdfs;
     };
 
+    class Thompson {
+    public:
+        static double dsigma(const double costheta);
+        static std::vector<double> dsigma(const std::vector<double>& costheta);
+    };
+
+    class Rayleigh {
+    public:
+        Rayleigh(const std::vector<double>& x,
+                const std::vector<double>& form_factor);
+        static std::vector<double> formfactor(
+                const std::vector<double>& costheta,
+                const double energy_mev,
+                const std::vector<double>& x,
+                const std::vector<double>& form_factor);
+        static std::vector<double> dsigma(
+                const std::vector<double>& costheta,
+                const double energy_mev,
+                const std::vector<double>& x,
+                const std::vector<double>& form_factor);
+        static std::vector<std::vector<double>> create_scatter_cdfs(
+                const std::vector<double>& energies,
+                const std::vector<double>& costhetas,
+                const std::vector<double>& x,
+                const std::vector<double>& form_factor);
+        double scatter_angle(double energy, double rand_uniform) const;
+    private:
+        std::vector<double> energy_idx;
+        std::vector<double> costheta_idx;
+        std::vector<std::vector<double>> scatter_cdfs;
+    };
+
 
 private:
     size_t GetIndex(double e) const;
@@ -104,6 +135,7 @@ private:
     bool log_material;
 
     Compton compton_scatter;
+    Rayleigh rayleigh_scatter;
 
     // cache for energy lookup
     mutable double cache_energy_min;
