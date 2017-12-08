@@ -231,10 +231,7 @@ Physics::INTER_TYPE Physics::InteractionType(
         return(NO_INTERACTION);
     }
 
-
-    // TODO: add back in rayleigh scattering once the distribution is fixed
-    // double rand = (pe + compton + rayleigh) * Random::Uniform();
-    double rand = (pe + compton) * Random::Uniform();
+    double rand = (pe + compton + rayleigh) * Random::Uniform();
     if (rand <= pe) {
         return PHOTOELECTRIC;
     } else if (rand <= (pe + compton)) {
