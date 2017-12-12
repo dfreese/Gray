@@ -150,14 +150,16 @@ void Mpi::CombineFiles(const Config & config, Output & output_hits,
                 remove(singles_seg_name.c_str());
             }
             if (config.get_log_coinc()) {
-                for (string name: config.get_filenames_coinc()) {
+                for (size_t coinc_idx = 0; coinc_idx < config.get_no_coinc_filenames(); ++coinc_idx) {
+		    string name = config.get_filename_coinc(coinc_idx);
                     string coinc_seg_name = name + mpi_output_append;
                     ifstream coinc_seg(coinc_seg_name);
-                    (*coincs[idx]) << coinc_seg.rdbuf();
+                    (*coincs[coinc_idx]) << coinc_seg.rdbuf();
                     coinc_seg.close();
                     remove(coinc_seg_name.c_str());
                 }
             }
         }
     }
+    Barrier();
 }
