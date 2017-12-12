@@ -35,6 +35,7 @@ int Simulation::SetupOutput(const Config & config, Output & output_hits,
                             Output & output_singles,
                             std::vector<Output> & outputs_coinc)
 {
+    Mpi::ConfigOutputFileHeaders();
     // This will be blank if mpi is not enabled.
     string mpi_output_append = Mpi::OutputAppend();
     if (config.get_log_hits()) {
