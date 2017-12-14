@@ -380,21 +380,21 @@ bool LoadDetector::Load(const std::string & filename,
                         MatrixStack.top().Transform3x3(&x_step);
                         MatrixStack.top().Transform3x3(&y_step);
                         MatrixStack.top().Transform3x3(&z_step);
-                        MatrixStack.top().ApplyTranslationLeft(z_step);
-                        info.grid_no_complete.z++;
-                        if (info.grid_no_complete.z >= info.grid_repeats.z) {
-                            // Reset z, step y
-                            MatrixStack.top().ApplyTranslationLeft(z_step * -1 * info.grid_no_complete.z);
-                            info.grid_no_complete.z = 0;
+                        MatrixStack.top().ApplyTranslationLeft(x_step);
+                        info.grid_no_complete.x++;
+                        if (info.grid_no_complete.x >= info.grid_repeats.x) {
+                            // Reset x, step y
+                            MatrixStack.top().ApplyTranslationLeft(x_step * -1 * info.grid_no_complete.x);
+                            info.grid_no_complete.x = 0;
                             MatrixStack.top().ApplyTranslationLeft(y_step);
                             info.grid_no_complete.y++;
                         }
                         if (info.grid_no_complete.y >= info.grid_repeats.y) {
-                            // Reset y, step x
+                            // Reset y, step z
                             MatrixStack.top().ApplyTranslationLeft(y_step * -1 * info.grid_no_complete.y);
                             info.grid_no_complete.y = 0;
-                            MatrixStack.top().ApplyTranslationLeft(x_step);
-                            info.grid_no_complete.x++;
+                            MatrixStack.top().ApplyTranslationLeft(z_step);
+                            info.grid_no_complete.z++;
                         }
                         break;
                     }
@@ -879,9 +879,9 @@ bool LoadDetector::Load(const std::string & filename,
             StartPos.x -= (double)(num_x-1) * UnitStep.x / 2.0;
             StartPos.y -= (double)(num_y-1) * UnitStep.y / 2.0;
             StartPos.z -= (double)(num_z-1) * UnitStep.z / 2.0;
-            for (int i = 0; i < num_x; i++) {
+            for (int k = 0; k < num_z; k++) {
                 for (int j = 0; j < num_y; j++) {
-                    for (int k = 0; k < num_z; k++) {
+                    for (int i = 0; i < num_x; i++) {
                         CurrentPos= StartPos;
                         CurrentPos.x += (double)i * UnitStep.x;
                         CurrentPos.y += (double)j * UnitStep.y;
