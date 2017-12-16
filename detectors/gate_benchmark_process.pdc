@@ -1,9 +1,0 @@
-merge crystal 1e-10 max
-merge detector 1e-10 max
-merge block 1e-10 max
-merge panel 1e-10 max
-blur energy 0.26 at 0.511
-filter egate_low 0.350
-filter egate_high 0.650
-coinc window 120e-9
-# coinc delay 120e-9 500e-9 keep_multiples
