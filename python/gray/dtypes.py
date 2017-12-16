@@ -72,3 +72,61 @@ def create_variable_dtype(write_mask):
         if mask:
             vals.append(field)
     return np.dtype(vals)
+
+def gate_cylpet_coinc_single_dtype():
+    return np.dtype([
+        ('run', np.int32),
+        ('event', np.int32),
+        ('source', np.int32),
+        ('srcpos', np.float64, (3,)),
+        ('time', np.float64),
+        ('energy', np.float64),
+        ('pos', np.float64, (3,)),
+        ('vol', np.int32, (6,)),
+        ('no_compton_phan', np.int32),
+        ('no_compton_det', np.int32),
+        ('no_rayleigh_phan', np.int32),
+        ('no_rayleigh_det', np.int32),
+        ('scanner_pos_axial', np.float64),
+        ('scanner_pos_angle', np.float64),
+        ])
+
+def gate_cylpet_single_dtype():
+    return np.dtype([
+        ('run', np.int32),
+        ('event', np.int32),
+        ('source', np.int32),
+        ('srcpos', np.float64, (3,)),
+        ('vol', np.int32, (6,)),
+        ('time', np.float64),
+        ('energy', np.float64),
+        ('pos', np.float64, (3,)),
+        ('no_compton_phan', np.int32),
+        ('no_compton_det', np.int32),
+        ('no_rayleigh_phan', np.int32),
+        ('no_rayleigh_det', np.int32),
+        ('last_compton_vol_name', 'S8'),
+        ('last_rayleigh_vol_name', 'S8'),
+        ])
+
+def gate_cylpet_hits_dtype():
+    return np.dtype([
+        ('run', np.int32),
+        ('event', np.int32),
+        ('primary_particle_id', np.int32),
+        ('source', np.int32),
+        ('vol', np.int32, (6,)),
+        ('time', np.float64),
+        ('energy', np.float64),
+        ('range', np.float64),
+        ('pos', np.float64, (3,)),
+        ('geant_particle_id', np.int32),
+        ('particle_id', np.int32),
+        ('mother_particle_id', np.int32),
+        ('photon_id', np.int32),
+        ('no_compton', np.int32),
+        ('no_rayleigh', np.int32),
+        ('process', 'S8'),
+        ('last_compton_vol_name', 'S8'),
+        ('last_rayleigh_vol_name', 'S8'),
+        ])

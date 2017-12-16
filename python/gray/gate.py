@@ -1,5 +1,6 @@
 import re
 import gray
+import numpy as np
 
 def remove_whitespace(s):
     """
@@ -196,3 +197,49 @@ def database_epdl(filename, energy_lo=None, energy_hi=None):
         epdl_data[name].density = mat.density
         epdl_data[name].index = mat.index
     return epdl_data
+
+def det_lookup(mapping, names, shape=None, det_name=None):
+    if shape is None:
+        shape = tuple(mapping[x].max() + 1 for x in names)
+    if det_name is None:
+        det_name = 'detector'
+    lookup = np.zeros(shape, dtype=int)
+    lookup[tuple(mapping[x] for x in names)] = mapping[det_name]
+    return lookup
+
+def det_map(vol, mapping, names, shape=None, det_name=None):
+    lookup = det_lookup(mapping, names, shape, det_name)
+    if len(names) != vol.shape[1]:
+        raise IndexError('The number of names given does not match the volume array')
+    return lookup[tuple(vol[:,x] for x in range(vol.shape[1]))]
+
+def convert_gate_hits(gate_data, mapping, names, shape=None, det_name=None):
+    # Could map more data to a gray format, but this is enough for now.
+    hits_mask = (True, True, False, False, False,
+                 True, True, False, False, False,
+                 False, False, False, False, False)
+    hits_dtype = gray.create_variable_dtype(hits_mask)
+    # Remove zero energy hits which mark boundaries in Gate
+    gate_data = gate_data[gate_data['energy'] > 0]
+    gray_data = np.empty(gate_data.shape, dtype=hits_dtype)
+
+    gray_data['time'] = gate_data['time']
+    gray_data['energy'] = gate_data['energy']
+    gray_data['id'] = gate_data['primary_particle_id']
+    gray_data['det_id'] = det_map(gate_data['vol'], mapping, names, shape,
+                                  det_name)
+    return gray_data
+
+def convert_gate_singles(gate_data, mapping, names, shape=None, det_name=None):
+    # Could map more data to a gray format, but this is enough for now.
+    single_mask = (True, True, False, False, False,
+                   True, True, False, False, False,
+                   False, False, False, False, False)
+    singles_dtype = gray.create_variable_dtype(single_mask)
+    gray_data = np.empty(gate_data.shape, dtype=singles_dtype)
+    gray_data['time'] = gate_data['time']
+    gray_data['energy'] = gate_data['energy']
+    gray_data['id'] = gate_data['event']
+    gray_data['det_id'] = det_map(gate_data['vol'], mapping, names, shape,
+                                  det_name)
+    return gray_data
