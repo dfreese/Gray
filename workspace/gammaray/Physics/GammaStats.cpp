@@ -217,7 +217,7 @@ GammaStats::KleinNishina::KleinNishina() :
         0.0, 0.010, 0.030, 0.050, 0.100, 0.200, 0.300, 0.400, 0.500, 0.600,
         0.700, 0.900, 1.100, 1.300, 1.500}),
     // Go from -1 to 1 linear in theta
-    costheta_idx(Math::cos_space(50)),
+    costheta_idx(Math::cos_space(300)),
     scatter_cdfs(create_scatter_cdfs(energy_idx, costheta_idx))
 {
 }
@@ -292,7 +292,7 @@ GammaStats::Compton::Compton(const std::vector<double>& x,
         0.0, 0.010, 0.030, 0.050, 0.100, 0.200, 0.300, 0.400, 0.500, 0.600,
         0.700, 0.900, 1.100, 1.300, 1.500}),
     // Go from -1 to 1 linear in theta
-    costheta_idx(Math::cos_space(50)),
+    costheta_idx(Math::cos_space(300)),
     scatter_cdfs(create_scatter_cdfs(energy_idx, costheta_idx, x, form_factor))
 {
 }
@@ -411,8 +411,7 @@ GammaStats::Rayleigh::Rayleigh(
     energy_idx({
         0.0, 0.001, 0.002, 0.005, 0.010, 0.020, 0.040, 0.060, 0.080, 0.080,
         0.100, 0.200, 0.300, 0.500, 1.000}),
-    // Go from -1 to 1 linear in theta
-    costheta_idx(Math::cos_space(50)),
+    costheta_idx(Math::cos_space(300)),
     scatter_cdfs(create_scatter_cdfs(energy_idx, costheta_idx, x, form_factor))
 {
 }
