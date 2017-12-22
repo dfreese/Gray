@@ -387,9 +387,9 @@ Indicates the end of a vector source started by start_vecsrc
 
 ### beam
 ```
-beam [position xyz] [direction xyz] [angle width] [activity]
+beam [position xyz] [direction xyz] [angle width] [energy] [activity]
 ```
-Creates a monoenergetic (0.511MeV) source with a given position and direction.
+Creates a monoenergetic source with a given position and direction.
 The angle should be non-negative.  If it is greater than zero, an angle offset
 from the direction axis will randomly be selected, along with a random azimuthal
 coordinate around the axis.

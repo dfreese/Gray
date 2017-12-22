@@ -7,7 +7,8 @@
 class BeamPointSource : public Source
 {
 public:
-    BeamPointSource(const VectorR3 &p, const VectorR3 &a, double angle, double act);
+    BeamPointSource(const VectorR3 &p, const VectorR3 &a, double angle,
+                    double energy, double act);
     // gets a beam positron instead of a regular one
     VectorR3 Decay() override;
     bool Inside(const VectorR3 & pos) const override;
@@ -15,6 +16,7 @@ public:
 private:
     VectorR3 beam_axis;
     double beam_angle;
+    double beam_energy;
 };
 
 #endif /*BEAMPOINTSOURCE_H_*/

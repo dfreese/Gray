@@ -768,18 +768,19 @@ bool LoadDetector::Load(const std::string & filename,
             TransformWithRigid(s.get(),MatrixStack.top());
             theScene.AddViewable(std::move(s));
         } else if (command == "beam") {
-            // beam pos_x pos_y pos_z axis_x axis_y axis_z angle activity
+            // beam pos_x pos_y pos_z axis_x axis_y axis_z angle energy activity
             // Beam source
             VectorR3 position;
             VectorR3 axis;
             double angle = -1.0;
+            double energy = -1.0;
             double activity = -1.0;
             int scanCode = sscanf(args.c_str(),
-                                  "%lf %lf %lf %lf %lf %lf %lf %lf",
+                                  "%lf %lf %lf %lf %lf %lf %lf %lf %lf",
                                   &(position.x), &(position.y), &(position.z),
                                   &(axis.x), &(axis.y), &(axis.z),
-                                  &angle, &activity);
-            if (scanCode != 8) {
+                                  &angle, &energy, &activity);
+            if (scanCode != 9) {
                 print_parse_error(line);
                 return(false);
             }
@@ -787,7 +788,7 @@ bool LoadDetector::Load(const std::string & filename,
             MatrixStack.top().Transform(&position);
             MatrixStack.top().Transform3x3(&axis);
             std::unique_ptr<BeamPointSource> s(new BeamPointSource(
-                    position, axis, angle, actScale*activity));
+                    position, axis, angle, energy, actScale*activity));
             sources.AddSource(std::move(s));
         } else if (command == "start_vecsrc") {
             double activity = -1.0;

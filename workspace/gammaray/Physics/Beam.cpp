@@ -11,10 +11,11 @@ Beam::Beam() :
 {
 }
 
-void Beam::SetBeam(const VectorR3 & axis, double angle)
+void Beam::SetBeam(const VectorR3 & axis, double angle, double energy)
 {
     beam_axis = axis;
     beam_angle = angle;
+    beam_energy = energy;
 }
 
 NuclearDecay Beam::Decay(int photon_number, double time, int src_id,
@@ -29,9 +30,9 @@ NuclearDecay Beam::Decay(int photon_number, double time, int src_id,
     } else {
         dir = beam_axis;
     }
-    beam.AddPhoton(Photon(position, dir, Physics::energy_511,
+    beam.AddPhoton(Photon(position, dir, beam_energy,
                           time, photon_number, Photon::P_BLUE, src_id));
-    beam.AddPhoton(Photon(position, dir.Negate(), Physics::energy_511,
+    beam.AddPhoton(Photon(position, dir.Negate(), beam_energy,
                           time, photon_number, Photon::P_RED, src_id));
     return (beam);
 }
