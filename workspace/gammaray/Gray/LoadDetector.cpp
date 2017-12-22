@@ -273,7 +273,7 @@ bool LoadDetector::Load(const std::string & filename,
         "process_file", "process", "mapping_file", "hits_var_mask",
         "singles_var_mask", "coinc_var_mask", "time", "start_time", "seed",
         "log_positron", "log_nonsensitive", "log_nointeraction", "log_errors",
-        "log_all"};
+        "log_all", "log_nondepositing"};
 
     while (!file_stack.empty()) {
         string line;
