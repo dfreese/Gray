@@ -404,7 +404,7 @@ struct InteractionStream::MergeAngerLogicFunctor {
                 static_cast<float>(lay0) * (e0.energy / energy_result) +
                 static_cast<float>(lay1) * (e1.energy / energy_result));
 
-        const int rev_idx = ((blk * no_bx + row_result) * no_by + col_result) * no_bz + lay_result;
+        const int rev_idx = ((blk * no_bz + row_result) * no_by + col_result) * no_bx + lay_result;
         const int id_result = reverse_map[rev_idx];
         if (e0.energy < e1.energy) {
             Interaction::MergeStats(e1, e0);
@@ -545,7 +545,7 @@ int InteractionStream::make_anger_func(
 
     std::vector<int> rev_map(total, -1);
     for (int idx = 0; idx < total; idx++) {
-        int rev_map_index = ((base[idx] * no_bx + bx[idx]) * no_by + by[idx]) * no_bz + bz[idx];
+        int rev_map_index = ((base[idx] * no_bz + bz[idx]) * no_by + by[idx]) * no_bx + bx[idx];
         if ((rev_map_index < 0) || (rev_map_index >= total)) {
             std::cerr << "Block index mapping is not consistent with block size at detector "
                       << idx << std::endl;
