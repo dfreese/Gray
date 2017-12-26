@@ -1,6 +1,7 @@
 #include <Pipeline/InteractionStream.h>
-#include <Random/Random.h>
+#include <cmath>
 #include <exception>
+#include <Random/Random.h>
 
 /*!
  * If the initial sort window is greater than zero, a sorting process is
@@ -432,15 +433,15 @@ struct InteractionStream::MergeAngerLogicFunctor {
         const int col1 = by[e1.det_id];
         const int lay0 = bz[e0.det_id];
         const int lay1 = bz[e1.det_id];
-        const int row_result = static_cast<int>(
+        const int row_result = static_cast<int>(std::round(
                 static_cast<float>(row0) * (e0.energy / energy_result) +
-                static_cast<float>(row1) * (e1.energy / energy_result));
-        const int col_result = static_cast<int>(
+                static_cast<float>(row1) * (e1.energy / energy_result)));
+        const int col_result = static_cast<int>(std::round(
                 static_cast<float>(col0) * (e0.energy / energy_result) +
-                static_cast<float>(col1) * (e1.energy / energy_result));
-        const int lay_result = static_cast<int>(
+                static_cast<float>(col1) * (e1.energy / energy_result)));
+        const int lay_result = static_cast<int>(std::round(
                 static_cast<float>(lay0) * (e0.energy / energy_result) +
-                static_cast<float>(lay1) * (e1.energy / energy_result));
+                static_cast<float>(lay1) * (e1.energy / energy_result)));
 
         const int rev_idx = index(blk, row_result, col_result, lay_result);
         const int id_result = reverse_map[rev_idx];
