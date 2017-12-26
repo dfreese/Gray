@@ -1,5 +1,6 @@
 #include <Pipeline/InteractionStream.h>
 #include <Random/Random.h>
+#include <exception>
 
 /*!
  * If the initial sort window is greater than zero, a sorting process is
@@ -365,22 +366,59 @@ struct InteractionStream::MergeMaxFunctor {
 };
 
 struct InteractionStream::MergeAngerLogicFunctor {
-    MergeAngerLogicFunctor(const std::vector<int> & base_map,
-                           const std::vector<int> & bx_map,
-                           const std::vector<int> & by_map,
-                           const std::vector<int> & bz_map,
-                           int nx, int ny, int nz,
-                           const std::vector<int> & rev_map) :
-        base(base_map),
-        bx(bx_map),
-        by(by_map),
-        bz(bz_map),
-        no_bx(nx),
-        no_by(ny),
-        no_bz(nz),
-        reverse_map(rev_map)
+    MergeAngerLogicFunctor(const std::vector<int> & base,
+                           const std::vector<int> & bx,
+                           const std::vector<int> & by,
+                           const std::vector<int> & bz) :
+        base(base),
+        bx(bx),
+        by(by),
+        bz(bz),
+        no_blk(*std::max_element(base.begin(), base.end()) + 1),
+        no_bx(*std::max_element(bx.begin(), bx.end()) + 1),
+        no_by(*std::max_element(by.begin(), by.end()) + 1),
+        no_bz(*std::max_element(bz.begin(), bz.end()) + 1),
+        reverse_map(create_reverse_map())
     {
+    }
 
+    std::vector<int> create_reverse_map() {
+        const int total = static_cast<int>(base.size());
+        const int implied_total = no_blk * no_bx * no_by * no_bz;
+        if (total != implied_total) {
+            std::stringstream err;
+            err << total << " detectors specified, but anger logic mapping of "
+                << no_blk << " blocks with a size of (x,y,z) = (" << no_bx
+                << "," << no_by << "," << no_bz << ")" << " implies "
+                << implied_total << " detectors.";
+            throw std::runtime_error(err.str());
+
+        }
+        std::vector<int> reverse_map(total, -1);
+
+        for (int idx = 0; idx < total; idx++) {
+            int rev_idx = index(base[idx], bx[idx], by[idx], bz[idx]);
+            if ((rev_idx < 0) || (rev_idx >= total)) {
+                std::stringstream err;
+                err << "Block index mapping is not consistent with block size "
+                    << "(x,y,z) = (" << no_bx << "," << no_by << "," << no_bz
+                    << ")" << " at detector " << idx;
+                throw std::runtime_error(err.str());
+            }
+            if (reverse_map[rev_idx] != -1) {
+                std::stringstream err;
+                err << "Duplicate mapping found for anger merge with block"
+                    << "size (x,y,z) = (" << no_bx << "," << no_by << ","
+                    << no_bz << ")" << " at detector " << idx;
+                throw std::runtime_error(err.str());
+            }
+            reverse_map[rev_idx] = idx;
+        }
+        return (reverse_map);
+    }
+
+    int index(int blk, int bx, int by, int bz) {
+        return (((blk * no_bz + bz) * no_by + by) * no_bx + bx);
     }
 
     void operator() (EventT & e0, EventT & e1) {
@@ -404,7 +442,7 @@ struct InteractionStream::MergeAngerLogicFunctor {
                 static_cast<float>(lay0) * (e0.energy / energy_result) +
                 static_cast<float>(lay1) * (e1.energy / energy_result));
 
-        const int rev_idx = ((blk * no_bz + row_result) * no_by + col_result) * no_bx + lay_result;
+        const int rev_idx = index(blk, row_result, col_result, lay_result);
         const int id_result = reverse_map[rev_idx];
         if (e0.energy < e1.energy) {
             Interaction::MergeStats(e1, e0);
@@ -423,6 +461,7 @@ struct InteractionStream::MergeAngerLogicFunctor {
     const std::vector<int> bx;
     const std::vector<int> by;
     const std::vector<int> bz;
+    const int no_blk;
     const int no_bx;
     const int no_by;
     const int no_bz;
@@ -512,15 +551,14 @@ struct InteractionStream::BlurTimeFunctor {
     const double max;
 };
 
-
-
 int InteractionStream::make_anger_func(
         const std::string & map_name,
         const std::vector<std::string> & anger_opts,
         MergeF & merge_func)
 {
     if (anger_opts.size() != 4) {
-        std::cerr << "Error: anger merge requires 3 block mapping names" << std::endl;
+        std::cerr << "Error: anger merge requires 3 block mapping names"
+                  << std::endl;
         return(-1);
     }
     std::vector<std::string> block_maps(3, "");
@@ -538,33 +576,13 @@ int InteractionStream::make_anger_func(
     const std::vector<int> & bx = this->id_maps[block_maps[0]];
     const std::vector<int> & by = this->id_maps[block_maps[1]];
     const std::vector<int> & bz = this->id_maps[block_maps[2]];
-    const int no_bx = *std::max_element(bx.begin(), bx.end()) + 1;
-    const int no_by = *std::max_element(by.begin(), by.end()) + 1;
-    const int no_bz = *std::max_element(bz.begin(), bz.end()) + 1;
-    const int total = static_cast<int>(base.size());
 
-    std::vector<int> rev_map(total, -1);
-    for (int idx = 0; idx < total; idx++) {
-        int rev_map_index = ((base[idx] * no_bz + bz[idx]) * no_by + by[idx]) * no_bx + bx[idx];
-        if ((rev_map_index < 0) || (rev_map_index >= total)) {
-            std::cerr << "Block index mapping is not consistent with block size at detector "
-                      << idx << std::endl;
-            std::cerr << "Assuming block size of (x,y,z) = (" << no_bx << ","
-                      << no_by << "," << no_bz << ")" << std::endl;
-            return(-4);
-        }
-        if (rev_map[rev_map_index] != -1) {
-            std::cerr << "Duplicate mapping found for anger merge block index on detector "
-                      << idx << std::endl;
-            std::cerr << "Assuming block size of (x,y,z) = (" << no_bx << ","
-                      << no_by << "," << no_bz << ")" << std::endl;
-            return(-5);
-        }
-        rev_map[rev_map_index] = idx;
+    try {
+        merge_func = MergeAngerLogicFunctor(base, bx, by, bz);
+    } catch (const std::runtime_error e) {
+        std::cerr << e.what() << std::endl;
+        return (-4);
     }
-
-    merge_func = MergeAngerLogicFunctor(base, bx, by, bz, no_bx, no_by, no_bz,
-                                        rev_map);
     return(0);
 }
 
