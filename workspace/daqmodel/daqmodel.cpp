@@ -6,7 +6,7 @@
 #include <Output/Input.h>
 #include <Output/Output.h>
 #include <Physics/Interaction.h>
-#include <Pipeline/InteractionStream.h>
+#include <Daq/InteractionStream.h>
 #include <Random/Random.h>
 
 using namespace std;

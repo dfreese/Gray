@@ -1,5 +1,5 @@
 #include <algorithm>
-#include <Pipeline/CoincProcess.h>
+#include <Daq/CoincProcess.h>
 
 /*!
  *

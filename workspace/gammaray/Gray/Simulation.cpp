@@ -2,7 +2,7 @@
 #include <Gray/Config.h>
 #include <Gray/GammaRayTrace.h>
 #include <Gray/Mpi.h>
-#include <Pipeline/InteractionStream.h>
+#include <Daq/InteractionStream.h>
 #include <Random/Random.h>
 #include <Sources/SourceList.h>
 #include <Graphics/SceneDescription.h>

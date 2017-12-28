@@ -12,7 +12,7 @@
 #include <Sources/SourceList.h>
 #include <Random/Random.h>
 #include <Physics/Physics.h>
-#include <Pipeline/InteractionStream.h>
+#include <Daq/InteractionStream.h>
 
 using namespace std;
 

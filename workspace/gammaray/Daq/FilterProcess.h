@@ -9,7 +9,7 @@
 #ifndef filterprocess_h
 #define filterprocess_h
 
-#include <Pipeline/Process.h>
+#include <Daq/Process.h>
 
 class FilterProcess : public Process {
 public:

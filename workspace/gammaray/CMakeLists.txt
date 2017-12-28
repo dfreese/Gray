@@ -1,4 +1,20 @@
 add_library(gammaray
+    Daq/BlurProcess.h
+    Daq/BlurProcess.cpp
+    Daq/CoincProcess.h
+    Daq/CoincProcess.cpp
+    Daq/DeadtimeProcess.h
+    Daq/DeadtimeProcess.cpp
+    Daq/FilterProcess.h
+    Daq/FilterProcess.cpp
+    Daq/MergeProcess.h
+    Daq/MergeProcess.cpp
+    Daq/SortProcess.h
+    Daq/SortProcess.cpp
+    Daq/Process.h
+    Daq/Process.cpp
+    Daq/InteractionStream.h
+    Daq/InteractionStream.cpp
     Graphics/CameraView.cpp
     Graphics/CameraView.h
     Graphics/Light.h
@@ -75,22 +91,6 @@ add_library(gammaray
     Physics/Positron.h
     Physics/Physics.cpp
     Physics/Physics.h
-    Pipeline/BlurProcess.h
-    Pipeline/BlurProcess.cpp
-    Pipeline/CoincProcess.h
-    Pipeline/CoincProcess.cpp
-    Pipeline/DeadtimeProcess.h
-    Pipeline/DeadtimeProcess.cpp
-    Pipeline/FilterProcess.h
-    Pipeline/FilterProcess.cpp
-    Pipeline/MergeProcess.h
-    Pipeline/MergeProcess.cpp
-    Pipeline/SortProcess.h
-    Pipeline/SortProcess.cpp
-    Pipeline/Process.h
-    Pipeline/Process.cpp
-    Pipeline/InteractionStream.h
-    Pipeline/InteractionStream.cpp
     Random/Random.cpp
     Random/Random.h
     Random/Transform.h

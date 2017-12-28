@@ -9,7 +9,7 @@
 #ifndef coincprocess_h
 #define coincprocess_h
 
-#include <Pipeline/Process.h>
+#include <Daq/Process.h>
 
 class CoincProcess : public Process {
 public:

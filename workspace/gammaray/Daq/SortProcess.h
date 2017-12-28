@@ -9,7 +9,7 @@
 #ifndef sortprocess_h
 #define sortprocess_h
 
-#include <Pipeline/Process.h>
+#include <Daq/Process.h>
 
 class SortProcess : public Process {
 public:

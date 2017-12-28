@@ -7,7 +7,7 @@
 //
 //
 #include <algorithm>
-#include <Pipeline/DeadtimeProcess.h>
+#include <Daq/DeadtimeProcess.h>
 
 /*!
  *

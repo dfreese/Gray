@@ -1,5 +1,5 @@
 #include <algorithm>
-#include <Pipeline/MergeProcess.h>
+#include <Daq/MergeProcess.h>
 
 /*!
  *

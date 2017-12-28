@@ -1,12 +1,12 @@
-#include <Pipeline/InteractionStream.h>
+#include <Daq/InteractionStream.h>
 #include <cmath>
 #include <exception>
-#include <Pipeline/BlurProcess.h>
-#include <Pipeline/CoincProcess.h>
-#include <Pipeline/DeadtimeProcess.h>
-#include <Pipeline/MergeProcess.h>
-#include <Pipeline/FilterProcess.h>
-#include <Pipeline/SortProcess.h>
+#include <Daq/BlurProcess.h>
+#include <Daq/CoincProcess.h>
+#include <Daq/DeadtimeProcess.h>
+#include <Daq/MergeProcess.h>
+#include <Daq/FilterProcess.h>
+#include <Daq/SortProcess.h>
 #include <Random/Random.h>
 
 /*!

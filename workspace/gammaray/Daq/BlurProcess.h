@@ -9,7 +9,7 @@
 #ifndef blurprocess_h
 #define blurprocess_h
 
-#include <Pipeline/Process.h>
+#include <Daq/Process.h>
 
 class BlurProcess : public Process {
 public:

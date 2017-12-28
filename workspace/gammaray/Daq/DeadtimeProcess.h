@@ -9,7 +9,7 @@
 #ifndef deadtimeprocess_h
 #define deadtimeprocess_h
 
-#include <Pipeline/Process.h>
+#include <Daq/Process.h>
 
 class DeadtimeProcess : public Process {
 public:

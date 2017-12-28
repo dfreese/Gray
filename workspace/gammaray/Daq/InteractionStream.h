@@ -17,9 +17,9 @@
 #include <sstream>
 #include <vector>
 #include <Physics/Interaction.h>
-#include <Pipeline/Process.h>
-#include <Pipeline/CoincProcess.h>
-#include <Pipeline/MergeProcess.h>
+#include <Daq/Process.h>
+#include <Daq/CoincProcess.h>
+#include <Daq/MergeProcess.h>
 
 class InteractionStream {
 public:

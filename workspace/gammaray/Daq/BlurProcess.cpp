@@ -1,4 +1,4 @@
-#include <Pipeline/BlurProcess.h>
+#include <Daq/BlurProcess.h>
 
 /*!
  *
