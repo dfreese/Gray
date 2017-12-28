@@ -17,19 +17,16 @@
 #include <sstream>
 #include <vector>
 #include <Physics/Interaction.h>
-#include <Pipeline/processor.h>
-#include <Pipeline/blurprocess.h>
-#include <Pipeline/coincprocess.h>
-#include <Pipeline/deadtimeprocess.h>
-#include <Pipeline/mergeprocess.h>
-#include <Pipeline/filterprocess.h>
-#include <Pipeline/sortprocess.h>
+#include <Pipeline/Process.h>
+#include <Pipeline/CoincProcess.h>
+#include <Pipeline/MergeProcess.h>
 
 class InteractionStream {
 public:
-    using EventT = Interaction;
-    using EventIter = std::vector<EventT>::iterator;
-    using TimeT = decltype(EventT::time);
+    using EventT = Process::EventT;
+    using EventIter = Process::EventIter;
+    using TimeT = Process::TimeT;
+    using DetIdT = Process::DetIdT;
 
     InteractionStream(TimeT initial_sort_window = -1);
 
@@ -72,24 +69,11 @@ public:
 
 
 private:
-    using TimeDiffF = std::function<TimeT(const EventT&, const EventT&)>;
-    using InfoF = std::function<int(const EventT&)>;
-    using FilterF = std::function<bool(EventT&)>;
-    using BlurF = std::function<void(EventT&)>;
-    using TimeF = std::function<TimeT(const EventT&)>;
-    using MergeF = std::function<void(EventT&, EventT&)>;
 
-    using ProcT = Processor<EventT>;
-    using MergeProcT = MergeProcess<EventT, TimeT, TimeF, InfoF, MergeF>;
-    using FilterProcT = FilterProcess<EventT, FilterF>;
-    using BlurProcT = BlurProcess<EventT, BlurF>;
-    using SortProcT = SortProcess<EventT, TimeT, TimeF>;
-    using CoincProcT = CoincProcess<EventT, TimeT, TimeF>;
-    using DeadtimeT = DeadtimeProcess<EventT, TimeT, TimeF>;
-    std::map<std::string, std::vector<int>> id_maps;
+    std::map<std::string, std::vector<DetIdT>> id_maps;
 
-    std::vector<std::unique_ptr<ProcT>> processes;
-    std::vector<std::unique_ptr<CoincProcT>> coinc_processes;
+    std::vector<std::unique_ptr<Process>> processes;
+    std::vector<std::unique_ptr<CoincProcess>> coinc_processes;
 
     //! Tells if a given process in processes should be printed
     std::vector<bool> print_info;
@@ -104,7 +88,8 @@ private:
     struct BlurTimeFunctor;
 
     static int load_id_maps(const std::string & filename,
-                            std::map<std::string, std::vector<int>> & id_maps);
+                            std::map<std::string,
+                            std::vector<DetIdT>> & id_maps);
 
     struct ProcessDescription {
         std::string type;
@@ -131,18 +116,11 @@ private:
 
     int set_processes(const std::vector<ProcessDescription> & process_descriptions);
 
-    void add_process(std::unique_ptr<ProcT> process, bool proc_print_info);
+    void add_process(std::unique_ptr<Process> process, bool proc_print_info);
 
     int make_anger_func(const std::string & map_name,
                         const std::vector<std::string> & anger_opts,
-                        MergeF & merge_func);
-
-    /*!
-     * Returns the detector id for the event.  This is then mapped to a.
-     */
-    InfoF get_id_func;
-
-    TimeF get_time_func;
+                        MergeProcess::MergeF & merge_func);
 
     int add_merge_process(ProcessDescription desc);
     int add_filter_process(ProcessDescription desc);

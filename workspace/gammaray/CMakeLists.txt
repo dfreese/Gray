@@ -75,15 +75,22 @@ add_library(gammaray
     Physics/Positron.h
     Physics/Physics.cpp
     Physics/Physics.h
-    Pipeline/blurprocess.h
-    Pipeline/coincprocess.h
-    Pipeline/deadtimeprocess.h
-    Pipeline/filterprocess.h
-    Pipeline/mergeprocess.h
-    Pipeline/processor.h
+    Pipeline/BlurProcess.h
+    Pipeline/BlurProcess.cpp
+    Pipeline/CoincProcess.h
+    Pipeline/CoincProcess.cpp
+    Pipeline/DeadtimeProcess.h
+    Pipeline/DeadtimeProcess.cpp
+    Pipeline/FilterProcess.h
+    Pipeline/FilterProcess.cpp
+    Pipeline/MergeProcess.h
+    Pipeline/MergeProcess.cpp
+    Pipeline/SortProcess.h
+    Pipeline/SortProcess.cpp
+    Pipeline/Process.h
+    Pipeline/Process.cpp
     Pipeline/InteractionStream.h
     Pipeline/InteractionStream.cpp
-    Pipeline/sortprocess.h
     Random/Random.cpp
     Random/Random.h
     Random/Transform.h
