@@ -784,15 +784,15 @@ int InteractionStream::add_deadtime_process(
     return(0);
 }
 
-std::vector<Interaction>::iterator InteractionStream::begin() {
+InteractionStream::EventIter InteractionStream::begin() {
     return(input_events.begin());
 }
 
-std::vector<Interaction>::iterator InteractionStream::end() {
+InteractionStream::EventIter InteractionStream::end() {
     return(input_events.end());
 }
 
-std::vector<Interaction>::iterator InteractionStream::hits_begin() {
+InteractionStream::EventIter InteractionStream::hits_begin() {
     if (hits_stopped) {
         if (process_ready_distance.empty()) {
             return(begin());
@@ -804,7 +804,7 @@ std::vector<Interaction>::iterator InteractionStream::hits_begin() {
     }
 }
 
-std::vector<Interaction>::iterator InteractionStream::hits_end() {
+InteractionStream::EventIter InteractionStream::hits_end() {
     if (hits_stopped) {
         return(end());
     } else {
@@ -816,7 +816,7 @@ std::vector<Interaction>::iterator InteractionStream::hits_end() {
     }
 }
 
-std::vector<Interaction>::iterator InteractionStream::singles_begin() {
+InteractionStream::EventIter InteractionStream::singles_begin() {
     if (singles_stopped) {
         return(singles_ready);
     } else {
@@ -824,7 +824,7 @@ std::vector<Interaction>::iterator InteractionStream::singles_begin() {
     }
 }
 
-std::vector<Interaction>::iterator InteractionStream::singles_end() {
+InteractionStream::EventIter InteractionStream::singles_end() {
     if (singles_stopped) {
         return(end());
     } else {
@@ -832,13 +832,11 @@ std::vector<Interaction>::iterator InteractionStream::singles_end() {
     }
 }
 
-
-std::vector<Interaction>::iterator InteractionStream::coinc_begin() {
+InteractionStream::EventIter InteractionStream::coinc_begin() {
     return(begin());
 }
 
-std::vector<Interaction>::iterator InteractionStream::coinc_end() {
-
+InteractionStream::EventIter InteractionStream::coinc_end() {
     if (coinc_stopped) {
         return(end());
     } else {

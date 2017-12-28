@@ -26,8 +26,9 @@
 
 class InteractionStream {
 public:
-    typedef Interaction EventT;
-    typedef decltype(EventT::time) TimeT;
+    using EventT = Interaction;
+    using EventIter = std::vector<EventT>::iterator;
+    using TimeT = decltype(EventT::time);
 
     InteractionStream(TimeT initial_sort_window = -1);
     ~InteractionStream();
@@ -47,16 +48,16 @@ public:
     friend std::ostream & operator << (std::ostream & os,
                                        const InteractionStream & s);
 
-    std::vector<Interaction> & get_buffer() {
+    std::vector<EventT> & get_buffer() {
         return (input_events);
     }
 
-    std::vector<Interaction>::iterator hits_begin();
-    std::vector<Interaction>::iterator hits_end();
-    std::vector<Interaction>::iterator singles_begin();
-    std::vector<Interaction>::iterator singles_end();
-    std::vector<Interaction>::iterator coinc_begin();
-    std::vector<Interaction>::iterator coinc_end();
+    EventIter hits_begin();
+    EventIter hits_end();
+    EventIter singles_begin();
+    EventIter singles_end();
+    EventIter coinc_begin();
+    EventIter coinc_end();
 
 
     void process_hits();
@@ -71,20 +72,20 @@ public:
 
 
 private:
-    typedef std::function<TimeT(const EventT&, const EventT&)> TimeDiffF;
-    typedef std::function<int(const EventT&)> InfoF;
-    typedef std::function<bool(EventT&)> FilterF;
-    typedef std::function<void(EventT&)> BlurF;
-    typedef std::function<TimeT(const EventT&)> TimeF;
-    typedef std::function<void(EventT&, EventT&)> MergeF;
+    using TimeDiffF = std::function<TimeT(const EventT&, const EventT&)>;
+    using InfoF = std::function<int(const EventT&)>;
+    using FilterF = std::function<bool(EventT&)>;
+    using BlurF = std::function<void(EventT&)>;
+    using TimeF = std::function<TimeT(const EventT&)>;
+    using MergeF = std::function<void(EventT&, EventT&)>;
 
-    typedef Processor<EventT> ProcT;
-    typedef MergeProcess<EventT, TimeT, TimeF, InfoF, MergeF> MergeProcT;
-    typedef FilterProcess<EventT, FilterF> FilterProcT;
-    typedef BlurProcess<EventT, BlurF> BlurProcT;
-    typedef SortProcess<EventT, TimeT, TimeF> SortProcT;
-    typedef CoincProcess<EventT, TimeT, TimeF> CoincProcT;
-    typedef DeadtimeProcess<EventT, TimeT, TimeF> DeadtimeT;
+    using ProcT = Processor<EventT>;
+    using MergeProcT = MergeProcess<EventT, TimeT, TimeF, InfoF, MergeF>;
+    using FilterProcT = FilterProcess<EventT, FilterF>;
+    using BlurProcT = BlurProcess<EventT, BlurF>;
+    using SortProcT = SortProcess<EventT, TimeT, TimeF>;
+    using CoincProcT = CoincProcess<EventT, TimeT, TimeF>;
+    using DeadtimeT = DeadtimeProcess<EventT, TimeT, TimeF>;
     std::map<std::string, std::vector<int>> id_maps;
 
     std::vector<ProcT*> processes;
@@ -160,16 +161,16 @@ private:
     int add_deadtime_process(const std::string & map_name, double deadtime,
                              const std::vector<std::string> & options);
 
-    std::vector<Interaction> input_events;
-    std::vector<std::vector<Interaction>::difference_type> process_ready_distance;
-    std::vector<Interaction>::iterator singles_ready;
-    std::vector<Interaction>::difference_type min_coinc_ready_dist;
-    std::vector<Interaction>::iterator coinc_ready;
+    std::vector<EventT> input_events;
+    std::vector<std::vector<EventT>::difference_type> process_ready_distance;
+    std::vector<EventT>::difference_type min_coinc_ready_dist;
+    EventIter singles_ready;
+    EventIter coinc_ready;
+    EventIter begin();
+    EventIter end();
     bool hits_stopped = false;
     bool singles_stopped = false;
     bool coinc_stopped = false;
-    std::vector<Interaction>::iterator begin();
-    std::vector<Interaction>::iterator end();
 };
 
 #endif // interactionstream_h
