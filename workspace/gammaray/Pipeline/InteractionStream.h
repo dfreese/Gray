@@ -108,13 +108,19 @@ private:
 
     struct ProcessDescription {
         std::string type;
-        std::string component;
-        double time;
-        std::vector<std::string> options;
+        std::vector<std::string> args;
+        bool as_double(size_t idx, double & val) {
+            try {
+                val = std::stod(args.at(idx));
+                return (true);
+            } catch (...) {
+                return (false);
+            }
+        }
     };
 
     static int line_to_process_description(const std::string & line,
-                                           ProcessDescription & proc_desc);
+                                           ProcessDescription & desc);
 
     static int load_process_list(
             const std::string & filename,
@@ -138,23 +144,12 @@ private:
 
     TimeF get_time_func;
 
-    int add_merge_process(const std::string & map_name, double merge_time,
-                          const std::vector<std::string> & options);
-
-    int add_filter_process(const std::string & filter_name, double value);
-
-    int add_blur_process(const std::string & name, double value,
-                         const std::vector<std::string> & options);
-
-    int add_sort_process(const std::string & name, double value,
-                         const std::vector<std::string> & options,
-                         bool user_requested);
-
-    int add_coinc_process(const std::string & name, double value,
-                          const std::vector<std::string> & options);
-
-    int add_deadtime_process(const std::string & map_name, double deadtime,
-                             const std::vector<std::string> & options);
+    int add_merge_process(ProcessDescription desc);
+    int add_filter_process(ProcessDescription desc);
+    int add_blur_process(ProcessDescription desc);
+    int add_sort_process(ProcessDescription desc, bool user_requested);
+    int add_coinc_process(ProcessDescription desc);
+    int add_deadtime_process(ProcessDescription desc);
 
     std::vector<EventT> input_events;
     std::vector<std::vector<EventT>::difference_type> process_ready_distance;
