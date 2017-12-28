@@ -19,27 +19,6 @@ InteractionStream::InteractionStream(TimeT initial_sort_window) :
     }
 }
 
-InteractionStream::~InteractionStream() {
-    for (auto p: merge_processes) {
-        delete p;
-    }
-    for (auto p: filter_processes) {
-        delete p;
-    }
-    for (auto p: blur_processes) {
-        delete p;
-    }
-    for (auto p: sort_processes) {
-        delete p;
-    }
-    for (auto p: coinc_processes) {
-        delete p;
-    }
-    for (auto p: deadtime_processes) {
-        delete p;
-    }
-}
-
 void InteractionStream::set_mappings(const std::map<std::string, std::vector<int>> & mapping) {
     this->id_maps = mapping;
 }
@@ -104,7 +83,7 @@ long InteractionStream::no_kept() const {
 
 long InteractionStream::no_dropped() const {
     long dropped = 0;
-    for (auto proc: processes) {
+    for (const auto& proc: processes) {
         dropped += proc->no_dropped();
     }
     return(dropped);
@@ -112,24 +91,30 @@ long InteractionStream::no_dropped() const {
 
 long InteractionStream::no_merged() const {
     long merged = 0;
-    for (auto & proc: merge_processes) {
-        merged += proc->no_dropped();
+    for (const auto& proc: processes) {
+        if (dynamic_cast<MergeProcT*>(proc.get())) {
+            merged += proc->no_dropped();
+        }
     }
     return(merged);
 }
 
 long InteractionStream::no_filtered() const {
     long filtered = 0;
-    for (auto & proc: filter_processes) {
-        filtered += proc->no_dropped();
+    for (const auto& proc: processes) {
+        if (dynamic_cast<FilterProcT*>(proc.get())) {
+            filtered += proc->no_dropped();
+        }
     }
     return(filtered);
 }
 
 long InteractionStream::no_deadtimed() const {
     long count = 0;
-    for (auto & proc: deadtime_processes) {
-        count += proc->no_dropped();
+    for (const auto& proc: processes) {
+        if (dynamic_cast<DeadtimeT*>(proc.get())) {
+            count += proc->no_dropped();
+        }
     }
     return(count);
 }
@@ -145,15 +130,9 @@ std::ostream & operator << (std::ostream & os, const InteractionStream & s) {
         }
     }
     os << "\n";
-    if (!s.merge_processes.empty()) {
-        os << "merged: " << s.no_merged() << "\n";
-    }
-    if (!s.filter_processes.empty()) {
-        os << "filtered: " << s.no_filtered() << "\n";
-    }
-    if (!s.deadtime_processes.empty()) {
-        os << "deadtimed: " << s.no_deadtimed() << "\n";
-    }
+    os << "merged: " << s.no_merged() << "\n";
+    os << "filtered: " << s.no_filtered() << "\n";
+    os << "deadtimed: " << s.no_deadtimed() << "\n";
     if (!s.coinc_processes.empty()) {
         for (auto & proc: s.coinc_processes) {
             os << *proc;
@@ -338,8 +317,10 @@ int InteractionStream::set_processes(
     return(0);
 }
 
-void InteractionStream::add_process(ProcT * process, bool proc_print_info) {
-    processes.push_back(process);
+void InteractionStream::add_process(std::unique_ptr<ProcT> process,
+                                    bool proc_print_info)
+{
+    processes.push_back(std::move(process));
     print_info.push_back(proc_print_info);
     process_ready_distance.push_back(0);
 }
@@ -615,12 +596,9 @@ int InteractionStream::add_merge_process(
         std::cerr << "Unknown merge type: " << merge_type << std::endl;
         return(-1);
     }
-
-    merge_processes.push_back(new MergeProcT(id_map, merge_time,
-                                             get_time_func, get_id_func,
-                                             merge_func));
-
-    add_process(merge_processes.back(), true);
+    add_process(std::unique_ptr<ProcT>(new MergeProcT(id_map, merge_time,
+                                       get_time_func, get_id_func,
+                                       merge_func)), true);
     return(0);
 }
 
@@ -636,8 +614,7 @@ int InteractionStream::add_filter_process(const std::string & filter_name,
         std::cerr << "Unknown filter type: " << filter_name << std::endl;
         return(-1);
     }
-    filter_processes.push_back(new FilterProcT(filt_func));
-    add_process(filter_processes.back(), true);
+    add_process(std::unique_ptr<ProcT>(new FilterProcT(filt_func)), true);
     return(0);
 }
 
@@ -647,11 +624,9 @@ int InteractionStream::add_blur_process(
         const std::vector<std::string> & options)
 {
     if (name == "energy") {
+        BlurF eblur;
         if (options.empty()) {
-            auto eblur = BlurEnergyFunctor(value);
-            blur_processes.push_back(new BlurProcT(eblur));
-            add_process(blur_processes.back(), true);
-            return(0);
+            eblur = BlurEnergyFunctor(value);
         } else if (options[0] == "at") {
             double ref_energy;
             std::stringstream ss(options[1]);
@@ -660,27 +635,25 @@ int InteractionStream::add_blur_process(
                 << std::endl;
                 return(-1);
             }
-            auto eblur = BlurEnergyReferencedFunctor(value, ref_energy);
-            blur_processes.push_back(new BlurProcT(eblur));
-            add_process(blur_processes.back(), true);
-            return(0);
+            eblur = BlurEnergyReferencedFunctor(value, ref_energy);
         } else {
             std::cerr << "unrecognized blur option: " << options[0]
             << std::endl;
             return(-1);
         }
+        add_process(std::unique_ptr<ProcT>(new BlurProcT(eblur)), true);
+        return(0);
     } else if (name == "time") {
         // Allow the value to be 3 FWHM on either side of the current event
         // TODO: allow this to be set by options.
         const TimeT max_blur = 3 * value;
         auto tblur = BlurTimeFunctor(value, max_blur);
-        blur_processes.push_back(new BlurProcT(tblur));
-        add_process(blur_processes.back(), true);
+        add_process(std::unique_ptr<ProcT>(new BlurProcT(tblur)), true);
 
         // Sort the stream afterwards, based on the capped blur
-        sort_processes.push_back(new SortProcT(max_blur * 2,
-                                               get_time_func));
-        add_process(sort_processes.back(), false);
+        add_process(std::unique_ptr<ProcT>(new SortProcT(max_blur * 2,
+                                                         get_time_func)),
+                    false);
         return(0);
     } else {
         std::cerr << "Unknown blur type: " << name << std::endl;
@@ -695,8 +668,8 @@ int InteractionStream::add_sort_process(
         bool user_requested)
 {
     if (name == "time") {
-        sort_processes.push_back(new SortProcT(value, get_time_func));
-        add_process(sort_processes.back(), user_requested);
+        add_process(std::unique_ptr<ProcT>(new SortProcT(value, get_time_func)),
+                    user_requested);
         return(0);
     } else {
         std::cerr << "Unknown sort type: " << name << std::endl;
@@ -747,9 +720,10 @@ int InteractionStream::add_coinc_process(const std::string & name, double value,
         }
     }
     auto tag_event_func = [](EventT & e, long id) {e.coinc_id = id;};
-    coinc_processes.push_back(new CoincProcT(value, get_time_func,
-                                             tag_event_func, reject_multiples,
-                                             paralyzable, window_offset));
+    coinc_processes.emplace_back(new CoincProcT(value, get_time_func,
+                                                tag_event_func,
+                                                reject_multiples,
+                                                paralyzable, window_offset));
     return(0);
 }
 
@@ -777,10 +751,9 @@ int InteractionStream::add_deadtime_process(
         return(-2);
     }
     const std::vector<int> id_map = id_maps[map_name];
-    deadtime_processes.push_back(new DeadtimeT(id_map, deadtime,
-                                               get_time_func, get_id_func,
-                                               paralyzable));
-    add_process(deadtime_processes.back(), true);
+    add_process(std::unique_ptr<ProcT>(new DeadtimeT(id_map, deadtime,
+                                                     get_time_func, get_id_func,
+                                                     paralyzable)), true);
     return(0);
 }
 

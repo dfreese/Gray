@@ -13,6 +13,7 @@
 #include <functional>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <sstream>
 #include <vector>
 #include <Physics/Interaction.h>
@@ -31,7 +32,6 @@ public:
     using TimeT = decltype(EventT::time);
 
     InteractionStream(TimeT initial_sort_window = -1);
-    ~InteractionStream();
 
     void set_mappings(const std::map<std::string, std::vector<int>> & mapping);
     int load_mappings(const std::string & filename);
@@ -88,13 +88,8 @@ private:
     using DeadtimeT = DeadtimeProcess<EventT, TimeT, TimeF>;
     std::map<std::string, std::vector<int>> id_maps;
 
-    std::vector<ProcT*> processes;
-    std::vector<MergeProcT*> merge_processes;
-    std::vector<FilterProcT*> filter_processes;
-    std::vector<BlurProcT*> blur_processes;
-    std::vector<SortProcT*> sort_processes;
-    std::vector<CoincProcT*> coinc_processes;
-    std::vector<DeadtimeT*> deadtime_processes;
+    std::vector<std::unique_ptr<ProcT>> processes;
+    std::vector<std::unique_ptr<CoincProcT>> coinc_processes;
 
     //! Tells if a given process in processes should be printed
     std::vector<bool> print_info;
@@ -130,7 +125,7 @@ private:
 
     int set_processes(const std::vector<ProcessDescription> & process_descriptions);
 
-    void add_process(ProcT * process, bool proc_print_info);
+    void add_process(std::unique_ptr<ProcT> process, bool proc_print_info);
 
     int make_anger_func(const std::string & map_name,
                         const std::vector<std::string> & anger_opts,
