@@ -25,8 +25,6 @@ public:
     long get_no_coinc_pair_events() const;
     long get_no_coinc_multiples_events() const;
     long get_no_coinc_singles() const;
-    friend std::ostream & operator << (std::ostream & os,
-                                       const CoincProcess & cp);
 
 private:
     void _reset() final;
@@ -34,6 +32,7 @@ private:
     void _stop(EventIter begin, EventIter end) final;
     EventIter process_events_optional_stop(EventIter begin, EventIter end,
                                            bool stopping);
+    std::string print_info() const final;
 
     TimeT coinc_window;
     TimeT window_offset;

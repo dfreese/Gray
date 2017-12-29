@@ -19,6 +19,8 @@ add_library(gammaray
     Daq/SortProcess.cpp
     Daq/Process.h
     Daq/Process.cpp
+    Daq/ProcessFactory.h
+    Daq/ProcessFactory.cpp
     Daq/InteractionStream.h
     Daq/InteractionStream.cpp
     Graphics/CameraView.cpp
@@ -79,6 +81,8 @@ add_library(gammaray
     Output/DetectorArray.h
     Output/Input.cpp
     Output/Input.h
+    Output/IO.cpp
+    Output/IO.h
     Output/Output.cpp
     Output/Output.h
     Physics/Beam.cpp

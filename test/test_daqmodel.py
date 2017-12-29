@@ -282,19 +282,6 @@ def test_energy_blur_std():
     exp_eres = eres * np.sqrt(ref_energy) / np.sqrt(energy)
     assert(np.abs(exp_eres - eres_out) / exp_eres < 1e-2)
 
-def test_sort():
-    data = np.zeros(5, dtype=gray.no_position_dtype)
-    max_time = 30.0
-    times = np.array((10.0, 0.0, 20.0, 50.0, 60.0),
-                        dtype=data.dtype['time'])
-    data['time'] = times
-
-    output = _create_and_run_merge(data, ('sort', 'time', max_time))
-    assert(output.size == data.size), \
-            'Size should remain unchanged for sort'
-    assert((output['time'] == times[np.argsort(times)]).all()), \
-            'Time should be sorted'
-
 def test_time_blur():
     data = np.zeros(5, dtype=gray.no_position_dtype)
     tres = 2.0

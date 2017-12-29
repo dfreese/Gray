@@ -61,22 +61,6 @@ energies.  If a reference is given by supplying the option "at 0.511" or any
 other energy in MeV, then an inverse square-root model will be used from that
 reference.
 
-
-### Sorting in Time
-
-sort time [max]
-
-Sorts the events in time.  This process assumes that events are generally time
-sorted, but have local deviations, which is generally true for gray simulations.
-The process will wait until it sees a time "current time + max" later before it
-assumes an event is sorted.  Max is in seconds.  A sorting process is added
-automatically after a time blurring process.  gray also adds a sorting process
-to sort individual photon interactions that may be out of order because of
-geometry.  gray-daq has an option to add a sorting process initially as well,
-but will otherwise assume the events are sorted in time.  The value of max
-should be kept minimal, as events are buffered as long as required, which could
-be memory-expensive if the events are extremely out of order.
-
 ### Coincidence Sorting
 
 coinc [type] [window] (options)

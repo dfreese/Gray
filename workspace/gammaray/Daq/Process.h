@@ -9,8 +9,9 @@
 #ifndef processor_h
 #define processor_h
 
-#include <vector>
 #include <algorithm>
+#include <string>
+#include <vector>
 #include <Physics/Interaction.h>
 
 class Process {
@@ -30,6 +31,7 @@ public:
     long no_events() const;
     long no_dropped() const;
     long no_kept() const;
+    friend std::ostream & operator << (std::ostream & os, const Process & cp);
 
 protected:
     void inc_no_dropped();
@@ -42,7 +44,7 @@ private:
     virtual EventIter _process_events(EventIter begin, EventIter end) = 0;
     virtual void _stop(EventIter begin, EventIter end) = 0;
     virtual void _reset() = 0;
-
+    virtual std::string print_info() const;
 
     /*!
      * Number of events seen by the map

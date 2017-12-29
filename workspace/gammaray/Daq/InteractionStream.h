@@ -18,8 +18,7 @@
 #include <vector>
 #include <Physics/Interaction.h>
 #include <Daq/Process.h>
-#include <Daq/CoincProcess.h>
-#include <Daq/MergeProcess.h>
+#include <Daq/ProcessFactory.h>
 
 class InteractionStream {
 public:
@@ -33,7 +32,7 @@ public:
 
     ContainerT& get_buffer();
 
-    void set_mappings(const std::map<std::string, std::vector<int>> & mapping);
+    void set_mappings(const std::map<std::string, std::vector<DetIdT>> & maps);
     int load_mappings(const std::string & filename);
     int set_processes(const std::vector<std::string> & lines);
     int load_processes(const std::string & filename);
@@ -72,7 +71,7 @@ private:
     std::map<std::string, std::vector<DetIdT>> id_maps;
 
     std::vector<std::unique_ptr<Process>> processes;
-    std::vector<std::unique_ptr<CoincProcess>> coinc_processes;
+    std::vector<std::unique_ptr<Process>> coinc_processes;
 
     //! Tells if a given process in processes should be printed
     std::vector<bool> print_info;
@@ -81,43 +80,11 @@ private:
                             std::map<std::string,
                             std::vector<DetIdT>> & id_maps);
 
-    struct ProcessDescription {
-        std::string type;
-        std::vector<std::string> args;
-        bool as_double(size_t idx, double & val) {
-            try {
-                val = std::stod(args.at(idx));
-                return (true);
-            } catch (...) {
-                return (false);
-            }
-        }
-    };
-
-    static int line_to_process_description(const std::string & line,
-                                           ProcessDescription & desc);
-
-    static int load_process_list(
-            const std::string & filename,
-            std::vector<ProcessDescription> & process_descriptions);
-    static int convert_process_lines(
-            const std::vector<std::string> & lines,
-            std::vector<ProcessDescription> & process_descriptions);
+    using ProcessDescription = ProcessFactory::ProcessDescription;
 
     int set_processes(const std::vector<ProcessDescription> & process_descriptions);
 
     void add_process(std::unique_ptr<Process> process, bool proc_print_info);
-
-    int make_anger_func(const std::string & map_name,
-                        const std::vector<std::string> & anger_opts,
-                        MergeProcess::MergeF & merge_func);
-
-    int add_merge_process(ProcessDescription desc);
-    int add_filter_process(ProcessDescription desc);
-    int add_blur_process(ProcessDescription desc);
-    int add_sort_process(ProcessDescription desc, bool user_requested);
-    int add_coinc_process(ProcessDescription desc);
-    int add_deadtime_process(ProcessDescription desc);
 
     ContainerT input_events;
     std::vector<ContainerT::difference_type> process_ready_distance;

@@ -1,15 +1,10 @@
 #include <Daq/InteractionStream.h>
-#include <cmath>
-#include <exception>
-#include <Daq/BlurProcess.h>
-#include <Daq/BlurFunctors.h>
 #include <Daq/CoincProcess.h>
 #include <Daq/DeadtimeProcess.h>
-#include <Daq/MergeProcess.h>
-#include <Daq/MergeFunctors.h>
 #include <Daq/FilterProcess.h>
-#include <Daq/FilterFunctors.h>
-#include <Daq/SortProcess.h>
+#include <Daq/MergeProcess.h>
+#include <Daq/ProcessFactory.h>
+#include <Output/IO.h>
 #include <Random/Random.h>
 
 /*!
@@ -20,8 +15,7 @@
  */
 InteractionStream::InteractionStream(TimeT initial_sort_window) {
     if (initial_sort_window > 0) {
-        add_process(std::unique_ptr<Process>(
-                new SortProcess(initial_sort_window)), false);
+        add_process(ProcessFactory::SortFactory(initial_sort_window), false);
     }
 }
 
@@ -30,9 +24,9 @@ InteractionStream::ContainerT& InteractionStream::get_buffer() {
 }
 
 void InteractionStream::set_mappings(const std::map<std::string,
-                                     std::vector<DetIdT>> & mapping)
+                                     std::vector<DetIdT>> & maps)
 {
-    this->id_maps = mapping;
+    id_maps = maps;
 }
 
 int InteractionStream::load_mappings(const std::string & filename) {
@@ -48,8 +42,8 @@ int InteractionStream::load_mappings(const std::string & filename) {
 
 int InteractionStream::set_processes(const std::vector<std::string> & lines) {
     std::vector<ProcessDescription> process_descriptions;
-    int convert_status = convert_process_lines(lines, process_descriptions);
-    if (convert_status < 0) {
+    int status = ProcessFactory::ProcessDescLines(lines, process_descriptions);
+    if (status < 0) {
         return(-1);
     }
 
@@ -58,12 +52,11 @@ int InteractionStream::set_processes(const std::vector<std::string> & lines) {
 
 int InteractionStream::load_processes(const std::string & filename) {
     std::vector<ProcessDescription> process_descriptions;
-    int proc_load_status = load_process_list(filename,
-                                             process_descriptions);
-    if (proc_load_status < 0) {
+    int status = ProcessFactory::ProcessDescFile(filename,
+                                                 process_descriptions);
+    if (status < 0) {
         return(-1);
     }
-
     return(set_processes(process_descriptions));
 }
 
@@ -163,11 +156,7 @@ int InteractionStream::load_id_maps(const std::string & filename,
     }
     std::string headers;
     // Find the first non-blank line, including comments
-    while (getline(input, headers)) {
-        if (headers.empty()) {
-            continue;
-        }
-        headers = headers.substr(0, headers.find_first_of("#"));
+    while (IO::GetLineCommented(input, headers)) {
         if (!headers.empty()) {
             break;
         }
@@ -182,11 +171,7 @@ int InteractionStream::load_id_maps(const std::string & filename,
 
     std::string line;
     int no_detectors = 0;
-    while (getline(input, line)) {
-        if (line.empty()) {
-            continue;
-        }
-        line = line.substr(0, line.find_first_of("#"));
+    while (IO::GetLineCommented(input, line)) {
         if (line.empty()) {
             continue;
         }
@@ -203,108 +188,26 @@ int InteractionStream::load_id_maps(const std::string & filename,
     return(no_detectors);
 }
 
-int InteractionStream::line_to_process_description(const std::string & line,
-                                                   ProcessDescription & desc)
-{
-
-    // Ignore blank lines, including just all whitespace
-    if (line.find_first_not_of(" ") == std::string::npos) {
-        return(0);
-    }
-    // Remove leading spaces, and anything after a comment
-    std::string new_line = line.substr(line.find_first_not_of(" "),
-                                       line.find_first_of("#"));
-    // Ignore blank lines again after removing comments
-    if (new_line.empty()) {
-        return(0);
-    }
-
-    std::stringstream line_ss(new_line);
-    if ((line_ss >> desc.type).fail()) {
-        return(-1);
-    }
-
-    std::string txt_val;
-    while (line_ss >> txt_val) {
-        desc.args.push_back(txt_val);
-    }
-    return(1);
-}
-
-int InteractionStream::load_process_list(const std::string & filename,
-                                         std::vector<ProcessDescription> & process_descriptions)
-{
-    std::ifstream input(filename);
-    if (!input) {
-        return(-1);
-    }
-    std::string line;
-    while (getline(input, line)) {
-        ProcessDescription proc_desc;
-        int status = line_to_process_description(line, proc_desc);
-        if (status < 0) {
-            return(status);
-        } else if (status == 0) {
-            // A blank line that we can safely ignore.
-            continue;
-        } else {
-            process_descriptions.push_back(proc_desc);
-        }
-    }
-    return(0);
-}
-
-int InteractionStream::convert_process_lines(
-        const std::vector<std::string> & lines,
-        std::vector<ProcessDescription> & process_descriptions)
-{
-    for (const auto & line: lines) {
-        ProcessDescription proc_desc;
-        int status = line_to_process_description(line, proc_desc);
-        if (status < 0) {
-            return(status);
-        } else if (status == 0) {
-            // A blank line that we can safely ignore.
-            continue;
-        } else {
-            process_descriptions.push_back(proc_desc);
-        }
-    }
-    return(0);
-}
-
 int InteractionStream::set_processes(
         const std::vector<ProcessDescription> & process_descriptions)
 {
-    for (const auto & proc_desc: process_descriptions) {
-        if (proc_desc.type == "merge") {
-            if (add_merge_process(proc_desc) < 0) {
-                return(-3);
-            }
-        } else if (proc_desc.type == "deadtime") {
-            if (add_deadtime_process(proc_desc) < 0) {
-                return(-3);
-            }
-        } else if (proc_desc.type == "filter") {
-            if (add_filter_process(proc_desc) < 0) {
-                return(-3);
-            }
-        } else if (proc_desc.type == "blur") {
-            if (add_blur_process(proc_desc) < 0) {
-                return(-3);
-            }
-        } else if (proc_desc.type == "sort") {
-            if (add_sort_process(proc_desc, true) < 0) {
-                return(-3);
-            }
-        } else if (proc_desc.type == "coinc") {
-            if (add_coinc_process(proc_desc) < 0) {
-                return(-3);
-            }
-        } else {
-            std::cerr << "Process Type not supported: " << proc_desc.type
-            << std::endl;
-            return(-2);
+    for (const auto & desc: process_descriptions) {
+        std::unique_ptr<Process> proc = ProcessFactory::ProcessFactory(desc,
+                                                                       id_maps);
+        if (proc == nullptr) {
+            return (-1);
+        }
+        add_process(std::move(proc), true);
+        if ((desc.type == "blur") && (desc.subtype == "time")) {
+            // If we blur time, we need to sort the data afterwards.
+            // Since we could add the time blur, we know we can safely get
+            // the time used.
+            TimeT max_blur_time = 0;
+            // TODO: place index for time blur in a reusable location so
+            // this doesn't need to be updated if the format changes.
+            desc.as_time(1, max_blur_time);
+            max_blur_time *= 2 * ProcessFactory::default_max_time_blur;
+            add_process(ProcessFactory::SortFactory(max_blur_time), false);
         }
     }
     return(0);
@@ -313,262 +216,13 @@ int InteractionStream::set_processes(
 void InteractionStream::add_process(std::unique_ptr<Process> process,
                                     bool proc_print_info)
 {
-    processes.push_back(std::move(process));
-    print_info.push_back(proc_print_info);
-    process_ready_distance.push_back(0);
-}
-
-int InteractionStream::make_anger_func(
-        const std::string & map_name,
-        const std::vector<std::string> & anger_args,
-        MergeProcess::MergeF & merge_func)
-{
-    if (anger_args.size() != 6) {
-        std::cerr << "Error: anger merge requires 3 block mapping names\n";
-        return(-1);
-    }
-    std::vector<std::string> block_maps(3, "");
-    // The first one should be "anger"
-    for (size_t idx = 0; idx < 3; idx++) {
-        block_maps[idx] = anger_args[idx + 3];
-    }
-    for (const auto & bm: block_maps) {
-        if (!this->id_maps.count(bm)) {
-            std::cerr << "Block label not found: " << bm << std::endl;
-            return(-3);
-        }
-    }
-    const std::vector<DetIdT> & base = this->id_maps[map_name];
-    const std::vector<DetIdT> & bx = this->id_maps[block_maps[0]];
-    const std::vector<DetIdT> & by = this->id_maps[block_maps[1]];
-    const std::vector<DetIdT> & bz = this->id_maps[block_maps[2]];
-
-    try {
-        merge_func = MergeFunctors::MergeAnger(base, bx, by, bz);
-    } catch (const std::runtime_error e) {
-        std::cerr << e.what() << std::endl;
-        return (-4);
-    }
-    return(0);
-}
-
-int InteractionStream::add_merge_process(ProcessDescription desc) {
-    if (desc.args.size() < 2) {
-        std::cerr << "filter format is: filter [type] [value] (options...)\n";
-    }
-    const std::string & name = desc.args[0];
-    double value;
-    if (!desc.as_double(1, value)) {
-        std::cerr << desc.args[1] << " is not a valid merge time\n";
-        return (-1);
-    }
-
-    if (id_maps.count(name) == 0) {
-        std::cerr << "Unknown id map type: " << name << "\n";
-        return(-1);
-    }
-    const std::vector<DetIdT> id_map = id_maps[name];
-    std::string merge_type = "max";
-    if (desc.args.size() >= 3) {
-        merge_type = desc.args[2];
-    }
-
-    MergeProcess::MergeF merge_func;
-    if (merge_type == "max") {
-        merge_func = MergeFunctors::MergeMax();
-    } else if (merge_type == "first") {
-        merge_func = MergeFunctors::MergeFirst();
-    } else if (merge_type == "anger") {
-        if (make_anger_func(name, desc.args, merge_func) < 0) {
-            std::cerr << "unable to create anger merge: " << std::endl;
-            return(-2);
-        }
+    if (dynamic_cast<CoincProcess*>(process.get())) {
+        coinc_processes.push_back(std::move(process));
     } else {
-        std::cerr << "Unknown merge type: " << merge_type << std::endl;
-        return(-1);
+        processes.push_back(std::move(process));
+        print_info.push_back(proc_print_info);
+        process_ready_distance.push_back(0);
     }
-    add_process(std::unique_ptr<Process>(new MergeProcess(id_map, value,
-                                                            merge_func)), true);
-    return(0);
-}
-
-int InteractionStream::add_filter_process(ProcessDescription desc) {
-    if (desc.args.size() < 2) {
-        std::cerr << "filter format is: filter [type] [value]\n";
-    }
-    const std::string & name = desc.args[0];
-    double value;
-    if (!desc.as_double(1, value)) {
-        std::cerr << desc.args[1] << " is not a valid value\n";
-        return (-1);
-    }
-
-    FilterProcess::FilterF filt_func;
-    if (name == "egate_low") {
-        filt_func = FilterFunctors::FilterEnergyGateLow(value);
-    } else if (name == "egate_high") {
-        filt_func = FilterFunctors::FilterEnergyGateHigh(value);
-    } else {
-        std::cerr << "Unknown filter type: " << name << std::endl;
-        return(-1);
-    }
-    add_process(std::unique_ptr<Process>(new FilterProcess(filt_func)), true);
-    return(0);
-}
-
-int InteractionStream::add_blur_process(ProcessDescription desc) {
-    if (desc.args.size() < 2) {
-        std::cerr << "blur format is: blur [type] [value] (options...)\n";
-    }
-    const std::string & name = desc.args[0];
-    double value;
-    if (!desc.as_double(1, value)) {
-        std::cerr << desc.args[1] << " is not a valid value\n";
-        return (-1);
-    }
-
-    if (name == "energy") {
-        BlurProcess::BlurF eblur;
-        if (desc.args.size() == 2) {
-            eblur = BlurFunctors::BlurEnergy(value);
-        } else if ((desc.args[2] == "at") && (desc.args.size() >= 4)) {
-            double ref_energy;
-            if (!desc.as_double(3, ref_energy)) {
-                std::cerr << desc.args[3]
-                          << " is an invalid reference energy\n";
-                return (-1);
-            }
-            eblur = BlurFunctors::BlurEnergyReferenced(value, ref_energy);
-        } else {
-            std::cerr << "unrecognized blur option: " << desc.args[2] << "\n";
-            return(-1);
-        }
-        add_process(std::unique_ptr<Process>(new BlurProcess(eblur)), true);
-        return(0);
-    } else if (name == "time") {
-        // Allow the value to be 3 FWHM on either side of the current event
-        // TODO: allow this to be set by options.
-        const TimeT max_blur = 3 * value;
-        auto tblur = BlurFunctors::BlurTime(value, max_blur);
-        add_process(std::unique_ptr<Process>(new BlurProcess(tblur)), true);
-
-        // Sort the stream afterwards, based on the capped blur
-        add_process(std::unique_ptr<Process>(new SortProcess(max_blur * 2)),
-                    false);
-        return(0);
-    } else {
-        std::cerr << "Unknown blur type: " << name << std::endl;
-        return(-1);
-    }
-}
-
-int InteractionStream::add_sort_process(ProcessDescription desc,
-                                        bool user_requested)
-{
-    if (desc.args.size() < 2) {
-        std::cerr << "sort format is: sort time [time]\n";
-    }
-    const std::string & name = desc.args[0];
-    if (name == "time") {
-        double value;
-        if (!desc.as_double(1, value)) {
-            std::cerr << desc.args[1] << " is not a valid time\n";
-            return (-1);
-        }
-        add_process(std::unique_ptr<Process>(new SortProcess(value)),
-                    user_requested);
-        return(0);
-    } else {
-        std::cerr << "Unknown sort type: " << name << std::endl;
-        return(-1);
-    }
-}
-
-int InteractionStream::add_coinc_process(ProcessDescription desc) {
-    if (desc.args.size() < 2) {
-        std::cerr << "coinc format is: coinc [window/delay] [width]"
-                  << " (options...)\n";
-    }
-    const std::string & name = desc.args[0];
-    double value;
-    if (!desc.as_double(1, value)) {
-        std::cerr << desc.args[1] << " is not a valid value\n";
-        return (-1);
-    }
-
-    bool paralyzable = false;
-    bool reject_multiples = true;
-    TimeT window_offset = 0;
-    bool look_for_offset = false;
-    if (name == "window") {
-    } else if (name == "delay") {
-        look_for_offset = true;
-    } else {
-        std::cerr << "Unknown coinc type: " << name << std::endl;
-        return(-2);
-    }
-    size_t option_start = 2;
-    if (look_for_offset) {
-        option_start = 3;
-        if (desc.args.size() < 3) {
-            std::cerr << "no delay offset specified\n";
-            return(-1);
-        }
-        if (!desc.as_double(2, window_offset)) {
-            std::cerr << "invalid coinc delay offset: " << desc.args[2] << "\n";
-            return (-1);
-        }
-    }
-    for (size_t ii = option_start; ii < desc.args.size(); ii++) {
-        const std::string & option = desc.args[ii];
-        if (option == "keep_multiples") {
-            reject_multiples = false;
-        } else if (option == "paralyzable") {
-            paralyzable = true;
-        } else {
-            std::cerr << "unrecognized coinc option: " << option << "\n";
-            return(-1);
-        }
-    }
-    coinc_processes.emplace_back(new CoincProcess(value, reject_multiples,
-                                                  paralyzable, window_offset));
-    return(0);
-}
-
-int InteractionStream::add_deadtime_process(ProcessDescription desc) {
-    if (desc.args.size() < 2) {
-        std::cerr << "deadtime format is: "
-                  << "deadtime [component] [value] (options...)\n";
-    }
-    const std::string & map_name = desc.args[0];
-    double value;
-    if (!desc.as_double(1, value)) {
-        std::cerr << desc.args[1] << " is not a valid deadtime value\n";
-        return (-1);
-    }
-
-    bool paralyzable = false;
-    for (size_t ii = 2; ii < desc.args.size(); ii++) {
-        const std::string & option = desc.args[ii];
-        if (option == "paralyzable") {
-            paralyzable = true;
-        } else if (option == "nonparalyzable") {
-            paralyzable = false;
-        } else {
-            std::cerr << "unrecognized deadtime option: " << option << "\n";
-            return(-1);
-        }
-    }
-
-    if (id_maps.count(map_name) == 0) {
-        std::cerr << "Unknown id map type: " << map_name << std::endl;
-        return(-2);
-    }
-    const std::vector<DetIdT> id_map = id_maps[map_name];
-    add_process(std::unique_ptr<Process>(new DeadtimeProcess(id_map, value,
-                                                               paralyzable)),
-                true);
-    return(0);
 }
 
 InteractionStream::EventIter InteractionStream::begin() {

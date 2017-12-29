@@ -1,5 +1,6 @@
 add_executable(test_gray
     test_main.cpp
+    test_io.cpp
     test_linear.cpp
     test_math.cpp
     test_random.cpp

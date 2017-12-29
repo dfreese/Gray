@@ -59,6 +59,14 @@ long Process::no_kept() const {
     return(count_kept);
 }
 
+/*!
+ *
+ */
+std::ostream& operator<< (std::ostream & os, const Process & p) {
+    os << p.print_info();
+    return(os);
+}
+
 void Process::inc_no_dropped() {
     count_dropped++;
 }
@@ -79,3 +87,6 @@ Process::DetIdT Process::get_det_id(const EventT& event) {
     return (event.det_id);
 }
 
+std::string Process::print_info() const {
+    return ("");
+}

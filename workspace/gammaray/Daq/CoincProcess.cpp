@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <iterator>
+#include <sstream>
 #include <Daq/CoincProcess.h>
 
 /*!
@@ -45,18 +46,6 @@ long CoincProcess::get_no_coinc_multiples_events() const {
  */
 long CoincProcess::get_no_coinc_singles() const {
     return(no_coinc_single_events);
-}
-
-/*!
- *
- */
-std::ostream& operator<< (std::ostream & os, const CoincProcess & cp)
-{
-    os << "coinc events            : " << cp.no_coinc_events << "\n"
-       << "events in coinc pair    : " << cp.no_coinc_pair_events << "\n"
-       << "events in coinc multiple: " << cp.no_coinc_multiples_events << "\n"
-       << "events in coinc single  : " << cp.no_coinc_single_events << "\n";
-    return(os);
 }
 
 void CoincProcess::_reset() {
@@ -197,4 +186,13 @@ CoincProcess::EventIter CoincProcess::process_events_optional_stop(
         }
     }
     return (cur_iter);
+}
+
+std::string CoincProcess::print_info() const {
+    std::stringstream ss;
+    ss << "coinc events            : " << no_coinc_events << "\n"
+       << "events in coinc pair    : " << no_coinc_pair_events << "\n"
+       << "events in coinc multiple: " << no_coinc_multiples_events << "\n"
+       << "events in coinc single  : " << no_coinc_single_events << "\n";
+    return (ss.str());
 }
