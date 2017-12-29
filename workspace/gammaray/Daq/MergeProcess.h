@@ -9,6 +9,7 @@
 #ifndef mergeprocess_h
 #define mergeprocess_h
 
+#include <vector>
 #include <Daq/Process.h>
 
 class MergeProcess : public Process {

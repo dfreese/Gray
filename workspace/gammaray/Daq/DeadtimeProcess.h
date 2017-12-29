@@ -9,6 +9,7 @@
 #ifndef deadtimeprocess_h
 #define deadtimeprocess_h
 
+#include <vector>
 #include <Daq/Process.h>
 
 class DeadtimeProcess : public Process {

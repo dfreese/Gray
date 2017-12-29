@@ -22,7 +22,7 @@ template<class I, class C = std::less<typename std::iterator_traits<I>::value_ty
 void insertion_sort(I begin, I end, C comp = C()) {
     for (auto i = begin; i != end; ++i) {
         auto index = std::upper_bound(begin, i, *i, comp);
-        std::rotate(index, i, i + 1);
+        std::rotate(index, i, std::next(i));
     }
 }
 }
@@ -46,7 +46,7 @@ SortProcess::EventIter SortProcess::_process_events(EventIter begin,
 
     // work back from the end to figure out where we've timed out, so what
     // we will consider sorted.
-    auto timed_out = end - 1;
+    auto timed_out = std::prev(end);
     const TimeT out_time = get_time(*timed_out) - max_wait_time;
     for (; timed_out != begin; --timed_out) {
         if (get_time(*timed_out) <= out_time) {

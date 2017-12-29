@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <iterator>
 #include <Daq/CoincProcess.h>
 
 /*!
@@ -112,7 +113,7 @@ CoincProcess::EventIter CoincProcess::process_events_optional_stop(
         // were not dealing with delayed windows, then we could assume that
         // the window and the current iterator formed one contiguous block
         // but that's not the case here.
-        EventIter window_start_iter = cur_iter + 1;
+        EventIter window_start_iter = std::next(cur_iter);
         for (; window_start_iter != end; window_start_iter++) {
             EventT & window_start_event = *window_start_iter;
             if (window_start_event.dropped ||

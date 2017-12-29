@@ -16,7 +16,8 @@
 class Process {
 public:
     using EventT = Interaction;
-    using EventIter = std::vector<EventT>::iterator;
+    using ContainerT = std::vector<EventT>;
+    using EventIter = ContainerT::iterator;
     using TimeT = decltype(EventT::time);
     using DetIdT = decltype(EventT::det_id);
 

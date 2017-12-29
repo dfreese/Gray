@@ -22,6 +22,10 @@ InteractionStream::InteractionStream(TimeT initial_sort_window) {
     }
 }
 
+InteractionStream::ContainerT& InteractionStream::get_buffer() {
+    return (input_events);
+}
+
 void InteractionStream::set_mappings(const std::map<std::string,
                                      std::vector<DetIdT>> & mapping)
 {
@@ -785,7 +789,7 @@ InteractionStream::EventIter InteractionStream::hits_begin() {
         if (process_ready_distance.empty()) {
             return(begin());
         } else {
-            return(begin() + process_ready_distance.front());
+            return(std::next(begin(), process_ready_distance.front()));
         }
     } else {
         return(begin());
@@ -799,7 +803,7 @@ InteractionStream::EventIter InteractionStream::hits_end() {
         if (process_ready_distance.empty()) {
             return(begin());
         } else {
-            return(begin() + process_ready_distance.front());
+            return(std::next(begin(), process_ready_distance.front()));
         }
     }
 }
@@ -840,7 +844,8 @@ void InteractionStream::process_hits() {
     singles_stopped = false;
     singles_ready = input_events.end();
     if (!processes.empty()) {
-        const auto begin = input_events.begin() + process_ready_distance.front();
+        const auto begin = std::next(input_events.begin(),
+                                     process_ready_distance.front());
         singles_ready = processes.front()->process_events(begin, singles_ready);
         process_ready_distance.front() = std::distance(input_events.begin(), singles_ready);
     }
@@ -853,7 +858,8 @@ void InteractionStream::process_singles() {
     // previously, so start where we left off.
     singles_ready = input_events.end();
     for (size_t ii = 0; ii < processes.size(); ii++) {
-        const auto begin = input_events.begin() + process_ready_distance[ii];
+        const auto begin = std::next(input_events.begin(),
+                                     process_ready_distance[ii]);
         singles_ready = processes[ii]->process_events(begin, singles_ready);
         process_ready_distance[ii] = std::distance(input_events.begin(), singles_ready);
     }
@@ -871,15 +877,16 @@ void InteractionStream::process_coinc(size_t idx) {
 void InteractionStream::stop_hits() {
     hits_stopped = true;
     if (!processes.empty()) {
-        processes.front()->stop(begin() + process_ready_distance.front(), end());
+        auto p_beg = std::next(begin(), process_ready_distance.front());
+        processes.front()->stop(p_beg, end());
     }
 }
-
 
 void InteractionStream::stop_singles() {
     singles_stopped = true;
     for (size_t ii = 0; ii < process_ready_distance.size(); ii++) {
-        processes[ii]->stop(begin() + process_ready_distance[ii], end());
+        auto p_beg = std::next(begin(), process_ready_distance[ii]);
+        processes[ii]->stop(p_beg, end());
     }
 }
 
@@ -890,9 +897,10 @@ void InteractionStream::stop_coinc(size_t idx) {
 
 void InteractionStream::clear_complete() {
     auto singles_dist = std::distance(input_events.begin(), singles_ready);
-    input_events.erase(begin(), begin() + min_coinc_ready_dist);
+    input_events.erase(begin(), std::next(begin(), min_coinc_ready_dist));
     for (auto & dist: process_ready_distance) {
         dist -= min_coinc_ready_dist;
     }
-    singles_ready = input_events.begin() + (singles_dist - min_coinc_ready_dist);
+    singles_ready = std::next(input_events.begin(),
+                              singles_dist - min_coinc_ready_dist);
 }

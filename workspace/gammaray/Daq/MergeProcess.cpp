@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <iterator>
 #include <Daq/MergeProcess.h>
 
 /*!
@@ -28,8 +29,8 @@ MergeProcess::EventIter MergeProcess::_process_events(EventIter begin,
         const int current_event_id = mapped_id(cur_event);
         // Check to see where this event times out
         const TimeT window = get_time(cur_event) + time_window;
-        auto next_iter = cur_iter + 1;
-        for (; next_iter != end; next_iter++) {
+        auto next_iter = std::next(cur_iter);
+        for (; next_iter != end; ++next_iter) {
             EventT & next_event = *next_iter;
             if (next_event.dropped) {
                 continue;

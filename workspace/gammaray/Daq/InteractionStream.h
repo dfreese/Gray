@@ -24,11 +24,14 @@
 class InteractionStream {
 public:
     using EventT = Process::EventT;
+    using ContainerT = Process::ContainerT;
     using EventIter = Process::EventIter;
     using TimeT = Process::TimeT;
     using DetIdT = Process::DetIdT;
 
     InteractionStream(TimeT initial_sort_window = -1);
+
+    ContainerT& get_buffer();
 
     void set_mappings(const std::map<std::string, std::vector<int>> & mapping);
     int load_mappings(const std::string & filename);
@@ -44,10 +47,6 @@ public:
     long no_deadtimed() const;
     friend std::ostream & operator << (std::ostream & os,
                                        const InteractionStream & s);
-
-    std::vector<EventT> & get_buffer() {
-        return (input_events);
-    }
 
     EventIter hits_begin();
     EventIter hits_end();
@@ -129,9 +128,9 @@ private:
     int add_coinc_process(ProcessDescription desc);
     int add_deadtime_process(ProcessDescription desc);
 
-    std::vector<EventT> input_events;
-    std::vector<std::vector<EventT>::difference_type> process_ready_distance;
-    std::vector<EventT>::difference_type min_coinc_ready_dist;
+    ContainerT input_events;
+    std::vector<ContainerT::difference_type> process_ready_distance;
+    ContainerT::difference_type min_coinc_ready_dist;
     EventIter singles_ready;
     EventIter coinc_ready;
     EventIter begin();
