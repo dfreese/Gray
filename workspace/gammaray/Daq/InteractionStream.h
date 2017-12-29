@@ -77,15 +77,6 @@ private:
     //! Tells if a given process in processes should be printed
     std::vector<bool> print_info;
 
-    struct MergeFirstFunctor;
-    struct MergeMaxFunctor;
-    struct MergeAngerLogicFunctor;
-    struct FilterEnergyGateLowFunctor;
-    struct FilterEnergyGateHighFunctor;
-    struct BlurEnergyFunctor;
-    struct BlurEnergyReferencedFunctor;
-    struct BlurTimeFunctor;
-
     static int load_id_maps(const std::string & filename,
                             std::map<std::string,
                             std::vector<DetIdT>> & id_maps);

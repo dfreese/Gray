@@ -1,14 +1,20 @@
 add_library(gammaray
     Daq/BlurProcess.h
     Daq/BlurProcess.cpp
+    Daq/BlurFunctors.h
+    Daq/BlurFunctors.cpp
     Daq/CoincProcess.h
     Daq/CoincProcess.cpp
     Daq/DeadtimeProcess.h
     Daq/DeadtimeProcess.cpp
     Daq/FilterProcess.h
     Daq/FilterProcess.cpp
+    Daq/FilterFunctors.h
+    Daq/FilterFunctors.cpp
     Daq/MergeProcess.h
     Daq/MergeProcess.cpp
+    Daq/MergeFunctors.h
+    Daq/MergeFunctors.cpp
     Daq/SortProcess.h
     Daq/SortProcess.cpp
     Daq/Process.h
