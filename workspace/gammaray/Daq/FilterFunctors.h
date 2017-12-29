@@ -1,3 +1,5 @@
+#ifndef FilterFunctors_h
+#define FilterFunctors_h
 #include <Daq/Process.h>
 
 namespace FilterFunctors {
@@ -17,3 +19,5 @@ namespace FilterFunctors {
     };
 
 }
+
+#endif // FilterFunctors_h

@@ -1,3 +1,5 @@
+#ifndef MergeFunctors_h
+#define MergeFunctors_h
 #include <vector>
 #include <Daq/Process.h>
 
@@ -34,3 +36,4 @@ namespace MergeFunctors {
         const std::vector<DetIdT> reverse_map;
     };
 }
+#endif // MergeFunctors_h

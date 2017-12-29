@@ -1,3 +1,5 @@
+#ifndef BlurFunctors_H
+#define BlurFunctors_H
 #include <Daq/Process.h>
 
 namespace BlurFunctors {
@@ -25,3 +27,5 @@ namespace BlurFunctors {
         const double max;
     };
 }
+
+#endif // BlurFunctors_H
