@@ -2,9 +2,9 @@
 #include <Daq/CoincProcess.h>
 #include <Daq/DeadtimeProcess.h>
 #include <Daq/FilterProcess.h>
+#include <Daq/Mapping.h>
 #include <Daq/MergeProcess.h>
 #include <Daq/ProcessFactory.h>
-#include <Output/IO.h>
 #include <Random/Random.h>
 
 /*!
@@ -31,7 +31,7 @@ void InteractionStream::set_mappings(const std::map<std::string,
 
 int InteractionStream::load_mappings(const std::string & filename) {
     std::map<std::string, std::vector<DetIdT>> id_maps;
-    int no_detectors = load_id_maps(filename, id_maps);
+    int no_detectors = Mapping::LoadMapping(filename, id_maps);
     if (no_detectors < 0) {
         return(-1);
     }
@@ -144,48 +144,6 @@ std::ostream & operator << (std::ostream & os, const InteractionStream & s) {
         }
     }
     return(os);
-}
-
-int InteractionStream::load_id_maps(const std::string & filename,
-                                    std::map<std::string,
-                                    std::vector<DetIdT>> & id_maps)
-{
-    std::ifstream input(filename);
-    if (!input) {
-        return(-1);
-    }
-    std::string headers;
-    // Find the first non-blank line, including comments
-    while (IO::GetLineCommented(input, headers)) {
-        if (!headers.empty()) {
-            break;
-        }
-    }
-    std::stringstream head_ss(headers);
-    std::string header;
-    std::vector<std::string> header_vec;
-    while (head_ss >> header) {
-        header_vec.push_back(header);
-        id_maps[header] = std::vector<DetIdT>();
-    }
-
-    std::string line;
-    int no_detectors = 0;
-    while (IO::GetLineCommented(input, line)) {
-        if (line.empty()) {
-            continue;
-        }
-        std::stringstream line_ss(line);
-        for (const auto & header: header_vec) {
-            DetIdT val;
-            if ((line_ss >> val).fail()) {
-                return(-2);
-            }
-            id_maps[header].push_back(val);
-        }
-        no_detectors++;
-    }
-    return(no_detectors);
 }
 
 int InteractionStream::set_processes(

@@ -11,6 +11,8 @@ add_library(gammaray
     Daq/FilterProcess.cpp
     Daq/FilterFunctors.h
     Daq/FilterFunctors.cpp
+    Daq/Mapping.h
+    Daq/Mapping.cpp
     Daq/MergeProcess.h
     Daq/MergeProcess.cpp
     Daq/MergeFunctors.h

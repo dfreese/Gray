@@ -76,10 +76,6 @@ private:
     //! Tells if a given process in processes should be printed
     std::vector<bool> print_info;
 
-    static int load_id_maps(const std::string & filename,
-                            std::map<std::string,
-                            std::vector<DetIdT>> & id_maps);
-
     using ProcessDescription = ProcessFactory::ProcessDescription;
 
     int set_processes(const std::vector<ProcessDescription> & process_descriptions);
