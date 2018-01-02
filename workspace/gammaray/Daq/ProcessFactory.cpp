@@ -121,7 +121,7 @@ std::unique_ptr<Process> BlurFactory(ProcessDescription desc) {
 }
 
 std::unique_ptr<Process> DeadtimeFactory(TimeT value, bool paralyzable,
-                                         const std::vector<DetIdT> id_map)
+                                         const IdLookupT& id_map)
 {
     return (std::unique_ptr<Process>(new DeadtimeProcess(id_map, value,
                                                          paralyzable)));
@@ -129,7 +129,7 @@ std::unique_ptr<Process> DeadtimeFactory(TimeT value, bool paralyzable,
 
 std::unique_ptr<Process> DeadtimeFactory(
         ProcessDescription desc,
-        const std::map<std::string, std::vector<DetIdT>> & id_maps)
+        const IdMappingT& id_maps)
 {
 
     if (desc.args.size() < 2) {
@@ -252,7 +252,7 @@ std::unique_ptr<Process> FilterFactory(ProcessDescription desc) {
 
 std::unique_ptr<Process> MergeFactory(MergeProcess::MergeF merge_func,
                                       TimeT value,
-                                      const std::vector<DetIdT> & id_map)
+                                      const IdLookupT& id_map)
 {
     return (std::unique_ptr<Process>(new MergeProcess(id_map, value,
                                                       merge_func)));
@@ -260,7 +260,7 @@ std::unique_ptr<Process> MergeFactory(MergeProcess::MergeF merge_func,
 
 std::unique_ptr<Process> MergeFactory(
         ProcessDescription desc,
-        const std::map<std::string, std::vector<DetIdT>> & id_maps)
+        const IdMappingT& id_maps)
 {
     if (desc.args.size() < 2) {
         std::cerr << "merge format is: merge [component] [time] (options...)\n";
@@ -325,7 +325,7 @@ std::unique_ptr<Process> SortFactory(TimeT value) {
 
 std::unique_ptr<Process> ProcessFactory(
         ProcessDescription desc,
-        const std::map<std::string, std::vector<DetIdT>> & id_maps)
+        const IdMappingT& id_maps)
 {
     // TODO: replace type string with enum
     if (desc.type == "merge") {

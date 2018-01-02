@@ -13,7 +13,7 @@
 /*!
  *
  */
-DeadtimeProcess::DeadtimeProcess(const std::vector<DetIdT> & lookup,
+DeadtimeProcess::DeadtimeProcess(const IdLookupT& lookup,
                                  TimeT deadtime, bool paralyzable) :
     id_lookup(lookup),
     time_window(deadtime),

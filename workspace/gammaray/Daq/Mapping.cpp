@@ -3,10 +3,7 @@
 #include <sstream>
 #include <Output/IO.h>
 
-int Mapping::LoadMapping(
-        std::istream& input,
-        std::map<std::string, std::vector<DetIdT>> & id_maps)
-{
+int Mapping::LoadMapping(std::istream& input, IdMappingT& id_maps) {
     if (!input) {
         return(-1);
     }
@@ -44,10 +41,7 @@ int Mapping::LoadMapping(
     return(no_detectors);
 }
 
-int Mapping::LoadMapping(
-        const std::string& filename,
-        std::map<std::string, std::vector<DetIdT>> & id_maps)
-{
+int Mapping::LoadMapping(const std::string& filename, IdMappingT& id_maps) {
     std::ifstream input(filename);
     return (LoadMapping(input, id_maps));
 }

@@ -32,7 +32,7 @@ public:
 
     ContainerT& get_buffer();
 
-    void set_mappings(const std::map<std::string, std::vector<DetIdT>> & maps);
+    void set_mappings(const Mapping::IdMappingT& maps);
     int load_mappings(const std::string & filename);
     int set_processes(const std::vector<std::string> & lines);
     int load_processes(const std::string & filename);
@@ -68,7 +68,7 @@ public:
 
 private:
 
-    std::map<std::string, std::vector<DetIdT>> id_maps;
+    Mapping::IdMappingT id_maps;
 
     std::vector<std::unique_ptr<Process>> processes;
     std::vector<std::unique_ptr<Process>> coinc_processes;

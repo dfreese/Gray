@@ -23,14 +23,13 @@ InteractionStream::ContainerT& InteractionStream::get_buffer() {
     return (input_events);
 }
 
-void InteractionStream::set_mappings(const std::map<std::string,
-                                     std::vector<DetIdT>> & maps)
+void InteractionStream::set_mappings(const Mapping::IdMappingT& maps)
 {
     id_maps = maps;
 }
 
 int InteractionStream::load_mappings(const std::string & filename) {
-    std::map<std::string, std::vector<DetIdT>> id_maps;
+    Mapping::IdMappingT id_maps;
     int no_detectors = Mapping::LoadMapping(filename, id_maps);
     if (no_detectors < 0) {
         return(-1);

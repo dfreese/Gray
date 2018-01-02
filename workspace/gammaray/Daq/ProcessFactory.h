@@ -6,6 +6,7 @@
 #include <sstream>
 #include <iostream>
 #include <vector>
+#include <Daq/Mapping.h>
 #include <Daq/Process.h>
 #include <Daq/BlurProcess.h>
 #include <Daq/FilterProcess.h>
@@ -15,7 +16,8 @@ namespace ProcessFactory {
     using EventT = Process::EventT;
     using TimeT = Process::TimeT;
     using DetIdT = Process::DetIdT;
-
+    using IdLookupT = Mapping::IdLookupT;
+    using IdMappingT = Mapping::IdMappingT;
 
     struct ProcessDescription {
         std::string type;
@@ -50,11 +52,10 @@ namespace ProcessFactory {
 
     std::unique_ptr<Process> BlurFactory(BlurProcess::BlurF filt_func);
     std::unique_ptr<Process> BlurFactory(ProcessDescription desc);
-    std::unique_ptr<Process> DeadtimeFactory(
-            ProcessDescription desc,
-            const std::map<std::string, std::vector<DetIdT>> & id_maps);
     std::unique_ptr<Process> DeadtimeFactory(TimeT value, bool paralyzable,
-                                             const std::vector<DetIdT> id_map);
+                                             const IdLookupT& id_map);
+    std::unique_ptr<Process> DeadtimeFactory(ProcessDescription desc,
+                                             const IdMappingT& id_maps);
 
     std::unique_ptr<Process> CoincFactory(ProcessDescription desc);
     std::unique_ptr<Process> CoincFactory(TimeT value,
@@ -66,7 +67,7 @@ namespace ProcessFactory {
     std::unique_ptr<Process> FilterFactory(ProcessDescription desc);
     std::unique_ptr<Process> MergeFactory(MergeProcess::MergeF merge_func,
                                           TimeT value,
-                                          const std::vector<DetIdT> & id_map);
+                                          const IdLookupT& id_map);
     std::unique_ptr<Process> MergeFactory(
             ProcessDescription desc,
             const std::map<std::string, std::vector<DetIdT>> & id_maps);

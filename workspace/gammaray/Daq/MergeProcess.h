@@ -10,6 +10,7 @@
 #define mergeprocess_h
 
 #include <vector>
+#include <Daq/Mapping.h>
 #include <Daq/Process.h>
 
 class MergeProcess : public Process {
@@ -18,9 +19,10 @@ public:
     using EventIter = Process::EventIter;
     using TimeT = Process::TimeT;
     using DetIdT = Process::DetIdT;
+    using IdLookupT = Mapping::IdLookupT;
     using MergeF = std::function<void(EventT&, EventT&)>;
 
-    MergeProcess(const std::vector<DetIdT> & lookup, TimeT t_window,
+    MergeProcess(const IdLookupT& lookup, TimeT t_window,
                  MergeF merge_fc);
 
 private:
@@ -33,7 +35,7 @@ private:
      * A lookup table for the component id that is associated with each
      * detector id.
      */
-    const std::vector<DetIdT> id_lookup;
+    const IdLookupT id_lookup;
 
     TimeT time_window;
 

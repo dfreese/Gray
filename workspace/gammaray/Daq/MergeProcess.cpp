@@ -5,7 +5,7 @@
 /*!
  *
  */
-MergeProcess::MergeProcess(const std::vector<DetIdT> & lookup,
+MergeProcess::MergeProcess(const IdLookupT& lookup,
                            TimeT t_window,
                            MergeF merge_fc) :
     id_lookup(lookup),

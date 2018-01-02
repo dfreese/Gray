@@ -10,6 +10,7 @@
 #define deadtimeprocess_h
 
 #include <vector>
+#include <Daq/Mapping.h>
 #include <Daq/Process.h>
 
 class DeadtimeProcess : public Process {
@@ -18,8 +19,9 @@ public:
     using EventIter = Process::EventIter;
     using TimeT = Process::TimeT;
     using DetIdT = Process::DetIdT;
+    using IdLookupT = Mapping::IdLookupT;
 
-    DeadtimeProcess(const std::vector<DetIdT> & lookup, TimeT deadtime,
+    DeadtimeProcess(const IdLookupT& lookup, TimeT deadtime,
                     bool paralyzable);
 
 private:
@@ -32,7 +34,7 @@ private:
      * A lookup table for the component id that is associated with each
      * detector id.
      */
-    const std::vector<DetIdT> id_lookup;
+    const IdLookupT id_lookup;
     TimeT time_window;
     bool is_paralyzable;
 };
