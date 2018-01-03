@@ -26,12 +26,13 @@ SourceList::SourceList() :
 
 void SourceList::AddSource(std::unique_ptr<Source> s)
 {
-    s->SetIsotope(valid_isotopes[current_isotope]->Clone());
-    if (s->GetIsotope() == nullptr) {
+    auto isotope = valid_isotopes[current_isotope]->Clone();
+    if (isotope == nullptr) {
         string error = "Isotope named " + current_isotope
         + " somehow set as current isotope, but was not implemented";
         throw(runtime_error(error));
     }
+    s->SetIsotope(std::move(isotope));
     if (s->isNegative()) {
         if (s->GetActivity() < -1.0) {
             string error = "Negative Source activities should be [-1,0)";
@@ -77,7 +78,7 @@ void SourceList::AddNextDecay(DecayInfo base_info) {
     double source_activity_bq = source->GetActivity();
     do {
         if (simulate_isotope_half_life) {
-            Isotope & isotope = *source->GetIsotope();
+            const Isotope& isotope = source->GetIsotope();
             source_activity_bq *= isotope.FractionRemaining(base_info.time);
         }
         // Time advances even if the decay is rejected by the inside negative
@@ -105,7 +106,7 @@ NuclearDecay SourceList::Decay() {
     DecayInfo decay = GetNextDecay();
     AddNextDecay(decay);
     auto & source = list[decay.source_idx];
-    Isotope & isotope = *source->GetIsotope();
+    const Isotope& isotope = source->GetIsotope();
     return (isotope.Decay(decay.decay_number, decay.time, decay.source_idx,
                           decay.position));
 }
@@ -179,7 +180,7 @@ double SourceList::ExpectedDecays(double start_time, double sim_time) const {
     double total = 0;
     for (auto & source: list) {
         double activity = source->GetActivity();
-        double half_life = source->GetIsotope()->GetHalfLife();
+        double half_life = source->GetIsotope().GetHalfLife();
         double source_decays = (pow(0.5, start_time / half_life) -
                                 pow(0.5, (start_time + sim_time) / half_life)) *
                                (half_life / log(2.0)) * activity;
@@ -195,14 +196,14 @@ double SourceList::ExpectedPhotons(double start_time, double sim_time) const {
     double total = 0;
     for (auto & source: list) {
         double activity = source->GetActivity();
-        double half_life = source->GetIsotope()->GetHalfLife();
+        double half_life = source->GetIsotope().GetHalfLife();
         double source_decays = (pow(0.5, start_time / half_life) -
                                 pow(0.5, (start_time + sim_time) / half_life)) *
         (half_life / log(2.0)) * activity;
         if (!simulate_isotope_half_life) {
             source_decays = sim_time * activity;
         }
-        total += source_decays * source->GetIsotope()->ExpectedNoPhotons();
+        total += source_decays * source->GetIsotope().ExpectedNoPhotons();
     }
     return (total);
 }

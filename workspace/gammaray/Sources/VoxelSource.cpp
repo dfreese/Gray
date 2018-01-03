@@ -36,7 +36,7 @@ VoxelSource::VoxelSource(const VectorR3 &p, int dims[3], const VectorR3 & vox_sc
 }
 
 
-size_t VoxelSource::search(double e, size_t b_idx, size_t s_idx)
+size_t VoxelSource::search(double e, size_t b_idx, size_t s_idx) const
 {
 
     if (b_idx == s_idx) {
@@ -50,7 +50,7 @@ size_t VoxelSource::search(double e, size_t b_idx, size_t s_idx)
     }
 }
 
-VectorR3 VoxelSource::Decay()
+VectorR3 VoxelSource::Decay() const
 {
     // Random is uniformly distributed between 0 and 1
     // prob.size is number of voxels.

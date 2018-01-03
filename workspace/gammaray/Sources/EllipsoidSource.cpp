@@ -24,7 +24,7 @@ EllipsoidSource::EllipsoidSource(const VectorR3 &center, const VectorR3 &a1,
     SetAxis(a1, a2);
 }
 
-VectorR3 EllipsoidSource::Decay() {
+VectorR3 EllipsoidSource::Decay() const {
     const double r1sq = radius1*radius1;
     const double r2sq = radius2*radius2;
     const double r3sq = radius3*radius3;

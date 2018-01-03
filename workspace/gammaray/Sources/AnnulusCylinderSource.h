@@ -10,7 +10,7 @@ public:
     AnnulusCylinderSource();
     AnnulusCylinderSource(const VectorR3 & position, double radius, VectorR3 L,
                           double activity);
-    VectorR3 Decay() override;
+    VectorR3 Decay() const override;
     bool Inside(const VectorR3 & pos) const override;
 
 private:

@@ -10,7 +10,7 @@ class CylinderSource : public Source
 public:
     CylinderSource();
     CylinderSource(const VectorR3 &pos, double radius, VectorR3 L, double act);
-    VectorR3 Decay() override;
+    VectorR3 Decay() const override;
     bool Inside(const VectorR3 & pos) const override;
 
 private:

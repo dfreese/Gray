@@ -19,7 +19,7 @@ VectorSource::VectorSource(const double act,
     this->scene->BuildTree(true, 8.0);
 }
 
-VectorR3 VectorSource::Decay() {
+VectorR3 VectorSource::Decay() const {
     VectorR3 pos;
     do {
         pos = center + Random::UniformRectangle(size);

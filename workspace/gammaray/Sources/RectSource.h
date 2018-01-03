@@ -12,7 +12,7 @@ public:
     RectSource();
     RectSource(const VectorR3 &pos, const VectorR3 &sz,
                const VectorR3 & orientation, double act);
-    VectorR3 Decay() override;
+    VectorR3 Decay() const override;
     bool Inside(const VectorR3 & pos) const override;
 private:
     const VectorR3 size;

@@ -13,7 +13,7 @@ SphereSource::SphereSource(const VectorR3 &p, double rad, double act) :
 {
 }
 
-VectorR3 SphereSource::Decay() {
+VectorR3 SphereSource::Decay() const {
     return(Random::UniformSphereFilled() * radius + position);
 }
 

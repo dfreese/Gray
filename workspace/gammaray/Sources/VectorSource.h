@@ -12,7 +12,7 @@ class VectorSource : public Source
 {
 public:
     VectorSource(const double act, std::unique_ptr<SceneDescription> scene);
-    VectorR3 Decay() override;
+    VectorR3 Decay() const override;
     bool Inside(const VectorR3 & pos) const override;
 
 private:

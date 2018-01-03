@@ -79,13 +79,13 @@ public:
         return negative;
     }
 
-    Isotope * GetIsotope()
+    const Isotope& GetIsotope() const
     {
-        return isotope.get();
+        return *isotope.get();
     }
 
     virtual bool Inside(const VectorR3 &pos) const = 0;
-    virtual VectorR3 Decay() = 0;
+    virtual VectorR3 Decay() const = 0;
 
 protected:
     std::unique_ptr<Isotope> isotope;

@@ -5,7 +5,7 @@ PointSource::PointSource(const VectorR3 &p, double act) :
 {
 }
 
-VectorR3 PointSource::Decay() {
+VectorR3 PointSource::Decay() const {
     return(position);
 }
 

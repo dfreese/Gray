@@ -8,7 +8,7 @@ class SphereSource : public Source
 public:
     SphereSource();
     SphereSource(const VectorR3 &pos, double radius, double act);
-    VectorR3 Decay() override;
+    VectorR3 Decay() const override;
     bool Inside(const VectorR3 & pos) const override;
 private:
     double radius;

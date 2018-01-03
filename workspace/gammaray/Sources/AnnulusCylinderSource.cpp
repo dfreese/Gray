@@ -17,7 +17,7 @@ AnnulusCylinderSource::AnnulusCylinderSource(const VectorR3 & position,
 {
 }
 
-VectorR3 AnnulusCylinderSource::Decay() {
+VectorR3 AnnulusCylinderSource::Decay() const {
     return(local_to_global * Random::UniformAnnulusCylinder(length, radius));
 }
 

@@ -16,7 +16,7 @@ CylinderSource::CylinderSource(const VectorR3 &p, double radius, VectorR3 L, dou
 {
 }
 
-VectorR3 CylinderSource::Decay() {
+VectorR3 CylinderSource::Decay() const {
     return(local_to_global * Random::UniformCylinder(length, radius));
 }
 

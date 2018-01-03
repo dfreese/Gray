@@ -20,7 +20,7 @@ RectSource::RectSource(const VectorR3 &p, const VectorR3 &sz,
 {
 }
 
-VectorR3 RectSource::Decay() {
+VectorR3 RectSource::Decay() const {
     return (local_to_global * Random::UniformRectangle(size));
 }
 

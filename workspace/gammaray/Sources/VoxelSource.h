@@ -11,12 +11,12 @@ public:
     VoxelSource();
     VoxelSource(const VectorR3 &p, int dims[3], const VectorR3 & vox_scale, double act);
     bool Load(const char * filename);
-    VectorR3 Decay() override;
+    VectorR3 Decay() const override;
     bool Inside(const VectorR3 & pos) const override;
 private:
     int dimension[3];
     VectorR3 scale;
-    size_t search(double e, size_t b_idx, size_t s_idx);
+    size_t search(double e, size_t b_idx, size_t s_idx) const;
     int AddSource(double val);
 
     std::vector <double> prob;

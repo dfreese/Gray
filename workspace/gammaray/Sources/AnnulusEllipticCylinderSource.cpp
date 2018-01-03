@@ -111,7 +111,7 @@ bool double_compare(double i, double j) {
 }
 }
 
-double AnnulusEllipticCylinderSource::InverseEllipticE(double arc_length)
+double AnnulusEllipticCylinderSource::InverseEllipticE(double arc_length) const
 {
     vector<double>::const_iterator val_iter = std::lower_bound(circ.cbegin(),
                                                                circ.cend(),
@@ -229,7 +229,7 @@ double AnnulusEllipticCylinderSource::IncompleteEllipticE(double phi, double m)
     return result;
 }
 
-VectorR3 AnnulusEllipticCylinderSource::Decay() {
+VectorR3 AnnulusEllipticCylinderSource::Decay() const {
     double C = circ[circ.size()-1];
     double C_uniform = C * Random::Uniform();
     double phi = InverseEllipticE(C_uniform);

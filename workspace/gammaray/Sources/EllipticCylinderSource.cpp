@@ -21,7 +21,7 @@ EllipticCylinderSource::EllipticCylinderSource(const VectorR3 &p, double r1,
     SetAxis(L);
 }
 
-VectorR3 EllipticCylinderSource::Decay() {
+VectorR3 EllipticCylinderSource::Decay() const {
     double r1sq = radius1*radius1;
     double r2sq = radius2*radius2;
 
