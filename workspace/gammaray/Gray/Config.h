@@ -36,7 +36,6 @@ public:
     const std::vector<std::string> & get_filenames_coinc() const;
     void set_seed(unsigned long val);
     unsigned long get_seed() const;
-    bool get_seed_set() const;
     bool set_format(const std::string & fmt);
     bool set_format_hits(const std::string & fmt);
     void set_format_hits(const Output::Format & fmt);
@@ -99,7 +98,7 @@ private:
     std::string filename_singles;
     std::vector<std::string> filenames_coinc;
     unsigned long seed = 0;
-    bool seed_set = false;
+    bool seed_set_command_line = false;
     bool format_hits_set = false;
     bool format_singles_set = false;
     bool format_coinc_set = false;

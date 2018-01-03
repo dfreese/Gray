@@ -1,5 +1,4 @@
 #include <cmath>
-#include <ctime>
 #include <Random/Random.h>
 #include <Random/Transform.h>
 #include <VrMath/LinearR3.h>
@@ -25,11 +24,6 @@ std::mt19937 & Random::generator() {
 std::normal_distribution<double> & Random::normal_distribution() {
     static std::normal_distribution<double> normal;
     return (normal);
-}
-
-bool & Random::seed_set() {
-    static bool seed_set(false);
-    return (seed_set);
 }
 
 unsigned long & Random::seed_used() {
@@ -61,29 +55,18 @@ long Random::Poisson(double lambda)
     return(poisson_distribution(generator()));
 }
 
-void Random::Seed(unsigned long seed)
+void Random::SeedDefault() {
+    SetSeed(std::mt19937::default_seed);
+}
+
+void Random::SetSeed(unsigned long seed)
 {
     generator().seed(seed);
-    seed_set() = true;
     seed_used() = seed;
-}
-
-void Random::Seed()
-{
-    unsigned long seed = std::time(NULL);
-    Seed(seed);
-}
-
-void Random::SeedDefault() {
-    Seed(std::mt19937::default_seed);
 }
 
 unsigned long Random::GetSeed() {
     return(seed_used());
-}
-
-bool Random::SeedSet() {
-    return(seed_set());
 }
 
 VectorR3 Random::UniformSphere()

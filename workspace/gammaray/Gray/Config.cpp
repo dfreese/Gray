@@ -7,6 +7,7 @@
 //
 
 #include <Gray/Config.h>
+#include <ctime>
 #include <sstream>
 #include <iostream>
 #include <Gray/Mpi.h>
@@ -24,6 +25,8 @@ int Config::ProcessCommandLine(int argc, char **argv, bool fail_without_scene)
         return(1);
     }
     Mpi::Init(argc, argv);
+    // Set the default seed to be the current time.
+    seed = std::time(NULL);
 
     char * include_cstr = getenv ("GRAY_INCLUDE");
     if (include_cstr) {
@@ -58,7 +61,8 @@ int Config::ProcessCommandLine(int argc, char **argv, bool fail_without_scene)
                 cerr << "Invalid seed: " << following_argument << endl;
                 return(-1);
             }
-            set_seed(tmp_seed);
+            seed = tmp_seed;
+            seed_set_command_line = true;
         } else if (argument == "-f") {
             set_filename_scene(following_argument);
         } else if (argument == "-p") {
@@ -242,18 +246,13 @@ std::string Config::get_filename_singles() const {
 }
 
 void Config::set_seed(unsigned long val) {
-    if (!seed_set) {
+    if (!seed_set_command_line) {
         seed = val;
-        seed_set = true;
     }
 }
 
 unsigned long Config::get_seed() const {
     return(seed);
-}
-
-bool Config::get_seed_set() const {
-    return(seed_set);
 }
 
 bool Config::set_format(const std::string & fmt) {

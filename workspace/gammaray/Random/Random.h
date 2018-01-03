@@ -10,10 +10,8 @@ class VectorR3;
 class Random
 {
 public:
-    static void Seed(unsigned long seed);
-    static bool SeedSet();
-    static void Seed();
     static void SeedDefault();
+    static void SetSeed(unsigned long seed);
     static unsigned long GetSeed();
     static unsigned long Int();
     static double Uniform();
@@ -41,7 +39,6 @@ public:
 private:
     static std::mt19937 & generator();
     static std::normal_distribution<double> & normal_distribution();
-    static bool & seed_set();
     static unsigned long & seed_used();
 };
 

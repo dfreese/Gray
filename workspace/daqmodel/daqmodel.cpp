@@ -31,11 +31,7 @@ int main(int argc, char ** argv) {
         }
     }
 
-    if (config.get_seed_set()) {
-        Random::Seed(config.get_seed());
-    } else {
-        Random::Seed();
-    }
+    Random::SetSeed(config.get_seed());
 
     if (config.get_filename_hits().empty()) {
         cerr << "Filename not specified" << endl;

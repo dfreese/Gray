@@ -12,11 +12,7 @@
 using namespace std;
 
 void Simulation::SetupSeed(const Config & config) {
-    if (config.get_seed_set()) {
-        Random::Seed(config.get_seed());
-    } else {
-        Random::Seed();
-    }
+    Random::SetSeed(config.get_seed());
     Mpi::ReSeed();
     cout << "Using Seed: " << Random::GetSeed() << endl;
 }

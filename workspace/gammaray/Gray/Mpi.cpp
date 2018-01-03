@@ -75,7 +75,7 @@ int Mpi::Size() {
 
 void Mpi::ReSeed() {
     if (Enabled()) {
-        Random::Seed(Random::GetSeed() + Rank());
+        Random::SetSeed(Random::GetSeed() + Rank());
     }
 }
 
