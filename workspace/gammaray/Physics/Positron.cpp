@@ -20,7 +20,7 @@ std::unique_ptr<Isotope> Positron::Clone() {
 }
 
 NuclearDecay Positron::Decay(int photon_number, double time, int src_id,
-                     const VectorR3 & position)
+                     const VectorR3 & position) const
 {
     VectorR3 anni_position(position);
     if (use_positron_dbexp) {

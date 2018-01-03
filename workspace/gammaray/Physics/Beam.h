@@ -12,7 +12,7 @@ public:
 
     std::unique_ptr<Isotope> Clone() override;
     NuclearDecay Decay(int photon_number, double time, int src_id,
-                       const VectorR3 & position) override;
+                       const VectorR3 & position) const override;
     double ExpectedNoPhotons() const override;
 
 private:

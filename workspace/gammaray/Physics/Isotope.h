@@ -14,7 +14,7 @@ public:
     virtual ~Isotope() = default;
     virtual std::unique_ptr<Isotope> Clone() = 0;
     virtual NuclearDecay Decay(int photon_number, double time, int src_id,
-                               const VectorR3 & position) = 0;
+                               const VectorR3 & position) const = 0;
     double GetHalfLife() const;
     double FractionRemaining(double time) const;
     virtual double ExpectedNoPhotons() const = 0;

@@ -12,7 +12,7 @@ public:
              double gamma_decay_energy_mev, double positron_emis_prob);
     std::unique_ptr<Isotope> Clone() override;
     NuclearDecay Decay(int photon_number, double time, int src_id,
-                       const VectorR3 & position) override;
+                       const VectorR3 & position) const override;
     double ExpectedNoPhotons() const override;
     void SetPositronRange(double c, double k1, double k2, double max);
     void SetPositronRange(double fwhm_mm, double max_mm);

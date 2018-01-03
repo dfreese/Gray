@@ -25,7 +25,7 @@ std::unique_ptr<Isotope> Beam::Clone() {
 }
 
 NuclearDecay Beam::Decay(int photon_number, double time, int src_id,
-                 const VectorR3 & position)
+                 const VectorR3 & position) const
 {
     NuclearDecay beam(photon_number, time, src_id, position, 0);
 
