@@ -1,4 +1,4 @@
-#include <Daq/InteractionStream.h>
+#include <Daq/DaqModel.h>
 #include <Daq/CoincProcess.h>
 #include <Daq/DeadtimeProcess.h>
 #include <Daq/FilterProcess.h>
@@ -13,18 +13,18 @@
  * gray, where we need to guarantee sorting before the user's preferences
  * are added.
  */
-InteractionStream::InteractionStream(TimeT initial_sort_window) {
+DaqModel::DaqModel(TimeT initial_sort_window) {
     if (initial_sort_window > 0) {
         add_process(ProcessFactory::SortFactory(initial_sort_window), false);
     }
 }
 
-InteractionStream::ContainerT& InteractionStream::get_buffer() {
+DaqModel::ContainerT& DaqModel::get_buffer() {
     return (input_events);
 }
 
-int InteractionStream::set_processes(const std::vector<std::string> & lines,
-                                     const Mapping::IdMappingT& mapping)
+int DaqModel::set_processes(const std::vector<std::string> & lines,
+                            const Mapping::IdMappingT& mapping)
 {
     std::vector<ProcessDescription> process_descriptions;
     int status = ProcessFactory::ProcessDescLines(lines, process_descriptions);
@@ -35,8 +35,8 @@ int InteractionStream::set_processes(const std::vector<std::string> & lines,
     return(set_processes(process_descriptions, mapping));
 }
 
-int InteractionStream::load_processes(const std::string & filename,
-                                      const Mapping::IdMappingT& mapping)
+int DaqModel::load_processes(const std::string & filename,
+                             const Mapping::IdMappingT& mapping)
 {
     std::vector<ProcessDescription> process_descriptions;
     int status = ProcessFactory::ProcessDescFile(filename,
@@ -47,15 +47,15 @@ int InteractionStream::load_processes(const std::string & filename,
     return(set_processes(process_descriptions, mapping));
 }
 
-size_t InteractionStream::no_processes() const {
+size_t DaqModel::no_processes() const {
     return(processes.size());
 }
 
-size_t InteractionStream::no_coinc_processes() const {
+size_t DaqModel::no_coinc_processes() const {
     return(coinc_processes.size());
 }
 
-long InteractionStream::no_events() const {
+long DaqModel::no_events() const {
     if (!processes.empty()) {
         return (processes.front()->no_events());
     } else if (!coinc_processes.empty()) {
@@ -65,7 +65,7 @@ long InteractionStream::no_events() const {
     }
 }
 
-long InteractionStream::no_kept() const {
+long DaqModel::no_kept() const {
     if (!processes.empty()) {
         return (processes.back()->no_kept());
     } else {
@@ -73,7 +73,7 @@ long InteractionStream::no_kept() const {
     }
 }
 
-long InteractionStream::no_dropped() const {
+long DaqModel::no_dropped() const {
     long dropped = 0;
     for (const auto& proc: processes) {
         dropped += proc->no_dropped();
@@ -81,7 +81,7 @@ long InteractionStream::no_dropped() const {
     return(dropped);
 }
 
-long InteractionStream::no_merged() const {
+long DaqModel::no_merged() const {
     long merged = 0;
     for (const auto& proc: processes) {
         if (dynamic_cast<MergeProcess*>(proc.get())) {
@@ -91,7 +91,7 @@ long InteractionStream::no_merged() const {
     return(merged);
 }
 
-long InteractionStream::no_filtered() const {
+long DaqModel::no_filtered() const {
     long filtered = 0;
     for (const auto& proc: processes) {
         if (dynamic_cast<FilterProcess*>(proc.get())) {
@@ -101,7 +101,7 @@ long InteractionStream::no_filtered() const {
     return(filtered);
 }
 
-long InteractionStream::no_deadtimed() const {
+long DaqModel::no_deadtimed() const {
     long count = 0;
     for (const auto& proc: processes) {
         if (dynamic_cast<DeadtimeProcess*>(proc.get())) {
@@ -111,7 +111,7 @@ long InteractionStream::no_deadtimed() const {
     return(count);
 }
 
-std::ostream & operator << (std::ostream & os, const InteractionStream & s) {
+std::ostream & operator << (std::ostream & os, const DaqModel & s) {
     os << "events: " << s.no_events() << "\n"
        << "kept: " << s.no_kept() << "\n"
        << "dropped: " << s.no_dropped() << "\n"
@@ -133,7 +133,7 @@ std::ostream & operator << (std::ostream & os, const InteractionStream & s) {
     return(os);
 }
 
-int InteractionStream::set_processes(
+int DaqModel::set_processes(
         const std::vector<ProcessDescription> & process_descriptions,
         const Mapping::IdMappingT& mapping)
 {
@@ -159,8 +159,8 @@ int InteractionStream::set_processes(
     return(0);
 }
 
-void InteractionStream::add_process(std::unique_ptr<Process> process,
-                                    bool proc_print_info)
+void DaqModel::add_process(std::unique_ptr<Process> process,
+                           bool proc_print_info)
 {
     if (dynamic_cast<CoincProcess*>(process.get())) {
         coinc_processes.push_back(std::move(process));
@@ -171,15 +171,15 @@ void InteractionStream::add_process(std::unique_ptr<Process> process,
     }
 }
 
-InteractionStream::EventIter InteractionStream::begin() {
+DaqModel::EventIter DaqModel::begin() {
     return(input_events.begin());
 }
 
-InteractionStream::EventIter InteractionStream::end() {
+DaqModel::EventIter DaqModel::end() {
     return(input_events.end());
 }
 
-InteractionStream::EventIter InteractionStream::hits_begin() {
+DaqModel::EventIter DaqModel::hits_begin() {
     if (hits_stopped) {
         if (process_ready_distance.empty()) {
             return(begin());
@@ -191,7 +191,7 @@ InteractionStream::EventIter InteractionStream::hits_begin() {
     }
 }
 
-InteractionStream::EventIter InteractionStream::hits_end() {
+DaqModel::EventIter DaqModel::hits_end() {
     if (hits_stopped) {
         return(end());
     } else {
@@ -203,7 +203,7 @@ InteractionStream::EventIter InteractionStream::hits_end() {
     }
 }
 
-InteractionStream::EventIter InteractionStream::singles_begin() {
+DaqModel::EventIter DaqModel::singles_begin() {
     if (singles_stopped) {
         return(singles_ready);
     } else {
@@ -211,7 +211,7 @@ InteractionStream::EventIter InteractionStream::singles_begin() {
     }
 }
 
-InteractionStream::EventIter InteractionStream::singles_end() {
+DaqModel::EventIter DaqModel::singles_end() {
     if (singles_stopped) {
         return(end());
     } else {
@@ -219,11 +219,11 @@ InteractionStream::EventIter InteractionStream::singles_end() {
     }
 }
 
-InteractionStream::EventIter InteractionStream::coinc_begin() {
+DaqModel::EventIter DaqModel::coinc_begin() {
     return(begin());
 }
 
-InteractionStream::EventIter InteractionStream::coinc_end() {
+DaqModel::EventIter DaqModel::coinc_end() {
     if (coinc_stopped) {
         return(end());
     } else {
@@ -235,7 +235,7 @@ InteractionStream::EventIter InteractionStream::coinc_end() {
  * Only run the first process, which is always a sorting process in gray.  This
  * should not be called if initial_sort_window was not specified.
  */
-void InteractionStream::process_hits() {
+void DaqModel::process_hits() {
     singles_stopped = false;
     singles_ready = input_events.end();
     if (!processes.empty()) {
@@ -247,7 +247,7 @@ void InteractionStream::process_hits() {
     min_coinc_ready_dist = std::distance(input_events.begin(), singles_ready);
 }
 
-void InteractionStream::process_singles() {
+void DaqModel::process_singles() {
     singles_stopped = false;
     // We might have left some singles that we processed in the buffer from
     // previously, so start where we left off.
@@ -261,7 +261,7 @@ void InteractionStream::process_singles() {
     min_coinc_ready_dist = std::distance(input_events.begin(), singles_ready);
 }
 
-void InteractionStream::process_coinc(size_t idx) {
+void DaqModel::process_coinc(size_t idx) {
     coinc_stopped = false;
     coinc_ready = coinc_processes[idx]->process_events(input_events.begin(),
                                                        singles_ready);
@@ -269,7 +269,7 @@ void InteractionStream::process_coinc(size_t idx) {
                                     std::distance(input_events.begin(), coinc_ready));
 }
 
-void InteractionStream::stop_hits() {
+void DaqModel::stop_hits() {
     hits_stopped = true;
     if (!processes.empty()) {
         auto p_beg = std::next(begin(), process_ready_distance.front());
@@ -277,7 +277,7 @@ void InteractionStream::stop_hits() {
     }
 }
 
-void InteractionStream::stop_singles() {
+void DaqModel::stop_singles() {
     singles_stopped = true;
     for (size_t ii = 0; ii < process_ready_distance.size(); ii++) {
         auto p_beg = std::next(begin(), process_ready_distance[ii]);
@@ -285,12 +285,12 @@ void InteractionStream::stop_singles() {
     }
 }
 
-void InteractionStream::stop_coinc(size_t idx) {
+void DaqModel::stop_coinc(size_t idx) {
     coinc_stopped = true;
     coinc_processes[idx]->stop(begin(), end());
 }
 
-void InteractionStream::clear_complete() {
+void DaqModel::clear_complete() {
     auto singles_dist = std::distance(input_events.begin(), singles_ready);
     input_events.erase(begin(), std::next(begin(), min_coinc_ready_dist));
     for (auto & dist: process_ready_distance) {

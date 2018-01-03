@@ -12,7 +12,7 @@
 #include <Sources/SourceList.h>
 #include <Random/Random.h>
 #include <Physics/Physics.h>
-#include <Daq/InteractionStream.h>
+#include <Daq/DaqModel.h>
 
 using namespace std;
 
@@ -59,7 +59,7 @@ int gray(int argc, char ** argv)
     // Setup the singles processor and load a default or specified mapping file
     const double max_req_sort_time = (5 * scene.GetMaxDistance() *
                                       Physics::inverse_speed_of_light);
-    InteractionStream singles_stream(max_req_sort_time);
+    DaqModel daq_model(max_req_sort_time);
 
     if (config.get_write_pos()) {
         if (!detector_array.WritePositions(config.get_write_pos_filename())) {
@@ -96,10 +96,10 @@ int gray(int argc, char ** argv)
     }
 
     if (config.get_filename_process().empty()) {
-        singles_stream.set_processes(config.get_process_lines(),
-                                     detector_array.Mapping());
-    } else if (singles_stream.load_processes(config.get_filename_process(),
-                                             detector_array.Mapping()) < 0)
+        daq_model.set_processes(config.get_process_lines(),
+                                detector_array.Mapping());
+    } else if (daq_model.load_processes(config.get_filename_process(),
+                                        detector_array.Mapping()) < 0)
     {
         cerr << "Loading pipeline file \"" << config.get_filename_process()
              << "\" failed" << endl;
@@ -125,7 +125,7 @@ int gray(int argc, char ** argv)
 
     Output output_hits;
     Output output_singles;
-    std::vector<Output> outputs_coinc(singles_stream.no_coinc_processes());
+    std::vector<Output> outputs_coinc(daq_model.no_coinc_processes());
     int setup_status = Simulation::SetupOutput(config, output_hits,
                                                output_singles, outputs_coinc);
     if (setup_status < 0) {
@@ -135,7 +135,7 @@ int gray(int argc, char ** argv)
 
     clock_t setup_time = clock();
     Simulation::RunSim(config, sources, scene, output_hits,
-                       output_singles, outputs_coinc, singles_stream);
+                       output_singles, outputs_coinc, daq_model);
 
     clock_t end_time = clock();
     double setup_time_sec =  double(setup_time - start_time) / CLOCKS_PER_SEC;

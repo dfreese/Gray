@@ -1,13 +1,5 @@
-//
-//  InteractionStream.h
-//  graypipeline
-//
-//  Created by David Freese on 4/1/17.
-//
-//
-
-#ifndef interactionstream_h
-#define interactionstream_h
+#ifndef DaqModel_h
+#define DaqModel_h
 
 #include <fstream>
 #include <functional>
@@ -20,7 +12,7 @@
 #include <Daq/Process.h>
 #include <Daq/ProcessFactory.h>
 
-class InteractionStream {
+class DaqModel {
 public:
     using EventT = Process::EventT;
     using ContainerT = Process::ContainerT;
@@ -28,7 +20,7 @@ public:
     using TimeT = Process::TimeT;
     using DetIdT = Process::DetIdT;
 
-    InteractionStream(TimeT initial_sort_window = -1);
+    DaqModel(TimeT initial_sort_window = -1);
 
     ContainerT& get_buffer();
     int set_processes(const std::vector<std::string> & lines,
@@ -43,8 +35,7 @@ public:
     long no_merged() const;
     long no_filtered() const;
     long no_deadtimed() const;
-    friend std::ostream & operator << (std::ostream & os,
-                                       const InteractionStream & s);
+    friend std::ostream & operator << (std::ostream & os, const DaqModel & s);
 
     EventIter hits_begin();
     EventIter hits_end();
@@ -91,4 +82,4 @@ private:
     bool coinc_stopped = false;
 };
 
-#endif // interactionstream_h
+#endif // DaqModel_h

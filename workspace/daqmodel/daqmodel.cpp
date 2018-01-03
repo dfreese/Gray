@@ -1,7 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <Daq/Mapping.h>
-#include <Daq/InteractionStream.h>
+#include <Daq/DaqModel.h>
 #include <Gray/Config.h>
 #include <Gray/LoadDetector.h>
 #include <Output/BinaryFormat.h>
@@ -73,7 +73,7 @@ int main(int argc, char ** argv) {
     config.set_singles_var_output_write_flags(input.get_write_flags());
     config.set_coinc_var_output_write_flags(input.get_write_flags());
 
-    InteractionStream singles_stream(config.get_sort_time());
+    DaqModel daq_model(config.get_sort_time());
     Mapping::IdMappingT mapping;
     if (!Mapping::LoadMapping(config.get_filename_mapping(), mapping)) {
         cerr << "Loading mapping file failed" << endl;
@@ -86,14 +86,13 @@ int main(int argc, char ** argv) {
             cerr << "No process steps specified" << endl;
             return(3);
         }
-        int proc_load_status = singles_stream.set_processes(proc_lines,
-                                                            mapping);
+        int proc_load_status = daq_model.set_processes(proc_lines, mapping);
         if (proc_load_status < 0) {
             cerr << "Loading process lines failed" << endl;
             return(2);
         }
     } else {
-        int proc_load_status = singles_stream.load_processes(
+        int proc_load_status = daq_model.load_processes(
                 config.get_filename_process(), mapping);
         if (proc_load_status < 0) {
             cerr << "Loading process file failed" << endl;
@@ -118,14 +117,14 @@ int main(int argc, char ** argv) {
         }
     }
 
-    std::vector<Output> outputs_coinc(singles_stream.no_coinc_processes());
+    std::vector<Output> outputs_coinc(daq_model.no_coinc_processes());
     if (config.get_log_coinc()) {
-        if (singles_stream.no_coinc_processes() != config.get_no_coinc_filenames()) {
+        if (daq_model.no_coinc_processes() != config.get_no_coinc_filenames()) {
             cerr << "Incorrect number of filenames specified for coinc outputs"
             << endl;
             return(4);
         }
-        for (size_t idx = 0; idx < singles_stream.no_coinc_processes(); idx++) {
+        for (size_t idx = 0; idx < daq_model.no_coinc_processes(); idx++) {
             Output & output_coinc = outputs_coinc[idx];
             output_coinc.SetFormat(config.get_format_coinc());
             output_coinc.SetVariableOutputMask(config.get_coinc_var_output_write_flags());
@@ -133,40 +132,40 @@ int main(int argc, char ** argv) {
         }
     }
 
-    while (input.read_interactions(singles_stream.get_buffer(), 100000)) {
-        singles_stream.process_singles();
+    while (input.read_interactions(daq_model.get_buffer(), 100000)) {
+        daq_model.process_singles();
         if (config.get_log_singles()) {
-            output.LogSingles(singles_stream.singles_begin(),
-                              singles_stream.singles_end());
+            output.LogSingles(daq_model.singles_begin(),
+                              daq_model.singles_end());
         }
 
-        for (size_t idx = 0; idx < singles_stream.no_coinc_processes(); idx++) {
-            singles_stream.process_coinc(idx);
+        for (size_t idx = 0; idx < daq_model.no_coinc_processes(); idx++) {
+            daq_model.process_coinc(idx);
             if (config.get_log_coinc()) {
-                outputs_coinc[idx].LogCoinc(singles_stream.coinc_begin(),
-                                            singles_stream.coinc_end(),
+                outputs_coinc[idx].LogCoinc(daq_model.coinc_begin(),
+                                            daq_model.coinc_end(),
                                             true);
             }
         }
-        singles_stream.clear_complete();
+        daq_model.clear_complete();
     }
 
-    singles_stream.stop_singles();
+    daq_model.stop_singles();
     if (config.get_log_singles()) {
-        output.LogSingles(singles_stream.singles_begin(), singles_stream.singles_end());
+        output.LogSingles(daq_model.singles_begin(), daq_model.singles_end());
     }
     
-    for (size_t idx = 0; idx < singles_stream.no_coinc_processes(); idx++) {
-        singles_stream.stop_coinc(idx);
+    for (size_t idx = 0; idx < daq_model.no_coinc_processes(); idx++) {
+        daq_model.stop_coinc(idx);
         if (config.get_log_coinc()) {
-            outputs_coinc[idx].LogCoinc(singles_stream.coinc_begin(),
-                                        singles_stream.coinc_end(), true);
+            outputs_coinc[idx].LogCoinc(daq_model.coinc_begin(),
+                                        daq_model.coinc_end(), true);
         }
     }
 
     if (config.get_verbose()) {
         cout << "______________\n DAQ Stats\n______________\n"
-             << singles_stream << endl;
+             << daq_model << endl;
     }
     return(0);
 }

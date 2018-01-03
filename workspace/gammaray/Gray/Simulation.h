@@ -7,7 +7,7 @@ class Config;
 class SourceList;
 class SceneDescription;
 class Output;
-class InteractionStream;
+class DaqModel;
 class GammaMaterial;
 
 class Simulation {
@@ -23,7 +23,7 @@ public:
                        const SceneDescription & scene,
                        Output & output_hits, Output & output_singles,
                        std::vector<Output> & outputs_coinc,
-                       InteractionStream & singles_stream);
+                       DaqModel & daq_model);
 };
 
 #endif // SIMULATION_H_

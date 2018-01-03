@@ -2,7 +2,7 @@
 #include <Gray/Config.h>
 #include <Gray/GammaRayTrace.h>
 #include <Gray/Mpi.h>
-#include <Daq/InteractionStream.h>
+#include <Daq/DaqModel.h>
 #include <Random/Random.h>
 #include <Sources/SourceList.h>
 #include <Graphics/SceneDescription.h>
@@ -65,7 +65,7 @@ void Simulation::RunSim(const Config & config, SourceList & sources,
                         const SceneDescription & scene,
                         Output & output_hits, Output & output_singles,
                         std::vector<Output> & outputs_coinc,
-                        InteractionStream & singles_stream)
+                        DaqModel & daq_model)
 {
     bool print_prog_bar = !Mpi::Enabled();
     const long num_chars = 70;
@@ -82,38 +82,38 @@ void Simulation::RunSim(const Config & config, SourceList & sources,
     if (print_prog_bar) cout << "[" << flush;
 
     const size_t interactions_soft_max = 100000;
-    singles_stream.get_buffer().reserve(interactions_soft_max + 50);
+    daq_model.get_buffer().reserve(interactions_soft_max + 50);
     while (sources.GetTime() < sources.GetEndTime()) {
         while (sources.GetTime() < sources.GetEndTime()) {
             NuclearDecay decay = sources.Decay();
-            ray_tracer.TraceDecay(decay, singles_stream.get_buffer());
-            if (interactions_soft_max < singles_stream.get_buffer().size()) {
+            ray_tracer.TraceDecay(decay, daq_model.get_buffer());
+            if (interactions_soft_max < daq_model.get_buffer().size()) {
                 break;
             }
         }
-        singles_stream.process_hits();
+        daq_model.process_hits();
         if (config.get_log_hits()) {
-            output_hits.LogHits(singles_stream.hits_begin(), singles_stream.hits_end());
+            output_hits.LogHits(daq_model.hits_begin(), daq_model.hits_end());
         }
 
-        singles_stream.process_singles();
+        daq_model.process_singles();
         if (config.get_log_singles() || config.get_log_coinc()) {
             if (config.get_log_singles()) {
-                output_singles.LogSingles(singles_stream.singles_begin(),
-                                          singles_stream.singles_end());
+                output_singles.LogSingles(daq_model.singles_begin(),
+                                          daq_model.singles_end());
             }
 
-            for (size_t idx = 0; idx < singles_stream.no_coinc_processes(); idx++) {
-                singles_stream.process_coinc(idx);
+            for (size_t idx = 0; idx < daq_model.no_coinc_processes(); idx++) {
+                daq_model.process_coinc(idx);
                 if (config.get_log_coinc()) {
-                    outputs_coinc[idx].LogCoinc(singles_stream.coinc_begin(),
-                                                singles_stream.coinc_end(),
+                    outputs_coinc[idx].LogCoinc(daq_model.coinc_begin(),
+                                                daq_model.coinc_end(),
                                                 true);
                 }
             }
         }
 
-        singles_stream.clear_complete();
+        daq_model.clear_complete();
 
         for (; current_tick < (sources.GetElapsedTime() / tick_mark);
              current_tick++)
@@ -122,25 +122,25 @@ void Simulation::RunSim(const Config & config, SourceList & sources,
         }
     }
 
-    singles_stream.stop_hits();
+    daq_model.stop_hits();
     if (config.get_log_hits()) {
-        output_hits.LogHits(singles_stream.hits_begin(), singles_stream.hits_end());
+        output_hits.LogHits(daq_model.hits_begin(), daq_model.hits_end());
         output_hits.Close();
     }
 
-    singles_stream.stop_singles();
+    daq_model.stop_singles();
     if (config.get_log_singles() || config.get_log_coinc()) {
         if (config.get_log_singles()) {
-            output_singles.LogSingles(singles_stream.singles_begin(),
-                                      singles_stream.singles_end());
+            output_singles.LogSingles(daq_model.singles_begin(),
+                                      daq_model.singles_end());
             output_singles.Close();
         }
 
-        for (size_t idx = 0; idx < singles_stream.no_coinc_processes(); idx++) {
-            singles_stream.stop_coinc(idx);
+        for (size_t idx = 0; idx < daq_model.no_coinc_processes(); idx++) {
+            daq_model.stop_coinc(idx);
             if (config.get_log_coinc()) {
-                outputs_coinc[idx].LogCoinc(singles_stream.coinc_begin(),
-                                            singles_stream.coinc_end(), true);
+                outputs_coinc[idx].LogCoinc(daq_model.coinc_begin(),
+                                            daq_model.coinc_end(), true);
                 outputs_coinc[idx].Close();
             }
         }
@@ -150,7 +150,7 @@ void Simulation::RunSim(const Config & config, SourceList & sources,
          << ray_tracer.statistics() << endl;
     if (config.get_log_singles() || config.get_log_coinc()) {
         cout << "______________\n DAQ Stats\n______________\n"
-        << singles_stream << endl;
+        << daq_model << endl;
     }
     // A NoOp function if MPI is not enabled.
     Mpi::CombineFiles(config, output_hits, output_singles, outputs_coinc);

@@ -5,6 +5,8 @@ add_library(gammaray
     Daq/BlurFunctors.cpp
     Daq/CoincProcess.h
     Daq/CoincProcess.cpp
+    Daq/DaqModel.h
+    Daq/DaqModel.cpp
     Daq/DeadtimeProcess.h
     Daq/DeadtimeProcess.cpp
     Daq/FilterProcess.h
@@ -23,8 +25,6 @@ add_library(gammaray
     Daq/Process.cpp
     Daq/ProcessFactory.h
     Daq/ProcessFactory.cpp
-    Daq/InteractionStream.h
-    Daq/InteractionStream.cpp
     Graphics/CameraView.cpp
     Graphics/CameraView.h
     Graphics/Light.h
