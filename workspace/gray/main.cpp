@@ -82,15 +82,13 @@ int gray(int argc, char ** argv)
     }
 
     if (config.get_write_pos()) {
-        std::ofstream det_file(config.get_write_pos_filename());
-        if (!det_file) {
+        if (!detector_array.WritePositions(config.get_write_pos_filename())) {
             std::cerr << "Unable to open detector position file for writing: "
                       << config.get_write_pos_filename() << "\n";
             return(4);
         }
-        det_file << detector_array;
         std::cout << "Detector position file written to "
-                  << config.get_write_map_filename() << "\n";
+                  << config.get_write_pos_filename() << "\n";
     }
     if (config.get_write_map()) {
         std::ofstream map_file(config.get_write_map_filename());

@@ -17,7 +17,8 @@ public:
                     const RigidMapR3 & map, int x, int y, int z, int bl);
     std::map<std::string, std::vector<int>> default_mapping();
     void OutputDetectorArray();
-    friend std::ostream& operator<< (std::ostream& os, const DetectorArray& d );
+    bool WritePositions(std::ostream& os) const;
+    bool WritePositions(const std::string& filename) const;
     std::vector<Detector> detectors;
     void WriteBasicMap(std::ostream & os,
                        const std::string & detector_name,

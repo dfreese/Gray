@@ -1,4 +1,5 @@
 #include <Output/DetectorArray.h>
+#include <fstream>
 #include <VrMath/LinearR3.h>
 #include <VrMath/LinearR4.h>
 
@@ -41,12 +42,19 @@ void DetectorArray::OutputDetectorArray()
     }
 }
 
-ostream& operator<< ( ostream& os, const DetectorArray& d )
-{
-    for (const auto & detector: d.detectors) {
-        os << detector << endl;
+bool DetectorArray::WritePositions(std::ostream& os) const {
+    if (!os) {
+        return (false);
     }
-    return os;
+    for (const auto & d: detectors) {
+        os << d << "\n";
+    }
+    return (os.good());
+}
+
+bool DetectorArray::WritePositions(const std::string& filename) const {
+    std::ofstream output(filename);
+    return (WritePositions(output));
 }
 
 void DetectorArray::WriteBasicMap(std::ostream & os,
@@ -63,3 +71,5 @@ void DetectorArray::WriteBasicMap(std::ostream & os,
            << d.idx[1] << " " << d.idx[2] << "\n";
     }
 }
+
+
