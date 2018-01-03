@@ -13,8 +13,8 @@ static_assert(sizeof(void*) == 8,
               "Only 64bit compilers are supported at this time");
 
 std::mt19937 & Random::generator() {
-    static std::mt19937 * generator = new std::mt19937();
-    return (*generator);
+    static std::mt19937 generator;
+    return (generator);
 }
 
 /*!
@@ -23,18 +23,18 @@ std::mt19937 & Random::generator() {
  * numbers, one which can be saved for later calls.
  */
 std::normal_distribution<double> & Random::normal_distribution() {
-    static auto * normal = new std::normal_distribution<double>();
-    return (*normal);
+    static std::normal_distribution<double> normal;
+    return (normal);
 }
 
 bool & Random::seed_set() {
-    static bool * seed_set = new bool(false);
-    return (*seed_set);
+    static bool seed_set(false);
+    return (seed_set);
 }
 
 unsigned long & Random::seed_used() {
-    static auto * seed_used = new unsigned long(std::mt19937::default_seed);
-    return (*seed_used);
+    static unsigned long seed_used(std::mt19937::default_seed);
+    return (seed_used);
 }
 
 unsigned long Random::Int() {
@@ -50,8 +50,7 @@ double Random::Gaussian() {
     return(normal_distribution()(generator()));
 }
 
-double Random::Exponential(const double lambda)
-{
+double Random::Exponential(const double lambda) {
     std::exponential_distribution<double> exponential_distribution(lambda);
     return(exponential_distribution(generator()));
 }
