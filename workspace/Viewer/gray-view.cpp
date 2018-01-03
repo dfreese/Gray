@@ -12,14 +12,14 @@ using namespace std;
 
 int main(int argc, char ** argv)
 {
-    if (argc == 1) {
-        Config::usage();
-        return(0);
-    }
     Config config;
-    if (!config.ProcessCommandLine(argc, argv, true)) {
+    int config_status = config.ProcessCommandLine(argc, argv, true);
+    if (config_status < 0) {
         Config::usage();
         return(1);
+    } else if (config_status > 0) {
+        Config::usage();
+        return(0);
     }
     DetectorArray detector_array;
     SceneDescription scene;

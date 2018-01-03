@@ -13,13 +13,13 @@ using namespace std;
 
 int main(int argc, char ** argv) {
     Config config;
-    if (argc == 1) {
-        Config::usage();
-        return(0);
-    }
-    if (!config.ProcessCommandLine(argc,argv)) {
+    int config_status = config.ProcessCommandLine(argc, argv, false);
+    if (config_status < 0) {
         Config::usage();
         return(1);
+    } else if (config_status > 0) {
+        Config::usage();
+        return(0);
     }
 
     if (!config.get_filename_scene().empty()) {

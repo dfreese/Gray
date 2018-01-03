@@ -6,15 +6,15 @@ import numpy as np
 
 def _run_merge(filename, output_filename, map_filename, proc_filename,
                input_dtype, verbose, coinc_filenames=None):
-    cmd = 'gray-daq -h %s -s %s -m %s -p %s' % (
+    cmd = 'gray-daq -i %s -s %s -m %s -p %s' % (
         filename, output_filename, map_filename, proc_filename
     )
     if verbose:
         cmd += ' -v'
     if input_dtype == gray.standard_dtype:
-        cmd += ' -i full_binary'
+        cmd += ' --fmt full_binary'
     elif input_dtype == gray.no_position_dtype:
-        cmd += ' -i no_pos_binary'
+        cmd += ' --fmt no_pos_binary'
     if coinc_filenames is not None:
         for coinc_name in coinc_filenames:
             cmd += ' -c %s' % coinc_name

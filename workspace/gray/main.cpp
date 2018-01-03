@@ -1,4 +1,5 @@
 #include <ctime>
+#include <fstream>
 #include <iostream>
 #include <Graphics/SceneDescription.h>
 #include <Gray/GammaMaterial.h>
@@ -19,15 +20,16 @@ using namespace std;
 int gray(int argc, char ** argv)
 {
     clock_t start_time = clock();
-    if (argc == 1) {
+    Config config;
+    int config_status = config.ProcessCommandLine(argc, argv, true);
+    if (config_status < 0) {
+        Config::usage();
+        return(1);
+    } else if (config_status > 0) {
         Config::usage();
         return(0);
     }
-    Config config;
-    if (!config.ProcessCommandLine(argc, argv, true)) {
-        Config::usage();
-        return(1);
-    }
+
     DetectorArray detector_array;
     SceneDescription scene;
     SourceList sources;
@@ -66,7 +68,7 @@ int gray(int argc, char ** argv)
     } else if (singles_stream.load_mappings(config.get_filename_mapping()) < 0)
     {
         cerr << "Loading mapping file \"" << config.get_filename_mapping()
-        << "\" failed" << endl;
+             << "\" failed" << endl;
         return(2);
     }
 
@@ -77,6 +79,34 @@ int gray(int argc, char ** argv)
         cerr << "Loading pipeline file \"" << config.get_filename_process()
              << "\" failed" << endl;
         return(3);
+    }
+
+    if (config.get_write_pos()) {
+        std::ofstream det_file(config.get_write_pos_filename());
+        if (!det_file) {
+            std::cerr << "Unable to open detector position file for writing: "
+                      << config.get_write_pos_filename() << "\n";
+            return(4);
+        }
+        det_file << detector_array;
+        std::cout << "Detector position file written to "
+                  << config.get_write_map_filename() << "\n";
+    }
+    if (config.get_write_map()) {
+        std::ofstream map_file(config.get_write_map_filename());
+        if (!map_file) {
+            std::cerr << "Unable to open map file for writing: "
+                      << config.get_write_map_filename() << "\n";
+            return(5);
+        }
+        detector_array.WriteBasicMap(map_file, "detector", "block", "bx", "by",
+                                     "bz");
+        std::cout << "Mapping file written to "
+                  << config.get_write_map_filename() << "\n";
+    }
+    if (config.get_write_pos() || config.get_write_map()) {
+        std::cout << "Exiting.\n";
+        return (0);
     }
 
     scene.BuildTree(true, 8.0);

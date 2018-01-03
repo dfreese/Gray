@@ -16,7 +16,7 @@
 class Config {
 public:
     Config() = default;
-    bool ProcessCommandLine(int argc, char **argv, bool fail_without_scene = false);
+    int ProcessCommandLine(int argc, char **argv, bool fail_without_scene);
     static void usage();
 
     void set_filename_scene(const std::string & name);
@@ -37,6 +37,7 @@ public:
     void set_seed(unsigned long val);
     unsigned long get_seed() const;
     bool get_seed_set() const;
+    bool set_format(const std::string & fmt);
     bool set_format_hits(const std::string & fmt);
     void set_format_hits(const Output::Format & fmt);
     Output::Format get_format_hits() const;
@@ -85,6 +86,10 @@ public:
     Output::WriteFlags get_coinc_var_output_write_flags() const;
     bool get_verbose() const;
     bool get_run_overlap_test() const;
+    bool get_write_pos() const;
+    bool get_write_map() const;
+    std::string get_write_pos_filename() const;
+    std::string get_write_map_filename() const;
 
 private:
     std::string filename_scene;
@@ -124,6 +129,8 @@ private:
     bool coinc_var_output_write_flags_set = false;
     bool verbose = false;
     bool run_overlap_test = false;
+    std::string write_pos_filename = "";
+    std::string write_map_filename = "";
 };
 
 #endif /* Config_h */

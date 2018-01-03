@@ -501,21 +501,3 @@ Sets the background color of the scene.  RGB values should be [0, 1].
 v
 ```
 Legacy.  Does nothing and can safely be removed.
-
-
-
-## Helper Output
-
-### save_detector
-```
-save_detector [filename]
-```
-Writes out the detector ids, sizes, and their positions to the given file.
-
-### save_basic_map
-```
-save_basic_map [filename]
-```
-Using all of the detectors specified, including if they were created by an array
-call, creates a basic mapping file, with detector, array, bx, by, and bz as
-fields.

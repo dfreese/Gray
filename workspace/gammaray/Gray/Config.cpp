@@ -13,15 +13,21 @@
 
 using namespace std;
 
-bool Config::ProcessCommandLine(int argc, char **argv, bool fail_without_scene)
+/*
+ * Zero indicates success
+ * Less than 0 indicates fatal error
+ * Greater than 0 indicates non-fatal exit required (i.e. help).
+ */
+int Config::ProcessCommandLine(int argc, char **argv, bool fail_without_scene)
 {
     if (argc == 1) {
-        return(false);
+        return(1);
     }
     Mpi::Init(argc, argv);
 
     char * include_cstr = getenv ("GRAY_INCLUDE");
     if (include_cstr) {
+        // TODO: use portable method.
         gray_include_env = string(include_cstr) + "/";
     }
 
@@ -30,8 +36,8 @@ bool Config::ProcessCommandLine(int argc, char **argv, bool fail_without_scene)
     // Arguments not requiring an input
     for (int ix = 1; ix < argc; ix++) {
         string argument(argv[ix]);
-        if (argument == "--help") {
-            return(false);
+        if ((argument == "--help") || (argument == "-h")) {
+            return (1);
         }
         if (argument == "--test_overlap") {
             run_overlap_test = true;
@@ -59,7 +65,7 @@ bool Config::ProcessCommandLine(int argc, char **argv, bool fail_without_scene)
             set_filename_process(following_argument);
         } else if (argument == "-m") {
             set_filename_mapping(following_argument);
-        } else if (argument == "-h") {
+        } else if (argument == "-i") {
             set_filename_hits(following_argument);
         } else if (argument == "-s") {
             set_filename_singles(following_argument);
@@ -69,64 +75,76 @@ bool Config::ProcessCommandLine(int argc, char **argv, bool fail_without_scene)
             double tmp_time;
             if ((follow_arg_ss >> tmp_time).fail()) {
                 cerr << "Invalid time: " << following_argument << endl;
-                return(false);
+                return(-2);
             }
             set_time(tmp_time);
         } else if (argument == "--start") {
             double tmp_start_time;
             if ((follow_arg_ss >> tmp_start_time).fail()) {
                 cerr << "Invalid start time: " << following_argument << endl;
-                return(-1);
+                return(-3);
             }
             set_start_time(tmp_start_time);
         } else if (argument == "--phys") {
             physics_filename = following_argument;
-        } else if ((argument == "--hits_format") || (argument == "-i")) {
+        } else if (argument == "--fmt") {
+            if (!set_format(following_argument)) {
+                cerr << "Invalid format: " << following_argument << "\n";
+                return(-4);
+            }
+        } else if (argument == "--hits_fmt") {
             if (!set_format_hits(following_argument)) {
                 cerr << "Invalid hits format: " << following_argument << endl;
-                return(false);
+                return(-4);
             }
-        } else if (argument == "--singles_format") {
+        } else if (argument == "--singles_fmt") {
             if (!set_format_singles(following_argument)) {
                 cerr << "Invalid singles format: " << following_argument << endl;
-                return(false);
+                return(-5);
             }
-        } else if (argument == "--coinc_format") {
+        } else if (argument == "--coinc_fmt") {
             if (!set_format_coinc(following_argument)) {
                 cerr << "Invalid coinc format: " << following_argument << endl;
-                return(false);
+                return(-6);
             }
         } else if (argument == "--hits_mask") {
             if (!set_hits_var_output_write_flags(following_argument)) {
                 cerr << "Invalid hits mask: " << following_argument << endl;
-                return(false);
+                return(-7);
             }
         } else if (argument == "--singles_mask") {
             if (!set_singles_var_output_write_flags(following_argument)) {
                 cerr << "Invalid singles mask: " << following_argument << endl;
-                return(false);
+                return(-8);
             }
         } else if (argument == "--coinc_mask") {
             if (!set_coinc_var_output_write_flags(following_argument)) {
                 cerr << "Invalid coinc mask: " << following_argument << endl;
-                return(false);
+                return(-9);
             }
         } else if (argument == "--sort") {
             double tmp_sort_time;
             if ((follow_arg_ss >> tmp_sort_time).fail()) {
                 cerr << "Invalid sort time: " << following_argument << endl;
-                return(false);
+                return(-10);
             }
             set_sort_time(tmp_sort_time);
+        } else if (argument == "--write_pos") {
+            write_pos_filename = following_argument;
+        } else if (argument == "--write_map") {
+            write_map_filename = following_argument;
+        } else if (argument.front() == '-') {
+            cerr << "Unrecognized command line argument: " << argument << "\n";
+            return (-99);
         }
     }
 
     if (fail_without_scene && get_filename_scene().empty()) {
-        cerr << "Error: input filename not set" << endl;
-        return(false);
+        cerr << "Error: scene filename not set" << endl;
+        return(-11);
     }
 
-    return(true);
+    return(0);
 }
 
 bool Config::get_log_hits() const {
@@ -147,8 +165,8 @@ bool Config::get_log_any() const {
 
 void Config::usage() {
     cout << "gray (-v) -f [Scene Description]\n"
-    << "  --help : print help message\n"
-    << "  -h [filename] : set the output hits file / input for gray-daq\n"
+    << "  -h or --help : print help message\n"
+    << "  -i [filename] : set the output hits file / input for gray-daq\n"
     << "  -s [filename] : set the output for the singles file\n"
     << "  -c [filename] : set an output for the coinc files (order matters)\n"
     << "  -p [filename] : set the input process file for daq model\n"
@@ -157,13 +175,16 @@ void Config::usage() {
     << "  --seed [seed] : set the seed for the rand number generator\n"
     << "  --start [time] : set the start time in seconds\n"
     << "  --phys [filename] : set Gray Physics file. default=$GRAY_INCLUDE/GrayPhysics.json\n"
-    << "  -i or --hits_format [type] : hits output or input format default: var_ascii\n"
-    << "  --singles_format [type] : default: var_ascii or input type\n"
-    << "  --coinc_format [type] : default: var_ascii or input type\n"
+    << "  --fmt [type] : all input and output formats: var_ascii\n"
+    << "  --hits_fmt [type] : hits output or input format, default: var_ascii\n"
+    << "  --singles_fmt [type] : default: var_ascii or input type\n"
+    << "  --coinc_fmt [type] : default: var_ascii or input type\n"
     << "  --hits_mask [type] : default: all on, or input mask\n"
     << "  --singles_mask [type] : default: all on, or input mask\n"
     << "  --coinc_mask [type] : default: all on, or input mask\n"
     << "  --test_overlap : run overlap testing for the input geometry\n"
+    << "  --write_pos [filename] : write out the detector positions to file\n"
+    << "  --write_map [filename] : write out mapping information used to file\n"
     << " gray-daq only: \n"
     << "  --sort [time] : sort the incoming events, assuming this max out of order time\n"
     << endl;
@@ -233,6 +254,12 @@ unsigned long Config::get_seed() const {
 
 bool Config::get_seed_set() const {
     return(seed_set);
+}
+
+bool Config::set_format(const std::string & fmt) {
+    return (set_format_hits(fmt) &&
+            set_format_singles(fmt) &&
+            set_format_coinc(fmt));
 }
 
 bool Config::set_format_hits(const std::string & fmt) {
@@ -488,4 +515,20 @@ bool Config::get_verbose() const {
 
 bool Config::get_run_overlap_test() const {
     return (run_overlap_test);
+}
+
+bool Config::get_write_pos() const {
+    return (!write_pos_filename.empty());
+}
+
+bool Config::get_write_map() const  {
+    return (!write_map_filename.empty());
+}
+
+std::string Config::get_write_pos_filename() const {
+    return (write_pos_filename);
+}
+
+std::string Config::get_write_map_filename() const  {
+    return (write_map_filename);
 }
