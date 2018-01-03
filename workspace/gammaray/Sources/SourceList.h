@@ -13,6 +13,7 @@
 
 class Isotope;
 class VectorR3;
+class RigidMapR3;
 class SceneDescription;
 class GammaMaterial;
 
@@ -22,7 +23,7 @@ public:
     SourceList();
     NuclearDecay Decay();
     void AddSource(std::unique_ptr<Source> s);
-    bool SetCurIsotope(const std::string & iso);
+    bool SetCurIsotope(const std::string& iso, const RigidMapR3& cur_matrix);
     void SetSimulationTime(double time);
     double GetTime() const;
     double GetElapsedTime() const;
@@ -49,7 +50,8 @@ private:
     double SearchSplitTime(double start_time, double full_sim_time,
                            double split_start, double no_photons,
                            double tol) const;
-    bool CreateBeamIsotope(const std::string & iso);
+    bool CreateBeamIsotope(const std::string & iso,
+                           const RigidMapR3& current_matrix);
 
     std::stack<GammaMaterial const *> GetSourceMaterialStack(size_t idx) const;
     std::vector <std::unique_ptr<Source>> list;

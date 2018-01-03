@@ -124,7 +124,8 @@ bool SourceList::InsideNegative(const VectorR3 & pos)
     return false;
 }
 
-bool SourceList::CreateBeamIsotope(const std::string & iso) {
+bool SourceList::CreateBeamIsotope(const std::string& iso,
+                                   const RigidMapR3& current_matrix) {
     stringstream ss(iso);
     std::string beam_str;
     VectorR3 axis;
@@ -145,16 +146,18 @@ bool SourceList::CreateBeamIsotope(const std::string & iso) {
                   << "format: \"beam [axis] [angle] [energy]\"\n";
         return (false);
     }
+    current_matrix.Transform3x3(&axis);
     valid_isotopes.emplace(iso, new Beam(axis, angle, energy));
     return (true);
 }
 
-bool SourceList::SetCurIsotope(const std::string & iso)
+bool SourceList::SetCurIsotope(const std::string& iso,
+                               const RigidMapR3& current_matrix)
 {
     if (valid_isotopes.count(iso)) {
         current_isotope = iso;
         return(true);
-    } else if (CreateBeamIsotope(iso)) {
+    } else if (CreateBeamIsotope(iso, current_matrix)) {
         current_isotope = iso;
         return (true);
     } else {

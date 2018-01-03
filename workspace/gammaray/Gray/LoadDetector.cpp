@@ -545,7 +545,7 @@ bool LoadDetector::Load(const std::string & filename,
         } else if (command == "echo") {
             cout << "echo: " << args << endl;
         } else if (command == "isotope") {
-            if (!sources.SetCurIsotope(args)) {
+            if (!sources.SetCurIsotope(args, MatrixStack.top())) {
                 print_parse_error(line);
                 cerr << "invalid isotope: " << args << endl;
                 return(false);
@@ -759,8 +759,6 @@ bool LoadDetector::Load(const std::string & filename,
                 print_parse_error(line);
                 return(false);
             }
-            // FIXME: beam isotopes created inside of SourceList do not have
-            // their axis transformed by the current matrix.
             MatrixStack.top().Transform(&position);
             std::unique_ptr<PointSource> s(new PointSource(
                     position, actScale*activity));
