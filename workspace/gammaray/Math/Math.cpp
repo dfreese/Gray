@@ -232,3 +232,16 @@ std::vector<double> Math::pdf_to_cdf(const std::vector<double> & x,
     }
     return (cdf);
 }
+
+/*!
+ * An integer mixing hash for unsigned longs taken from here:
+ * https://stackoverflow.com/a/12996028/2465202
+ */
+unsigned long Math::hash(unsigned long x) {
+    constexpr unsigned long mult1(0xbf58476d1ce4e5b9);
+    constexpr unsigned long mult2(0x94d049bb133111eb);
+    x = (x ^ (x >> 30)) * mult1;
+    x = (x ^ (x >> 27)) * mult2;
+    x = x ^ (x >> 31);
+    return x;
+}

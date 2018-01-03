@@ -31,6 +31,7 @@ namespace Math {
                                const std::vector<double> & y);
     std::vector<double> pdf_to_cdf(const std::vector<double> & x,
                                    const std::vector<double> & pdf);
+    unsigned long hash(unsigned long x);
 }
 
 #endif // MATH_H

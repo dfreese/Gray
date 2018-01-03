@@ -11,6 +11,7 @@
 #include <sstream>
 #include <iostream>
 #include <Gray/Mpi.h>
+#include <Math/Math.h>
 
 using namespace std;
 
@@ -26,7 +27,7 @@ int Config::ProcessCommandLine(int argc, char **argv, bool fail_without_scene)
     }
     Mpi::Init(argc, argv);
     // Set the default seed to be the current time.
-    seed = std::time(NULL);
+    seed = Math::hash(std::time(NULL));
 
     char * include_cstr = getenv ("GRAY_INCLUDE");
     if (include_cstr) {
