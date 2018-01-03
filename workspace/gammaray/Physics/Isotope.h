@@ -2,9 +2,7 @@
 #define ISOTOPE_H
 
 #include <limits>
-#include <map>
-#include <stack>
-#include <string>
+#include <memory>
 #include <VrMath/LinearR3.h>
 #include <Physics/NuclearDecay.h>
 
@@ -14,6 +12,7 @@ public:
     Isotope() = default;
     Isotope(double half_life_s);
     virtual ~Isotope() = default;
+    virtual std::unique_ptr<Isotope> Clone() = 0;
     virtual NuclearDecay Decay(int photon_number, double time, int src_id,
                                const VectorR3 & position) = 0;
     double GetHalfLife() const;

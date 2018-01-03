@@ -15,6 +15,10 @@ Positron::Positron(double acolinearity_deg_fwhm, double half_life,
 {
 }
 
+std::unique_ptr<Isotope> Positron::Clone() {
+    return (std::unique_ptr<Isotope>(new Positron(*this)));
+}
+
 NuclearDecay Positron::Decay(int photon_number, double time, int src_id,
                      const VectorR3 & position)
 {

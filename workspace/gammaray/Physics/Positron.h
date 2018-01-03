@@ -7,8 +7,10 @@ class Positron: public Isotope
 {
 public:
     Positron() = default;
+    Positron(const Positron&) = default;
     Positron(double acolinearity_deg_fwhm, double half_life,
              double gamma_decay_energy_mev, double positron_emis_prob);
+    std::unique_ptr<Isotope> Clone() override;
     NuclearDecay Decay(int photon_number, double time, int src_id,
                        const VectorR3 & position) override;
     double ExpectedNoPhotons() const override;

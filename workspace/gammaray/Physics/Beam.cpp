@@ -7,8 +7,21 @@
 using namespace std;
 
 Beam::Beam() :
-    Isotope(std::numeric_limits<double>::infinity())
+    Beam({0, 0, 1}, 0, Physics::energy_511)
 {
+}
+
+Beam::Beam(const VectorR3 & axis, double angle, double energy) :
+    Isotope(std::numeric_limits<double>::infinity()),
+    beam_axis(axis),
+    beam_angle(angle),
+    beam_energy(energy)
+{
+
+}
+
+std::unique_ptr<Isotope> Beam::Clone() {
+    return (std::unique_ptr<Isotope>(new Beam(*this)));
 }
 
 void Beam::SetBeam(const VectorR3 & axis, double angle, double energy)
