@@ -56,7 +56,7 @@ private:
     double CalculateTime();
     bool InsideNegative(const VectorR3 & pos);
     int decay_number;
-    std::map<std::string, Positron> valid_positrons;
+    std::map<std::string, std::unique_ptr<Isotope>> valid_isotopes;
     std::string current_isotope;
     double simulation_time;
     struct DecayInfo {

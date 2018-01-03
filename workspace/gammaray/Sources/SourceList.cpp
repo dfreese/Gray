@@ -33,9 +33,8 @@ void SourceList::AddSource(std::unique_ptr<Source> s)
     if (beam_pt_src) {
         isotope = std::unique_ptr<Isotope>(new Beam());
     } else {
-        if (valid_positrons.count(current_isotope) > 0) {
-            isotope = std::unique_ptr<Isotope>(
-                    new Positron(valid_positrons[current_isotope]));
+        if (valid_isotopes.count(current_isotope) > 0) {
+            isotope = valid_isotopes[current_isotope]->Clone();
         } else {
             string error = "Isotope named " + current_isotope
                 + " somehow set as current isotope, but was not implemented";
@@ -137,7 +136,7 @@ bool SourceList::InsideNegative(const VectorR3 & pos)
 
 bool SourceList::SetCurIsotope(const std::string & iso)
 {
-    if (valid_positrons.count(iso)) {
+    if (valid_isotopes.count(iso)) {
         current_isotope = iso;
         return(true);
     } else {
@@ -409,8 +408,10 @@ bool SourceList::LoadIsotope(const std::string & iso_name,
         gamma_energy = 0;
     }
 
-    valid_positrons[iso_name] = Positron(acolinearity, half_life,
-                                         positron_prob, gamma_energy);
+    valid_isotopes[iso_name] = std::unique_ptr<Isotope>(
+            new Positron(acolinearity, half_life, positron_prob, gamma_energy));
+    Positron cur_positron = dynamic_cast<Positron&>(
+            *valid_isotopes[iso_name].get());
 
     Json::Value is_default = isotope["default"];
     if (is_default.isBool()) {
@@ -430,7 +431,7 @@ bool SourceList::LoadIsotope(const std::string & iso_name,
 
         double fwhm_mm = fwhm_mm_json.asDouble();
         double max_mm = max_mm_json.asDouble();
-        valid_positrons[iso_name].SetPositronRange(fwhm_mm, max_mm);
+        cur_positron.SetPositronRange(fwhm_mm, max_mm);
     } else if (model == "levin_exp") {
         Json::Value c_json = isotope["prob_c"];
         Json::Value k1_json = isotope["k1"];
@@ -447,7 +448,7 @@ bool SourceList::LoadIsotope(const std::string & iso_name,
         double k1 = k1_json.asDouble();
         double k2 = k2_json.asDouble();
         double max_mm = max_mm_json.asDouble();
-        valid_positrons[iso_name].SetPositronRange(c, k1, k2, max_mm);
+        cur_positron.SetPositronRange(c, k1, k2, max_mm);
     } else {
         std::cerr << "Unrecognized model, \"" << model << "\" for isotope \""
                   << iso_name << "\"\n";
