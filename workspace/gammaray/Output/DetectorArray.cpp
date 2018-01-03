@@ -18,30 +18,6 @@ int DetectorArray::AddDetector(const VectorR3 & pos, const VectorR3 &size,
     return detector_id;
 }
 
-std::map<std::string, std::vector<int>> DetectorArray::default_mapping() {
-    std::map<std::string, std::vector<int>> map;
-    map["detector"] = std::vector<int>();
-    map["block"] = std::vector<int>();
-    map["bx"] = std::vector<int>();
-    map["by"] = std::vector<int>();
-    map["bz"] = std::vector<int>();
-    for (const auto & d: detectors){
-        map["detector"].push_back(d.detector_id);
-        map["block"].push_back(d.block);
-        map["bx"].push_back(d.idx[0]);
-        map["by"].push_back(d.idx[1]);
-        map["bz"].push_back(d.idx[2]);
-    }
-    return(map);
-}
-
-void DetectorArray::OutputDetectorArray()
-{
-    for (int i = 0; i < detectors.size(); i++) {
-        cout << (detectors[i]);
-    }
-}
-
 bool DetectorArray::WritePositions(std::ostream& os) const {
     if (!os) {
         return (false);
@@ -57,19 +33,41 @@ bool DetectorArray::WritePositions(const std::string& filename) const {
     return (WritePositions(output));
 }
 
-void DetectorArray::WriteBasicMap(std::ostream & os,
-                                  const std::string & detector_name,
-                                  const std::string & block_name,
-                                  const std::string & bx_name,
-                                  const std::string & by_name,
-                                  const std::string & bz_name)
-{
-    os << detector_name << " " << block_name << " " << bx_name  << " "
-       << by_name << " " << bz_name << "\n";
-    for (const auto & d: detectors){
-        os << d.detector_id << " " << d.block << " " << d.idx[0]  << " "
-           << d.idx[1] << " " << d.idx[2] << "\n";
+Mapping::IdMappingT DetectorArray::DefaultMapping() const {
+    Mapping::IdMappingT map;
+    map.emplace("detector", detectors.size());
+    map.emplace("block", detectors.size());
+    map.emplace("bx", detectors.size());
+    map.emplace("by", detectors.size());
+    map.emplace("bz", detectors.size());
+    for (size_t ii = 0; ii < detectors.size(); ++ii) {
+        auto & d = detectors[ii];
+        map["detector"][ii] = d.detector_id;
+        map["block"][ii] = d.block;
+        map["bx"][ii] = d.idx[0];
+        map["by"][ii] = d.idx[1];
+        map["bz"][ii] = d.idx[2];
+    }
+    return(map);
+}
+
+Mapping::IdMappingT DetectorArray::Mapping() const {
+    if (mapping_set) {
+        return (mapping);
+    } else {
+        return (DefaultMapping());
     }
 }
 
+bool DetectorArray::LoadMapping(const std::string& filename) {
+    if (Mapping::LoadMapping(filename, mapping)) {
+        mapping_set = true;
+        return (true);
+    } else {
+        return (false);
+    }
+}
 
+bool DetectorArray::WriteDefaultMapping(const std::string& filename) const {
+    return (Mapping::WriteMapping(filename, Mapping()));
+}

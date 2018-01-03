@@ -1,12 +1,13 @@
 #include <fstream>
 #include <iostream>
+#include <Daq/Mapping.h>
+#include <Daq/InteractionStream.h>
 #include <Gray/Config.h>
 #include <Gray/LoadDetector.h>
 #include <Output/BinaryFormat.h>
 #include <Output/Input.h>
 #include <Output/Output.h>
 #include <Physics/Interaction.h>
-#include <Daq/InteractionStream.h>
 #include <Random/Random.h>
 
 using namespace std;
@@ -77,11 +78,12 @@ int main(int argc, char ** argv) {
     config.set_coinc_var_output_write_flags(input.get_write_flags());
 
     InteractionStream singles_stream(config.get_sort_time());
-    int no_detectors = singles_stream.load_mappings(config.get_filename_mapping());
-    if (no_detectors < 0) {
+    Mapping::IdMappingT mapping;
+    if (!Mapping::LoadMapping(config.get_filename_mapping(), mapping)) {
         cerr << "Loading mapping file failed" << endl;
         return(2);
     }
+    singles_stream.set_mapping(mapping);
 
     if (config.get_filename_process().empty()) {
         vector<string> proc_lines = config.get_process_lines();

@@ -32,8 +32,7 @@ public:
 
     ContainerT& get_buffer();
 
-    void set_mappings(const Mapping::IdMappingT& maps);
-    int load_mappings(const std::string & filename);
+    void set_mapping(const Mapping::IdMappingT& mapping);
     int set_processes(const std::vector<std::string> & lines);
     int load_processes(const std::string & filename);
     size_t no_processes() const;
@@ -68,7 +67,7 @@ public:
 
 private:
 
-    Mapping::IdMappingT id_maps;
+    Mapping::IdMappingT mapping;
 
     std::vector<std::unique_ptr<Process>> processes;
     std::vector<std::unique_ptr<Process>> coinc_processes;

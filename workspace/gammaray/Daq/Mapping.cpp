@@ -45,3 +45,34 @@ int Mapping::LoadMapping(const std::string& filename, IdMappingT& id_maps) {
     std::ifstream input(filename);
     return (LoadMapping(input, id_maps));
 }
+
+bool Mapping::WriteMapping(std::ostream& output, const IdMappingT& mapping) {
+    size_t no_detectors = 0;
+    for (auto it = mapping.begin(); it != mapping.end(); ++it) {
+        output << (*it).first;
+        if (std::next(it) != mapping.end()) {
+            output << " ";
+        } else {
+            no_detectors = (*mapping.begin()).second.size();
+            output << "\n";
+        }
+    }
+
+    for (size_t ii = 0; ii < no_detectors; ++ii) {
+        for (auto it = mapping.begin(); it != mapping.end(); ++it) {
+            output << (*it).second[ii];
+            if (std::next(it) != mapping.end()) {
+                output << " ";
+            }
+        }
+        output << "\n";
+    }
+    return (output.good());
+}
+
+bool Mapping::WriteMapping(const std::string& filename,
+                           const IdMappingT& mapping)
+{
+    std::ofstream output(filename);
+    return (WriteMapping(output, mapping));
+}

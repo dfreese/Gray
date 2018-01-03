@@ -35,3 +35,39 @@ TEST(LoadMappingTest, Basic) {
     ASSERT_EQ(status, no_detectors);
     EXPECT_EQ(exp_mapping, mapping);
 }
+
+TEST(WriteMappingTest, Roundtrip) {
+    std::stringstream ss("detector block bx by bz\n"
+                         "0 0 0 0 0\n"
+                         "1 0 1 0 0\n"
+                         "2 0 0 1 0\n"
+                         "3 0 1 1 0 # has a comment\n"
+                         "4 0 0 0 1\n"
+                         "   5 0 1 0 1 # has leading whitespace too\n"
+                         "6 0 0 1 1\n"
+                         "7 0 1 1 1\n");
+
+    // The output column order will be in ascending order of the strings for
+    // the mappings.  This could change if the underlying container changes
+    // from a map.
+    std::string exp("block bx by bz detector\n"
+                    "0 0 0 0 0\n"
+                    "0 1 0 0 1\n"
+                    "0 0 1 0 2\n"
+                    "0 1 1 0 3\n"
+                    "0 0 0 1 4\n"
+                    "0 1 0 1 5\n"
+                    "0 0 1 1 6\n"
+                    "0 1 1 1 7\n");
+    Mapping::IdMappingT mapping;
+    Mapping::LoadMapping(ss, mapping);
+
+    std::stringstream ss_output;
+    Mapping::WriteMapping(ss_output, mapping);
+    EXPECT_EQ(exp, ss_output.str());
+
+    // Complete the roundtrip and make sure we read in the same thing.
+    Mapping::IdMappingT exp_mapping;
+    Mapping::LoadMapping(ss_output, exp_mapping);
+    EXPECT_EQ(exp_mapping, mapping);
+}

@@ -1,5 +1,4 @@
 #include <ctime>
-#include <fstream>
 #include <iostream>
 #include <Graphics/SceneDescription.h>
 #include <Gray/GammaMaterial.h>
@@ -62,25 +61,6 @@ int gray(int argc, char ** argv)
                                       Physics::inverse_speed_of_light);
     InteractionStream singles_stream(max_req_sort_time);
 
-
-    if (config.get_filename_mapping() == "") {
-        singles_stream.set_mappings(detector_array.default_mapping());
-    } else if (singles_stream.load_mappings(config.get_filename_mapping()) < 0)
-    {
-        cerr << "Loading mapping file \"" << config.get_filename_mapping()
-             << "\" failed" << endl;
-        return(2);
-    }
-
-    if (config.get_filename_process() == "") {
-        singles_stream.set_processes(config.get_process_lines());
-    } else if (singles_stream.load_processes(config.get_filename_process()) < 0)
-    {
-        cerr << "Loading pipeline file \"" << config.get_filename_process()
-             << "\" failed" << endl;
-        return(3);
-    }
-
     if (config.get_write_pos()) {
         if (!detector_array.WritePositions(config.get_write_pos_filename())) {
             std::cerr << "Unable to open detector position file for writing: "
@@ -91,20 +71,38 @@ int gray(int argc, char ** argv)
                   << config.get_write_pos_filename() << "\n";
     }
     if (config.get_write_map()) {
-        std::ofstream map_file(config.get_write_map_filename());
-        if (!map_file) {
-            std::cerr << "Unable to open map file for writing: "
+        if (!detector_array.WriteDefaultMapping(
+                    config.get_write_map_filename()))
+        {
+            std::cerr << "Unable to write default mapping file: "
                       << config.get_write_map_filename() << "\n";
             return(5);
         }
-        detector_array.WriteBasicMap(map_file, "detector", "block", "bx", "by",
-                                     "bz");
+
         std::cout << "Mapping file written to "
-                  << config.get_write_map_filename() << "\n";
+        << config.get_write_map_filename() << "\n";
     }
     if (config.get_write_pos() || config.get_write_map()) {
         std::cout << "Exiting.\n";
         return (0);
+    }
+
+    if (!config.get_filename_mapping().empty()) {
+        if (!detector_array.LoadMapping(config.get_filename_mapping())) {
+            cerr << "Loading mapping file \"" << config.get_filename_mapping()
+                 << "\" failed" << endl;
+            return(2);
+        }
+    }
+    singles_stream.set_mapping(detector_array.Mapping());
+
+    if (config.get_filename_process().empty()) {
+        singles_stream.set_processes(config.get_process_lines());
+    } else if (singles_stream.load_processes(config.get_filename_process()) < 0)
+    {
+        cerr << "Loading pipeline file \"" << config.get_filename_process()
+             << "\" failed" << endl;
+        return(3);
     }
 
     scene.BuildTree(true, 8.0);

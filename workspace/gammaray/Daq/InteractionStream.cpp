@@ -23,20 +23,9 @@ InteractionStream::ContainerT& InteractionStream::get_buffer() {
     return (input_events);
 }
 
-void InteractionStream::set_mappings(const Mapping::IdMappingT& maps)
+void InteractionStream::set_mapping(const Mapping::IdMappingT& mapping)
 {
-    id_maps = maps;
-}
-
-int InteractionStream::load_mappings(const std::string & filename) {
-    Mapping::IdMappingT id_maps;
-    int no_detectors = Mapping::LoadMapping(filename, id_maps);
-    if (no_detectors < 0) {
-        return(-1);
-    }
-    this->id_maps = id_maps;
-    return(no_detectors);
-
+    this->mapping = mapping;
 }
 
 int InteractionStream::set_processes(const std::vector<std::string> & lines) {
@@ -150,7 +139,7 @@ int InteractionStream::set_processes(
 {
     for (const auto & desc: process_descriptions) {
         std::unique_ptr<Process> proc = ProcessFactory::ProcessFactory(desc,
-                                                                       id_maps);
+                                                                       mapping);
         if (proc == nullptr) {
             return (-1);
         }
