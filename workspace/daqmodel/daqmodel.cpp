@@ -83,7 +83,6 @@ int main(int argc, char ** argv) {
         cerr << "Loading mapping file failed" << endl;
         return(2);
     }
-    singles_stream.set_mapping(mapping);
 
     if (config.get_filename_process().empty()) {
         vector<string> proc_lines = config.get_process_lines();
@@ -91,13 +90,15 @@ int main(int argc, char ** argv) {
             cerr << "No process steps specified" << endl;
             return(3);
         }
-        int proc_load_status = singles_stream.set_processes(proc_lines);
+        int proc_load_status = singles_stream.set_processes(proc_lines,
+                                                            mapping);
         if (proc_load_status < 0) {
             cerr << "Loading process lines failed" << endl;
             return(2);
         }
     } else {
-        int proc_load_status = singles_stream.load_processes(config.get_filename_process());
+        int proc_load_status = singles_stream.load_processes(
+                config.get_filename_process(), mapping);
         if (proc_load_status < 0) {
             cerr << "Loading process file failed" << endl;
             return(2);

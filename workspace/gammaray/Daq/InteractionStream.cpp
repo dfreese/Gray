@@ -23,29 +23,28 @@ InteractionStream::ContainerT& InteractionStream::get_buffer() {
     return (input_events);
 }
 
-void InteractionStream::set_mapping(const Mapping::IdMappingT& mapping)
+int InteractionStream::set_processes(const std::vector<std::string> & lines,
+                                     const Mapping::IdMappingT& mapping)
 {
-    this->mapping = mapping;
-}
-
-int InteractionStream::set_processes(const std::vector<std::string> & lines) {
     std::vector<ProcessDescription> process_descriptions;
     int status = ProcessFactory::ProcessDescLines(lines, process_descriptions);
     if (status < 0) {
         return(-1);
     }
 
-    return(set_processes(process_descriptions));
+    return(set_processes(process_descriptions, mapping));
 }
 
-int InteractionStream::load_processes(const std::string & filename) {
+int InteractionStream::load_processes(const std::string & filename,
+                                      const Mapping::IdMappingT& mapping)
+{
     std::vector<ProcessDescription> process_descriptions;
     int status = ProcessFactory::ProcessDescFile(filename,
                                                  process_descriptions);
     if (status < 0) {
         return(-1);
     }
-    return(set_processes(process_descriptions));
+    return(set_processes(process_descriptions, mapping));
 }
 
 size_t InteractionStream::no_processes() const {
@@ -135,7 +134,8 @@ std::ostream & operator << (std::ostream & os, const InteractionStream & s) {
 }
 
 int InteractionStream::set_processes(
-        const std::vector<ProcessDescription> & process_descriptions)
+        const std::vector<ProcessDescription> & process_descriptions,
+        const Mapping::IdMappingT& mapping)
 {
     for (const auto & desc: process_descriptions) {
         std::unique_ptr<Process> proc = ProcessFactory::ProcessFactory(desc,

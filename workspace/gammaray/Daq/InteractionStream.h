@@ -31,10 +31,10 @@ public:
     InteractionStream(TimeT initial_sort_window = -1);
 
     ContainerT& get_buffer();
-
-    void set_mapping(const Mapping::IdMappingT& mapping);
-    int set_processes(const std::vector<std::string> & lines);
-    int load_processes(const std::string & filename);
+    int set_processes(const std::vector<std::string> & lines,
+                      const Mapping::IdMappingT& mapping);
+    int load_processes(const std::string & filename,
+                       const Mapping::IdMappingT& mapping);
     size_t no_processes() const;
     size_t no_coinc_processes() const;
     long no_events() const;
@@ -66,9 +66,6 @@ public:
 
 
 private:
-
-    Mapping::IdMappingT mapping;
-
     std::vector<std::unique_ptr<Process>> processes;
     std::vector<std::unique_ptr<Process>> coinc_processes;
 
@@ -77,7 +74,8 @@ private:
 
     using ProcessDescription = ProcessFactory::ProcessDescription;
 
-    int set_processes(const std::vector<ProcessDescription> & process_descriptions);
+    int set_processes(const std::vector<ProcessDescription> & process_descriptions,
+                      const Mapping::IdMappingT& mapping);
 
     void add_process(std::unique_ptr<Process> process, bool proc_print_info);
 

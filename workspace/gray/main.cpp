@@ -94,11 +94,12 @@ int gray(int argc, char ** argv)
             return(2);
         }
     }
-    singles_stream.set_mapping(detector_array.Mapping());
 
     if (config.get_filename_process().empty()) {
-        singles_stream.set_processes(config.get_process_lines());
-    } else if (singles_stream.load_processes(config.get_filename_process()) < 0)
+        singles_stream.set_processes(config.get_process_lines(),
+                                     detector_array.Mapping());
+    } else if (singles_stream.load_processes(config.get_filename_process(),
+                                             detector_array.Mapping()) < 0)
     {
         cerr << "Loading pipeline file \"" << config.get_filename_process()
              << "\" failed" << endl;
