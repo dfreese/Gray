@@ -111,14 +111,14 @@ add_library(gammaray
     Sources/AnnulusCylinderSource.h
     Sources/AnnulusEllipticCylinderSource.cpp
     Sources/AnnulusEllipticCylinderSource.h
-    Sources/BeamPointSource.cpp
-    Sources/BeamPointSource.h
     Sources/CylinderSource.cpp
     Sources/CylinderSource.h
     Sources/EllipsoidSource.cpp
     Sources/EllipsoidSource.h
     Sources/EllipticCylinderSource.cpp
     Sources/EllipticCylinderSource.h
+    Sources/PointSource.cpp
+    Sources/PointSource.h
     Sources/RectSource.cpp
     Sources/RectSource.h
     Sources/Source.h

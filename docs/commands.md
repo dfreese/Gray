@@ -350,6 +350,15 @@ isotope [isotope name]
 Sets the current isotope to the given name.  This must match, exactly, the name
 given to the isotope in the isotopes file.
 
+```
+isotope beam [direction xyz] [angle width (deg fwhm)] [energy] [activity]
+```
+Creates a monoenergetic source with a given direction.  The angle should be
+non-negative.  If it is greater than zero, an angle offset from the direction
+axis will randomly be selected, along with a random azimuthal coordinate around
+the axis.  This is typically paired with pt_src.  Gamma rays are emitted in
+both direction and (-direction).
+
 ### cyl_src
 ```
 cyl_src ["cyl" options] [activity]
@@ -385,14 +394,14 @@ end_vecsrc
 ```
 Indicates the end of a vector source started by start_vecsrc
 
-### beam
+### pt_src
 ```
-beam [position xyz] [direction xyz] [angle width] [energy] [activity]
+pt_src [position xyz] [activity]
 ```
-Creates a monoenergetic source with a given position and direction.
-The angle should be non-negative.  If it is greater than zero, an angle offset
-from the direction axis will randomly be selected, along with a random azimuthal
-coordinate around the axis.
+Creates a source where decays are emitted precisely from the position given.
+If the current isotope is a positron, the positron range will be applied from
+this position.  This can commonly be paired with a "isotope beam ..."  command
+to create a gamma ray beam of a particular energy.
 
 ### voxel_src
 ```

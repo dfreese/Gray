@@ -3,11 +3,14 @@
 # spectra.
 
 m Air
-beam 0.0 0.0 0.0 0.0 0.0 1.0 0.0 0.510998903 2.7027
+isotope beam 0.0 0.0 1.0 0.0 0.510998903
+pt_src 0.0 0.0 0.0 1.0
 time 1.0
 
 m LSO
 color 0.05 0.20 0.05  0.1 0.4 0.1  0.3 0.3 0.3  0.0 0.0 0.0  0.2 0.50 0.2 1.05
 k 0.0 0.0 51.0 100.0 100.0 100.0
+k 0.0 0.0 -51.0 100.0 100.0 100.0
 
-hits_format full_binary
+hits_format var_binary
+log_nondepositing

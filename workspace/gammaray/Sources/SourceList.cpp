@@ -3,7 +3,7 @@
 #include <Physics/Beam.h>
 #include <Physics/Positron.h>
 #include <Physics/Physics.h>
-#include <Sources/BeamPointSource.h>
+#include <Sources/PointSource.h>
 #include <Sources/VectorSource.h>
 #include <Graphics/VisiblePoint.h>
 #include <Graphics/SceneDescription.h>
@@ -26,23 +26,12 @@ SourceList::SourceList() :
 
 void SourceList::AddSource(std::unique_ptr<Source> s)
 {
-    std::unique_ptr<Isotope> isotope;
-    // BeamPointSource requires a beam isotope, so override the current isotope
-    // setting to make sure that is given.
-    BeamPointSource * beam_pt_src = dynamic_cast<BeamPointSource *>(s.get());
-    if (beam_pt_src) {
-        isotope = std::unique_ptr<Isotope>(new Beam());
-    } else {
-        if (valid_isotopes.count(current_isotope) > 0) {
-            isotope = valid_isotopes[current_isotope]->Clone();
-        } else {
-            string error = "Isotope named " + current_isotope
-                + " somehow set as current isotope, but was not implemented";
-            throw(runtime_error(error));
-        }
+    s->SetIsotope(valid_isotopes[current_isotope]->Clone());
+    if (s->GetIsotope() == nullptr) {
+        string error = "Isotope named " + current_isotope
+        + " somehow set as current isotope, but was not implemented";
+        throw(runtime_error(error));
     }
-    
-    s->SetIsotope(std::move(isotope));
     if (s->isNegative()) {
         if (s->GetActivity() < -1.0) {
             string error = "Negative Source activities should be [-1,0)";
@@ -134,15 +123,42 @@ bool SourceList::InsideNegative(const VectorR3 & pos)
     return false;
 }
 
+bool SourceList::CreateBeamIsotope(const std::string & iso) {
+    stringstream ss(iso);
+    std::string beam_str;
+    VectorR3 axis;
+    double angle;
+    double energy;
+
+    ss >> beam_str;
+    ss >> axis.x;
+    ss >> axis.y;
+    ss >> axis.z;
+    ss >> angle;
+    ss >> energy;
+    if (beam_str != "beam") {
+        return (false);
+    }
+    if (ss.fail()) {
+        std::cerr << "Invalid beam. \"" << iso << "\"\n"
+                  << "format: \"beam [axis] [angle] [energy]\"\n";
+        return (false);
+    }
+    valid_isotopes.emplace(iso, new Beam(axis, angle, energy));
+    return (true);
+}
+
 bool SourceList::SetCurIsotope(const std::string & iso)
 {
     if (valid_isotopes.count(iso)) {
         current_isotope = iso;
         return(true);
+    } else if (CreateBeamIsotope(iso)) {
+        current_isotope = iso;
+        return (true);
     } else {
         return(false);
     }
-
 }
 
 void SourceList::SetSimulationTime(double time)

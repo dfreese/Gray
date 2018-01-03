@@ -48,7 +48,7 @@ public:
         return activity;
     }
 
-    virtual void SetIsotope(std::unique_ptr<Isotope> i)
+    void SetIsotope(std::unique_ptr<Isotope> i)
     {
         isotope = std::move(i);
     }

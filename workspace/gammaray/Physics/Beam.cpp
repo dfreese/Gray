@@ -11,10 +11,10 @@ Beam::Beam() :
 {
 }
 
-Beam::Beam(const VectorR3 & axis, double angle, double energy) :
+Beam::Beam(const VectorR3 & axis, double angle_deg_fwhm, double energy) :
     Isotope(std::numeric_limits<double>::infinity()),
     beam_axis(axis),
-    beam_angle(angle),
+    beam_angle((angle_deg_fwhm/180.0) * M_PI/2.35482005),
     beam_energy(energy)
 {
 
@@ -22,13 +22,6 @@ Beam::Beam(const VectorR3 & axis, double angle, double energy) :
 
 std::unique_ptr<Isotope> Beam::Clone() {
     return (std::unique_ptr<Isotope>(new Beam(*this)));
-}
-
-void Beam::SetBeam(const VectorR3 & axis, double angle, double energy)
-{
-    beam_axis = axis;
-    beam_angle = angle;
-    beam_energy = energy;
 }
 
 NuclearDecay Beam::Decay(int photon_number, double time, int src_id,

@@ -19,10 +19,10 @@
 #include <Output/DetectorArray.h>
 #include <Sources/AnnulusCylinderSource.h>
 #include <Sources/AnnulusEllipticCylinderSource.h>
-#include <Sources/BeamPointSource.h>
 #include <Sources/CylinderSource.h>
 #include <Sources/EllipsoidSource.h>
 #include <Sources/EllipticCylinderSource.h>
+#include <Sources/PointSource.h>
 #include <Sources/RectSource.h>
 #include <Sources/SphereSource.h>
 #include <Sources/VectorSource.h>
@@ -545,15 +545,9 @@ bool LoadDetector::Load(const std::string & filename,
         } else if (command == "echo") {
             cout << "echo: " << args << endl;
         } else if (command == "isotope") {
-            char string[256];
-            int scanCode = sscanf(args.c_str(), "%s", string);
-            if (scanCode != 1) {
+            if (!sources.SetCurIsotope(args)) {
                 print_parse_error(line);
-                return(false);
-            }
-            if (!sources.SetCurIsotope(string)) {
-                print_parse_error(line);
-                cerr << "invalid isotope: " << string << endl;
+                cerr << "invalid isotope: " << args << endl;
                 return(false);
             }
         } else if (command == "voxel_src") {
@@ -752,28 +746,24 @@ bool LoadDetector::Load(const std::string & filename,
             s->SetMaterial(curMaterial);
             TransformWithRigid(s.get(),MatrixStack.top());
             theScene.AddViewable(std::move(s));
-        } else if (command == "beam") {
-            // beam pos_x pos_y pos_z axis_x axis_y axis_z angle energy activity
-            // Beam source
+        } else if (command == "pt_src") {
+            // pt_src pos_x pos_y pos_z activity
             VectorR3 position;
-            VectorR3 axis;
-            double angle = -1.0;
-            double energy = -1.0;
-            double activity = -1.0;
-            int scanCode = sscanf(args.c_str(),
-                                  "%lf %lf %lf %lf %lf %lf %lf %lf %lf",
-                                  &(position.x), &(position.y), &(position.z),
-                                  &(axis.x), &(axis.y), &(axis.z),
-                                  &angle, &energy, &activity);
-            if (scanCode != 9) {
+            double activity;
+            std::stringstream ss(args);
+            ss >> position.x;
+            ss >> position.y;
+            ss >> position.z;
+            ss >> activity;
+            if (ss.fail()) {
                 print_parse_error(line);
                 return(false);
             }
-            axis.Normalize();
+            // FIXME: beam isotopes created inside of SourceList do not have
+            // their axis transformed by the current matrix.
             MatrixStack.top().Transform(&position);
-            MatrixStack.top().Transform3x3(&axis);
-            std::unique_ptr<BeamPointSource> s(new BeamPointSource(
-                    position, axis, angle, energy, actScale*activity));
+            std::unique_ptr<PointSource> s(new PointSource(
+                    position, actScale*activity));
             sources.AddSource(std::move(s));
         } else if (command == "start_vecsrc") {
             double activity = -1.0;

@@ -49,6 +49,7 @@ private:
     double SearchSplitTime(double start_time, double full_sim_time,
                            double split_start, double no_photons,
                            double tol) const;
+    bool CreateBeamIsotope(const std::string & iso);
 
     std::stack<GammaMaterial const *> GetSourceMaterialStack(size_t idx) const;
     std::vector <std::unique_ptr<Source>> list;

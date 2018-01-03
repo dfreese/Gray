@@ -8,10 +8,9 @@ class Beam : public Isotope
 public:
     Beam();
     Beam(const Beam&) = default;
-    Beam(const VectorR3 & axis, double angle, double energy);
+    Beam(const VectorR3 & axis, double angle_deg_fwhm, double energy);
 
     std::unique_ptr<Isotope> Clone() override;
-    void SetBeam(const VectorR3 & axis, double angle, double energy);
     NuclearDecay Decay(int photon_number, double time, int src_id,
                        const VectorR3 & position) override;
     double ExpectedNoPhotons() const override;
