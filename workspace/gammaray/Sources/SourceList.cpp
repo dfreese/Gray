@@ -111,8 +111,7 @@ NuclearDecay SourceList::Decay() {
                           decay.position));
 }
 
-bool SourceList::InsideNegative(const VectorR3 & pos)
-{
+bool SourceList::InsideNegative(const VectorR3 & pos) const {
     for (int i = 0; i < neg_list.size(); i++) {
         if (neg_list[i]->Inside(pos)) {
             double ratio = -1 * neg_list[i]->GetActivity();
@@ -373,7 +372,7 @@ std::stack<GammaMaterial const *> SourceList::GetUpdatedStack(
         dist = remaining_dist;
         if (point.IsFrontFacing()) {
             // Front face means we are entering a material.
-            mat_stack.push(static_cast<GammaMaterial const * const>(&point.GetMaterial()));
+            mat_stack.emplace(static_cast<GammaMaterial const *>(&point.GetMaterial()));
         } else if (point.IsBackFacing()) {
             // Back face means we are exiting a material
             if (mat_stack.empty()) {

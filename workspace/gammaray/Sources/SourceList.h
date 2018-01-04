@@ -36,9 +36,9 @@ public:
     void AdjustTimeForSplit(int idx, int n);
     void BuildMaterialStacks(const SceneDescription & scene);
     GammaMaterial const & GetSourceMaterial(size_t idx) const;
-    std::stack<GammaMaterial const *> GetUpdatedStack(size_t idx,
-                                                      const VectorR3 & pos,
-                                                      const SceneDescription & scene) const;
+    std::stack<GammaMaterial const *> GetUpdatedStack(
+            size_t idx, const VectorR3 & pos,
+            const SceneDescription & scene) const;
 
 private:
     double ExpectedDecays(double start_time, double sim_time) const;
@@ -52,33 +52,31 @@ private:
                            double tol) const;
     bool CreateBeamIsotope(const std::string & iso,
                            const RigidMapR3& current_matrix);
+    bool InsideNegative(const VectorR3 & pos) const;
+    bool LoadIsotope(const std::string& iso_name, Json::Value isotope);
 
-    std::stack<GammaMaterial const *> GetSourceMaterialStack(size_t idx) const;
-    std::vector <std::unique_ptr<Source>> list;
-    std::vector <std::unique_ptr<Source>> neg_list;
-    double CalculateTime();
-    bool InsideNegative(const VectorR3 & pos);
-    int decay_number;
-    std::map<std::string, std::unique_ptr<Isotope>> valid_isotopes;
-    std::string current_isotope;
-    double simulation_time;
     struct DecayInfo {
         double time;
         size_t source_idx;
         VectorR3 position;
         int decay_number;
-        friend bool operator<(const DecayInfo & lhs, const DecayInfo & rhs) {
-            return (lhs.time < rhs.time);
+        bool operator<(const DecayInfo & rhs) const {
+            return (time < rhs.time);
         }
     };
-    std::set<DecayInfo> decay_list;
     void AddNextDecay(DecayInfo base_info);
     DecayInfo GetNextDecay();
+
+    std::stack<GammaMaterial const *> GetSourceMaterialStack(size_t idx) const;
+    std::vector<std::unique_ptr<Source>> list;
+    std::vector<std::unique_ptr<Source>> neg_list;
+    int decay_number;
+    std::map<std::string, std::unique_ptr<Isotope>> valid_isotopes;
+    std::string current_isotope;
+    double simulation_time;
+    std::set<DecayInfo> decay_list;
     bool simulate_isotope_half_life;
     double start_time;
-
-
-    bool LoadIsotope(const std::string& iso_name, Json::Value isotope);
 };
 
 #endif
