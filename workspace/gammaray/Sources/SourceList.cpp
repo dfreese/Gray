@@ -2,13 +2,10 @@
 #include <Random/Random.h>
 #include <Physics/Beam.h>
 #include <Physics/Positron.h>
-#include <Physics/Physics.h>
 #include <Sources/PointSource.h>
 #include <Sources/VectorSource.h>
-#include <Graphics/VisiblePoint.h>
-#include <Graphics/SceneDescription.h>
-#include <Gray/GammaMaterial.h>
 #include <VrMath/LinearR3.h>
+#include <algorithm>
 #include <exception>
 #include <limits>
 #include <fstream>
@@ -70,6 +67,15 @@ double SourceList::GetSimulationTime() const
 
 double SourceList::GetEndTime() const {
     return(simulation_time + start_time);
+}
+
+std::vector<VectorR3> SourceList::GetSourcePositions() const {
+    std::vector<VectorR3> positions(list.size());
+    std::transform(list.begin(), list.end(), positions.begin(),
+                   [](const std::unique_ptr<Source> & s) {
+                       return s->GetPosition();
+                   });
+    return (positions);
 }
 
 void SourceList::AddNextDecay(DecayInfo base_info) {
@@ -276,122 +282,6 @@ void SourceList::InitSources() {
         AddNextDecay(info);
     }
 }
-
-void SourceList::BuildMaterialStacks(const SceneDescription & scene) {
-    const VectorR3 dir(1, 0, 0);
-
-    // Use the first material listed in Gray_Materials as the default material
-    // in the world.
-    GammaMaterial const * const default_material(
-            static_cast<GammaMaterial const * const>(&scene.GetDefaultMaterial()));
-    for (auto & source: list) {
-        stack<GammaMaterial const *> materials;
-        stack<bool> front_face;
-        VisiblePoint point;
-        point.SetPosition(source->GetPosition());
-
-        double hit_dist = DBL_MAX;
-        long obj_num = scene.SeekIntersection(
-                point.GetPosition() + dir * SceneDescription::ray_trace_epsilon,
-                dir, hit_dist, point);
-
-        while (obj_num >= 0) {
-            materials.push(static_cast<GammaMaterial const *>(&point.GetMaterial()));
-            if (point.IsFrontFacing()) {
-                front_face.push(true);
-            } else {
-                front_face.push(false);
-            }
-            hit_dist = DBL_MAX;
-            obj_num = scene.SeekIntersection(
-                    point.GetPosition() + dir * SceneDescription::ray_trace_epsilon,
-                    dir, hit_dist, point);
-        }
-
-        stack<GammaMaterial const *> true_materials;
-        true_materials.push(default_material);
-        while (!materials.empty()) {
-            bool is_front_face = front_face.top();
-            GammaMaterial const * material = materials.top();
-            front_face.pop();
-            materials.pop();
-
-            if (!is_front_face) {
-                true_materials.push(material);
-            } else {
-                true_materials.pop();
-                if (true_materials.size() < 1) {
-                    throw runtime_error("Error in determining source materials: potential object overlap error");
-                }
-            }
-        }
-        source->SetMaterialStack(true_materials);
-    }
-}
-
-std::stack<GammaMaterial const *> SourceList::GetSourceMaterialStack(size_t idx) const
-{
-    return (list[idx]->GetMaterialStack());
-}
-
-const GammaMaterial & SourceList::GetSourceMaterial(size_t idx) const {
-    return (*list[idx]->GetMaterialStack().top());
-}
-
-/*!
- * Checks if a photon's start position changes the geometry it is in relative
- * to the center of the source from which we have already established a
- * reliable materials stack.
- *
- * This calls SeekIntersection limited to the distance between the two points.
- */
-std::stack<GammaMaterial const *> SourceList::GetUpdatedStack(
-        size_t idx, const VectorR3 & pos, const SceneDescription & scene) const
-{
-    std::stack<GammaMaterial const *> mat_stack(GetSourceMaterialStack(idx));
-    VectorR3 src_pos(list[idx]->GetPosition());
-    // If the points are equal, as they will be for a decay without some sort
-    // of blur like positron range, then bail without any ray tracing.
-    if (src_pos == pos) {
-        return (mat_stack);
-    }
-    // The direction vector from the center of the source to the photon's
-    // starting position. Leave this unnormalized for now so we can calculate
-    // the distance.
-    auto dir = pos - src_pos;
-    // This holds the maximum trace distance / returned hit distance
-    double dist = dir.Norm();
-    // The remaining distance we must trace to the photon's starting point
-    double remaining_dist = dist;
-    dir.Normalize();
-    VisiblePoint point;
-    point.SetPosition(src_pos);
-    while (scene.SeekIntersection(point.GetPosition() + 1e-10 * dir, dir, dist, point) >= 0)
-    {
-        remaining_dist -= dist + SceneDescription::ray_trace_epsilon;
-        dist = remaining_dist;
-        if (point.IsFrontFacing()) {
-            // Front face means we are entering a material.
-            mat_stack.emplace(static_cast<GammaMaterial const *>(&point.GetMaterial()));
-        } else if (point.IsBackFacing()) {
-            // Back face means we are exiting a material
-            if (mat_stack.empty()) {
-                // If we somehow have an empty stack, then we somehow missed a
-                // front face.
-                break;
-            }
-            if (mat_stack.top() != (&point.GetMaterial())) {
-                // If the material we find on the back face isn't the material
-                // we think we're in, then there's probably some weird overlap.
-                break;
-            }
-            // If everything looks okay, pull that material off of the stack.
-            mat_stack.pop();
-        }
-    }
-    return (mat_stack);
-}
-
 
 bool SourceList::LoadIsotope(const std::string & iso_name,
                              Json::Value isotope)

@@ -11,14 +11,13 @@ class Interaction;
 class SceneDescription;
 class Output;
 class Photon;
-class SourceList;
 class VectorR3;
 
 class GammaRayTrace {
 public:
 
-    GammaRayTrace(SourceList & source_list,
-                  const SceneDescription & scene,
+    GammaRayTrace(const SceneDescription & scene,
+                  const std::vector<VectorR3>& source_positions,
                   bool log_nondepositing_inter,
                   bool log_nuclear_decays_inter,
                   bool log_nonsensitive_inter,
@@ -46,14 +45,29 @@ public:
     const TraceStats & statistics() const;
     void TraceDecay(NuclearDecay & decay,
                     std::vector<Interaction> & interactions) const;
+    static std::stack<GammaMaterial const *> BuildStack(
+            const SceneDescription& scene,
+            const VectorR3& src_pos);
+    static std::vector<std::stack<GammaMaterial const *>> BuildStacks(
+            const SceneDescription& scene,
+            const std::vector<VectorR3>& positions);
+    static std::stack<GammaMaterial const *> UpdateStack(
+            const VectorR3 & src_pos, const VectorR3 & pos,
+            const SceneDescription & scene,
+            const std::stack<GammaMaterial const *>& base);
 
 private:
     void TracePhoton(Photon &photon,
                      std::vector<Interaction> & interactions,
                      std::stack<GammaMaterial const *> MatStack) const;
+    std::stack<GammaMaterial const *> DecayStack(
+            size_t src_id, const VectorR3 & pos) const;
+    const GammaMaterial& SourceMaterial(size_t idx) const;
 
-    SourceList & sources;
+
     const SceneDescription & scene;
+    const std::vector<VectorR3> source_positions;
+    const std::vector<std::stack<GammaMaterial const *>> source_mats;
     bool log_nondepositing_inter;
     bool log_nuclear_decays;
     bool log_nonsensitive;

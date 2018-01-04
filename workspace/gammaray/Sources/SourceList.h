@@ -14,8 +14,6 @@
 class Isotope;
 class VectorR3;
 class RigidMapR3;
-class SceneDescription;
-class GammaMaterial;
 
 class SourceList
 {
@@ -29,16 +27,12 @@ public:
     double GetElapsedTime() const;
     double GetSimulationTime() const;
     double GetEndTime() const;
+    std::vector<VectorR3> GetSourcePositions() const;
     void SetSimulateIsotopeHalfLife(bool val);
     void SetStartTime(double val);
     void InitSources();
     bool LoadIsotopes(const std::string& physics_filename);
     void AdjustTimeForSplit(int idx, int n);
-    void BuildMaterialStacks(const SceneDescription & scene);
-    GammaMaterial const & GetSourceMaterial(size_t idx) const;
-    std::stack<GammaMaterial const *> GetUpdatedStack(
-            size_t idx, const VectorR3 & pos,
-            const SceneDescription & scene) const;
 
 private:
     double ExpectedDecays(double start_time, double sim_time) const;
@@ -67,7 +61,6 @@ private:
     void AddNextDecay(DecayInfo base_info);
     DecayInfo GetNextDecay();
 
-    std::stack<GammaMaterial const *> GetSourceMaterialStack(size_t idx) const;
     std::vector<std::unique_ptr<Source>> list;
     std::vector<std::unique_ptr<Source>> neg_list;
     int decay_number;

@@ -6,15 +6,11 @@
 #define SOURCE_H
 
 #include <memory>
-#include <stack>
-#include <vector>
 
 #include <VrMath/MathMisc.h>
 #include <VrMath/LinearR3.h>
 #include <Physics/Isotope.h>
 #include <Physics/Physics.h>
-
-class GammaMaterial;
 
 class Source
 {
@@ -67,14 +63,6 @@ public:
         source_num = i;
     }
 
-    void SetMaterialStack(std::stack<GammaMaterial const *> material_stack) {
-        this->material_stack = material_stack;
-    }
-
-    const std::stack<GammaMaterial const *> & GetMaterialStack() const {
-        return(material_stack);
-    }
-
     bool isNegative() const {
         return negative;
     }
@@ -93,9 +81,6 @@ protected:
     bool negative;
     int source_num;
     VectorR3 position;
-
-private:
-    std::stack<GammaMaterial const *> material_stack;
 };
 
 #endif // SOURCE_H

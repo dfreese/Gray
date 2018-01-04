@@ -23,7 +23,6 @@ void Simulation::SetupSources(const Config & config, SourceList & sources,
     sources.SetSimulationTime(config.get_time());
     sources.SetStartTime(config.get_start_time());
     Mpi::AdjustSimTime(sources);
-    sources.BuildMaterialStacks(scene);
     sources.InitSources();
 }
 
@@ -72,7 +71,7 @@ void Simulation::RunSim(const Config & config, SourceList & sources,
     double tick_mark = sources.GetSimulationTime() / num_chars;
     int current_tick = 0;
 
-    GammaRayTrace ray_tracer(sources, scene,
+    GammaRayTrace ray_tracer(scene, sources.GetSourcePositions(),
                              config.get_log_nondepositing_inter(),
                              config.get_log_nuclear_decays(),
                              config.get_log_nonsensitive(),
