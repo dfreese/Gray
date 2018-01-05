@@ -23,6 +23,10 @@ DaqModel::ContainerT& DaqModel::get_buffer() {
     return (input_events);
 }
 
+void DaqModel::consume(std::vector<Interaction> inters) {
+    input_events.insert(input_events.end(), inters.begin(), inters.end());
+}
+
 int DaqModel::set_processes(const std::vector<std::string> & lines,
                             const Mapping::IdMappingT& mapping)
 {

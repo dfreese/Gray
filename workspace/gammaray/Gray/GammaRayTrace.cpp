@@ -161,9 +161,8 @@ void GammaRayTrace::TracePhoton(
     return;
 }
 
-void GammaRayTrace::TraceDecay(NuclearDecay decay,
-                               std::vector<Interaction> & interactions) const
-{
+std::vector<Interaction> GammaRayTrace::TraceDecay(NuclearDecay decay) const {
+    std::vector<Interaction> interactions;
     stats.decays++;
     int src_id = decay.GetSourceId();
     if (log_nuclear_decays) {
@@ -174,6 +173,7 @@ void GammaRayTrace::TraceDecay(NuclearDecay decay,
         stats.photons++;
         TracePhoton(photon, interactions, DecayStack(src_id, photon.GetPos()));
     }
+    return (interactions);
 }
 
 std::stack<GammaMaterial const *> GammaRayTrace::BuildStack(

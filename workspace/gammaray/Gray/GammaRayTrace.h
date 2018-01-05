@@ -4,10 +4,10 @@
 #include <vector>
 #include <ostream>
 #include <stack>
+#include <Physics/Interaction.h>
 #include <Physics/NuclearDecay.h>
 
 class GammaMaterial;
-class Interaction;
 class SceneDescription;
 class Output;
 class Photon;
@@ -43,8 +43,7 @@ public:
 
 
     const TraceStats & statistics() const;
-    void TraceDecay(NuclearDecay decay,
-                    std::vector<Interaction> & interactions) const;
+    std::vector<Interaction> TraceDecay(NuclearDecay decay) const;
     static std::stack<GammaMaterial const *> BuildStack(
             const SceneDescription& scene,
             const VectorR3& src_pos);

@@ -23,6 +23,7 @@ public:
     DaqModel(TimeT initial_sort_window = -1);
 
     ContainerT& get_buffer();
+    void consume(std::vector<Interaction> inters);
     int set_processes(const std::vector<std::string> & lines,
                       const Mapping::IdMappingT& mapping);
     int load_processes(const std::string & filename,
