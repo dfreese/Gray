@@ -26,7 +26,7 @@ public:
     double GetElapsedTime() const;
     double GetSimulationTime() const;
     double GetEndTime() const;
-    bool GetTimeComplete() const;
+    bool SimulationIncomplete() const;
     std::vector<VectorR3> GetSourcePositions() const;
     void SetSimulateIsotopeHalfLife(bool val);
     void SetStartTime(double val);

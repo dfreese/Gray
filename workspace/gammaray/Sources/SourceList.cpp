@@ -69,7 +69,7 @@ double SourceList::GetEndTime() const {
     return(end_time);
 }
 
-bool SourceList::GetTimeComplete() const {
+bool SourceList::SimulationIncomplete() const {
     return (GetTime() < GetEndTime());
 }
 
