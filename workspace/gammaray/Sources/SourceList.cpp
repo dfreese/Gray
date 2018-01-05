@@ -70,7 +70,7 @@ double SourceList::GetEndTime() const {
 }
 
 bool SourceList::GetTimeComplete() const {
-    return (GetSimulationTime() < GetEndTime());
+    return (GetTime() < GetEndTime());
 }
 
 std::vector<VectorR3> SourceList::GetSourcePositions() const {
