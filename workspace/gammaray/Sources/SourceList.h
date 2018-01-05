@@ -3,8 +3,7 @@
 
 #include <map>
 #include <memory>
-#include <set>
-#include <stack>
+#include <queue>
 #include <string>
 #include <vector>
 #include <Physics/Positron.h>
@@ -51,14 +50,16 @@ private:
 
     struct DecayInfo {
         double time;
-        size_t source_idx;
+        int source_idx;
         VectorR3 position;
-        int decay_number;
         bool operator<(const DecayInfo & rhs) const {
             return (time < rhs.time);
         }
+        bool operator>(const DecayInfo & rhs) const {
+            return (time > rhs.time);
+        }
     };
-    void AddNextDecay(DecayInfo base_info);
+    DecayInfo NextDecay(DecayInfo base_info) const;
     DecayInfo GetNextDecay();
 
     std::vector<std::unique_ptr<Source>> list;
@@ -67,7 +68,11 @@ private:
     std::map<std::string, std::unique_ptr<Isotope>> valid_isotopes;
     std::string current_isotope;
     double simulation_time;
-    std::set<DecayInfo> decay_list;
+
+    // Hold all of the information on the upcoming decays in a min-priority
+    // queue, so the earliest time event is in front.
+    std::priority_queue<DecayInfo, std::vector<DecayInfo>,
+            std::greater<DecayInfo>> decay_list;
     bool simulate_isotope_half_life;
     double start_time;
 };

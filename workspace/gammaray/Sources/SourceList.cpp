@@ -53,7 +53,7 @@ double SourceList::GetTime() const
     // Set the current time to be the next decay that will happen.  This won't
     // be accessed until the next iteration of the main loop, this way we don't
     // simulate events outside of the simulation time.
-    return((*decay_list.begin()).time);
+    return(decay_list.top().time);
 }
 
 double SourceList::GetElapsedTime() const {
@@ -78,11 +78,11 @@ std::vector<VectorR3> SourceList::GetSourcePositions() const {
     return (positions);
 }
 
-void SourceList::AddNextDecay(DecayInfo base_info) {
+SourceList::DecayInfo SourceList::NextDecay(DecayInfo base_info) const {
     // Calculating the next source decay timesize_t source_idx, double base_time
     auto & source = list[base_info.source_idx];
-    double source_activity_bq = source->GetActivity();
     do {
+        double source_activity_bq = source->GetActivity();
         if (simulate_isotope_half_life) {
             const Isotope& isotope = source->GetIsotope();
             source_activity_bq *= isotope.FractionRemaining(base_info.time);
@@ -93,13 +93,13 @@ void SourceList::AddNextDecay(DecayInfo base_info) {
         base_info.time += Random::Exponential(source_activity_bq);
         base_info.position = source->Decay();
     } while (InsideNegative(base_info.position));
-    base_info.decay_number = decay_number++;
-    decay_list.insert(base_info);
+    return (base_info);
 }
 
 SourceList::DecayInfo SourceList::GetNextDecay() {
-    DecayInfo ret_val(*decay_list.begin());
-    decay_list.erase(decay_list.begin());
+    DecayInfo ret_val(decay_list.top());
+    decay_list.pop();
+    decay_list.emplace(NextDecay(ret_val));
     return (ret_val);
 }
 
@@ -110,11 +110,10 @@ NuclearDecay SourceList::Decay() {
     }
 
     DecayInfo decay = GetNextDecay();
-    AddNextDecay(decay);
-    auto & source = list[decay.source_idx];
-    const Isotope& isotope = source->GetIsotope();
-    return (isotope.Decay(decay.decay_number, decay.time, decay.source_idx,
-                          decay.position));
+
+    const Isotope& isotope = list[decay.source_idx]->GetIsotope();
+    return (isotope.Decay(
+            decay_number++, decay.time, decay.source_idx, decay.position));
 }
 
 bool SourceList::InsideNegative(const VectorR3 & pos) const {
@@ -275,11 +274,11 @@ void SourceList::AdjustTimeForSplit(int idx, int n) {
 }
 
 void SourceList::InitSources() {
-    for (size_t sidx = 0; sidx < list.size(); sidx++) {
+    for (int sidx = 0; sidx < static_cast<int>(list.size()); ++sidx) {
         DecayInfo info;
         info.time = start_time;
         info.source_idx = sidx;
-        AddNextDecay(info);
+        decay_list.emplace(NextDecay(info));
     }
 }
 
