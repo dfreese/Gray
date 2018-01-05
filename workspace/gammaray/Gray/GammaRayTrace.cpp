@@ -4,6 +4,7 @@
 #include <Graphics/ViewableTriangle.h>
 #include <Graphics/SceneDescription.h>
 #include <Gray/GammaMaterial.h>
+#include <Gray/GammaRayTraceStats.h>
 #include <Physics/Interaction.h>
 #include <Physics/Positron.h>
 #include <Physics/Photon.h>
@@ -32,9 +33,10 @@ GammaRayTrace::GammaRayTrace(const SceneDescription & scene,
 }
 
 void GammaRayTrace::TracePhoton(
-        Photon &photon,
+        Photon photon,
         std::vector<Interaction> & interactions,
-        std::stack<GammaMaterial const *> MatStack) const
+        std::stack<GammaMaterial const *> MatStack,
+        GammaRayTraceStats& stats) const
 {
     for (int trace_depth = 0; trace_depth < max_trace_depth; trace_depth++) {
         if (MatStack.empty()) {
@@ -161,7 +163,10 @@ void GammaRayTrace::TracePhoton(
     return;
 }
 
-std::vector<Interaction> GammaRayTrace::TraceDecay(NuclearDecay decay) const {
+std::vector<Interaction> GammaRayTrace::TraceDecay(
+        const NuclearDecay& decay,
+        GammaRayTraceStats& stats) const
+{
     std::vector<Interaction> interactions;
     stats.decays++;
     int src_id = decay.GetSourceId();
@@ -169,9 +174,10 @@ std::vector<Interaction> GammaRayTrace::TraceDecay(NuclearDecay decay) const {
         interactions.emplace_back(
                 Physics::NuclearDecay(decay, SourceMaterial(src_id)));
     }
-    for (Photon & photon: decay) {
+    for (const Photon& photon: decay) {
         stats.photons++;
-        TracePhoton(photon, interactions, DecayStack(src_id, photon.GetPos()));
+        TracePhoton(photon, interactions, DecayStack(src_id, photon.GetPos()),
+                stats);
     }
     return (interactions);
 }
@@ -307,24 +313,3 @@ const GammaMaterial& GammaRayTrace::SourceMaterial(size_t idx) const {
     return (*source_mats[idx].top());
 }
 
-const GammaRayTrace::TraceStats & GammaRayTrace::statistics() const {
-    return (stats);
-}
-
-std::ostream & operator<< (std::ostream & os,
-                           const GammaRayTrace::TraceStats& s)
-{
-    os << "decays: " << s.decays << "\n"
-       << "photons: " << s.photons << "\n"
-       << "no_interaction: " << s.no_interaction << "\n"
-       << "photoelectric: " << s.photoelectric << "\n"
-       << "xray_escape: " << s.xray_escape << "\n"
-       << "compton: " << s.compton << "\n"
-       << "rayleigh: " << s.rayleigh << "\n"
-       << "photoelectric_sensitive: " << s.photoelectric_sensitive << "\n"
-       << "xray_escape_sensitive: " << s.xray_escape_sensitive << "\n"
-       << "compton_sensitive: " << s.compton_sensitive << "\n"
-       << "rayleigh_sensitive: " << s.rayleigh_sensitive << "\n"
-       << "error: " << s.error << "\n";
-    return os;
-}

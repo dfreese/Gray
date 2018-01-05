@@ -19,8 +19,8 @@ public:
     VectorR3 GetPosition() const;
     double GetTime() const;
     void AddPhoton(Photon && p);
-    std::vector<Photon>::reverse_iterator begin();
-    std::vector<Photon>::reverse_iterator end();
+    std::vector<Photon>::const_reverse_iterator begin() const;
+    std::vector<Photon>::const_reverse_iterator end() const;
 
 private:
     double energy = 0;

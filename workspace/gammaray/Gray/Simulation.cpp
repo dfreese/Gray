@@ -1,6 +1,7 @@
 #include <Gray/Simulation.h>
 #include <Gray/Config.h>
 #include <Gray/GammaRayTrace.h>
+#include <Gray/GammaRayTraceStats.h>
 #include <Gray/Mpi.h>
 #include <Daq/DaqModel.h>
 #include <Random/Random.h>
@@ -80,11 +81,12 @@ void Simulation::RunSim(const Config & config, SourceList & sources,
 
     if (print_prog_bar) cout << "[" << flush;
 
+    GammaRayTraceStats ray_stats;
     const size_t interactions_soft_max = 100000;
     daq_model.get_buffer().reserve(interactions_soft_max + 50);
     while (sources.SimulationIncomplete()) {
         while (sources.SimulationIncomplete()) {
-            daq_model.consume(ray_tracer.TraceDecay(sources.Decay()));
+            daq_model.consume(ray_tracer.TraceDecay(sources.Decay(), ray_stats));
             if (interactions_soft_max < daq_model.get_buffer().size()) {
                 break;
             }
@@ -145,7 +147,7 @@ void Simulation::RunSim(const Config & config, SourceList & sources,
     }
     if (print_prog_bar) cout << "=] Done." << endl;
     cout << "\n______________\n Stats\n______________\n"
-         << ray_tracer.statistics() << endl;
+         << ray_stats << endl;
     if (config.get_log_singles() || config.get_log_coinc()) {
         cout << "______________\n DAQ Stats\n______________\n"
         << daq_model << endl;

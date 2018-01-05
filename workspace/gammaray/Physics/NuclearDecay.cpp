@@ -12,12 +12,12 @@ NuclearDecay::NuclearDecay(int decay_number, double time, int src_id,
 
 }
 
-std::vector<Photon>::reverse_iterator NuclearDecay::begin() {
-    return (photons.rbegin());
+std::vector<Photon>::const_reverse_iterator NuclearDecay::begin() const {
+    return (photons.crbegin());
 }
 
-std::vector<Photon>::reverse_iterator NuclearDecay::end() {
-    return (photons.rend());
+std::vector<Photon>::const_reverse_iterator NuclearDecay::end() const {
+    return (photons.crend());
 }
 
 void NuclearDecay::AddPhoton(Photon && p)

@@ -5,12 +5,13 @@
 #include <ostream>
 #include <stack>
 #include <Physics/Interaction.h>
-#include <Physics/NuclearDecay.h>
+#include <Physics/Photon.h>
 
 class GammaMaterial;
+class GammaRayTraceStats;
 class SceneDescription;
 class Output;
-class Photon;
+class NuclearDecay;
 class VectorR3;
 
 class GammaRayTrace {
@@ -24,26 +25,9 @@ public:
                   bool log_nointeractions_inter,
                   bool log_errors_inter);
 
-    struct TraceStats {
-        long decays = 0;
-        long photons = 0;
-        long no_interaction = 0;
-        long photoelectric = 0;
-        long xray_escape = 0;
-        long compton = 0;
-        long rayleigh = 0;
-        long photoelectric_sensitive = 0;
-        long xray_escape_sensitive = 0;
-        long compton_sensitive = 0;
-        long rayleigh_sensitive = 0;
-        long error = 0;
-        friend std::ostream & operator<< (std::ostream & os,
-                                          const TraceStats& s);
-    };
+    std::vector<Interaction> TraceDecay(const NuclearDecay& decay,
+            GammaRayTraceStats& stats) const;
 
-
-    const TraceStats & statistics() const;
-    std::vector<Interaction> TraceDecay(NuclearDecay decay) const;
     static std::stack<GammaMaterial const *> BuildStack(
             const SceneDescription& scene,
             const VectorR3& src_pos);
@@ -56,9 +40,10 @@ public:
             const std::stack<GammaMaterial const *>& base);
 
 private:
-    void TracePhoton(Photon &photon,
+    void TracePhoton(Photon photon,
                      std::vector<Interaction> & interactions,
-                     std::stack<GammaMaterial const *> MatStack) const;
+                     std::stack<GammaMaterial const *> MatStack,
+                     GammaRayTraceStats& stats) const;
     std::stack<GammaMaterial const *> DecayStack(
             size_t src_id, const VectorR3 & pos) const;
     const GammaMaterial& SourceMaterial(size_t idx) const;
@@ -67,13 +52,12 @@ private:
     const SceneDescription & scene;
     const std::vector<VectorR3> source_positions;
     const std::vector<std::stack<GammaMaterial const *>> source_mats;
-    bool log_nondepositing_inter;
-    bool log_nuclear_decays;
-    bool log_nonsensitive;
-    bool log_nointeractions;
-    bool log_errors;
-    mutable TraceStats stats;
-    int max_trace_depth;
+    const bool log_nondepositing_inter;
+    const bool log_nuclear_decays;
+    const bool log_nonsensitive;
+    const bool log_nointeractions;
+    const bool log_errors;
+    const int max_trace_depth;
 };
 
 #endif /*GAMMARAYTRACE_H*/
