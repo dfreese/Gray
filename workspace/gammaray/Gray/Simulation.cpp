@@ -84,8 +84,7 @@ void Simulation::RunSim(const Config & config, SourceList & sources,
     daq_model.get_buffer().reserve(interactions_soft_max + 50);
     while (sources.GetTime() < sources.GetEndTime()) {
         while (sources.GetTime() < sources.GetEndTime()) {
-            NuclearDecay decay = sources.Decay();
-            ray_tracer.TraceDecay(decay, daq_model.get_buffer());
+            ray_tracer.TraceDecay(sources.Decay(), daq_model.get_buffer());
             if (interactions_soft_max < daq_model.get_buffer().size()) {
                 break;
             }

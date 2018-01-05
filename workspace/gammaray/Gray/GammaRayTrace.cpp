@@ -161,7 +161,7 @@ void GammaRayTrace::TracePhoton(
     return;
 }
 
-void GammaRayTrace::TraceDecay(NuclearDecay & decay,
+void GammaRayTrace::TraceDecay(NuclearDecay decay,
                                std::vector<Interaction> & interactions) const
 {
     stats.decays++;

@@ -43,7 +43,7 @@ public:
 
 
     const TraceStats & statistics() const;
-    void TraceDecay(NuclearDecay & decay,
+    void TraceDecay(NuclearDecay decay,
                     std::vector<Interaction> & interactions) const;
     static std::stack<GammaMaterial const *> BuildStack(
             const SceneDescription& scene,
