@@ -180,6 +180,7 @@ CoincProcess::EventIter CoincProcess::process_events_optional_stop(
         if (keep_events) {
             current_event.coinc_id = no_coinc_events;
             no_coinc_events++;
+            this->inc_no_kept(no_events);
         } else {
             current_event.coinc_id = -2;
             this->inc_no_dropped(no_events);

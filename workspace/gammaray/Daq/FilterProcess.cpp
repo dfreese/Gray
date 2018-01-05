@@ -17,7 +17,9 @@ FilterProcess::EventIter FilterProcess::_process_events(EventIter begin,
     for (auto iter = begin; iter != end; ++iter) {
         EventT & event = *iter;
         if (!event.dropped) {
-            if (!this->filt_func(event)) {
+            if (this->filt_func(event)) {
+                this->inc_no_kept();
+            } else {
                 this->inc_no_dropped();
             }
         }

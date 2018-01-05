@@ -26,6 +26,7 @@ MergeProcess::EventIter MergeProcess::_process_events(EventIter begin,
         if (cur_event.dropped) {
             continue;
         }
+        this->inc_no_kept();
         const int current_event_id = mapped_id(cur_event);
         // Check to see where this event times out
         const TimeT window = cur_event.time + time_window;

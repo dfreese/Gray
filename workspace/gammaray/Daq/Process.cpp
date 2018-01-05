@@ -4,28 +4,14 @@
  *
  */
 Process::EventIter Process::process_events(EventIter begin, EventIter end) {
-    const long start_count_dropped = count_dropped;
-    auto ready_events = _process_events(begin, end);
-
-    auto kept_func = [](const EventT & event) {return (!event.dropped);};
-    const long kept = std::count_if(begin, ready_events, kept_func);
-    count_kept += kept;
-    count_events += kept + (count_dropped - start_count_dropped);
-    return(ready_events);
+    return(_process_events(begin, end));
 }
 
 /*!
  *
  */
 void Process::stop(EventIter begin, EventIter end) {
-    const long start_count_dropped = count_dropped;
-
     _stop(begin, end);
-
-    auto kept_func = [](const EventT & event) {return (!event.dropped);};
-    const long kept = std::count_if(begin, end, kept_func);
-    count_kept += kept;
-    count_events += kept + (count_dropped - start_count_dropped);
 }
 
 /*!
@@ -42,21 +28,21 @@ void Process::reset() {
  * Number of events processed by the class
  */
 long Process::no_events() const {
-    return(count_events);
+    return (count_kept + count_dropped);
 }
 
 /*!
  * Number of events dropped or merged by the class
  */
 long Process::no_dropped() const {
-    return(count_dropped);
+    return (count_dropped);
 }
 
 /*!
  * Number of events output by the class.
  */
 long Process::no_kept() const {
-    return(count_kept);
+    return (count_kept);
 }
 
 /*!
@@ -64,7 +50,15 @@ long Process::no_kept() const {
  */
 std::ostream& operator<< (std::ostream & os, const Process & p) {
     os << p.print_info();
-    return(os);
+    return (os);
+}
+
+void Process::inc_no_kept() {
+    ++count_kept;
+}
+
+void Process::inc_no_kept(long val) {
+    count_kept += val;
 }
 
 void Process::inc_no_dropped() {

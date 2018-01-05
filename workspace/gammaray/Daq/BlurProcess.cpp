@@ -17,6 +17,7 @@ BlurProcess::EventIter BlurProcess::_process_events(EventIter begin,
     for (auto iter = begin; iter != end; ++iter) {
         EventT & event = *iter;
         if (!event.dropped) {
+            this->inc_no_kept();
             blur_func(event);
         }
     }

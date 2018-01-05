@@ -32,6 +32,7 @@ DeadtimeProcess::EventIter DeadtimeProcess::_process_events(EventIter begin,
         if ((*current_event).dropped) {
             continue;
         }
+        this->inc_no_kept();
         const DetIdT current_event_id = mapped_id(*current_event);
         // Check to see where this event times out
         TimeT window = (*current_event).time + time_window;

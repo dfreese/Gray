@@ -34,6 +34,8 @@ public:
     friend std::ostream & operator << (std::ostream & os, const Process & cp);
 
 protected:
+    void inc_no_kept();
+    void inc_no_kept(long val);
     void inc_no_dropped();
     void inc_no_dropped(long val);
 
