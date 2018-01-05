@@ -66,7 +66,11 @@ double SourceList::GetSimulationTime() const
 }
 
 double SourceList::GetEndTime() const {
-    return(simulation_time + start_time);
+    return(end_time);
+}
+
+bool SourceList::GetTimeComplete() const {
+    return (GetSimulationTime() < GetEndTime());
 }
 
 std::vector<VectorR3> SourceList::GetSourcePositions() const {
@@ -172,6 +176,7 @@ bool SourceList::SetCurIsotope(const std::string& iso,
 void SourceList::SetSimulationTime(double time)
 {
     simulation_time = time;
+    end_time = start_time + simulation_time;
 }
 
 void SourceList::SetSimulateIsotopeHalfLife(bool val) {
@@ -181,6 +186,7 @@ void SourceList::SetSimulateIsotopeHalfLife(bool val) {
 void SourceList::SetStartTime(double val)
 {
     start_time = val;
+    end_time = start_time + simulation_time;
 }
 
 double SourceList::ExpectedDecays(double start_time, double sim_time) const {

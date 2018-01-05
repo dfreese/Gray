@@ -82,8 +82,8 @@ void Simulation::RunSim(const Config & config, SourceList & sources,
 
     const size_t interactions_soft_max = 100000;
     daq_model.get_buffer().reserve(interactions_soft_max + 50);
-    while (sources.GetTime() < sources.GetEndTime()) {
-        while (sources.GetTime() < sources.GetEndTime()) {
+    while (!sources.GetTimeComplete()) {
+        while (!sources.GetTimeComplete()) {
             ray_tracer.TraceDecay(sources.Decay(), daq_model.get_buffer());
             if (interactions_soft_max < daq_model.get_buffer().size()) {
                 break;

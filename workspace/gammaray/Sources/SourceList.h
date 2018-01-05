@@ -26,6 +26,7 @@ public:
     double GetElapsedTime() const;
     double GetSimulationTime() const;
     double GetEndTime() const;
+    bool GetTimeComplete() const;
     std::vector<VectorR3> GetSourcePositions() const;
     void SetSimulateIsotopeHalfLife(bool val);
     void SetStartTime(double val);
@@ -75,6 +76,7 @@ private:
             std::greater<DecayInfo>> decay_list;
     bool simulate_isotope_half_life;
     double start_time;
+    double end_time;
 };
 
 #endif
