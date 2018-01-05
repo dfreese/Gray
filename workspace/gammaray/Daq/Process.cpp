@@ -75,18 +75,6 @@ void Process::inc_no_dropped(long val) {
     count_dropped += val;
 }
 
-Process::TimeT Process::get_time(const EventT& event) {
-    return (event.time);
-}
-
-Process::TimeT Process::time_diff(const EventT& lhs, const EventT& rhs) {
-    return (lhs.time - rhs.time);
-}
-
-Process::DetIdT Process::get_det_id(const EventT& event) {
-    return (event.det_id);
-}
-
 std::string Process::print_info() const {
     return ("");
 }

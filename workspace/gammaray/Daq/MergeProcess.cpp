@@ -28,14 +28,14 @@ MergeProcess::EventIter MergeProcess::_process_events(EventIter begin,
         }
         const int current_event_id = mapped_id(cur_event);
         // Check to see where this event times out
-        const TimeT window = get_time(cur_event) + time_window;
+        const TimeT window = cur_event.time + time_window;
         auto next_iter = std::next(cur_iter);
         for (; next_iter != end; ++next_iter) {
             EventT & next_event = *next_iter;
             if (next_event.dropped) {
                 continue;
             }
-            if (get_time(next_event) >= window) {
+            if (next_event.time >= window) {
                 break;
             }
             if (current_event_id == mapped_id(next_event)) {
@@ -68,5 +68,5 @@ void MergeProcess::_reset() {
  *
  */
 MergeProcess::DetIdT MergeProcess::mapped_id(const EventT& event) const {
-    return(id_lookup[get_det_id(event)]);
+    return(id_lookup[event.det_id]);
 }

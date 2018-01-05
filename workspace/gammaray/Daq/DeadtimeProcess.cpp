@@ -34,14 +34,14 @@ DeadtimeProcess::EventIter DeadtimeProcess::_process_events(EventIter begin,
         }
         const DetIdT current_event_id = mapped_id(*current_event);
         // Check to see where this event times out
-        TimeT window = get_time(*current_event) + time_window;
+        TimeT window = (*current_event).time + time_window;
         auto next_event = std::next(current_event);
         for (; next_event != end; ++next_event) {
             if ((*next_event).dropped) {
                 continue;
             }
 
-            const TimeT next_time = get_time(*next_event);
+            const TimeT next_time = (*next_event).time;
             if (next_time >= window) {
                 break;
             }
@@ -78,5 +78,5 @@ void DeadtimeProcess::_reset() {
  *
  */
 DeadtimeProcess::DetIdT DeadtimeProcess::mapped_id(const EventT& event) const {
-    return(id_lookup[get_det_id(event)]);
+    return(id_lookup[event.det_id]);
 }

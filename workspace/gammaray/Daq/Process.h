@@ -36,9 +36,6 @@ public:
 protected:
     void inc_no_dropped();
     void inc_no_dropped(long val);
-    static TimeT get_time(const EventT& event);
-    static TimeT time_diff(const EventT& lhs, const EventT& rhs);
-    static DetIdT get_det_id(const EventT& event);
 
 private:
     virtual EventIter _process_events(EventIter begin, EventIter end) = 0;

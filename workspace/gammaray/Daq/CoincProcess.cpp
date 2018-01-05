@@ -110,7 +110,7 @@ CoincProcess::EventIter CoincProcess::process_events_optional_stop(
             {
                 continue;
             }
-            TimeT delta_t = time_diff(window_start_event, current_event);
+            TimeT delta_t = window_start_event.time - current_event.time;
             if (delta_t >= window_start) {
                 break;
             }
@@ -132,7 +132,7 @@ CoincProcess::EventIter CoincProcess::process_events_optional_stop(
             {
                 continue;
             }
-            TimeT delta_t = time_diff(window_end_event, current_event);
+            TimeT delta_t = window_end_event.time - current_event.time;
             if (delta_t >= window_end) {
                 break;
             } else {

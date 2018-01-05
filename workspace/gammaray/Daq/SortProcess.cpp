@@ -40,16 +40,16 @@ SortProcess::EventIter SortProcess::_process_events(EventIter begin,
     }
 
     auto time_cmp = [](const EventT& e0, const EventT& e1) {
-        return(get_time(e0) < get_time(e1));
+        return(e0.time < e1.time);
     };
     insertion_sort(begin, end, time_cmp);
 
     // work back from the end to figure out where we've timed out, so what
     // we will consider sorted.
     auto timed_out = std::prev(end);
-    const TimeT out_time = get_time(*timed_out) - max_wait_time;
+    const TimeT out_time = (*timed_out).time - max_wait_time;
     for (; timed_out != begin; --timed_out) {
-        if (get_time(*timed_out) <= out_time) {
+        if ((*timed_out).time <= out_time) {
             break;
         }
     }
