@@ -15,3 +15,5 @@ CMakeScripts
 /pet_benchmark_fast.dat
 /bin/
 /build
+# CMake output to be used with autocomplete
+/workspace/compile_commands.json
