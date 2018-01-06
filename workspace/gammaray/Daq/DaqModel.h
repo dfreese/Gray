@@ -6,6 +6,7 @@
 #include <iostream>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <sstream>
 #include <vector>
 #include <Physics/Interaction.h>
@@ -81,6 +82,7 @@ private:
     bool hits_stopped = false;
     bool singles_stopped = false;
     bool coinc_stopped = false;
+    std::mutex buffer_mutex;
 };
 
 #endif // DaqModel_h

@@ -3,6 +3,7 @@
 
 #include <map>
 #include <memory>
+#include <mutex>
 #include <queue>
 #include <string>
 #include <vector>
@@ -77,6 +78,7 @@ private:
     bool simulate_isotope_half_life;
     double start_time;
     double end_time;
+    mutable std::mutex decay_mutex;
 };
 
 #endif

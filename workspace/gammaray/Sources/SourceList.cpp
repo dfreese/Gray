@@ -45,6 +45,7 @@ void SourceList::AddSource(std::unique_ptr<Source> s)
 
 double SourceList::GetTime() const
 {
+    std::lock_guard<std::mutex> lck(decay_mutex);
     if (decay_list.empty()) {
         // If there are no new decays, assume there were no sources and return
         // the end of the simulation

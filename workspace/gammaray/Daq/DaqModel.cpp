@@ -24,6 +24,7 @@ DaqModel::ContainerT& DaqModel::get_buffer() {
 }
 
 void DaqModel::consume(std::vector<Interaction> inters) {
+    std::lock_guard<std::mutex> lock(buffer_mutex);
     input_events.insert(input_events.end(), inters.begin(), inters.end());
 }
 
