@@ -24,8 +24,9 @@ DeadtimeProcess::DeadtimeProcess(const IdLookupT& lookup,
 /*!
  *
  */
-DeadtimeProcess::EventIter DeadtimeProcess::_process_events(EventIter begin,
-                                                            EventIter end)
+DeadtimeProcess::EventIter DeadtimeProcess::process(
+        EventIter begin,
+        EventIter end)
 {
     auto current_event = begin;
     for (; current_event != end; current_event++) {
@@ -65,8 +66,8 @@ DeadtimeProcess::EventIter DeadtimeProcess::_process_events(EventIter begin,
 /*!
  *
  */
-void DeadtimeProcess::_stop(EventIter begin, EventIter end) {
-    _process_events(begin, end);
+void DeadtimeProcess::stop(EventIter begin, EventIter end) {
+    process(begin, end);
 };
 
 /*!

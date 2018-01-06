@@ -23,10 +23,10 @@ public:
 
     DeadtimeProcess(const IdLookupT& lookup, TimeT deadtime,
                     bool paralyzable);
+    EventIter process(EventIter begin, EventIter end) final;
+    void stop(EventIter begin, EventIter end) final;
 
 private:
-    EventIter _process_events(EventIter begin, EventIter end) final;
-    void _stop(EventIter begin, EventIter end) final;
     void _reset() final;
     DetIdT mapped_id(const EventT& event) const;
 

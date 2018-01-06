@@ -20,6 +20,8 @@ public:
 
     CoincProcess(TimeT coinc_win, bool reject_multiple_events,
                  bool is_paralyzable, TimeT win_offset);
+    EventIter process(EventIter begin, EventIter end) final;
+    void stop(EventIter begin, EventIter end) final;
 
     long get_no_coinc_events() const;
     long get_no_coinc_pair_events() const;
@@ -28,11 +30,9 @@ public:
 
 private:
     void _reset() final;
-    EventIter _process_events(EventIter begin, EventIter end) final;
-    void _stop(EventIter begin, EventIter end) final;
+    std::string print_info() const final;
     EventIter process_events_optional_stop(EventIter begin, EventIter end,
                                            bool stopping);
-    std::string print_info() const final;
 
     TimeT coinc_window;
     TimeT window_offset;

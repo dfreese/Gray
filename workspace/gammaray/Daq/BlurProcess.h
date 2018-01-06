@@ -18,10 +18,10 @@ public:
     using BlurF = std::function<void(EventT&)>;
 
     BlurProcess(BlurF blurring_func);
+    EventIter process(EventIter begin, EventIter end) final;
+    void stop(EventIter begin, EventIter end) final;
 
 private:
-    EventIter _process_events(EventIter begin, EventIter end) final;
-    void _stop(EventIter begin, EventIter end) final;
     void _reset() final;
 
     /*!

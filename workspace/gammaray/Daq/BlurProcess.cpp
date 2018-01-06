@@ -11,9 +11,7 @@ BlurProcess::BlurProcess(BlurF blurring_func) :
 /*!
  *
  */
-BlurProcess::EventIter BlurProcess::_process_events(EventIter begin,
-                                                    EventIter end)
-{
+BlurProcess::EventIter BlurProcess::process(EventIter begin, EventIter end) {
     for (auto iter = begin; iter != end; ++iter) {
         EventT & event = *iter;
         if (!event.dropped) {
@@ -27,8 +25,8 @@ BlurProcess::EventIter BlurProcess::_process_events(EventIter begin,
 /*!
  *
  */
-void BlurProcess::_stop(EventIter begin, EventIter end) {
-    _process_events(begin, end);
+void BlurProcess::stop(EventIter begin, EventIter end) {
+    process(begin, end);
 }
 
 /*!

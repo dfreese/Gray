@@ -11,9 +11,7 @@ FilterProcess::FilterProcess(FilterF filter_func) :
 /*!
  *
  */
-FilterProcess::EventIter FilterProcess::_process_events(EventIter begin,
-                                                        EventIter end)
-{
+FilterProcess::EventIter FilterProcess::process(EventIter begin, EventIter end) {
     for (auto iter = begin; iter != end; ++iter) {
         EventT & event = *iter;
         if (!event.dropped) {
@@ -30,8 +28,8 @@ FilterProcess::EventIter FilterProcess::_process_events(EventIter begin,
 /*!
  *
  */
-void FilterProcess::_stop(EventIter begin, EventIter end) {
-    _process_events(begin, end);
+void FilterProcess::stop(EventIter begin, EventIter end) {
+    process(begin, end);
 };
 
 /*!

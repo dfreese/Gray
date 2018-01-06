@@ -30,9 +30,7 @@ void insertion_sort(I begin, I end, C comp = C()) {
 /*!
  *
  */
-SortProcess::EventIter SortProcess::_process_events(EventIter begin,
-                                                    EventIter end)
-{
+SortProcess::EventIter SortProcess::process(EventIter begin, EventIter end) {
     // The timeout detection in this function requires a non-empty container
     // so if we're given an empty range, bail right away.
     if (begin == end) {
@@ -62,8 +60,8 @@ SortProcess::EventIter SortProcess::_process_events(EventIter begin,
 /*!
  *
  */
-void SortProcess::_stop(EventIter begin, EventIter end) {
-    _process_events(begin, end);
+void SortProcess::stop(EventIter begin, EventIter end) {
+    process(begin, end);
 };
 
 /*!

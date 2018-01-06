@@ -24,10 +24,10 @@ public:
 
     MergeProcess(const IdLookupT& lookup, TimeT t_window,
                  MergeF merge_fc);
+    EventIter process(EventIter begin, EventIter end) final;
+    void stop(EventIter begin, EventIter end) final;
 
 private:
-    EventIter _process_events(EventIter begin, EventIter end) final;
-    void _stop(EventIter begin, EventIter end) final;
     void _reset() final;
     DetIdT mapped_id(const EventT& event) const;
 

@@ -58,16 +58,14 @@ void CoincProcess::_reset() {
 /*!
  *
  */
-CoincProcess::EventIter CoincProcess::_process_events(EventIter begin,
-                                                      EventIter end)
-{
+CoincProcess::EventIter CoincProcess::process(EventIter begin, EventIter end) {
     return(process_events_optional_stop(begin, end, false));
 }
 
 /*!
  *
  */
-void CoincProcess::_stop(EventIter begin, EventIter end) {
+void CoincProcess::stop(EventIter begin, EventIter end) {
     process_events_optional_stop(begin, end, true);
 }
 

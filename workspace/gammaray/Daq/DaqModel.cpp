@@ -245,7 +245,7 @@ void DaqModel::process_hits() {
     if (!processes.empty()) {
         const auto begin = std::next(input_events.begin(),
                                      process_ready_distance.front());
-        singles_ready = processes.front()->process_events(begin, singles_ready);
+        singles_ready = processes.front()->process(begin, singles_ready);
         process_ready_distance.front() = std::distance(input_events.begin(), singles_ready);
     }
     min_coinc_ready_dist = std::distance(input_events.begin(), singles_ready);
@@ -259,7 +259,7 @@ void DaqModel::process_singles() {
     for (size_t ii = 0; ii < processes.size(); ii++) {
         const auto begin = std::next(input_events.begin(),
                                      process_ready_distance[ii]);
-        singles_ready = processes[ii]->process_events(begin, singles_ready);
+        singles_ready = processes[ii]->process(begin, singles_ready);
         process_ready_distance[ii] = std::distance(input_events.begin(), singles_ready);
     }
     min_coinc_ready_dist = std::distance(input_events.begin(), singles_ready);
@@ -267,8 +267,8 @@ void DaqModel::process_singles() {
 
 void DaqModel::process_coinc(size_t idx) {
     coinc_stopped = false;
-    coinc_ready = coinc_processes[idx]->process_events(input_events.begin(),
-                                                       singles_ready);
+    coinc_ready = coinc_processes[idx]->process(input_events.begin(),
+            singles_ready);
     min_coinc_ready_dist = std::min(min_coinc_ready_dist,
                                     std::distance(input_events.begin(), coinc_ready));
 }

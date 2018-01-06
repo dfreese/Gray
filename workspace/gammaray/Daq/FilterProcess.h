@@ -18,9 +18,10 @@ public:
     using FilterF = std::function<bool(EventT&)>;
 
     FilterProcess(FilterF filter_func);
+    EventIter process(EventIter begin, EventIter end) final;
+    void stop(EventIter begin, EventIter end) final;
+
 private:
-    EventIter _process_events(EventIter begin, EventIter end);
-    void _stop(EventIter begin, EventIter end) final;
     void _reset() final;
 
     /*!

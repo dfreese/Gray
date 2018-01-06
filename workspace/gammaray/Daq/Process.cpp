@@ -1,20 +1,6 @@
 #include <Daq/Process.h>
 
 /*!
- *
- */
-Process::EventIter Process::process_events(EventIter begin, EventIter end) {
-    return(_process_events(begin, end));
-}
-
-/*!
- *
- */
-void Process::stop(EventIter begin, EventIter end) {
-    _stop(begin, end);
-}
-
-/*!
  * Resets the map and clears out all of the events.
  */
 void Process::reset() {

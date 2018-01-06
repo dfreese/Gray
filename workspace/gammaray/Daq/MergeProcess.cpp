@@ -17,9 +17,7 @@ MergeProcess::MergeProcess(const IdLookupT& lookup,
 /*!
  *
  */
-MergeProcess::EventIter MergeProcess::_process_events(EventIter begin,
-                                                      EventIter end)
-{
+MergeProcess::EventIter MergeProcess::process(EventIter begin, EventIter end) {
     auto cur_iter = begin;
     for (; cur_iter != end; cur_iter++) {
         EventT & cur_event = *cur_iter;
@@ -55,8 +53,8 @@ MergeProcess::EventIter MergeProcess::_process_events(EventIter begin,
 /*!
  *
  */
-void MergeProcess::_stop(EventIter begin, EventIter end) {
-    _process_events(begin, end);
+void MergeProcess::stop(EventIter begin, EventIter end) {
+    process(begin, end);
 };
 
 /*!
