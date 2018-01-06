@@ -1,5 +1,6 @@
 add_executable(test_gray
     test_main.cpp
+    test_daq.cpp
     test_io.cpp
     test_linear.cpp
     test_mapping.cpp
