@@ -26,7 +26,7 @@ public:
     virtual ~Process() = default;
 
     virtual EventIter process(EventIter begin, EventIter end) = 0;
-    virtual void stop(EventIter begin, EventIter end) = 0;
+    virtual void stop(EventIter begin, EventIter end);
     void reset();
     long no_events() const;
     long no_dropped() const;
@@ -40,7 +40,7 @@ protected:
     void inc_no_dropped(long val);
 
 private:
-    virtual void _reset() = 0;
+    virtual void _reset();
     virtual std::string print_info() const;
 
     /*!

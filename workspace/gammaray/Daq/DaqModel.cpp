@@ -300,6 +300,7 @@ void DaqModel::stop_singles() {
     for (size_t ii = 0; ii < process_ready_distance.size(); ii++) {
         auto p_beg = std::next(begin(), process_ready_distance[ii]);
         processes[ii]->stop(p_beg, end());
+        process_ready_distance[ii] = std::distance(begin(), end());
     }
 }
 

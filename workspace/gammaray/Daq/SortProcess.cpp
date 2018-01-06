@@ -51,21 +51,10 @@ SortProcess::EventIter SortProcess::process(EventIter begin, EventIter end) {
             break;
         }
     }
-    // If the underlying container becomes a list, change the sorting function
-    // to return the number and decrement back from the timeout.
-    this->inc_no_kept(std::distance(begin, timed_out));
+    // TODO: implement this in the sort loop so we don't need to do go over
+    // the events twice.
+    this->inc_no_kept(std::count_if(begin, timed_out, [](const EventT& e) {
+                return (!e.dropped); }));
     return (timed_out);
 };
 
-/*!
- *
- */
-void SortProcess::stop(EventIter begin, EventIter end) {
-    process(begin, end);
-};
-
-/*!
- *
- */
-void SortProcess::_reset() {
-}

@@ -25,16 +25,3 @@ FilterProcess::EventIter FilterProcess::process(EventIter begin, EventIter end) 
     return (end);
 };
 
-/*!
- *
- */
-void FilterProcess::stop(EventIter begin, EventIter end) {
-    process(begin, end);
-};
-
-/*!
- *
- */
-void FilterProcess::_reset() {
-}
-

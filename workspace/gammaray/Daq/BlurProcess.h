@@ -19,11 +19,8 @@ public:
 
     BlurProcess(BlurF blurring_func);
     EventIter process(EventIter begin, EventIter end) final;
-    void stop(EventIter begin, EventIter end) final;
 
 private:
-    void _reset() final;
-
     /*!
      * A function that somehow blurs the event
      */

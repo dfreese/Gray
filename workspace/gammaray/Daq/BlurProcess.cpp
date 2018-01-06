@@ -21,16 +21,3 @@ BlurProcess::EventIter BlurProcess::process(EventIter begin, EventIter end) {
     }
     return (end);
 }
-
-/*!
- *
- */
-void BlurProcess::stop(EventIter begin, EventIter end) {
-    process(begin, end);
-}
-
-/*!
- *
- */
-void BlurProcess::_reset() {
-}

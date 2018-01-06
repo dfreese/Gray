@@ -61,19 +61,6 @@ DeadtimeProcess::EventIter DeadtimeProcess::process(
     }
     // Should never hit here.
     return (current_event);
-};
-
-/*!
- *
- */
-void DeadtimeProcess::stop(EventIter begin, EventIter end) {
-    process(begin, end);
-};
-
-/*!
- *
- */
-void DeadtimeProcess::_reset() {
 }
 
 /*!

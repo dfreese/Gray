@@ -19,11 +19,8 @@ public:
 
     SortProcess(TimeT max_time_to_wait);
     EventIter process(EventIter begin, EventIter end) final;
-    void stop(EventIter begin, EventIter end) final;
 
 private:
-    void _reset() final;
-
     TimeT max_wait_time;
 };
 #endif // sortprocess_h

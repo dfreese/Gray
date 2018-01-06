@@ -19,11 +19,8 @@ public:
 
     FilterProcess(FilterF filter_func);
     EventIter process(EventIter begin, EventIter end) final;
-    void stop(EventIter begin, EventIter end) final;
 
 private:
-    void _reset() final;
-
     /*!
      * A function that returns true if the event should be kept.
      */

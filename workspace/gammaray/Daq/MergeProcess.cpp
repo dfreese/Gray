@@ -24,8 +24,7 @@ MergeProcess::EventIter MergeProcess::process(EventIter begin, EventIter end) {
         if (cur_event.dropped) {
             continue;
         }
-        this->inc_no_kept();
-        const int current_event_id = mapped_id(cur_event);
+        const DetIdT current_event_id = mapped_id(cur_event);
         // Check to see where this event times out
         const TimeT window = cur_event.time + time_window;
         auto next_iter = std::next(cur_iter);
@@ -35,33 +34,30 @@ MergeProcess::EventIter MergeProcess::process(EventIter begin, EventIter end) {
                 continue;
             }
             if (next_event.time >= window) {
+                // We have found an event that is outside of the window so we
+                // know that cur_event will be kept, and not be merged with
+                // something else.
+                this->inc_no_kept();
                 break;
             }
             if (current_event_id == mapped_id(next_event)) {
                 merge_func(cur_event, next_event);
                 this->inc_no_dropped();
+                // merge_func can drop either cur_event or next_event, so in
+                // the case that the earlier event is dropped, then bail out
+                // of this loop and pick up next_event as the new cur_event.
+                if (cur_event.dropped) {
+                    break;
+                }
             }
         }
         if (next_iter == end) {
             return (cur_iter);
         }
     }
-    // shouldn't happen
+    // should only happen on an empty range call (begin == end)
     return (cur_iter);
 };
-
-/*!
- *
- */
-void MergeProcess::stop(EventIter begin, EventIter end) {
-    process(begin, end);
-};
-
-/*!
- *
- */
-void MergeProcess::_reset() {
-}
 
 /*!
  *
