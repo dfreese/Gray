@@ -118,11 +118,24 @@ long DaqModel::no_deadtimed() const {
 std::ostream & operator << (std::ostream & os, const DaqModel & s) {
     os << "events: " << s.no_events() << "\n"
        << "kept: " << s.no_kept() << "\n"
-       << "dropped: " << s.no_dropped() << "\n"
-       << "drop per level: ";
+       << "dropped: " << s.no_dropped() << "\n";
+    os << "kept per level: ";
     for (size_t idx = 0; idx < s.processes.size(); idx++) {
         if (s.print_info[idx]) {
-            os << " " << s.processes[idx]->no_dropped() << ",";
+            os << s.processes[idx]->no_kept();
+            if (idx + 1 < s.processes.size()) {
+                os << ", ";
+            }
+        }
+    }
+    os << "\n";
+    os << "drop per level: ";
+    for (size_t idx = 0; idx < s.processes.size(); idx++) {
+        if (s.print_info[idx]) {
+            os << s.processes[idx]->no_dropped();
+            if (idx + 1 < s.processes.size()) {
+                os << ", ";
+            }
         }
     }
     os << "\n";
@@ -278,6 +291,7 @@ void DaqModel::stop_hits() {
     if (!processes.empty()) {
         auto p_beg = std::next(begin(), process_ready_distance.front());
         processes.front()->stop(p_beg, end());
+        process_ready_distance.front() = std::distance(begin(), end());
     }
 }
 
