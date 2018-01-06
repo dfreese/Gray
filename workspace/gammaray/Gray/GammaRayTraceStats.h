@@ -15,6 +15,39 @@ struct GammaRayTraceStats {
     long rayleigh_sensitive = 0;
     long error = 0;
 
+    GammaRayTraceStats& operator+=(const GammaRayTraceStats& rhs) {
+        decays += rhs.decays;
+        photons += rhs.photons;
+        no_interaction += rhs.no_interaction;
+        photoelectric += rhs.photoelectric;
+        xray_escape += rhs.xray_escape;
+        compton += rhs.compton;
+        rayleigh += rhs.rayleigh;
+        photoelectric_sensitive += rhs.photoelectric_sensitive;
+        xray_escape_sensitive += rhs.xray_escape_sensitive;
+        compton_sensitive += rhs.compton_sensitive;
+        rayleigh_sensitive += rhs.rayleigh_sensitive;
+        error += rhs.error;
+        return (*this);
+    }
+
+    GammaRayTraceStats operator+(const GammaRayTraceStats& rhs) {
+        GammaRayTraceStats result(*this);
+        result.decays += rhs.decays;
+        result.photons += rhs.photons;
+        result.no_interaction += rhs.no_interaction;
+        result.photoelectric += rhs.photoelectric;
+        result.xray_escape += rhs.xray_escape;
+        result.compton += rhs.compton;
+        result.rayleigh += rhs.rayleigh;
+        result.photoelectric_sensitive += rhs.photoelectric_sensitive;
+        result.xray_escape_sensitive += rhs.xray_escape_sensitive;
+        result.compton_sensitive += rhs.compton_sensitive;
+        result.rayleigh_sensitive += rhs.rayleigh_sensitive;
+        result.error += rhs.error;
+        return (result);
+    }
+
     friend std::ostream & operator<< (std::ostream & os,
                                       const GammaRayTraceStats& s)
     {
