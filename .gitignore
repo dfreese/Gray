@@ -1,11 +1,4 @@
-*.a
-*.o
-*.cmake
 *.pyc
-Makefile
-CMakeFiles
-CMakeCache.txt
-CMakeScripts
 /materials/*.dat
 /python/epdl/epdl.all
 /materials/GrayPhysics.json

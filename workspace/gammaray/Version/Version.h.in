@@ -1,0 +1,19 @@
+#ifndef VERSION_H
+#define VERSION_H
+
+struct Version {
+    static constexpr int VersionMajor = @VERSION_MAJOR@;
+    static constexpr int VersionMinor = @VERSION_MINOR@;
+    static constexpr int VersionPatch = @VERSION_PATCH@;
+    static std::string GitSHA1() {
+        return ("@GIT_SHA1@");
+    }
+    static std::string VersionStr() {
+        return ("@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@");
+    }
+    static std::string CopyrightYear() {
+        return ("@CURRENT_YEAR@");
+    }
+};
+
+#endif // VERSION_H

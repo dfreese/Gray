@@ -22,10 +22,8 @@ int gray(int argc, char ** argv)
     Config config;
     int config_status = config.ProcessCommandLine(argc, argv, true);
     if (config_status < 0) {
-        Config::usage();
         return(1);
     } else if (config_status > 0) {
-        Config::usage();
         return(0);
     }
 

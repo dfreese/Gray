@@ -1,3 +1,8 @@
+include(GetGitRevisionDescription)
+git_describe(GIT_SHA1 --match=NeVeRmAtCh --always --abbrev=10)
+string(TIMESTAMP CURRENT_YEAR "%Y")
+configure_file(Version/Version.h.in ${CMAKE_BINARY_DIR}/generated/Version/Version.h)
+
 add_library(gammaray
     Daq/BlurProcess.h
     Daq/BlurProcess.cpp
@@ -146,8 +151,9 @@ add_library(gammaray
     VrMath/PolynomialRC.h
     VrMath/Quaternion.cpp
     VrMath/Quaternion.h
+    ${CMAKE_BINARY_DIR}/generated/Version/Version.h
 )
-target_include_directories(gammaray PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(gammaray PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_BINARY_DIR}/generated)
 target_link_libraries(gammaray jsoncpp)
 
 if (MPI_CXX_FOUND)

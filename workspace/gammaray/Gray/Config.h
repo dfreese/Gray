@@ -18,6 +18,7 @@ public:
     Config() = default;
     int ProcessCommandLine(int argc, char **argv, bool fail_without_scene);
     static void usage();
+    static void version();
 
     void set_filename_scene(const std::string & name);
     std::string get_filename_scene() const;

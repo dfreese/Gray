@@ -12,6 +12,7 @@
 #include <iostream>
 #include <Gray/Mpi.h>
 #include <Math/Math.h>
+#include <Version/Version.h>
 
 using namespace std;
 
@@ -23,6 +24,7 @@ using namespace std;
 int Config::ProcessCommandLine(int argc, char **argv, bool fail_without_scene)
 {
     if (argc == 1) {
+        Config::usage();
         return(1);
     }
     Mpi::Init(argc, argv);
@@ -41,7 +43,12 @@ int Config::ProcessCommandLine(int argc, char **argv, bool fail_without_scene)
     for (int ix = 1; ix < argc; ix++) {
         string argument(argv[ix]);
         if ((argument == "--help") || (argument == "-h")) {
+            Config::usage();
             return (1);
+        }
+        if (argument == "--version") {
+            Config::version();
+            return (2);
         }
         if (argument == "--test_overlap") {
             run_overlap_test = true;
@@ -171,6 +178,7 @@ bool Config::get_log_any() const {
 void Config::usage() {
     cout << "gray (-v) -f [Scene Description]\n"
     << "  -h or --help : print help message\n"
+    << "  --version : print version information\n"
     << "  -i [filename] : set the output hits file / input for gray-daq\n"
     << "  -s [filename] : set the output for the singles file\n"
     << "  -c [filename] : set an output for the coinc files (order matters)\n"
@@ -195,6 +203,15 @@ void Config::usage() {
     << endl;
 }
 
+void Config::version() {
+    cout << "Gray: a Ray Tracing-based Monte Carlo Simulator for PET\n"
+         << "\n"
+         << "  Copyright: Peter D. Olcott and David L. Freese, "
+         << Version::CopyrightYear() << "\n"
+         << "  Version: "  << Version::VersionStr() << "\n"
+         << "  Git Commit: " << Version::GitSHA1() << "\n"
+         << "\n";
+}
 
 void Config::set_filename_scene(const std::string & name) {
     if (filename_scene == "") {

@@ -17,6 +17,7 @@ DaqModel::DaqModel(TimeT initial_sort_window) {
     if (initial_sort_window > 0) {
         add_process(ProcessFactory::SortFactory(initial_sort_window), false);
     }
+
 }
 
 DaqModel::ContainerT& DaqModel::get_buffer() {
