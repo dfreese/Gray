@@ -3,7 +3,6 @@
 
 #include <map>
 #include <memory>
-#include <mutex>
 #include <queue>
 #include <string>
 #include <vector>
@@ -64,10 +63,15 @@ private:
     DecayInfo NextDecay(DecayInfo base_info) const;
     DecayInfo GetNextDecay();
 
-    std::vector<std::unique_ptr<Source>> list;
-    std::vector<std::unique_ptr<Source>> neg_list;
+    // We keep these as shared_ptrs as we assume this SourceList can be copied
+    // and used by different threads.  The access to the sources and isotopes
+    // is entirely read-only and const, so it is fine to be accessed across
+    // different threads.  That however, means care must be taken to make sure
+    // it stays that way.
+    std::vector<std::shared_ptr<Source>> list;
+    std::vector<std::shared_ptr<Source>> neg_list;
+    std::map<std::string, std::shared_ptr<Isotope>> valid_isotopes;
     int decay_number;
-    std::map<std::string, std::unique_ptr<Isotope>> valid_isotopes;
     std::string current_isotope;
     double simulation_time;
 
@@ -78,7 +82,6 @@ private:
     bool simulate_isotope_half_life;
     double start_time;
     double end_time;
-    mutable std::mutex decay_mutex;
 };
 
 #endif

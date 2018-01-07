@@ -23,7 +23,7 @@ SourceList::SourceList() :
 
 void SourceList::AddSource(std::unique_ptr<Source> s)
 {
-    auto isotope = valid_isotopes[current_isotope]->Clone();
+    shared_ptr<Isotope> isotope = valid_isotopes[current_isotope];
     if (isotope == nullptr) {
         string error = "Isotope named " + current_isotope
         + " somehow set as current isotope, but was not implemented";
@@ -45,7 +45,6 @@ void SourceList::AddSource(std::unique_ptr<Source> s)
 
 double SourceList::GetTime() const
 {
-    std::lock_guard<std::mutex> lck(decay_mutex);
     if (decay_list.empty()) {
         // If there are no new decays, assume there were no sources and return
         // the end of the simulation
@@ -77,7 +76,7 @@ bool SourceList::SimulationIncomplete() const {
 std::vector<VectorR3> SourceList::GetSourcePositions() const {
     std::vector<VectorR3> positions(list.size());
     std::transform(list.begin(), list.end(), positions.begin(),
-                   [](const std::unique_ptr<Source> & s) {
+                   [](const std::shared_ptr<Source> & s) {
                        return s->GetPosition();
                    });
     return (positions);
