@@ -11,6 +11,8 @@
 
 #include <Daq/Process.h>
 
+class ProcessStats;
+
 class SortProcess : public Process {
 public:
     using EventT = Process::EventT;
@@ -18,7 +20,9 @@ public:
     using TimeT = Process::TimeT;
 
     SortProcess(TimeT max_time_to_wait);
-    EventIter process(EventIter begin, EventIter end) final;
+    EventIter process(
+            EventIter begin, EventIter end,
+            ProcessStats& stats) const final;
 
 private:
     TimeT max_wait_time;

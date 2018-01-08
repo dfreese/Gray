@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <iterator>
 #include <Daq/MergeProcess.h>
+#include <Daq/ProcessStats.h>
 
 /*!
  *
@@ -17,7 +18,10 @@ MergeProcess::MergeProcess(const IdLookupT& lookup,
 /*!
  *
  */
-MergeProcess::EventIter MergeProcess::process(EventIter begin, EventIter end) {
+MergeProcess::EventIter MergeProcess::process(
+        EventIter begin, EventIter end,
+        ProcessStats& stats) const
+{
     auto cur_iter = begin;
     for (; cur_iter != end; cur_iter++) {
         EventT & cur_event = *cur_iter;
@@ -37,12 +41,12 @@ MergeProcess::EventIter MergeProcess::process(EventIter begin, EventIter end) {
                 // We have found an event that is outside of the window so we
                 // know that cur_event will be kept, and not be merged with
                 // something else.
-                this->inc_no_kept();
+                stats.no_kept++;
                 break;
             }
             if (current_event_id == mapped_id(next_event)) {
                 merge_func(cur_event, next_event);
-                this->inc_no_dropped();
+                stats.no_dropped++;
                 // merge_func can drop either cur_event or next_event, so in
                 // the case that the earlier event is dropped, then bail out
                 // of this loop and pick up next_event as the new cur_event.

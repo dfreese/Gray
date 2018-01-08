@@ -13,6 +13,8 @@
 #include <Daq/Mapping.h>
 #include <Daq/Process.h>
 
+class ProcessStats;
+
 class DeadtimeProcess : public Process {
 public:
     using EventT = Process::EventT;
@@ -23,7 +25,9 @@ public:
 
     DeadtimeProcess(const IdLookupT& lookup, TimeT deadtime,
                     bool paralyzable);
-    EventIter process(EventIter begin, EventIter end) final;
+    EventIter process(
+            EventIter begin, EventIter end,
+            ProcessStats& stats) const final;
 
 private:
     DetIdT mapped_id(const EventT& event) const;

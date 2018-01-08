@@ -2,6 +2,7 @@
 #include <memory>
 #include "Daq/Mapping.h"
 #include "Daq/Process.h"
+#include "Daq/ProcessStats.h"
 #include "Daq/ProcessFactory.h"
 #include "Physics/Interaction.h"
 
@@ -22,12 +23,13 @@ TEST(MergeTest, BasicMergeFirst) {
         events[ii].energy = energy[ii];
     }
 
-    auto ready = proc->process(events.begin(), events.end());
+    ProcessStats stats;
+    auto ready = proc->process(events.begin(), events.end(), stats);
     EXPECT_EQ(ready, events.end() - 1);
 
-    proc->stop(ready, events.end());
-    EXPECT_EQ(proc->no_dropped(), 1);
-    EXPECT_EQ(proc->no_kept(), 3);
+    proc->stop(ready, events.end(), stats);
+    EXPECT_EQ(stats.no_dropped, 1);
+    EXPECT_EQ(stats.no_kept, 3);
     EXPECT_EQ(events[1].dropped, true);
     EXPECT_EQ(events[0].energy, energy[0] + energy[1]);
 }
@@ -48,12 +50,13 @@ TEST(MergeTest, BasicMergeMax) {
         events[ii].energy = energy[ii];
     }
 
-    auto ready = proc->process(events.begin(), events.end());
+    ProcessStats stats;
+    auto ready = proc->process(events.begin(), events.end(), stats);
     EXPECT_EQ(ready, events.end() - 1);
 
-    proc->stop(ready, events.end());
-    EXPECT_EQ(proc->no_dropped(), 1);
-    EXPECT_EQ(proc->no_kept(), 3);
+    proc->stop(ready, events.end(), stats);
+    EXPECT_EQ(stats.no_dropped, 1);
+    EXPECT_EQ(stats.no_kept, 3);
     EXPECT_EQ(events[0].dropped, true);
     EXPECT_EQ(events[1].energy, energy[0] + energy[1]);
 }

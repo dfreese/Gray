@@ -11,6 +11,8 @@
 
 #include <Daq/Process.h>
 
+class ProcessStats;
+
 class CoincProcess : public Process {
 public:
 
@@ -20,28 +22,19 @@ public:
 
     CoincProcess(TimeT coinc_win, bool reject_multiple_events,
                  bool is_paralyzable, TimeT win_offset);
-    EventIter process(EventIter begin, EventIter end) final;
-    void stop(EventIter begin, EventIter end) final;
-
-    long get_no_coinc_events() const;
-    long get_no_coinc_pair_events() const;
-    long get_no_coinc_multiples_events() const;
-    long get_no_coinc_singles() const;
+    EventIter process(
+            EventIter begin, EventIter end,
+            ProcessStats& stats) const final;
+    void stop(EventIter begin, EventIter end, ProcessStats& stats) const final;
 
 private:
-    void _reset() final;
-    std::string print_info() const final;
-    EventIter process_events_optional_stop(EventIter begin, EventIter end,
-                                           bool stopping);
+    EventIter process_events_optional_stop(
+            EventIter begin, EventIter end,
+            ProcessStats& stats, bool stopping) const;
 
     TimeT coinc_window;
     TimeT window_offset;
     bool reject_multiples;
     bool paralyzable;
-
-    long no_coinc_pair_events;
-    long no_coinc_multiples_events;
-    long no_coinc_single_events;
-    long no_coinc_events;
 };
 #endif // coincprocess_h

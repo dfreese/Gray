@@ -1,4 +1,3 @@
-
 //
 //  deadtimeprocess.h
 //  graypipeline
@@ -9,6 +8,7 @@
 #include <algorithm>
 #include <iterator>
 #include <Daq/DeadtimeProcess.h>
+#include <Daq/ProcessStats.h>
 
 /*!
  *
@@ -25,15 +25,15 @@ DeadtimeProcess::DeadtimeProcess(const IdLookupT& lookup,
  *
  */
 DeadtimeProcess::EventIter DeadtimeProcess::process(
-        EventIter begin,
-        EventIter end)
+        EventIter begin, EventIter end,
+        ProcessStats& stats) const
 {
     auto current_event = begin;
     for (; current_event != end; current_event++) {
         if ((*current_event).dropped) {
             continue;
         }
-        this->inc_no_kept();
+
         const DetIdT current_event_id = mapped_id(*current_event);
         // Check to see where this event times out
         TimeT window = (*current_event).time + time_window;
@@ -45,11 +45,12 @@ DeadtimeProcess::EventIter DeadtimeProcess::process(
 
             const TimeT next_time = (*next_event).time;
             if (next_time >= window) {
+                stats.no_kept++;
                 break;
             }
             if (current_event_id == mapped_id(*next_event)) {
                 (*next_event).dropped = true;
-                this->inc_no_dropped();
+                stats.no_dropped++;
                 if (is_paralyzable) {
                     window = next_time + time_window;
                 }

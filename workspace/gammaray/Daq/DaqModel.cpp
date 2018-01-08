@@ -25,7 +25,6 @@ DaqModel::ContainerT& DaqModel::get_buffer() {
 }
 
 void DaqModel::consume(std::vector<Interaction> inters) {
-    std::lock_guard<std::mutex> lock(buffer_mutex);
     input_events.insert(input_events.end(), inters.begin(), inters.end());
 }
 
@@ -63,9 +62,9 @@ size_t DaqModel::no_coinc_processes() const {
 
 long DaqModel::no_events() const {
     if (!processes.empty()) {
-        return (processes.front()->no_events());
+        return (processes.front().second.no_events());
     } else if (!coinc_processes.empty()) {
-        return (coinc_processes.front()->no_events());
+        return (coinc_processes.front().second.no_events());
     } else {
         return (0);
     }
@@ -73,45 +72,45 @@ long DaqModel::no_events() const {
 
 long DaqModel::no_kept() const {
     if (!processes.empty()) {
-        return (processes.back()->no_kept());
+        return (processes.back().second.no_kept);
     } else {
         return (0);
     }
 }
 
 long DaqModel::no_dropped() const {
-    long dropped = 0;
-    for (const auto& proc: processes) {
-        dropped += proc->no_dropped();
+    long count = 0;
+    for (const auto& p: processes) {
+        count += p.second.no_dropped;
     }
-    return(dropped);
+    return(count);
 }
 
 long DaqModel::no_merged() const {
-    long merged = 0;
-    for (const auto& proc: processes) {
-        if (dynamic_cast<MergeProcess*>(proc.get())) {
-            merged += proc->no_dropped();
+    long count = 0;
+    for (const auto& p: processes) {
+        if (dynamic_cast<MergeProcess*>(p.first.get())) {
+            count += p.second.no_dropped;
         }
     }
-    return(merged);
+    return(count);
 }
 
 long DaqModel::no_filtered() const {
-    long filtered = 0;
-    for (const auto& proc: processes) {
-        if (dynamic_cast<FilterProcess*>(proc.get())) {
-            filtered += proc->no_dropped();
+    long count = 0;
+    for (const auto& p: processes) {
+        if (dynamic_cast<FilterProcess*>(p.first.get())) {
+            count += p.second.no_dropped;
         }
     }
-    return(filtered);
+    return(count);
 }
 
 long DaqModel::no_deadtimed() const {
     long count = 0;
-    for (const auto& proc: processes) {
-        if (dynamic_cast<DeadtimeProcess*>(proc.get())) {
-            count += proc->no_dropped();
+    for (const auto& p: processes) {
+        if (dynamic_cast<DeadtimeProcess*>(p.first.get())) {
+            count += p.second.no_dropped;
         }
     }
     return(count);
@@ -124,7 +123,7 @@ std::ostream & operator << (std::ostream & os, const DaqModel & s) {
     os << "kept per level: ";
     for (size_t idx = 0; idx < s.processes.size(); idx++) {
         if (s.print_info[idx]) {
-            os << s.processes[idx]->no_kept();
+            os << s.processes[idx].second.no_kept;
             if (idx + 1 < s.processes.size()) {
                 os << ", ";
             }
@@ -134,7 +133,7 @@ std::ostream & operator << (std::ostream & os, const DaqModel & s) {
     os << "drop per level: ";
     for (size_t idx = 0; idx < s.processes.size(); idx++) {
         if (s.print_info[idx]) {
-            os << s.processes[idx]->no_dropped();
+            os << s.processes[idx].second.no_dropped;
             if (idx + 1 < s.processes.size()) {
                 os << ", ";
             }
@@ -145,8 +144,8 @@ std::ostream & operator << (std::ostream & os, const DaqModel & s) {
     os << "filtered: " << s.no_filtered() << "\n";
     os << "deadtimed: " << s.no_deadtimed() << "\n";
     if (!s.coinc_processes.empty()) {
-        for (auto & proc: s.coinc_processes) {
-            os << *proc;
+        for (auto & p: s.coinc_processes) {
+            os << p.second.coinc_info();
         }
     }
     return(os);
@@ -182,9 +181,9 @@ void DaqModel::add_process(std::unique_ptr<Process> process,
                            bool proc_print_info)
 {
     if (dynamic_cast<CoincProcess*>(process.get())) {
-        coinc_processes.push_back(std::move(process));
+        coinc_processes.emplace_back(std::move(process), ProcessStats());
     } else {
-        processes.push_back(std::move(process));
+        processes.emplace_back(std::move(process), ProcessStats());
         print_info.push_back(proc_print_info);
         process_ready_distance.push_back(0);
     }
@@ -260,7 +259,8 @@ void DaqModel::process_hits() {
     if (!processes.empty()) {
         const auto begin = std::next(input_events.begin(),
                                      process_ready_distance.front());
-        singles_ready = processes.front()->process(begin, singles_ready);
+        auto& proc_pair = processes.front();
+        singles_ready = proc_pair.first->process(begin, singles_ready, proc_pair.second);
         process_ready_distance.front() = std::distance(input_events.begin(), singles_ready);
     }
     min_coinc_ready_dist = std::distance(input_events.begin(), singles_ready);
@@ -274,7 +274,8 @@ void DaqModel::process_singles() {
     for (size_t ii = 0; ii < processes.size(); ii++) {
         const auto begin = std::next(input_events.begin(),
                                      process_ready_distance[ii]);
-        singles_ready = processes[ii]->process(begin, singles_ready);
+        auto& proc_pair = processes[ii];
+        singles_ready = proc_pair.first->process(begin, singles_ready, proc_pair.second);
         process_ready_distance[ii] = std::distance(input_events.begin(), singles_ready);
     }
     min_coinc_ready_dist = std::distance(input_events.begin(), singles_ready);
@@ -282,17 +283,20 @@ void DaqModel::process_singles() {
 
 void DaqModel::process_coinc(size_t idx) {
     coinc_stopped = false;
-    coinc_ready = coinc_processes[idx]->process(input_events.begin(),
-            singles_ready);
-    min_coinc_ready_dist = std::min(min_coinc_ready_dist,
-                                    std::distance(input_events.begin(), coinc_ready));
+    auto& proc_pair = coinc_processes[idx];
+    coinc_ready = proc_pair.first->process(
+            input_events.begin(), singles_ready, proc_pair.second);
+    min_coinc_ready_dist = std::min(
+            min_coinc_ready_dist,
+            std::distance(input_events.begin(), coinc_ready));
 }
 
 void DaqModel::stop_hits() {
     hits_stopped = true;
     if (!processes.empty()) {
         auto p_beg = std::next(begin(), process_ready_distance.front());
-        processes.front()->stop(p_beg, end());
+        auto& proc_pair = processes.front();
+        proc_pair.first->stop(p_beg, end(), proc_pair.second);
         process_ready_distance.front() = std::distance(begin(), end());
     }
 }
@@ -301,14 +305,16 @@ void DaqModel::stop_singles() {
     singles_stopped = true;
     for (size_t ii = 0; ii < process_ready_distance.size(); ii++) {
         auto p_beg = std::next(begin(), process_ready_distance[ii]);
-        processes[ii]->stop(p_beg, end());
+        auto& proc_pair = processes[ii];
+        proc_pair.first->stop(p_beg, end(), proc_pair.second);
         process_ready_distance[ii] = std::distance(begin(), end());
     }
 }
 
 void DaqModel::stop_coinc(size_t idx) {
     coinc_stopped = true;
-    coinc_processes[idx]->stop(begin(), end());
+    auto& proc_pair = coinc_processes[idx];
+    proc_pair.first->stop(begin(), end(), proc_pair.second);
 }
 
 void DaqModel::clear_complete() {

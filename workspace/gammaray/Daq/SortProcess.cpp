@@ -1,6 +1,7 @@
 #include <Daq/SortProcess.h>
 #include <algorithm>
 #include <iterator>
+#include <Daq/ProcessStats.h>
 
 /*!
  *
@@ -30,7 +31,10 @@ void insertion_sort(I begin, I end, C comp = C()) {
 /*!
  *
  */
-SortProcess::EventIter SortProcess::process(EventIter begin, EventIter end) {
+SortProcess::EventIter SortProcess::process(
+        EventIter begin, EventIter end,
+        ProcessStats& stats) const
+{
     // The timeout detection in this function requires a non-empty container
     // so if we're given an empty range, bail right away.
     if (begin == end) {
@@ -53,8 +57,9 @@ SortProcess::EventIter SortProcess::process(EventIter begin, EventIter end) {
     }
     // TODO: implement this in the sort loop so we don't need to do go over
     // the events twice.
-    this->inc_no_kept(std::count_if(begin, timed_out, [](const EventT& e) {
-                return (!e.dropped); }));
+    stats.no_kept += std::count_if(
+            begin, timed_out, [](const EventT& e) { return (!e.dropped); });
+
     return (timed_out);
 };
 

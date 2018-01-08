@@ -6,12 +6,13 @@
 #include <iostream>
 #include <map>
 #include <memory>
-#include <mutex>
 #include <sstream>
+#include <utility>
 #include <vector>
 #include <Physics/Interaction.h>
 #include <Daq/Process.h>
 #include <Daq/ProcessFactory.h>
+#include <Daq/ProcessStats.h>
 
 class DaqModel {
 public:
@@ -59,18 +60,17 @@ public:
 
 
 private:
-    std::vector<std::unique_ptr<Process>> processes;
-    std::vector<std::unique_ptr<Process>> coinc_processes;
+    using ProcessDescription = ProcessFactory::ProcessDescription;
+    int set_processes(
+            const std::vector<ProcessDescription> & process_descriptions,
+            const Mapping::IdMappingT& mapping);
+    void add_process(std::unique_ptr<Process> process, bool proc_print_info);
+
+    std::vector<std::pair<std::shared_ptr<Process>, ProcessStats>> processes;
+    std::vector<std::pair<std::shared_ptr<Process>, ProcessStats>> coinc_processes;
 
     //! Tells if a given process in processes should be printed
     std::vector<bool> print_info;
-
-    using ProcessDescription = ProcessFactory::ProcessDescription;
-
-    int set_processes(const std::vector<ProcessDescription> & process_descriptions,
-                      const Mapping::IdMappingT& mapping);
-
-    void add_process(std::unique_ptr<Process> process, bool proc_print_info);
 
     ContainerT input_events;
     std::vector<ContainerT::difference_type> process_ready_distance;
@@ -82,7 +82,6 @@ private:
     bool hits_stopped = false;
     bool singles_stopped = false;
     bool coinc_stopped = false;
-    std::mutex buffer_mutex;
 };
 
 #endif // DaqModel_h

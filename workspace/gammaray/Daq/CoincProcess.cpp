@@ -1,7 +1,6 @@
-#include <algorithm>
-#include <iterator>
-#include <sstream>
 #include <Daq/CoincProcess.h>
+#include <iterator>
+#include <Daq/ProcessStats.h>
 
 /*!
  *
@@ -11,69 +10,32 @@ CoincProcess::CoincProcess(TimeT coinc_win, bool reject_multiple_events,
     coinc_window(coinc_win),
     window_offset(win_offset),
     reject_multiples(reject_multiple_events),
-    paralyzable(is_paralyzable),
-    no_coinc_pair_events(0),
-    no_coinc_multiples_events(0),
-    no_coinc_single_events(0),
-    no_coinc_events(0)
+    paralyzable(is_paralyzable)
 {
-
 }
 
 /*!
  *
  */
-long CoincProcess::get_no_coinc_events() const {
-    return(no_coinc_events);
+CoincProcess::EventIter CoincProcess::process(
+        EventIter begin, EventIter end, ProcessStats& stats) const
+{
+    return(process_events_optional_stop(begin, end, stats, false));
 }
 
 /*!
  *
  */
-long CoincProcess::get_no_coinc_pair_events() const {
-    return(no_coinc_pair_events);
-}
-
-/*!
- *
- */
-long CoincProcess::get_no_coinc_multiples_events() const {
-    return(no_coinc_multiples_events);
-}
-
-/*!
- *
- */
-long CoincProcess::get_no_coinc_singles() const {
-    return(no_coinc_single_events);
-}
-
-void CoincProcess::_reset() {
-    no_coinc_pair_events = 0;
-    no_coinc_multiples_events = 0;
-    no_coinc_single_events = 0;
-    no_coinc_events = 0;
-}
-
-/*!
- *
- */
-CoincProcess::EventIter CoincProcess::process(EventIter begin, EventIter end) {
-    return(process_events_optional_stop(begin, end, false));
-}
-
-/*!
- *
- */
-void CoincProcess::stop(EventIter begin, EventIter end) {
-    process_events_optional_stop(begin, end, true);
+void CoincProcess::stop(EventIter begin, EventIter end, ProcessStats& stats) const {
+    process_events_optional_stop(begin, end, stats, true);
 }
 
 /*!
  *
  */
 CoincProcess::EventIter CoincProcess::process_events_optional_stop(
-        EventIter begin, EventIter end, bool stopping)
+        EventIter begin, EventIter end,
+        ProcessStats& stats, bool stopping) const
 {
     // coinc_id == -1 means event hasn't been touched.  coinc_id == -2
     // indicateds a rejected event.  Zero or higher means it has been
@@ -156,13 +118,13 @@ CoincProcess::EventIter CoincProcess::process_events_optional_stop(
         // Sort out the singles, doubles, and multiples.
         bool keep_events = false;
         if (no_events == 2) {
-            no_coinc_pair_events += no_events;
+            stats.no_coinc_pair_events += no_events;
             keep_events = true;
         } else if (no_events > 2) {
-            no_coinc_multiples_events += no_events;
+            stats.no_coinc_multiples_events += no_events;
             keep_events = !reject_multiples;
         } else {
-            no_coinc_single_events += no_events;
+            stats.no_coinc_single_events += no_events;
         }
         for (auto iter = window_start_iter; iter != window_end_iter; ++iter)  {
             EventT & event = *iter;
@@ -170,28 +132,19 @@ CoincProcess::EventIter CoincProcess::process_events_optional_stop(
                 continue;
             }
             if (keep_events) {
-                event.coinc_id = no_coinc_events;
+                event.coinc_id = stats.no_coinc_events;
             } else {
                 event.coinc_id = -2;
             }
         }
         if (keep_events) {
-            current_event.coinc_id = no_coinc_events;
-            no_coinc_events++;
-            this->inc_no_kept(no_events);
+            current_event.coinc_id = stats.no_coinc_events;
+            stats.no_coinc_events++;
+            stats.no_kept += no_events;
         } else {
             current_event.coinc_id = -2;
-            this->inc_no_dropped(no_events);
+            stats.no_dropped += no_events;
         }
     }
     return (cur_iter);
-}
-
-std::string CoincProcess::print_info() const {
-    std::stringstream ss;
-    ss << "coinc events            : " << no_coinc_events << "\n"
-       << "events in coinc pair    : " << no_coinc_pair_events << "\n"
-       << "events in coinc multiple: " << no_coinc_multiples_events << "\n"
-       << "events in coinc single  : " << no_coinc_single_events << "\n";
-    return (ss.str());
 }

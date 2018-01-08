@@ -30,6 +30,7 @@ add_library(gammaray
     Daq/Process.cpp
     Daq/ProcessFactory.h
     Daq/ProcessFactory.cpp
+    Daq/ProcessStats.h
     Graphics/CameraView.cpp
     Graphics/CameraView.h
     Graphics/Light.h

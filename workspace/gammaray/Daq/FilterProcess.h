@@ -11,6 +11,8 @@
 
 #include <Daq/Process.h>
 
+class ProcessStats;
+
 class FilterProcess : public Process {
 public:
     using EventT = Process::EventT;
@@ -18,7 +20,9 @@ public:
     using FilterF = std::function<bool(EventT&)>;
 
     FilterProcess(FilterF filter_func);
-    EventIter process(EventIter begin, EventIter end) final;
+    EventIter process(
+            EventIter begin, EventIter end,
+            ProcessStats& stats) const final;
 
 private:
     /*!
