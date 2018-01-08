@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <Daq/DaqModel.h>
+#include <Gray/SimulationStats.h>
 #include <Output/Output.h>
 #include <Sources/SourceList.h>
 
@@ -18,7 +19,7 @@ public:
         const DaqModel& daq_model,
         size_t thread_idx, size_t no_threads);
 
-    void Run();
+    SimulationStats Run();
 
 private:
     SourceList sources;

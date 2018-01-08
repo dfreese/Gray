@@ -18,6 +18,40 @@ struct DaqStats {
     std::vector<long> no_dropped_per_proc;
     std::vector<bool> print_info;
 
+    DaqStats& operator+=(const DaqStats& rhs) {
+        no_events += rhs.no_events;
+        no_kept += rhs.no_kept;
+        no_dropped += rhs.no_dropped;
+        no_merged += rhs.no_merged;
+        no_filtered += rhs.no_filtered;
+        no_deadtimed += rhs.no_deadtimed;
+        if (coinc_stats.size() < rhs.coinc_stats.size()) {
+            coinc_stats.resize(rhs.coinc_stats.size());
+        }
+        for (size_t idx = 0; idx < coinc_stats.size(); ++idx) {
+            coinc_stats[idx] += rhs.coinc_stats[idx];
+        }
+        if (no_kept_per_proc.size() < rhs.no_kept_per_proc.size()) {
+            no_kept_per_proc.resize(rhs.no_kept_per_proc.size());
+        }
+        for (size_t idx = 0; idx < no_kept_per_proc.size(); ++idx) {
+            no_kept_per_proc[idx] += rhs.no_kept_per_proc[idx];
+        }
+        if (no_dropped_per_proc.size() < rhs.no_dropped_per_proc.size()) {
+            no_dropped_per_proc.resize(rhs.no_dropped_per_proc.size());
+        }
+        for (size_t idx = 0; idx < no_dropped_per_proc.size(); ++idx) {
+            no_dropped_per_proc[idx] += rhs.no_dropped_per_proc[idx];
+        }
+        if (print_info.size() < rhs.print_info.size()) {
+            print_info.resize(rhs.print_info.size());
+        }
+        for (size_t idx = 0; idx < print_info.size(); ++idx) {
+            print_info[idx] = print_info[idx] || rhs.print_info[idx];
+        }
+        return (*this);
+    }
+
     friend std::ostream& operator << (std::ostream& os, const DaqStats& s) {
         os << "events: " << s.no_events << "\n"
             << "kept: " << s.no_kept << "\n"

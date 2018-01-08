@@ -33,18 +33,7 @@ struct GammaRayTraceStats {
 
     GammaRayTraceStats operator+(const GammaRayTraceStats& rhs) {
         GammaRayTraceStats result(*this);
-        result.decays += rhs.decays;
-        result.photons += rhs.photons;
-        result.no_interaction += rhs.no_interaction;
-        result.photoelectric += rhs.photoelectric;
-        result.xray_escape += rhs.xray_escape;
-        result.compton += rhs.compton;
-        result.rayleigh += rhs.rayleigh;
-        result.photoelectric_sensitive += rhs.photoelectric_sensitive;
-        result.xray_escape_sensitive += rhs.xray_escape_sensitive;
-        result.compton_sensitive += rhs.compton_sensitive;
-        result.rayleigh_sensitive += rhs.rayleigh_sensitive;
-        result.error += rhs.error;
+        result += rhs;
         return (result);
     }
 

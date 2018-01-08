@@ -78,6 +78,7 @@ add_library(gammaray
     Gray/Mpi.h
     Gray/Simulation.cpp
     Gray/Simulation.h
+    Gray/SimulationStats.h
     KdTree/DoubleRecurse.cpp
     KdTree/DoubleRecurse.h
     KdTree/KdTree.h

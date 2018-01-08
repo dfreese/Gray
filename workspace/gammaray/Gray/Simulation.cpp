@@ -70,7 +70,7 @@ Simulation::Simulation(
     }
 }
 
-void Simulation::Run() {
+SimulationStats Simulation::Run() {
     bool print_prog_bar = !Mpi::Enabled();
     const long num_chars = 70;
     double tick_mark = sources.GetSimulationTime() / num_chars;
@@ -150,14 +150,13 @@ void Simulation::Run() {
         }
     }
     if (print_prog_bar) cout << "=] Done." << endl;
-    cout << "\n______________\n Stats\n______________\n"
-         << ray_stats << endl;
-    if (config.get_log_singles() || config.get_log_coinc()) {
-        cout << "______________\n DAQ Stats\n______________\n"
-        << daq_model << endl;
-    }
     // A NoOp function if MPI is not enabled.
     Mpi::CombineFiles(config, output_hits, output_singles, outputs_coinc);
     Mpi::Finalize();
+    SimulationStats result;
+    result.physics = ray_stats;
+    result.daq = daq_model.stats();
+    return (result);
 }
+
 

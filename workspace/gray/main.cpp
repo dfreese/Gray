@@ -1,5 +1,7 @@
 #include <ctime>
+#include <future>
 #include <iostream>
+#include <vector>
 #include <Graphics/SceneDescription.h>
 #include <Gray/GammaMaterial.h>
 #include <Gray/GammaRayTrace.h>
@@ -130,9 +132,27 @@ int gray(int argc, char ** argv)
     Random::SetSeed(config.get_seed());
     cout << "Using Seed: " << Random::GetSeed() << endl;
 
-    Simulation sim(config, scene, sources, daq_model, 0, 1);
+    size_t no_threads = 1;
+    std::vector<Simulation> sims;
+    for (size_t idx = 0; idx < no_threads; ++idx) {
+        sims.emplace_back(config, scene, sources, daq_model, idx, no_threads);
+    }
     clock_t setup_time = clock();
-    sim.Run();
+    std::vector<std::future<SimulationStats>> results(no_threads);
+    for (size_t idx = 0; idx < no_threads; ++idx) {
+        results[idx] = std::async(&Simulation::Run, &sims[idx]);
+    }
+    SimulationStats total;
+    for (auto& r : results) {
+        total += r.get();
+    }
+    cout << "\n______________\n Stats\n______________\n"
+         << total.physics << endl;
+    if (config.get_log_singles() || config.get_log_coinc()) {
+        cout << "______________\n DAQ Stats\n______________\n"
+        << total.daq << endl;
+    }
+
     clock_t end_time = clock();
     double setup_time_sec =  double(setup_time - start_time) / CLOCKS_PER_SEC;
     double run_time_sec =  double(end_time - setup_time) / CLOCKS_PER_SEC;
