@@ -7,59 +7,70 @@
 #include <Sources/SourceList.h>
 #include <Graphics/SceneDescription.h>
 #include <iostream>
+#include <stdexcept>
+#include <string>
 #include <vector>
 
 using namespace std;
 
-void Simulation::SetupSources(const Config & config, SourceList & sources,
-                              SceneDescription & scene)
+Simulation::Simulation(
+        const Config& config,
+        const SceneDescription& scene,
+        const SourceList& sources,
+        const DaqModel& daq_model,
+        size_t thread_idx, size_t no_threads) :
+    config(config),
+    sources(sources),
+    scene(scene),
+    daq_model(daq_model),
+    thread_idx(thread_idx),
+    no_threads(no_threads),
+    outputs_coinc(daq_model.no_coinc_processes())
 {
-    sources.SetSimulationTime(config.get_time());
-    sources.SetStartTime(config.get_start_time());
-    Mpi::AdjustSimTime(sources);
-    sources.InitSources();
-}
+    this->sources.SetSimulationTime(config.get_time());
+    this->sources.SetStartTime(config.get_start_time());
+    if (no_threads > 1) {
+        this->sources.AdjustTimeForSplit(thread_idx, no_threads);
+    }
+    this->sources.InitSources();
 
-int Simulation::SetupOutput(const Config & config, Output & output_hits,
-                            Output & output_singles,
-                            std::vector<Output> & outputs_coinc)
-{
-    Mpi::ConfigOutputFileHeaders();
-    // This will be blank if mpi is not enabled.
-    string mpi_output_append = Mpi::OutputAppend();
+    string output_append;
+    if (no_threads > 1) {
+        output_append = ".rank_" + std::to_string(thread_idx);
+    }
+
+    bool success = true;
     if (config.get_log_hits()) {
         output_hits.SetFormat(config.get_format_hits());
-        output_hits.SetVariableOutputMask(config.get_hits_var_output_write_flags());
-        output_hits.SetLogfile(config.get_filename_hits() + mpi_output_append);
+        output_hits.SetVariableOutputMask(
+                config.get_hits_var_output_write_flags());
+        success &= output_hits.SetLogfile(
+                    config.get_filename_hits() + output_append);
     }
     if (config.get_log_singles()) {
         output_singles.SetFormat(config.get_format_singles());
-        output_singles.SetVariableOutputMask(config.get_singles_var_output_write_flags());
-        output_singles.SetLogfile(config.get_filename_singles() + mpi_output_append);
+        output_singles.SetVariableOutputMask(
+                config.get_singles_var_output_write_flags());
+        success &= output_singles.SetLogfile(
+                config.get_filename_singles() + output_append);
     }
     if (config.get_log_coinc()) {
-        if (outputs_coinc.size() != config.get_no_coinc_filenames())
-        {
-            cerr << "Incorrect number of filenames specified for coinc outputs"
-                 << endl;
-            return(-1);
-        }
         for (size_t idx = 0; idx < outputs_coinc.size(); idx++) {
             Output & output_coinc = outputs_coinc[idx];
             output_coinc.SetFormat(config.get_format_coinc());
-            output_coinc.SetVariableOutputMask(config.get_coinc_var_output_write_flags());
-            output_coinc.SetLogfile(config.get_filename_coinc(idx) + mpi_output_append);
+            output_coinc.SetVariableOutputMask(
+                    config.get_coinc_var_output_write_flags());
+            success &= output_coinc.SetLogfile(
+                    config.get_filename_coinc(idx) + output_append);
         }
     }
-    return(0);
+
+    if (!success) {
+        throw std::runtime_error("Unable to open output files");
+    }
 }
 
-void Simulation::RunSim(const Config & config, SourceList & sources,
-                        const SceneDescription & scene,
-                        Output & output_hits, Output & output_singles,
-                        std::vector<Output> & outputs_coinc,
-                        DaqModel & daq_model)
-{
+void Simulation::Run() {
     bool print_prog_bar = !Mpi::Enabled();
     const long num_chars = 70;
     double tick_mark = sources.GetSimulationTime() / num_chars;
@@ -149,3 +160,4 @@ void Simulation::RunSim(const Config & config, SourceList & sources,
     Mpi::CombineFiles(config, output_hits, output_singles, outputs_coinc);
     Mpi::Finalize();
 }
+

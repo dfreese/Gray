@@ -2,27 +2,35 @@
 #define SIMULATION_H_
 
 #include <vector>
+#include <Daq/DaqModel.h>
+#include <Output/Output.h>
+#include <Sources/SourceList.h>
 
 class Config;
-class SourceList;
 class SceneDescription;
-class Output;
-class DaqModel;
-class GammaMaterial;
 
 class Simulation {
 public:
-    static void SetupSources(const Config & config, SourceList & sources,
-                             SceneDescription & scene);
-    static int SetupOutput(const Config & config, Output & output_hits,
-                           Output & output_singles,
-                           std::vector<Output> & outputs_coinc);
+    Simulation(
+        const Config& config,
+        const SceneDescription& scene,
+        const SourceList& sources,
+        const DaqModel& daq_model,
+        size_t thread_idx, size_t no_threads);
 
-    static void RunSim(const Config & config, SourceList & sources,
-                       const SceneDescription & scene,
-                       Output & output_hits, Output & output_singles,
-                       std::vector<Output> & outputs_coinc,
-                       DaqModel & daq_model);
+    void Run();
+
+private:
+    SourceList sources;
+    DaqModel daq_model;
+    size_t thread_idx;
+    size_t no_threads;
+    const SceneDescription& scene;
+    const Config& config;
+    Output output_hits;
+    Output output_singles;
+    std::vector<Output> outputs_coinc;
+
 };
 
 #endif // SIMULATION_H_

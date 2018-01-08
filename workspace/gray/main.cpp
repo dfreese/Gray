@@ -103,6 +103,13 @@ int gray(int argc, char ** argv)
         return(3);
     }
 
+    if (config.get_log_coinc() &&
+            (daq_model.no_coinc_processes() != config.get_no_coinc_filenames()))
+    {
+        std::cerr << "Incorrect number of filenames specified for coinc outputs\n";
+        return(4);
+    }
+
     scene.BuildTree(true, 8.0);
 
     if (config.get_run_overlap_test()) {
@@ -123,20 +130,9 @@ int gray(int argc, char ** argv)
     Random::SetSeed(config.get_seed());
     cout << "Using Seed: " << Random::GetSeed() << endl;
 
-    Output output_hits;
-    Output output_singles;
-    std::vector<Output> outputs_coinc(daq_model.no_coinc_processes());
-    int setup_status = Simulation::SetupOutput(config, output_hits,
-                                               output_singles, outputs_coinc);
-    if (setup_status < 0) {
-        return(4);
-    }
-    Simulation::SetupSources(config, sources, scene);
-
+    Simulation sim(config, scene, sources, daq_model, 0, 1);
     clock_t setup_time = clock();
-    Simulation::RunSim(config, sources, scene, output_hits,
-                       output_singles, outputs_coinc, daq_model);
-
+    sim.Run();
     clock_t end_time = clock();
     double setup_time_sec =  double(setup_time - start_time) / CLOCKS_PER_SEC;
     double run_time_sec =  double(end_time - setup_time) / CLOCKS_PER_SEC;
