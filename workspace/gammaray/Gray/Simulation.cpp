@@ -71,7 +71,7 @@ Simulation::Simulation(
 }
 
 SimulationStats Simulation::Run() {
-    bool print_prog_bar = !Mpi::Enabled();
+    bool print_prog_bar = (thread_idx == 0);
     const long num_chars = 70;
     double tick_mark = sources.GetSimulationTime() / num_chars;
     int current_tick = 0;
