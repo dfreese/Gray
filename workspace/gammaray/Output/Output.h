@@ -22,6 +22,7 @@ public:
     };
 
     Output();
+    Output(Output&&) = default;
     ~Output();
     bool SetLogfile(const std::string & name);
     void SetFormat(Format format);
