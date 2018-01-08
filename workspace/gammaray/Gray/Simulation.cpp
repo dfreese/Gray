@@ -2,7 +2,6 @@
 #include <Gray/Config.h>
 #include <Gray/GammaRayTrace.h>
 #include <Gray/GammaRayTraceStats.h>
-#include <Gray/Mpi.h>
 #include <Daq/DaqModel.h>
 #include <Sources/SourceList.h>
 #include <Graphics/SceneDescription.h>

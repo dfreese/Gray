@@ -74,8 +74,6 @@ add_library(gammaray
     Gray/LoadDetector.h
     Gray/LoadMaterials.cpp
     Gray/LoadMaterials.h
-    Gray/Mpi.cpp
-    Gray/Mpi.h
     Gray/Simulation.cpp
     Gray/Simulation.h
     Gray/SimulationStats.h
@@ -159,10 +157,3 @@ add_library(gammaray
 target_include_directories(gammaray PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_BINARY_DIR}/generated)
 target_link_libraries(gammaray jsoncpp)
 
-if (MPI_CXX_FOUND)
-    add_definitions(-DMPI_COMPILE_ENABLED)
-    target_link_libraries(gammaray ${MPI_CXX_LIBRARIES})
-    include_directories(${MPI_CXX_INCLUDE_PATH})
-    set(CMAKE_CXX_COMPILE_FLAGS ${CMAKE_CXX_COMPILE_FLAGS} ${MPI_CXX_COMPILE_FLAGS})
-    set(CMAKE_CXX_LINK_FLAGS ${CMAKE_CXX_LINK_FLAGS} ${MPI_CXX_LINK_FLAGS})
-endif (MPI_CXX_FOUND)

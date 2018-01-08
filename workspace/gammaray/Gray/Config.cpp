@@ -10,7 +10,6 @@
 #include <ctime>
 #include <sstream>
 #include <iostream>
-#include <Gray/Mpi.h>
 #include <Math/Math.h>
 #include <Version/Version.h>
 
@@ -27,7 +26,6 @@ int Config::ProcessCommandLine(int argc, char **argv, bool fail_without_scene)
         Config::usage();
         return(1);
     }
-    Mpi::Init(argc, argv);
     // Set the default seed to be the current time.
     seed = Math::hash(std::time(NULL));
 

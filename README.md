@@ -6,7 +6,6 @@ A ray-tracing based Monte-Carlo simulation for PET
 * CMake 2.8.12 or later
 * OpenGL, GLU, and GLUT (Optional for viewing)
 * Python 2.7 or later to generate the materials files from EPDL
-* MPI (Optional for parallel computing operations)
 
 ## Structure
 This repository has or assumes the following structure:
@@ -81,6 +80,5 @@ How to install Gray:
     ```
     gray
     gray-daq
-    gray-mpi
     gray-view
     ```
