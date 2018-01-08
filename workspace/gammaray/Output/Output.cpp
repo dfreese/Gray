@@ -240,15 +240,16 @@ void Output::LogInteraction(const Interaction & interact) {
     }
 }
 
-bool Output::SetLogfile(const std::string & name)
+bool Output::SetLogfile(const std::string & name, bool write_header_flag)
 {
-    log_file.open(name.c_str(), ios::out);
+    log_file.open(name);
     if (log_file.fail()) {
         cerr << "ERROR: cannot open ";
         cerr << name;
         cerr << " log file.\n";
         return false;
     }
+    log_filename = name;
 
     if (write_header_flag) {
         if (format == VARIABLE_ASCII) {
@@ -261,6 +262,10 @@ bool Output::SetLogfile(const std::string & name)
     }
 
     return(true);
+}
+
+std::string Output::GetFilename() const {
+    return (log_filename);
 }
 
 int Output::ParseFormat(const std::string & identifier, Output::Format & fmt) {

@@ -6,6 +6,7 @@
 #include <Daq/DaqModel.h>
 #include <Sources/SourceList.h>
 #include <Graphics/SceneDescription.h>
+#include <cstdio>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -39,20 +40,28 @@ Simulation::Simulation(
         output_append = ".rank_" + std::to_string(thread_idx);
     }
 
+    // For the files not written by the first process, don't write the header
+    // out so the files can simply be concatenated.  Since that doesn't decode
+    // what is in the files, currently, the decay_id starts over for every
+    // thread.
+    bool write_header = thread_idx > 0;
+
     bool success = true;
     if (config.get_log_hits()) {
         output_hits.SetFormat(config.get_format_hits());
         output_hits.SetVariableOutputMask(
                 config.get_hits_var_output_write_flags());
         success &= output_hits.SetLogfile(
-                    config.get_filename_hits() + output_append);
+                    config.get_filename_hits() + output_append,
+                    write_header);
     }
     if (config.get_log_singles()) {
         output_singles.SetFormat(config.get_format_singles());
         output_singles.SetVariableOutputMask(
                 config.get_singles_var_output_write_flags());
         success &= output_singles.SetLogfile(
-                config.get_filename_singles() + output_append);
+                config.get_filename_singles() + output_append,
+                write_header);
     }
     if (config.get_log_coinc()) {
         for (size_t idx = 0; idx < outputs_coinc.size(); idx++) {
@@ -61,7 +70,8 @@ Simulation::Simulation(
             output_coinc.SetVariableOutputMask(
                     config.get_coinc_var_output_write_flags());
             success &= output_coinc.SetLogfile(
-                    config.get_filename_coinc(idx) + output_append);
+                    config.get_filename_coinc(idx) + output_append,
+                    write_header);
         }
     }
 
@@ -150,13 +160,55 @@ SimulationStats Simulation::Run() {
         }
     }
     if (print_prog_bar) cout << "=] Done." << endl;
-    // A NoOp function if MPI is not enabled.
-    Mpi::CombineFiles(config, output_hits, output_singles, outputs_coinc);
-    Mpi::Finalize();
     SimulationStats result;
     result.physics = ray_stats;
     result.daq = daq_model.stats();
     return (result);
 }
 
-
+void Simulation::CombineOutputs(
+        const Config& config, const std::vector<Simulation>& sims)
+{
+    if (sims.size() == 1) {
+        return;
+    }
+    std::ofstream hits;
+    std::ofstream singles;
+    // Unclear why g++ was complaining about emplace_back with ofstream,
+    // but this works...
+    std::vector<unique_ptr<ofstream>> coincs;
+    if (config.get_log_hits()) {
+        hits.open(config.get_filename_hits());
+    }
+    if (config.get_log_singles()) {
+        singles.open(config.get_filename_singles());
+    }
+    if (config.get_log_coinc()) {
+        for (const auto& name: config.get_filenames_coinc()) {
+            coincs.emplace_back(new std::ofstream(name));
+        }
+    }
+    for (int idx = 0; idx < sims.size(); idx++) {
+        const Simulation& sim = sims[idx];
+        if (config.get_log_hits()) {
+            std::ifstream hits_seg(sim.output_hits.GetFilename());
+            hits << hits_seg.rdbuf();
+            hits_seg.close();
+            std::remove(sim.output_hits.GetFilename().c_str());
+        }
+        if (config.get_log_singles()) {
+            std::ifstream singles_seg(sim.output_singles.GetFilename());
+            singles << singles_seg.rdbuf();
+            singles_seg.close();
+            std::remove(sim.output_singles.GetFilename().c_str());
+        }
+        if (config.get_log_coinc()) {
+            for (size_t coinc_idx = 0; coinc_idx < config.get_no_coinc_filenames(); ++coinc_idx) {
+                std::ifstream coinc_seg(sim.outputs_coinc[coinc_idx].GetFilename());
+                (*coincs[coinc_idx]) << coinc_seg.rdbuf();
+                coinc_seg.close();
+                std::remove(sim.outputs_coinc[coinc_idx].GetFilename().c_str());
+            }
+        }
+    }
+}

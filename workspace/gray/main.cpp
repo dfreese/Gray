@@ -151,6 +151,9 @@ int gray(int argc, char ** argv)
     for (auto& r : results) {
         total += r.get();
     }
+
+    Simulation::CombineOutputs(config, sims);
+
     cout << "\n______________\n Stats\n______________\n"
          << total.physics << endl;
     if (config.get_log_singles() || config.get_log_coinc()) {

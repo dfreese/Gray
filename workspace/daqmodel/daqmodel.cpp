@@ -108,7 +108,7 @@ int main(int argc, char ** argv) {
     if (config.get_log_singles()) {
     output.SetFormat(config.get_format_singles());
         output.SetVariableOutputMask(config.get_singles_var_output_write_flags());
-        if (!output.SetLogfile(config.get_filename_singles())) {
+        if (!output.SetLogfile(config.get_filename_singles(), /*write_header=*/true)) {
             cerr << "Failed to open output file: "
             << config.get_filename_singles() << endl;
             return(5);
@@ -126,7 +126,7 @@ int main(int argc, char ** argv) {
             Output & output_coinc = outputs_coinc[idx];
             output_coinc.SetFormat(config.get_format_coinc());
             output_coinc.SetVariableOutputMask(config.get_coinc_var_output_write_flags());
-            output_coinc.SetLogfile(config.get_filename_coinc(idx));
+            output_coinc.SetLogfile(config.get_filename_coinc(idx), /*write_header=*/true);
         }
     }
 

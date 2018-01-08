@@ -24,7 +24,7 @@ public:
     Output();
     Output(Output&&) = default;
     ~Output();
-    bool SetLogfile(const std::string & name);
+    bool SetLogfile(const std::string & name, bool write_header);
     void SetFormat(Format format);
     void LogInteraction(const Interaction & interact);
     void LogInteractions(const std::vector<Interaction> & interactions);
@@ -36,6 +36,7 @@ public:
     void LogCoinc(const std::vector<Interaction>::const_iterator & begin,
                   const std::vector<Interaction>::const_iterator & end,
                   bool pair_all);
+    std::string GetFilename() const;
 
     static int ParseFormat(const std::string & identifier, Format & fmt);
     static void DisableHeader();
@@ -105,6 +106,7 @@ private:
     Format format;
     WriteFlags var_format_write_flags;
     static bool write_header_flag;
+    std::string log_filename;
 };
 
 #endif /*OUTPUT_H_*/
