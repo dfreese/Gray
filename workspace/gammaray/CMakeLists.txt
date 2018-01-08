@@ -12,6 +12,7 @@ add_library(gammaray
     Daq/CoincProcess.cpp
     Daq/DaqModel.h
     Daq/DaqModel.cpp
+    Daq/DaqStats.h
     Daq/DeadtimeProcess.h
     Daq/DeadtimeProcess.cpp
     Daq/FilterProcess.h

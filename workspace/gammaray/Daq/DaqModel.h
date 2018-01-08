@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 #include <Physics/Interaction.h>
+#include <Daq/DaqStats.h>
 #include <Daq/Process.h>
 #include <Daq/ProcessFactory.h>
 #include <Daq/ProcessStats.h>
@@ -57,6 +58,7 @@ public:
     void stop_coinc(size_t idx);
 
     void clear_complete();
+    DaqStats stats() const;
 
 
 private:

@@ -24,6 +24,22 @@ struct ProcessStats {
             << "events in coinc single  : " << no_coinc_single_events << "\n";
         return (ss.str());
     }
+
+    ProcessStats& operator+=(const ProcessStats& rhs) {
+        no_dropped += rhs.no_dropped;
+        no_kept += rhs.no_kept;
+        no_coinc_pair_events += rhs.no_coinc_pair_events;
+        no_coinc_multiples_events += rhs.no_coinc_multiples_events;
+        no_coinc_single_events += rhs.no_coinc_single_events;
+        no_coinc_events += rhs.no_coinc_events;
+        return (*this);
+    }
+
+    ProcessStats operator+(const ProcessStats& rhs) {
+        ProcessStats result(*this);
+        result += rhs;
+        return (result);
+    }
 };
 
 #endif // process_stats_h

@@ -1,4 +1,5 @@
 #include <Daq/DaqModel.h>
+#include <Daq/DaqStats.h>
 #include <Daq/CoincProcess.h>
 #include <Daq/DeadtimeProcess.h>
 #include <Daq/FilterProcess.h>
@@ -116,39 +117,30 @@ long DaqModel::no_deadtimed() const {
     return(count);
 }
 
+DaqStats DaqModel::stats() const {
+    DaqStats report;
+    report.no_events = no_events();
+    report.no_kept = no_kept();
+    report.no_dropped = no_dropped();
+    report.no_merged = no_merged();
+    report.no_filtered = no_filtered();
+    report.no_deadtimed = no_deadtimed();
+    report.no_kept_per_proc = std::vector<long>(no_processes());
+    report.no_dropped_per_proc = std::vector<long>(no_processes());
+    for (size_t idx = 0; idx < no_processes(); ++idx) {
+        report.no_kept_per_proc[idx] = processes[idx].second.no_kept;
+        report.no_dropped_per_proc[idx] = processes[idx].second.no_dropped;
+    }
+    report.coinc_stats = std::vector<ProcessStats>(no_coinc_processes());
+    for (size_t idx = 0; idx < no_coinc_processes(); ++idx) {
+        report.coinc_stats[idx] = coinc_processes[idx].second;
+    }
+    report.print_info = print_info;
+    return (report);
+}
+
 std::ostream & operator << (std::ostream & os, const DaqModel & s) {
-    os << "events: " << s.no_events() << "\n"
-       << "kept: " << s.no_kept() << "\n"
-       << "dropped: " << s.no_dropped() << "\n";
-    os << "kept per level: ";
-    for (size_t idx = 0; idx < s.processes.size(); idx++) {
-        if (s.print_info[idx]) {
-            os << s.processes[idx].second.no_kept;
-            if (idx + 1 < s.processes.size()) {
-                os << ", ";
-            }
-        }
-    }
-    os << "\n";
-    os << "drop per level: ";
-    for (size_t idx = 0; idx < s.processes.size(); idx++) {
-        if (s.print_info[idx]) {
-            os << s.processes[idx].second.no_dropped;
-            if (idx + 1 < s.processes.size()) {
-                os << ", ";
-            }
-        }
-    }
-    os << "\n";
-    os << "merged: " << s.no_merged() << "\n";
-    os << "filtered: " << s.no_filtered() << "\n";
-    os << "deadtimed: " << s.no_deadtimed() << "\n";
-    if (!s.coinc_processes.empty()) {
-        for (auto & p: s.coinc_processes) {
-            os << p.second.coinc_info();
-        }
-    }
-    return(os);
+    return(os << s.stats());
 }
 
 int DaqModel::set_processes(
