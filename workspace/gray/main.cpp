@@ -140,7 +140,12 @@ int gray(int argc, char ** argv)
     clock_t setup_time = clock();
     std::vector<std::future<SimulationStats>> results(no_threads);
     for (size_t idx = 0; idx < no_threads; ++idx) {
-        results[idx] = std::async(&Simulation::Run, &sims[idx]);
+        // For the first simulation which will be the only one run for a single
+        // thread environment, use the deferred launch policy which will run
+        // in this thread.  For all others, use async to launch another thread.
+        auto policy = idx == 0 ? std::launch::deferred:std::launch::async;
+        // equivalent to Simulation sim(); sim.Run(); in separate threads.
+        results[idx] = std::async(policy, &Simulation::Run, &sims[idx]);
     }
     SimulationStats total;
     for (auto& r : results) {
