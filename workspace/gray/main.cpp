@@ -52,7 +52,6 @@ int gray(int argc, char ** argv)
              << "\" failed" << endl;
         return(1);
     }
-    Simulation::SetupSeed(config);
 
     // Setup the singles processor and load a default or specified mapping file
     const double max_req_sort_time = (5 * scene.GetMaxDistance() *
@@ -120,6 +119,9 @@ int gray(int argc, char ** argv)
     if (!config.get_log_any()) {
         cout << "Warning: No output specified." << endl;
     }
+
+    Random::SetSeed(config.get_seed());
+    cout << "Using Seed: " << Random::GetSeed() << endl;
 
     Output output_hits;
     Output output_singles;

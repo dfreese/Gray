@@ -73,12 +73,6 @@ int Mpi::Size() {
     return (size);
 }
 
-void Mpi::ReSeed() {
-    if (Enabled()) {
-        Random::SetSeed(Random::GetSeed() + Rank());
-    }
-}
-
 void Mpi::ConfigOutputFileHeaders() {
     if (Enabled()) {
         if (rank > 0) {

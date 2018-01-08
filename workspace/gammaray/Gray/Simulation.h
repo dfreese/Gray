@@ -12,7 +12,6 @@ class GammaMaterial;
 
 class Simulation {
 public:
-    static void SetupSeed(const Config & config);
     static void SetupSources(const Config & config, SourceList & sources,
                              SceneDescription & scene);
     static int SetupOutput(const Config & config, Output & output_hits,

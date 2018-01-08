@@ -4,19 +4,12 @@
 #include <Gray/GammaRayTraceStats.h>
 #include <Gray/Mpi.h>
 #include <Daq/DaqModel.h>
-#include <Random/Random.h>
 #include <Sources/SourceList.h>
 #include <Graphics/SceneDescription.h>
 #include <iostream>
 #include <vector>
 
 using namespace std;
-
-void Simulation::SetupSeed(const Config & config) {
-    Random::SetSeed(config.get_seed());
-    Mpi::ReSeed();
-    cout << "Using Seed: " << Random::GetSeed() << endl;
-}
 
 void Simulation::SetupSources(const Config & config, SourceList & sources,
                               SceneDescription & scene)
