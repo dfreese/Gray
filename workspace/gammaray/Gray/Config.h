@@ -90,6 +90,7 @@ public:
     bool get_write_map() const;
     std::string get_write_pos_filename() const;
     std::string get_write_map_filename() const;
+    int get_no_threads() const;
 
 private:
     std::string filename_scene;
@@ -131,6 +132,7 @@ private:
     bool run_overlap_test = false;
     std::string write_pos_filename = "";
     std::string write_map_filename = "";
+    int no_threads = 1;
 };
 
 #endif /* Config_h */

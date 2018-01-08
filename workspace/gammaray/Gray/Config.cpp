@@ -145,6 +145,11 @@ int Config::ProcessCommandLine(int argc, char **argv, bool fail_without_scene)
             write_pos_filename = following_argument;
         } else if (argument == "--write_map") {
             write_map_filename = following_argument;
+        } else if (argument == "-nt") {
+            if ((follow_arg_ss >> no_threads).fail()) {
+                cerr << "Invalid number of threads: " << following_argument << endl;
+                return(-11);
+            }
         } else if (argument.front() == '-') {
             cerr << "Unrecognized command line argument: " << argument << "\n";
             return (-99);
@@ -198,6 +203,7 @@ void Config::usage() {
     << "  --test_overlap : run overlap testing for the input geometry\n"
     << "  --write_pos [filename] : write out the detector positions to file\n"
     << "  --write_map [filename] : write out mapping information used to file\n"
+    << "  -nt [number] : number of threads to use, default = 1\n"
     << " gray-daq only: \n"
     << "  --sort [time] : sort the incoming events, assuming this max out of order time\n"
     << endl;
@@ -548,4 +554,8 @@ std::string Config::get_write_pos_filename() const {
 
 std::string Config::get_write_map_filename() const  {
     return (write_map_filename);
+}
+
+int Config::get_no_threads() const {
+    return (no_threads);
 }

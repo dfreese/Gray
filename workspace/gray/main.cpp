@@ -132,14 +132,14 @@ int gray(int argc, char ** argv)
     Random::SetSeed(config.get_seed());
     cout << "Using Seed: " << Random::GetSeed() << endl;
 
-    size_t no_threads = 1;
+    int no_threads = config.get_no_threads();
     std::vector<Simulation> sims;
-    for (size_t idx = 0; idx < no_threads; ++idx) {
+    for (int idx = 0; idx < no_threads; ++idx) {
         sims.emplace_back(config, scene, sources, daq_model, idx, no_threads);
     }
     clock_t setup_time = clock();
     std::vector<std::future<SimulationStats>> results(no_threads);
-    for (size_t idx = 0; idx < no_threads; ++idx) {
+    for (int idx = 0; idx < no_threads; ++idx) {
         // For the first simulation which will be the only one run for a single
         // thread environment, use the deferred launch policy which will run
         // in this thread.  For all others, use async to launch another thread.
