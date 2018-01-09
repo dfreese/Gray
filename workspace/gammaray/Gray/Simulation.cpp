@@ -43,7 +43,7 @@ Simulation::Simulation(
     // out so the files can simply be concatenated.  Since that doesn't decode
     // what is in the files, currently, the decay_id starts over for every
     // thread.
-    bool write_header = thread_idx > 0;
+    bool write_header = (thread_idx == 0);
 
     bool success = true;
     if (config.get_log_hits()) {
