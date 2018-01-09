@@ -68,8 +68,8 @@ private:
             const Mapping::IdMappingT& mapping);
     void add_process(std::unique_ptr<Process> process, bool proc_print_info);
 
-    std::vector<std::pair<std::shared_ptr<Process>, ProcessStats>> processes;
-    std::vector<std::pair<std::shared_ptr<Process>, ProcessStats>> coinc_processes;
+    std::vector<std::pair<std::shared_ptr<const Process>, ProcessStats>> processes;
+    std::vector<std::pair<std::shared_ptr<const Process>, ProcessStats>> coinc_processes;
 
     //! Tells if a given process in processes should be printed
     std::vector<bool> print_info;

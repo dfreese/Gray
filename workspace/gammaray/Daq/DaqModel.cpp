@@ -90,7 +90,7 @@ long DaqModel::no_dropped() const {
 long DaqModel::no_merged() const {
     long count = 0;
     for (const auto& p: processes) {
-        if (dynamic_cast<MergeProcess*>(p.first.get())) {
+        if (dynamic_cast<const MergeProcess*>(p.first.get())) {
             count += p.second.no_dropped;
         }
     }
@@ -100,7 +100,7 @@ long DaqModel::no_merged() const {
 long DaqModel::no_filtered() const {
     long count = 0;
     for (const auto& p: processes) {
-        if (dynamic_cast<FilterProcess*>(p.first.get())) {
+        if (dynamic_cast<const FilterProcess*>(p.first.get())) {
             count += p.second.no_dropped;
         }
     }
@@ -110,7 +110,7 @@ long DaqModel::no_filtered() const {
 long DaqModel::no_deadtimed() const {
     long count = 0;
     for (const auto& p: processes) {
-        if (dynamic_cast<DeadtimeProcess*>(p.first.get())) {
+        if (dynamic_cast<const DeadtimeProcess*>(p.first.get())) {
             count += p.second.no_dropped;
         }
     }
@@ -172,7 +172,7 @@ int DaqModel::set_processes(
 void DaqModel::add_process(std::unique_ptr<Process> process,
                            bool proc_print_info)
 {
-    if (dynamic_cast<CoincProcess*>(process.get())) {
+    if (dynamic_cast<const CoincProcess*>(process.get())) {
         coinc_processes.emplace_back(std::move(process), ProcessStats());
     } else {
         processes.emplace_back(std::move(process), ProcessStats());

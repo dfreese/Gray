@@ -68,8 +68,8 @@ private:
     // is entirely read-only and const, so it is fine to be accessed across
     // different threads.  That however, means care must be taken to make sure
     // it stays that way.
-    std::vector<std::shared_ptr<Source>> list;
-    std::vector<std::shared_ptr<Source>> neg_list;
+    std::vector<std::shared_ptr<const Source>> list;
+    std::vector<std::shared_ptr<const Source>> neg_list;
     std::map<std::string, std::shared_ptr<Isotope>> valid_isotopes;
     int decay_number;
     std::string current_isotope;

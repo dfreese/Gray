@@ -76,7 +76,7 @@ bool SourceList::SimulationIncomplete() const {
 std::vector<VectorR3> SourceList::GetSourcePositions() const {
     std::vector<VectorR3> positions(list.size());
     std::transform(list.begin(), list.end(), positions.begin(),
-                   [](const std::shared_ptr<Source> & s) {
+                   [](const std::shared_ptr<const Source> & s) {
                        return s->GetPosition();
                    });
     return (positions);
