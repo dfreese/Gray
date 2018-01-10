@@ -11,6 +11,8 @@ double Isotope::GetHalfLife() const {
 }
 
 double Isotope::FractionRemaining(double time) const {
+    // Note: this will produce a nan at time=infinity for infinite half_life.
+    // Please don't do that....
     return(std::pow(2.0, -time / half_life));
 }
 

@@ -86,11 +86,7 @@ SourceList::DecayInfo SourceList::NextDecay(DecayInfo base_info) const {
     // Calculating the next source decay timesize_t source_idx, double base_time
     auto & source = list[base_info.source_idx];
     do {
-        double source_activity_bq = source->GetActivity();
-        if (simulate_isotope_half_life) {
-            const Isotope& isotope = source->GetIsotope();
-            source_activity_bq *= isotope.FractionRemaining(base_info.time);
-        }
+        double source_activity_bq = source->GetActivity(base_info.time);
         // Time advances even if the decay is rejected by the inside negative
         // source test.  This is by design, as we do not know how much activity
         // a negative source inherently removes from the positive sources.
@@ -327,7 +323,9 @@ bool SourceList::LoadIsotope(const std::string & iso_name,
     double gamma_energy = isotope["prompt_gamma_energy_mev"].asDouble();
     std::string model = isotope["model"].asString();
 
-    if (half_life <= 0) {
+    // If the value given is negative or the user disables source decay from
+    // the command line, then set the half life to be infinite.
+    if ((half_life <= 0) && (!simulate_isotope_half_life)) {
         half_life = std::numeric_limits<double>::infinity();
     }
 

@@ -40,8 +40,18 @@ public:
     }
     virtual ~Source() {}
 
+    /*!
+     * Returns the initial activity of the source.
+     */
     double GetActivity() const {
         return activity;
+    }
+
+    /*!
+     * Calculates the activity of the source given the isotope's half-life.
+     */
+    double GetActivity(double time) const {
+        return (activity * isotope->FractionRemaining(time));
     }
 
     void SetIsotope(std::shared_ptr<const Isotope> i)

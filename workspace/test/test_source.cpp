@@ -1,5 +1,8 @@
 #include "gtest/gtest.h"
+#include <limits>
 #include <memory>
+#include "Physics/Positron.h"
+#include "Sources/SphereSource.h"
 #include "Sources/VectorSource.h"
 #include "Graphics/SceneDescription.h"
 #include "Graphics/ViewableSphere.h"
@@ -32,4 +35,26 @@ TEST_F(VectorSourceTest, OutsideOnEdge) {
 
 TEST_F(VectorSourceTest, OutsideExtents) {
     EXPECT_FALSE(source->Inside({10, 1e-6, -1}));
+}
+
+TEST(Source, HalfLife) {
+    const double act = 1.0;
+    const double act_uCi = act / Physics::decays_per_microcurie;
+    SphereSource sp({0, 0, 0}, 1.0, act_uCi);
+    Positron pos;
+
+    pos = Positron(0.0, std::numeric_limits<double>::infinity(), 1.0, 0);
+    sp.SetIsotope(std::make_shared<Positron>(pos));
+    EXPECT_EQ(sp.GetActivity(0.0), act);
+    EXPECT_EQ(sp.GetActivity(1.0), act);
+    EXPECT_EQ(sp.GetActivity(std::numeric_limits<double>::max()), act);
+
+
+    double half_life = 1.0;
+    pos = Positron(0.0, 1.0, half_life, 0);
+    sp.SetIsotope(std::make_shared<Positron>(pos));
+    EXPECT_EQ(sp.GetActivity(0.0 * half_life), act);
+    EXPECT_EQ(sp.GetActivity(1.0 * half_life), act / 2.0);
+    EXPECT_EQ(sp.GetActivity(2.0 * half_life), act / 4.0);
+    EXPECT_EQ(sp.GetActivity(std::numeric_limits<double>::max()), 0.0);
 }
