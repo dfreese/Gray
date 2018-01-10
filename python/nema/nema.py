@@ -44,20 +44,23 @@ def displacement(point, theta):
     disp = (point * unit_vec).sum(0)
     return disp
 
-def aligned_sinogram(sino):
+def aligned_sinogram(sino, roll_idxs=None):
     sino = np.asarray(sino).copy()
     mid = sino.shape[1] / 2
-    for idx, max_idx in zip(range(sino.shape[0]), sino.argmax(1)):
-        sino[idx, :] = np.roll(sino[idx, :], mid - max_idx)
+    if roll_idxs is None:
+        roll_idxs = mid - sino.argmax(1)
+    for idx, roll_idx in zip(range(roll_idxs.size), roll_idxs):
+        sino[idx, :] = np.roll(sino[idx, :], roll_idx)
     return sino
 
-def aligned_sum(sino):
-    return aligned_sinogram(sino).sum(0)
+def aligned_sum(sino, roll_idxs=None):
+    return aligned_sinogram(sino, roll_idxs).sum(0)
 
-def nema_counts(prompt_sino, delay_sino):
+def nema_counts(prompt_sino, delay_sino, src_pos=None):
     true_cut_cm = 2.0
     # Subtract out the randoms
-    corrected_sum = prompt_sino.aligned_sum() - delay_sino.aligned_sum()
+    corrected_sum = (prompt_sino.aligned_sum(src_pos=src_pos) -
+            delay_sino.aligned_sum(src_pos=src_pos))
     # Add in the 20.0mm point where we cut between definitely scatter and
     # scatter/true
     centers_with_cut = np.sort(np.concatenate(
@@ -125,8 +128,20 @@ class Sinogram(object):
         self.step_theta = self.centers_theta[1] - self.centers_theta[0]
         self.step_dist = self.centers_dist[1] - self.centers_dist[0]
 
-    def aligned(self):
-        return aligned_sinogram(self.data)
+    def aligned(self, src_pos=None, *args, **kwargs):
+        if src_pos is not None:
+            kwargs['roll_idxs'] = self.tax_idx(src_pos)
+        return aligned_sinogram(self.data, *args, **kwargs)
 
-    def aligned_sum(self):
-        return aligned_sum(self.data)
+    def aligned_sum(self, src_pos=None, *args, **kwargs):
+        if src_pos is not None:
+            kwargs['roll_idxs'] = self.tax_idx(src_pos)
+        return aligned_sum(self.data, *args, **kwargs)
+
+    def tax_idx(self, pos):
+        '''
+        turns a transaxial position (x, y) into a series of indexs for each
+        theta in the sinogram
+        '''
+        return (displacement(pos, self.centers_theta) //
+                self.step_dist).astype(int)
