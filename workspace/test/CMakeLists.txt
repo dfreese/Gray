@@ -5,6 +5,7 @@ add_executable(test_gray
     test_linear.cpp
     test_mapping.cpp
     test_math.cpp
+    test_physics.cpp
     test_random.cpp
     test_source.cpp
     test_transform.cpp
