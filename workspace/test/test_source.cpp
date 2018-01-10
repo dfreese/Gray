@@ -58,3 +58,28 @@ TEST(Source, HalfLife) {
     EXPECT_EQ(sp.GetActivity(2.0 * half_life), act / 4.0);
     EXPECT_EQ(sp.GetActivity(std::numeric_limits<double>::max()), 0.0);
 }
+
+TEST(Source, ExpectedDecaysAndPhotons) {
+    const double act = 1.0;
+    const double act_uCi = act / Physics::decays_per_microcurie;
+    SphereSource sp({0, 0, 0}, 1.0, act_uCi);
+    Positron pos;
+
+    pos = Positron(0.0, std::numeric_limits<double>::infinity(), 1.0, 0);
+    double phots = pos.ExpectedNoPhotons();
+    sp.SetIsotope(std::make_shared<Positron>(pos));
+    EXPECT_EQ(sp.GetExpectedDecays(0.0, 0.0), 0.0);
+    EXPECT_EQ(sp.GetExpectedDecays(0.0, 1.0), 1.0 * act);
+    EXPECT_EQ(sp.GetExpectedDecays(0.0, 2.0), 2.0 * act);
+    EXPECT_EQ(sp.GetExpectedPhotons(0.0, 1.0), 1.0 * act * phots);
+    EXPECT_EQ(sp.GetExpectedPhotons(0.0, 2.0), 2.0 * act * phots);
+
+    double half_life = 1.0;
+    pos = Positron(0.0, 1.0, half_life, 0);
+    phots = pos.ExpectedNoPhotons();
+    sp.SetIsotope(std::make_shared<Positron>(pos));
+    EXPECT_NEAR(sp.GetExpectedDecays(0.0, 1.0), 0.721348 * act, 1e-6);
+    EXPECT_NEAR(sp.GetExpectedDecays(1.0, 1.0), 0.360674 * act, 1e-6);
+    EXPECT_NEAR(sp.GetExpectedPhotons(0.0, 1.0), 0.721348 * act * phots, 1e-6);
+    EXPECT_NEAR(sp.GetExpectedPhotons(1.0, 1.0), 0.360674 * act * phots, 1e-6);
+}

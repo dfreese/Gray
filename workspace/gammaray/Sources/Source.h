@@ -54,6 +54,14 @@ public:
         return (activity * isotope->FractionRemaining(time));
     }
 
+    double GetExpectedDecays(double start, double time) const {
+        return (activity * isotope->FractionIntegral(start, time));
+    }
+
+    double GetExpectedPhotons(double start, double time) const {
+        return (isotope->ExpectedNoPhotons() * GetExpectedDecays(start, time));
+    }
+
     void SetIsotope(std::shared_ptr<const Isotope> i)
     {
         isotope = std::move(i);

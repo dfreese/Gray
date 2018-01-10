@@ -20,6 +20,20 @@ TEST(Isotope, FractionRemaining) {
     EXPECT_EQ(pos.FractionRemaining(std::numeric_limits<double>::max()), 0.0);
 }
 
+TEST(Isotope, FractionIntegral) {
+    Positron pos;
+    pos = Positron(0.0, std::numeric_limits<double>::infinity(), 1.0, 0);
+    EXPECT_EQ(pos.FractionIntegral(0.0, 0.0), 0.0);
+    EXPECT_EQ(pos.FractionIntegral(0.0, 1.0), 1.0);
+
+    double half_life = 1.0;
+    pos = Positron(0.0, 1.0, half_life, 0);
+    EXPECT_EQ(pos.FractionIntegral(0.0, 0.0), 0.0);
+    EXPECT_NEAR(pos.FractionIntegral(0.0, 1.0), 0.721348, 1e-6);
+    EXPECT_NEAR(pos.FractionIntegral(1.0, 1.0), 0.360674, 1e-6);
+}
+
+
 TEST(Positron, ExpectedPhotons) {
     Positron pos;
     pos = Positron(0.0, std::numeric_limits<double>::infinity(), 1.0, 0);

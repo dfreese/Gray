@@ -36,7 +36,6 @@ public:
     void PrintSplits(int n) const;
 
 private:
-    double ExpectedDecays(double start_time, double sim_time) const;
     double ExpectedPhotons(double start_time, double sim_time) const;
     void CalculateEqualPhotonTimeSplits(
         double start_time, double full_sim_time, int n,

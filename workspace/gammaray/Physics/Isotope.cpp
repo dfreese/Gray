@@ -13,6 +13,14 @@ double Isotope::GetHalfLife() const {
 double Isotope::FractionRemaining(double time) const {
     // Note: this will produce a nan at time=infinity for infinite half_life.
     // Please don't do that....
-    return(std::pow(2.0, -time / half_life));
+    return(std::pow(0.5, time / half_life));
 }
 
+double Isotope::FractionIntegral(double start, double time) const {
+    if (half_life == std::numeric_limits<double>::infinity()) {
+        return (time);
+    } else {
+        return (half_life / std::log(2.0) *
+                (FractionRemaining(start) - FractionRemaining(start + time)));
+    }
+}

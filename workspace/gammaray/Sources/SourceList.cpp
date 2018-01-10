@@ -185,34 +185,10 @@ void SourceList::SetStartTime(double val)
     end_time = start_time + simulation_time;
 }
 
-double SourceList::ExpectedDecays(double start_time, double sim_time) const {
-    double total = 0;
-    for (auto & source: list) {
-        double activity = source->GetActivity();
-        double half_life = source->GetIsotope().GetHalfLife();
-        double source_decays = (pow(0.5, start_time / half_life) -
-                                pow(0.5, (start_time + sim_time) / half_life)) *
-                               (half_life / log(2.0)) * activity;
-        if (!simulate_isotope_half_life) {
-            source_decays = sim_time * activity;
-        }
-        total += source_decays;
-    }
-    return (total);
-}
-
 double SourceList::ExpectedPhotons(double start_time, double sim_time) const {
     double total = 0;
-    for (auto & source: list) {
-        double activity = source->GetActivity();
-        double half_life = source->GetIsotope().GetHalfLife();
-        double source_decays = (pow(0.5, start_time / half_life) -
-                                pow(0.5, (start_time + sim_time) / half_life)) *
-        (half_life / log(2.0)) * activity;
-        if (!simulate_isotope_half_life) {
-            source_decays = sim_time * activity;
-        }
-        total += source_decays * source->GetIsotope().ExpectedNoPhotons();
+    for (const auto& source: list) {
+        total += source->GetExpectedPhotons(start_time, sim_time);
     }
     return (total);
 }

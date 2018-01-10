@@ -17,6 +17,7 @@ public:
                                const VectorR3 & position) const = 0;
     double GetHalfLife() const;
     double FractionRemaining(double time) const;
+    double FractionIntegral(double start, double time) const;
     virtual double ExpectedNoPhotons() const = 0;
 
 private:
