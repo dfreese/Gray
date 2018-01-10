@@ -151,6 +151,14 @@ int Config::ProcessCommandLine(int argc, char **argv, bool fail_without_scene)
                 cerr << "Invalid number of threads: " << following_argument << endl;
                 return(-11);
             }
+        } else if (argument == "--print_splits") {
+            // Just dump this into the number of threads, and then set a flag
+            // bail out of the simulaton before the kd-tree build.
+            if ((follow_arg_ss >> no_threads).fail()) {
+                cerr << "Invalid number of splits: " << following_argument << endl;
+                return(-11);
+            }
+            print_splits = true;
         } else if (argument.front() == '-') {
             cerr << "Unrecognized command line argument: " << argument << "\n";
             return (-99);
@@ -205,6 +213,7 @@ void Config::usage() {
     << "  --write_pos [filename] : write out the detector positions to file\n"
     << "  --write_map [filename] : write out mapping information used to file\n"
     << "  -nt [number or \"auto\"] : number of threads to use, default = 1\n"
+    << "  --print_splits [number] : print out start and sim times for even cpu load\n"
     << " gray-daq only: \n"
     << "  --sort [time] : sort the incoming events, assuming this max out of order time\n"
     << endl;
@@ -559,4 +568,8 @@ std::string Config::get_write_map_filename() const  {
 
 int Config::get_no_threads() const {
     return (no_threads);
+}
+
+bool Config::get_print_splits() const {
+    return (print_splits);
 }

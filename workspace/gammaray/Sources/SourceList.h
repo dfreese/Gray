@@ -33,6 +33,7 @@ public:
     void InitSources();
     bool LoadIsotopes(const std::string& physics_filename);
     void AdjustTimeForSplit(int idx, int n);
+    void PrintSplits(int n) const;
 
 private:
     double ExpectedDecays(double start_time, double sim_time) const;

@@ -279,6 +279,22 @@ void SourceList::AdjustTimeForSplit(int idx, int n) {
     SetSimulationTime(split_times[idx]);
 }
 
+void SourceList::PrintSplits(int n) const {
+    std::vector<double> split_starts, split_times;
+    CalculateEqualPhotonTimeSplits(
+            start_time, simulation_time, n, split_starts, split_times);
+    std::cout << "starts:";
+    for (auto start : split_starts) {
+        std::cout << " " << start;
+    }
+    std::cout << '\n';
+    std::cout << "times:";
+    for (auto time: split_times) {
+        std::cout << " " << time;
+    }
+    std::cout << '\n';
+}
+
 void SourceList::InitSources() {
     for (int sidx = 0; sidx < static_cast<int>(list.size()); ++sidx) {
         DecayInfo info;

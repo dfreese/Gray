@@ -85,6 +85,11 @@ int main(int argc, char ** argv) {
         return (0);
     }
 
+    if (config.get_print_splits()) {
+        sources.PrintSplits(config.get_no_threads());
+        return (0);
+    }
+
     if (!config.get_filename_mapping().empty()) {
         if (!detector_array.LoadMapping(config.get_filename_mapping())) {
             cerr << "Loading mapping file \"" << config.get_filename_mapping()

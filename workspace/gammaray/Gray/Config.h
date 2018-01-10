@@ -91,6 +91,7 @@ public:
     std::string get_write_pos_filename() const;
     std::string get_write_map_filename() const;
     int get_no_threads() const;
+    bool get_print_splits() const;
 
 private:
     std::string filename_scene;
@@ -133,6 +134,7 @@ private:
     std::string write_pos_filename = "";
     std::string write_map_filename = "";
     int no_threads = 1;
+    bool print_splits = false;
 };
 
 #endif /* Config_h */
