@@ -8,8 +8,9 @@
 
 #include <Gray/Config.h>
 #include <ctime>
-#include <sstream>
 #include <iostream>
+#include <sstream>
+#include <thread>
 #include <Math/Math.h>
 #include <Version/Version.h>
 
@@ -144,7 +145,9 @@ int Config::ProcessCommandLine(int argc, char **argv, bool fail_without_scene)
         } else if (argument == "--write_map") {
             write_map_filename = following_argument;
         } else if (argument == "-nt") {
-            if ((follow_arg_ss >> no_threads).fail()) {
+            if (following_argument == "auto") {
+                no_threads = std::thread::hardware_concurrency();
+            } else if ((follow_arg_ss >> no_threads).fail()) {
                 cerr << "Invalid number of threads: " << following_argument << endl;
                 return(-11);
             }
@@ -201,7 +204,7 @@ void Config::usage() {
     << "  --test_overlap : run overlap testing for the input geometry\n"
     << "  --write_pos [filename] : write out the detector positions to file\n"
     << "  --write_map [filename] : write out mapping information used to file\n"
-    << "  -nt [number] : number of threads to use, default = 1\n"
+    << "  -nt [number or \"auto\"] : number of threads to use, default = 1\n"
     << " gray-daq only: \n"
     << "  --sort [time] : sort the incoming events, assuming this max out of order time\n"
     << endl;
