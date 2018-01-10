@@ -44,7 +44,7 @@ public:
         return activity;
     }
 
-    void SetIsotope(std::shared_ptr<Isotope> i)
+    void SetIsotope(std::shared_ptr<const Isotope> i)
     {
         isotope = std::move(i);
     }
@@ -76,7 +76,7 @@ public:
     virtual VectorR3 Decay() const = 0;
 
 protected:
-    std::shared_ptr<Isotope> isotope;
+    std::shared_ptr<const Isotope> isotope;
     double activity;
     bool negative;
     int source_num;
