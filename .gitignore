@@ -10,3 +10,5 @@
 /build
 # CMake output to be used with autocomplete
 /workspace/compile_commands.json
+# Vim swap files
+.*.swp
