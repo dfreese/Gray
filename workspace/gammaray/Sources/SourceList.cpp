@@ -255,16 +255,14 @@ void SourceList::PrintSplits(int n) const {
     std::vector<double> split_starts, split_times;
     CalculateEqualPhotonTimeSplits(
             start_time, simulation_time, n, split_starts, split_times);
-    std::cout << "starts:";
-    for (auto start : split_starts) {
-        std::cout << " " << start;
+    const std::string output_name("gray_splits.dat");
+    std::ofstream output(output_name);
+    output << "# start split\n";
+    for (int idx = 0; idx < n; ++idx) {
+        output << split_starts[idx] << " " << split_times[idx] << "\n";
     }
-    std::cout << '\n';
-    std::cout << "times:";
-    for (auto time: split_times) {
-        std::cout << " " << time;
-    }
-    std::cout << '\n';
+
+    std::cout << "splits written to \"" << output_name << "\"\n";
 }
 
 void SourceList::InitSources() {
