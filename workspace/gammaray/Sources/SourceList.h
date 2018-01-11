@@ -20,6 +20,7 @@ public:
     SourceList();
     NuclearDecay Decay();
     void AddSource(std::unique_ptr<Source> s);
+    void AddIsotope(const std::string& name, std::unique_ptr<Isotope> s);
     bool SetCurIsotope(const std::string& iso, const RigidMapR3& cur_matrix);
     void SetSimulationTime(double time);
     double GetTime() const;
@@ -34,16 +35,15 @@ public:
     bool LoadIsotopes(const std::string& physics_filename);
     void AdjustTimeForSplit(int idx, int n);
     void PrintSplits(int n) const;
-
-private:
     double ExpectedPhotons(double start_time, double sim_time) const;
     void CalculateEqualPhotonTimeSplits(
         double start_time, double full_sim_time, int n,
         std::vector<double> & split_start,
         std::vector<double> & split_length) const;
     double SearchSplitTime(double start_time, double full_sim_time,
-                           double split_start, double no_photons,
-                           double tol) const;
+                           double split_start, double no_photons) const;
+
+private:
     bool CreateBeamIsotope(const std::string & iso,
                            const RigidMapR3& current_matrix);
     bool InsideNegative(const VectorR3 & pos) const;

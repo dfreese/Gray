@@ -2,6 +2,7 @@
 #include <limits>
 #include <memory>
 #include "Physics/Positron.h"
+#include "Sources/SourceList.h"
 #include "Sources/SphereSource.h"
 #include "Sources/VectorSource.h"
 #include "Graphics/SceneDescription.h"
@@ -82,4 +83,28 @@ TEST(Source, ExpectedDecaysAndPhotons) {
     EXPECT_NEAR(sp.GetExpectedDecays(1.0, 1.0), 0.360674 * act, 1e-6);
     EXPECT_NEAR(sp.GetExpectedPhotons(0.0, 1.0), 0.721348 * act * phots, 1e-6);
     EXPECT_NEAR(sp.GetExpectedPhotons(1.0, 1.0), 0.360674 * act * phots, 1e-6);
+}
+
+TEST(SourceList, SearchSplitTime) {
+    double half_life = 1.0;
+    const double act = 1.0;
+    const double act_uCi = act / Physics::decays_per_microcurie;
+    SourceList list;
+    list.AddIsotope("test",
+            std::unique_ptr<Isotope>(new Positron(0.0, 1.0, half_life, 0)));
+    list.SetCurIsotope("test", RigidMapR3());
+
+    list.AddSource(std::unique_ptr<Source>(
+                new SphereSource({0, 0, 0}, 1.0, act_uCi)));
+    list.SetSimulationTime(2.0);
+
+    double exp_phot = list.ExpectedPhotons(0.0, 2.0);
+    EXPECT_NEAR(exp_phot, 1.0820212 * act * 2.0, 1e-6);
+
+    double time = list.SearchSplitTime(0, 2.0, 0, exp_phot);
+    EXPECT_EQ(time, 2.0);
+
+    time = list.SearchSplitTime(0, 2.0, 0, exp_phot / 2.0);
+    EXPECT_NEAR(list.ExpectedPhotons(0, time), exp_phot / 2.0, 1e-5);
+    EXPECT_NEAR(list.ExpectedPhotons(time, 2.0 - time), exp_phot / 2.0, 1e-5);
 }

@@ -21,12 +21,11 @@ SourceList::SourceList() :
 {
 }
 
-void SourceList::AddSource(std::unique_ptr<Source> s)
-{
+void SourceList::AddSource(std::unique_ptr<Source> s) {
     shared_ptr<Isotope> isotope = valid_isotopes[current_isotope];
     if (isotope == nullptr) {
         string error = "Isotope named " + current_isotope
-        + " somehow set as current isotope, but was not implemented";
+            + " somehow set as current isotope, but was not implemented";
         throw(runtime_error(error));
     }
     s->SetIsotope(std::move(isotope));
@@ -41,6 +40,13 @@ void SourceList::AddSource(std::unique_ptr<Source> s)
         s->SetSourceNum(static_cast<int>(list.size()));
         list.push_back(std::move(s));
     }
+}
+
+void SourceList::AddIsotope(
+        const std::string& name,
+        std::unique_ptr<Isotope> s)
+{
+    valid_isotopes.emplace(name, std::move(s));
 }
 
 double SourceList::GetTime() const
@@ -151,7 +157,7 @@ bool SourceList::CreateBeamIsotope(const std::string& iso,
         return (false);
     }
     current_matrix.Transform3x3(&axis);
-    valid_isotopes.emplace(iso, new Beam(axis, angle, energy));
+    AddIsotope(iso, std::unique_ptr<Isotope>(new Beam(axis, angle, energy)));
     return (true);
 }
 
@@ -193,26 +199,19 @@ double SourceList::ExpectedPhotons(double start_time, double sim_time) const {
     return (total);
 }
 
-double SourceList::SearchSplitTime(double start_time, double full_sim_time,
-                                   double split_start, double no_photons,
-                                   double tol) const
+double SourceList::SearchSplitTime(
+        double start_time, double full_sim_time,
+        double split_start, double no_photons) const
 {
     double end_time = start_time + full_sim_time;
     // Initialize to the end of the simulation
     double split_time = end_time - start_time;
     double alpha = 0.5;
-    double split_no_photons;
-    for (int idx = 0; idx < 20; idx++) {
-        split_no_photons = ExpectedPhotons(split_start, split_time);
+    for (int idx = 0; idx < 30; idx++) {
+        double split_no_photons = ExpectedPhotons(split_start, split_time);
         split_time *= 1.0 + alpha * ((no_photons / split_no_photons) - 1.0);
-        // Numerical safety check
-        if ((split_time <= 0) || (split_time > full_sim_time)) {
-            break;
-        }
-        if ((abs(split_no_photons - no_photons) / no_photons) < tol) {
-            break;
-        }
     }
+
     // Make sure we don't overrun the end of the simulation, this should not
     // happen, but tolerances can add up.
     if (split_start + split_time > end_time) {
@@ -229,17 +228,18 @@ void SourceList::CalculateEqualPhotonTimeSplits(
     double start_time, double full_sim_time, int n,
     std::vector<double> & split_start, std::vector<double> & split_length) const
 {
-    split_start = std::vector<double>(n, start_time);
-    split_length = std::vector<double>(n, full_sim_time / n);
+    split_start = std::vector<double>(n);
+    split_length = std::vector<double>(n);
     double total_photons = ExpectedPhotons(start_time, full_sim_time);
     double split_exp_photons = total_photons / n;
-    for (int idx = 0; idx < n; idx++) {
-        split_length[idx] = SearchSplitTime(start_time, full_sim_time,
-                                            split_start[idx], split_exp_photons,
-                                            1.0e-11);
-        if ((idx + 1) < n) {
-            split_start[idx + 1] = split_start[idx] + split_length[idx];
+    for (int idx = 0; idx < n; ++idx) {
+        if (idx == 0) {
+            split_start[idx] = start_time;
+        } else {
+            split_start[idx] = split_start[idx - 1] + split_length[idx - 1];
         }
+        split_length[idx] = SearchSplitTime(
+                start_time, full_sim_time, split_start[idx], split_exp_photons);
     }
 }
 
@@ -312,10 +312,9 @@ bool SourceList::LoadIsotope(const std::string & iso_name,
         gamma_energy = 0;
     }
 
-    valid_isotopes[iso_name] = std::unique_ptr<Isotope>(
+    auto iso = std::unique_ptr<Isotope>(
             new Positron(acolinearity, half_life, positron_prob, gamma_energy));
-    Positron cur_positron = dynamic_cast<Positron&>(
-            *valid_isotopes[iso_name].get());
+    Positron cur_positron = dynamic_cast<Positron&>(*iso.get());
 
     Json::Value is_default = isotope["default"];
     if (is_default.isBool()) {
@@ -359,6 +358,7 @@ bool SourceList::LoadIsotope(const std::string & iso_name,
         return (false);
     }
 
+    AddIsotope(iso_name, std::move(iso));
     return (true);
 }
 
