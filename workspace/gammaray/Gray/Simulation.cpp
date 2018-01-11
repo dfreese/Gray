@@ -27,8 +27,6 @@ Simulation::Simulation(
     no_threads(no_threads),
     outputs_coinc(daq_model.no_coinc_processes())
 {
-    this->sources.SetSimulationTime(config.get_time());
-    this->sources.SetStartTime(config.get_start_time());
     if (no_threads > 1) {
         this->sources.AdjustTimeForSplit(thread_idx, no_threads);
     }

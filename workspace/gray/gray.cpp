@@ -85,6 +85,8 @@ int main(int argc, char ** argv) {
         return (0);
     }
 
+    sources.SetSimulationTime(config.get_time());
+    sources.SetStartTime(config.get_start_time());
     if (config.get_print_splits()) {
         sources.PrintSplits(config.get_no_threads());
         return (0);
