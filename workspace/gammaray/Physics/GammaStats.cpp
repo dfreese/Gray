@@ -450,3 +450,8 @@ std::vector<std::vector<double>> GammaStats::Rayleigh::create_scatter_cdfs(
 
     return (scatter_cdfs);
 }
+
+void GammaStats::DisableRayleigh() {
+    log_rayleigh = std::vector<double>(rayleigh.size(), std::log(0));
+    rayleigh = std::vector<double>(rayleigh.size(), 0);
+}

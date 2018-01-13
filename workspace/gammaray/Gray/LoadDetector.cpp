@@ -1139,6 +1139,8 @@ bool LoadDetector::Load(const std::string & filename,
                 ProcessDetector(baseCenter, baseSize, curMaterial, -1,
                                 theScene, MatrixStack.top());
             }
+        } else if (command == "disable_rayleigh") {
+            DisableRayleigh(theScene);
         } else if (config_commands.count(command)) {
             // Handle all of the commands that deal with the config class in
             // the same function so that it can be called independently.
@@ -1439,4 +1441,12 @@ int LoadDetector::IncrementDetector(const RigidMapR3 & current_matrix,
 
     return (detector_array.AddDetector(StartPos, UnitSize, current_matrix,
                                        0, 0, 0, 0));
+}
+
+void LoadDetector::DisableRayleigh(SceneDescription& scene) {
+    for (size_t idx = 0; idx < scene.NumMaterials(); ++idx) {
+        GammaStats& stats = static_cast<GammaStats&>(
+                static_cast<GammaMaterial&>(scene.GetMaterial(idx)));
+        stats.DisableRayleigh();
+    }
 }

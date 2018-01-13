@@ -59,6 +59,7 @@ private:
                                     Config & config);
     static int IncrementDetector(const RigidMapR3 & current_matrix,
                                  DetectorArray & detector_array);
+    static void DisableRayleigh(SceneDescription& scene);
 };
 
 

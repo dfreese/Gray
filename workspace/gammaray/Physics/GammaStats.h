@@ -33,6 +33,7 @@ public:
     std::string GetName() const;
     double GetComptonScatterAngle(double energy) const;
     double GetRayleighScatterAngle(double energy) const;
+    void DisableRayleigh();
 
     class KleinNishina {
     public:

@@ -194,6 +194,12 @@ disable_half_life
 Has no options.  No isotopes experience decay in activity over time, regardless
 of their settings
 
+### disable_rayleigh
+```
+disable_rayleigh
+```
+Has no options.  Disables rayleigh scattering globally within all materials.
+
 
 ## Movement and Orientation
 
