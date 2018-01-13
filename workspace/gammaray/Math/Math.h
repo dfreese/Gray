@@ -5,6 +5,7 @@
 #include <vector>
 
 namespace Math {
+    size_t interp_index(const std::vector<double>& x, double x_value);
     double interpolate(const std::vector<double> & x,
                        const std::vector<double> & y,
                        double x_value);

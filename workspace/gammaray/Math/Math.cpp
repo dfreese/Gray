@@ -1,9 +1,18 @@
 #include <Math/Math.h>
 
-#include <cmath>
-#include <vector>
-#include <numeric>
 #include <algorithm>
+#include <cmath>
+#include <iostream>
+#include <numeric>
+#include <vector>
+
+/*!
+ * Returns the index to be used for a interpolate call.
+ * Useful if multiple interp calls will be made and the index should be saved.
+ */
+size_t Math::interp_index(const std::vector<double>& x, double x_value) {
+    return (std::upper_bound(x.begin(), x.end(), x_value) - x.begin());
+}
 
 /*!
  * For a given set of x and y, perform piecewise linear interpolation between
@@ -29,8 +38,11 @@ double Math::interpolate(const std::vector<double> & x,
     }
     double delta = x[idx] - x[idx - 1];
     double alpha = (x_value - x[idx - 1]) / delta;
-    if (alpha > 1.0) {
-        alpha = 1.0;
+    if (alpha >= 1.0) {
+        // This is required, because if we end up with y[idx-1] == -inf, then
+        // this will return -nan. Reverse for positive. If we use this for
+        // log-log interpolation, then we need to handle that case appropriately.
+        return (y[idx]);
     }
     double dsigma_max = ((1.0 - alpha) * y[idx - 1] + alpha * y[idx]);
     return(dsigma_max);
@@ -44,12 +56,18 @@ double Math::interpolate(const std::vector<double> & x,
         return(y.front());
     } else if (idx == x.size()) {
         return(y.back());
+    } else if (x_value >= x[idx]) {
+        // Required to so that we don't have a 0 * y[idx] in case y[idx]
+        // is inf intentionally.
+        return (y[idx]);
+    } else if (x_value == x[idx - 1]) {
+        // Required to so that we don't have a 0 * y[idx - 1] in case y[idx-1]
+        // is inf intentionally.
+        return (y[idx - 1]);
     }
+
     double delta = x[idx] - x[idx - 1];
     double alpha = (x_value - x[idx - 1]) / delta;
-    if (alpha > 1.0) {
-        alpha = 1.0;
-    }
     double dsigma_max = ((1.0 - alpha) * y[idx - 1] + alpha * y[idx]);
     return(dsigma_max);
 }
