@@ -115,7 +115,6 @@ public:
 
 
 private:
-    size_t GetIndex(double e) const;
     std::string name;
     int index;
     std::string filename;
@@ -136,11 +135,6 @@ private:
 
     Compton compton_scatter;
     Rayleigh rayleigh_scatter;
-
-    // cache for energy lookup
-    mutable double cache_energy_min;
-    mutable double cache_energy_max;
-    mutable size_t cache_idx;
 };
 
 #endif

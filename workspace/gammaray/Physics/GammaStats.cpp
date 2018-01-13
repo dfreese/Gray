@@ -16,10 +16,7 @@ GammaStats::GammaStats() :
     log_material(false),
     // Make the form factor always 1
     compton_scatter({0.0, 1.0}, {1.0, 1.0}),
-    rayleigh_scatter({0.0, 1.0}, {1.0, 1.0}),
-    cache_energy_min(-1),
-    cache_energy_max(-1),
-    cache_idx(0)
+    rayleigh_scatter({0.0, 1.0}, {1.0, 1.0})
 {
 }
 
@@ -45,10 +42,7 @@ GammaStats::GammaStats(
         enable_interactions(true),
         log_material(sensitive),
         compton_scatter(x, scattering_func),
-        rayleigh_scatter(x, form_factor),
-        cache_energy_min(-1),
-        cache_energy_max(-1),
-        cache_idx(0)
+        rayleigh_scatter(x, form_factor)
 {
     // Convert the mass attenuation coefficient to a linear attenuation
     // coefficient by multiplying by density.
@@ -107,28 +101,6 @@ bool GammaStats::InteractionsEnabled() const {
 void GammaStats::DisableInteractions()
 {
     enable_interactions = false;
-}
-
-size_t GammaStats::GetIndex(double e) const
-{
-    if ((cache_energy_min >= e) && (cache_energy_max < e)) {
-        return cache_idx;
-    }
-    // binary search the sorted list of energies for the index.  This
-    // intentionally searches in the same way Math::linear_interpolate does.
-    cache_idx = (std::upper_bound(energy.begin(), energy.end(), e) -
-                 energy.begin());
-    if (cache_idx == energy.size()) {
-        cache_energy_max = energy.back();
-    } else {
-        cache_energy_max = energy[cache_idx];
-    }
-    if (cache_idx == 0) {
-        cache_energy_min = energy.front();
-    } else {
-        cache_energy_min = energy[cache_idx - 1];
-    }
-    return cache_idx;
 }
 
 bool GammaStats::Load()
@@ -195,7 +167,7 @@ bool GammaStats::Load()
 void GammaStats::GetInteractionProbs(double e, double & pe, double & comp,
                                      double & ray) const
 {
-    size_t idx = GetIndex(e);
+    size_t idx = Math::interp_index(energy, e);
     const double log_e = std::log(e);
     pe = std::exp(Math::interpolate(log_energy, log_photoelectric, log_e, idx));
     comp = std::exp(Math::interpolate(log_energy, log_compton, log_e, idx));
