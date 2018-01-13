@@ -217,9 +217,7 @@ Physics::INTER_TYPE Physics::InteractionType(
     double pe, compton, rayleigh;
     mat_gamma_prop.GetInteractionProbs(photon.GetEnergy(), pe, compton, rayleigh);
 
-    // TODO: add back in rayleigh scattering once the distribution is fixed
-    // double rand_dist = RandomExponentialDistance(pe + compton + rayleigh);
-    double rand_dist = Random::Exponential(pe + compton);
+    double rand_dist = Random::Exponential(pe + compton + rayleigh);
     if (dist > rand_dist) {
         dist = rand_dist;
     }
