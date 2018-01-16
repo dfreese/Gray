@@ -489,3 +489,7 @@ Epoxy:  d=1.0 g/cm3; n=3; state=Solid
 Carbide: d=15.8 g/cm3; n=2 ; state=Solid
         +el: name=Tungsten   ; n=1
         +el: name=Carbon     ; n=1
+
+CarbonFiber: d=1.4 g/cm3; n=1; state=Solid
+        +el: name=Carbon     ; n=1
+
