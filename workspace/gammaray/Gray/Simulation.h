@@ -18,6 +18,7 @@ public:
             const SourceList& sources,
             const DaqModel& daq_model,
             size_t thread_idx, size_t no_threads);
+    Simulation(Simulation&&) = default;
     SimulationStats Run();
     static void CombineOutputs(
             const Config& config,

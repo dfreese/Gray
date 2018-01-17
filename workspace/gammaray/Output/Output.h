@@ -4,6 +4,7 @@
 #include <Output/BinaryFormat.h>
 #include <stdlib.h>
 #include <fstream>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -23,7 +24,7 @@ public:
 
     Output();
     Output(Output&&) = default;
-    ~Output();
+
     bool SetLogfile(const std::string & name, bool write_header);
     void SetFormat(Format format);
     void LogInteraction(const Interaction & interact);
@@ -102,7 +103,11 @@ private:
     int MakeLogWord(int interaction, int color, int scatter, int det_mat,
                     int src_id);
 
-    std::ofstream log_file;
+    // GCC 4.8 didn't implement move support for ostream, including ofstream,
+    // so use unique_ptr to hack that back in for now.  April 2019, when
+    // Ubuntu 14.04 LTS reaches end-of-life would be a reasonable point to
+    // remove these hacks and drop support for < GCC 5.
+    std::unique_ptr<std::ofstream> log_file;
     Format format;
     WriteFlags var_format_write_flags;
     static bool write_header_flag;

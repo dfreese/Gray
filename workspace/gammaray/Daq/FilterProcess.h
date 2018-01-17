@@ -9,6 +9,7 @@
 #ifndef filterprocess_h
 #define filterprocess_h
 
+#include <functional>
 #include <Daq/Process.h>
 
 class ProcessStats;

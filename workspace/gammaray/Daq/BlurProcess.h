@@ -9,6 +9,7 @@
 #ifndef blurprocess_h
 #define blurprocess_h
 
+#include <functional>
 #include <Daq/Process.h>
 
 class ProcessStats;

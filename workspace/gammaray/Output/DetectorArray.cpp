@@ -35,11 +35,11 @@ bool DetectorArray::WritePositions(const std::string& filename) const {
 
 Mapping::IdMappingT DetectorArray::DefaultMapping() const {
     Mapping::IdMappingT map;
-    map.emplace("detector", detectors.size());
-    map.emplace("block", detectors.size());
-    map.emplace("bx", detectors.size());
-    map.emplace("by", detectors.size());
-    map.emplace("bz", detectors.size());
+    map.emplace("detector", Mapping::IdLookupT(detectors.size()));
+    map.emplace("block", Mapping::IdLookupT(detectors.size()));
+    map.emplace("bx", Mapping::IdLookupT(detectors.size()));
+    map.emplace("by", Mapping::IdLookupT(detectors.size()));
+    map.emplace("bz", Mapping::IdLookupT(detectors.size()));
     for (size_t ii = 0; ii < detectors.size(); ++ii) {
         auto & d = detectors[ii];
         map["detector"][ii] = d.detector_id;

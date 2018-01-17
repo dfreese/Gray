@@ -12,17 +12,12 @@ void Output::DisableHeader() {
     write_header_flag = false;
 }
 
-Output::Output()
+Output::Output() 
 {
-}
-
-Output::~Output()
-{
-    log_file.close();
 }
 
 void Output::Close() {
-    log_file.close();
+    log_file->close();
 }
 
 int Output::MakeLogWord(int interaction, int color, int scatter, int det_mat,
@@ -108,11 +103,11 @@ void Output::LogCoinc(const vector<Interaction>::const_iterator & begin,
 void Output::LogInteractions(const vector<Interaction> & interactions) {
     if (format == VARIABLE_ASCII) {
         for (const auto & interact: interactions) {
-            write_variable_ascii(interact, log_file, var_format_write_flags);
+            write_variable_ascii(interact, *log_file, var_format_write_flags);
         }
     } else if (format == VARIABLE_BINARY) {
         for (const auto & interact: interactions) {
-            write_variable_binary(interact, log_file, var_format_write_flags);
+            write_variable_binary(interact, *log_file, var_format_write_flags);
         }
     } else if (format == FULL_BINARY) {
         vector<GrayBinaryStandard> events(interactions.size());
@@ -130,7 +125,7 @@ void Output::LogInteractions(const vector<Interaction> & interactions) {
                                 interact.scatter_compton_phantom, interact.mat_id,
                                 interact.src_id);
         }
-        log_file.write(reinterpret_cast<char*>(events.data()),
+        log_file->write(reinterpret_cast<char*>(events.data()),
                        events.size() * sizeof(GrayBinaryStandard));
     } else if (format == NO_POS_BINARY) {
         vector<GrayBinaryNoPosition> events(interactions.size());
@@ -145,33 +140,33 @@ void Output::LogInteractions(const vector<Interaction> & interactions) {
                                 interact.scatter_compton_phantom, interact.mat_id,
                                 interact.src_id);
         }
-        log_file.write(reinterpret_cast<char*>(events.data()),
+        log_file->write(reinterpret_cast<char*>(events.data()),
                        events.size() * sizeof(GrayBinaryNoPosition));
     } else if (format == FULL_ASCII) {
         for (const auto & interact: interactions) {
             char str[256];
-            log_file << " " << interact.type << " ";
-            log_file << interact.decay_id;
-            log_file << " " << interact.color << " ";
+            (*log_file) << " " << interact.type << " ";
+            (*log_file) << interact.decay_id;
+            (*log_file) << " " << interact.color << " ";
             sprintf(str,"%23.16e ", interact.time);
-            log_file << str;
+            (*log_file) << str;
             sprintf(str,"%12.6e ", interact.energy);
-            log_file << str;
+            (*log_file) << str;
             sprintf(str,"%15.8e %15.8e %15.8e %2d ", (float) interact.pos.x,
                     (float) interact.pos.y,
                     (float) interact.pos.z,
                     interact.src_id);
-            log_file << str;
+            (*log_file) << str;
             if (interact.scatter_compton_phantom) {
-                log_file << " 1 ";
+                (*log_file) << " 1 ";
             } else {
-                log_file << " 0 ";
+                (*log_file) << " 0 ";
             }
             sprintf(str,"%2d ", interact.mat_id);
-            log_file << str;
+            (*log_file) << str;
             sprintf(str,"%3d ", interact.det_id);
-            log_file << str;
-            log_file << "\n";
+            (*log_file) << str;
+            (*log_file) << "\n";
         }
     }
 }
@@ -179,10 +174,10 @@ void Output::LogInteractions(const vector<Interaction> & interactions) {
 void Output::LogInteraction(const Interaction & interact) {
     switch (format) {
         case VARIABLE_ASCII: {
-            write_variable_ascii(interact, log_file, var_format_write_flags);
+            write_variable_ascii(interact, *log_file, var_format_write_flags);
         } break;
         case VARIABLE_BINARY: {
-            write_variable_binary(interact, log_file, var_format_write_flags);
+            write_variable_binary(interact, *log_file, var_format_write_flags);
         } break;
         case FULL_BINARY: {
             GrayBinaryStandard b;
@@ -196,7 +191,7 @@ void Output::LogInteraction(const Interaction & interact) {
             b.log = MakeLogWord(interact.type, interact.color,
                                 interact.scatter_compton_phantom, interact.mat_id,
                                 interact.src_id);
-            log_file.write(reinterpret_cast<char*>(&b), sizeof(b));
+            log_file->write(reinterpret_cast<char*>(&b), sizeof(b));
         } break;
         case NO_POS_BINARY: {
             GrayBinaryNoPosition b;
@@ -207,32 +202,32 @@ void Output::LogInteraction(const Interaction & interact) {
             b.log = MakeLogWord(interact.type, interact.color,
                                 interact.scatter_compton_phantom, interact.mat_id,
                                 interact.src_id);
-            log_file.write(reinterpret_cast<char*>(&b), sizeof(b));
+            log_file->write(reinterpret_cast<char*>(&b), sizeof(b));
         } break;
         case FULL_ASCII: {
             char str[256];
-            log_file << " " << interact.type << " ";
-            log_file << interact.decay_id;
-            log_file << " " << interact.color << " ";
+            (*log_file) << " " << interact.type << " ";
+            (*log_file) << interact.decay_id;
+            (*log_file) << " " << interact.color << " ";
             sprintf(str,"%23.16e ", interact.time);
-            log_file << str;
+            (*log_file) << str;
             sprintf(str,"%12.6e ", interact.energy);
-            log_file << str;
+            (*log_file) << str;
             sprintf(str,"%15.8e %15.8e %15.8e %2d ", (float) interact.pos.x,
                     (float) interact.pos.y,
                     (float) interact.pos.z,
                     interact.src_id);
-            log_file << str;
+            (*log_file) << str;
             if (interact.scatter_compton_phantom) {
-                log_file << " 1 ";
+                (*log_file) << " 1 ";
             } else {
-                log_file << " 0 ";
+                (*log_file) << " 0 ";
             }
             sprintf(str,"%2d ", interact.mat_id);
-            log_file << str;
+            (*log_file) << str;
             sprintf(str,"%3d ", interact.det_id);
-            log_file << str;
-            log_file << "\n";
+            (*log_file) << str;
+            (*log_file) << "\n";
         } break;
         default: {
 
@@ -242,8 +237,9 @@ void Output::LogInteraction(const Interaction & interact) {
 
 bool Output::SetLogfile(const std::string & name, bool write_header_flag)
 {
-    log_file.open(name);
-    if (log_file.fail()) {
+    log_file = std::unique_ptr<std::ofstream>(new std::ofstream());
+    log_file->open(name);
+    if (log_file->fail()) {
         cerr << "ERROR: cannot open ";
         cerr << name;
         cerr << " log file.\n";
@@ -253,11 +249,11 @@ bool Output::SetLogfile(const std::string & name, bool write_header_flag)
 
     if (write_header_flag) {
         if (format == VARIABLE_ASCII) {
-            write_header(log_file, false);
-            write_write_flags(var_format_write_flags, log_file, false);
+            write_header(*log_file, false);
+            write_write_flags(var_format_write_flags, *log_file, false);
         } else if (format == VARIABLE_BINARY) {
-            write_header(log_file, true);
-            write_write_flags(var_format_write_flags, log_file, true);
+            write_header(*log_file, true);
+            write_write_flags(var_format_write_flags, *log_file, true);
         }
     }
 

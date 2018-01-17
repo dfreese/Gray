@@ -141,7 +141,7 @@ int main(int argc, char ** argv) {
     int no_threads = config.get_no_threads();
     std::vector<Simulation> sims;
     for (int idx = 0; idx < no_threads; ++idx) {
-        sims.emplace_back(config, scene, sources, daq_model, idx, no_threads);
+        sims.emplace_back(Simulation(config, scene, sources, daq_model, idx, no_threads));
     }
     clock_t setup_time = clock();
     std::vector<std::future<SimulationStats>> results(no_threads);

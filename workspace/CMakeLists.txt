@@ -1,6 +1,24 @@
 cmake_minimum_required (VERSION 2.8.12)
 project (Gray)
 
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    # https://stackoverflow.com/a/31313226/2465202
+    # https://stackoverflow.com/a/39110966/2465202
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.8)
+        message(FATAL_ERROR "GCC 4.8 or greater is required")
+    endif()
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 4.8)
+        # GCC 4.8 still requires pthreads
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -lpthread")
+    endif()
+endif()
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 3.3)
+        message(FATAL_ERROR "Clang 3.3 or greater is required")
+    endif()
+endif()
+
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
