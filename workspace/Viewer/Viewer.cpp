@@ -125,7 +125,7 @@ void run_viewer(int argc, char** argv, SceneDescription & FileScene) {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH );
     glutInitWindowSize(301,246);
     glutInitWindowPosition(0, 0);
-    glutCreateWindow( "Ray Tracing" );
+    int window_id = glutCreateWindow( "Ray Tracing" );
 
     // set up callback functions
     glutKeyboardFunc( myKeyboardFunc );
@@ -140,5 +140,5 @@ void run_viewer(int argc, char** argv, SceneDescription & FileScene) {
     } catch (...) {
         cout << "exit command caught" << endl;
     }
-
+    glutDestroyWindow(window_id);
 }
