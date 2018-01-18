@@ -203,7 +203,7 @@ Interaction Physics::ErrorEmtpy(const Photon & p)
  */
 Physics::INTER_TYPE Physics::InteractionType(
         Photon & photon,
-        double & dist,
+        double dist,
         const GammaStats & mat_gamma_prop,
         double & deposit)
 {

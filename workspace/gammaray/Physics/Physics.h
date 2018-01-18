@@ -23,8 +23,6 @@ public:
         ERROR_TRACE_DEPTH = 7,
     };
 
-    Physics() {};
-
     static Interaction NoInteraction();
     static Interaction NoInteraction(const Photon & p,
                                      const GammaStats & mat_gamma_prop);
@@ -43,7 +41,7 @@ public:
     static Interaction ErrorEmtpy(const Photon & p);
 
     static INTER_TYPE InteractionType(Photon &p,
-                                      double & dist,
+                                      double dist,
                                       const GammaStats & mat_gamma_prop,
                                       double & deposit);
     static void ComptonScatter(Photon &p, double & deposit,
