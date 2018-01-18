@@ -96,12 +96,16 @@ add_library(gammaray
     Output/Output.h
     Physics/Beam.cpp
     Physics/Beam.h
+    Physics/Compton.cpp
+    Physics/Compton.h
     Physics/GammaStats.cpp
     Physics/GammaStats.h
     Physics/Interaction.cpp
     Physics/Interaction.h
     Physics/Isotope.cpp
     Physics/Isotope.h
+    Physics/KleinNishina.cpp
+    Physics/KleinNishina.h
     Physics/NuclearDecay.cpp
     Physics/NuclearDecay.h
     Physics/Photon.cpp
@@ -110,6 +114,10 @@ add_library(gammaray
     Physics/Positron.h
     Physics/Physics.cpp
     Physics/Physics.h
+    Physics/Rayleigh.cpp
+    Physics/Rayleigh.h
+    Physics/Thompson.cpp
+    Physics/Thompson.h
     Random/Random.cpp
     Random/Random.h
     Random/Transform.h
