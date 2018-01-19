@@ -125,14 +125,6 @@ log_nonsensitive
 Has no options.  Tells gray to log hits in non-sensitive materials in the hits
 file.
 
-### log_nointeraction
-```
-log_nointeraction
-```
-Has no options.  Tells gray to log times a photon passes through a material
-without interacting in the hits file.  Not really useful unless you want to see
-the full photon path for some reason.
-
 ### log_errors
 ```
 log_errors

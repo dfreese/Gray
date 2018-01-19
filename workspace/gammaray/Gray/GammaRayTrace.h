@@ -22,7 +22,6 @@ public:
                   bool log_nondepositing_inter,
                   bool log_nuclear_decays_inter,
                   bool log_nonsensitive_inter,
-                  bool log_nointeractions_inter,
                   bool log_errors_inter);
 
     std::vector<Interaction> TraceDecay(const NuclearDecay& decay,
@@ -55,7 +54,6 @@ private:
     const bool log_nondepositing_inter;
     const bool log_nuclear_decays;
     const bool log_nonsensitive;
-    const bool log_nointeractions;
     const bool log_errors;
     const int max_trace_depth;
 };

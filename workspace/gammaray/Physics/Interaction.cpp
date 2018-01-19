@@ -1,8 +1,78 @@
 #include <Physics/Interaction.h>
 #include <cmath>
 #include <iostream>
+#include <Physics/GammaStats.h>
+#include <Physics/Photon.h>
+#include <Physics/NuclearDecay.h>
 
 using namespace std;
+
+Interaction::Interaction(
+        Type type,
+        const Photon& p) :
+    type(type),
+    decay_id(p.GetId()),
+    time(p.GetTime()),
+    pos(p.GetPos()),
+    energy(p.GetEnergy()),
+    color(p.GetColor()),
+    src_id(p.GetSrc()),
+    mat_id(-1),
+    det_id(p.GetDetId()),
+    scatter_compton_phantom(p.GetScatterComptonPhantom()),
+    scatter_compton_detector(p.GetScatterComptonDetector()),
+    scatter_rayleigh_phantom(p.GetScatterRayleighPhantom()),
+    scatter_rayleigh_detector(p.GetScatterRayleighDetector()),
+    xray_flouresence(p.GetXrayFlouresence()),
+    dropped(true)
+{
+}
+
+Interaction::Interaction(
+        Type type,
+        const Photon& p,
+        const GammaStats& mat,
+        double deposit) :
+    type(type),
+    decay_id(p.GetId()),
+    time(p.GetTime()),
+    pos(p.GetPos()),
+    energy(deposit),
+    color(p.GetColor()),
+    src_id(p.GetSrc()),
+    mat_id(mat.GetMaterial()),
+    det_id(p.GetDetId()),
+    scatter_compton_phantom(p.GetScatterComptonPhantom()),
+    scatter_compton_detector(p.GetScatterComptonDetector()),
+    scatter_rayleigh_phantom(p.GetScatterRayleighPhantom()),
+    scatter_rayleigh_detector(p.GetScatterRayleighDetector()),
+    xray_flouresence(p.GetXrayFlouresence()),
+    dropped(Dropped(type, mat))
+{
+}
+
+Interaction::Interaction(
+        const NuclearDecay& p,
+        const GammaStats & mat) :
+    type(Type::NUCLEAR_DECAY),
+    decay_id(p.GetDecayNumber()),
+    time(p.GetTime()),
+    pos(p.GetPosition()),
+    energy(p.GetEnergy()),
+    color(Photon::Color::P_YELLOW),
+    src_id(p.GetSourceId()),
+    mat_id(mat.GetMaterial()),
+    det_id(-1),
+    scatter_compton_phantom(0),
+    scatter_compton_detector(0),
+    scatter_rayleigh_phantom(0),
+    scatter_rayleigh_detector(0),
+    xray_flouresence(0),
+    dropped(Dropped(type, mat))
+{
+}
+
+
 
 /*!
  * Performs the basic merging required for different events.  Merges energy and
@@ -69,5 +139,29 @@ void Interaction::MergeStats(Interaction & i0, const Interaction & i1) {
         i0.scatter_rayleigh_phantom += hit_info.scatter_rayleigh_phantom;
         i0.scatter_rayleigh_detector += hit_info.scatter_rayleigh_detector;
         i0.xray_flouresence += hit_info.xray_flouresence;
+    }
+}
+
+/*!
+ * This determines if the DaqModel will try and process this event or not.
+ * We can keep the interactions, such as errors in the buffer around to log them
+ * as hits, but they will not be processed as singles.
+ */
+bool Interaction::Dropped(Type type, const GammaStats& mat) {
+    switch (type) {
+        case Type::COMPTON:
+            return (!mat.LogMaterial());
+        case Type::PHOTOELECTRIC:
+            return (!mat.LogMaterial());
+        case Type::RAYLEIGH:
+            return (true);
+        case Type::NUCLEAR_DECAY:
+            return (true);
+        case Type::ERROR_EMPTY:
+            return (true);
+        case Type::ERROR_TRACE_DEPTH:
+            return (true);
+        case Type::ERROR_MATCH:
+            return (true);
     }
 }

@@ -57,13 +57,11 @@ public:
     void set_log_nondepositing_inter(bool val);
     void set_log_nuclear_decays(bool val);
     void set_log_nonsensitive(bool val);
-    void set_log_nointeraction(bool val);
     void set_log_errors(bool val);
     void set_log_all(bool val);
     bool get_log_nondepositing_inter() const;
     bool get_log_nuclear_decays() const;
     bool get_log_nonsensitive() const;
-    bool get_log_nointeraction() const;
     bool get_log_errors() const;
     bool get_log_all() const;
     void set_time(double val);
@@ -111,7 +109,6 @@ private:
     bool log_nondepositing_inter = false;
     bool log_nuclear_decays = false;
     bool log_nonsensitive = false;
-    bool log_nointeraction = false;
     bool log_errors = false;
     bool log_all = false;
     std::vector<std::string> process_lines;

@@ -87,7 +87,6 @@ SimulationStats Simulation::Run() {
                              config.get_log_nondepositing_inter(),
                              config.get_log_nuclear_decays(),
                              config.get_log_nonsensitive(),
-                             config.get_log_nointeraction(),
                              config.get_log_errors());
 
     if (print_prog_bar) cout << "[" << flush;

@@ -385,10 +385,6 @@ void Config::set_log_nonsensitive(bool val) {
     log_nonsensitive = val;
 }
 
-void Config::set_log_nointeraction(bool val) {
-    log_nointeraction = val;
-}
-
 void Config::set_log_errors(bool val) {
     log_errors = val;
 }
@@ -407,10 +403,6 @@ bool Config::get_log_nuclear_decays() const {
 
 bool Config::get_log_nonsensitive() const {
     return(log_nonsensitive || log_all);
-}
-
-bool Config::get_log_nointeraction() const {
-    return(log_nointeraction || log_all);
 }
 
 bool Config::get_log_errors() const {

@@ -17,7 +17,6 @@ GammaRayTrace::GammaRayTrace(const SceneDescription & scene,
                              bool log_nondepositing_inter,
                              bool log_nuclear_decays_inter,
                              bool log_nonsensitive_inter,
-                             bool log_nointeractions_inter,
                              bool log_errors_inter) :
     scene(scene),
     source_positions(source_positions),
@@ -25,7 +24,6 @@ GammaRayTrace::GammaRayTrace(const SceneDescription & scene,
     log_nondepositing_inter(log_nondepositing_inter),
     log_nuclear_decays(log_nuclear_decays_inter),
     log_nonsensitive(log_nonsensitive_inter),
-    log_nointeractions(log_nointeractions_inter),
     log_errors(log_errors_inter),
     max_trace_depth(500)
 {
@@ -46,7 +44,8 @@ void GammaRayTrace::TracePhoton(
             // material or preceded by a front face.  This will happen if there
             // some sort of setup error in the KdTree.
             if (log_errors){
-                interactions.emplace_back(Physics::ErrorEmtpy(photon));
+                interactions.emplace_back(
+                        Interaction(Interaction::Type::ERROR_EMPTY, photon));
             }
             stats.error++;
             return;
@@ -61,88 +60,67 @@ void GammaRayTrace::TracePhoton(
         // There was nothing further in the environment to hit, so return.
         if (intersectNum < 0) {
             stats.no_interaction++;
-            if (log_nointeractions) {
-                interactions.emplace_back(
-                        Physics::NoInteraction(photon, mat_gamma_prop));
-            }
             return;
         }
 
-        double deposit = 0;
-        Physics::INTER_TYPE type = Physics::InteractionType(
-                photon, hitDist, mat_gamma_prop, deposit);
+        double deposit = photon.GetEnergy();
+        Interaction::Type type;
+        // Check to see if the photon interacts in the material, and if so then
+        // check to see what type it is.  Distance will move the photon the
+        // appropriate distance whether or not it interacts in the material.
+        if (mat_gamma_prop.Distance(photon, hitDist)) {
+            type = mat_gamma_prop.Interact(photon);
+            deposit -= photon.GetEnergy();
+        } else {
+            // If no interaction, recursively traverse the in the direction
+            // the photon was travelling
+            if (visPoint.IsFrontFacing()) {
+                // This detector id will be used to determine if we scatter
+                // in a detector or inside a phantom
+                photon.SetDetId(visPoint.GetObject().GetDetectorId());
+                MatStack.emplace(static_cast<GammaMaterial const * const>(
+                            &visPoint.GetMaterial()));
+            } else if (visPoint.IsBackFacing()) {
+                // Check to make sure we are exiting the material we think
+                // we are currently in.
+                if (&visPoint.GetMaterial() != MatStack.top()) {
+                    if (log_errors){
+                        interactions.emplace_back(
+                                Interaction(Interaction::Type::ERROR_MATCH, photon));
+                    }
+                    stats.error++;
+                    return;
+                }
+                photon.SetDetId(-1);
+                MatStack.pop();
+            } else {
+                throw(runtime_error("Material has no face"));
+            }
+            // Make sure not to hit same place in kdtree
+            photon.AddPos(photon.GetDir() * SceneDescription::ray_trace_epsilon);
+            continue;
+        }
         bool is_sensitive = (photon.GetDetId() >= 0);
-        bool log_interact = ((!is_sensitive && log_nonsensitive) ||
-                             is_sensitive);
+        bool log_interact = (log_nonsensitive || is_sensitive);
+
         // test for Photoelectric interaction
         switch (type) {
-            case Physics::NO_INTERACTION: {
-                // If not interaction, recursively traverse the in the direction
-                // the photon was travelling
-                if (visPoint.IsFrontFacing()) {
-                    // This detector id will be used to determine if we scatter
-                    // in a detector or inside a phantom
-                    photon.SetDetId(visPoint.GetObject().GetDetectorId());
-                    MatStack.emplace(static_cast<GammaMaterial const * const>(
-                            &visPoint.GetMaterial()));
-                } else if (visPoint.IsBackFacing()) {
-                    // Check to make sure we are exiting the material we think
-                    // we are currently in.
-                    if (&visPoint.GetMaterial() != MatStack.top()) {
-                        if (log_errors){
-                            interactions.emplace_back(
-                                    Physics::ErrorTraceDepth(photon, mat_gamma_prop));
-                        }
-                        stats.error++;
-                        return;
-                    }
-                    photon.SetDetId(-1);
-                    MatStack.pop();
-                } else {
-                    throw(runtime_error("Material has no face"));
-                }
-                // Make sure not to hit same place in kdtree
-                photon.AddPos(photon.GetDir() * SceneDescription::ray_trace_epsilon);
-                break;
-            }
-            case Physics::PHOTOELECTRIC: {
-                if (log_interact) {
-                    interactions.emplace_back(
-                            Physics::Photoelectric(photon, mat_gamma_prop));
-                }
+            case Interaction::Type::PHOTOELECTRIC: {
                 stats.photoelectric++;
                 if (is_sensitive) {
                     stats.photoelectric_sensitive++;
                 }
-                return;
-            }
-            case Physics::XRAY_ESCAPE: {
-                if (log_interact) {
-                    interactions.emplace_back(
-                            Physics::XrayEscape(photon, deposit, mat_gamma_prop));
-                }
-                stats.xray_escape++;
-                if (is_sensitive) {
-                    stats.xray_escape_sensitive++;
-                }
                 break;
             }
-            case Physics::COMPTON: {
-                if (log_interact) {
-                    interactions.emplace_back(
-                            Physics::Compton(photon, deposit, mat_gamma_prop));
-                }
+            case Interaction::Type::COMPTON: {
                 stats.compton++;
                 if (is_sensitive) {
                     stats.compton_sensitive++;
                 }
                 break;
             }
-            case Physics::RAYLEIGH: {
-                if (log_nondepositing_inter & log_interact) {
-                    interactions.emplace_back(
-                            Physics::Rayleigh(photon, mat_gamma_prop));
-                }
+            case Interaction::Type::RAYLEIGH: {
+                log_interact &= log_nondepositing_inter;
                 stats.rayleigh++;
                 if (is_sensitive) {
                     stats.rayleigh_sensitive++;
@@ -150,14 +128,21 @@ void GammaRayTrace::TracePhoton(
                 break;
             }
             default: {
-                throw(runtime_error("Unexpected interaction type in Interaction::GammaInteraction"));
+                throw(runtime_error("Unexpected interaction type in GammaStats::Interact"));
             }
+        }
+        if (log_interact) {
+            interactions.emplace_back(
+                    Interaction(type, photon, mat_gamma_prop, deposit));
+        }
+        if (photon.GetEnergy() <= 0) {
+            return;
         }
     }
 
     if (log_errors){
         interactions.emplace_back(
-                Physics::ErrorTraceDepth(photon, *MatStack.top()));
+                Interaction(Interaction::Type::ERROR_TRACE_DEPTH, photon));
     }
     stats.error++;
     return;
@@ -172,7 +157,7 @@ std::vector<Interaction> GammaRayTrace::TraceDecay(
     int src_id = decay.GetSourceId();
     if (log_nuclear_decays) {
         interactions.emplace_back(
-                Physics::NuclearDecay(decay, SourceMaterial(src_id)));
+                Interaction(decay, SourceMaterial(src_id)));
     }
     for (const Photon& photon: decay) {
         stats.photons++;

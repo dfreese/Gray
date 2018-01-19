@@ -1,9 +1,13 @@
 #ifndef GAMMA_STATS_H
 #define GAMMA_STATS_H
 
+#include <mutex>
 #include <string>
 #include <vector>
 #include <Physics/Compton.h>
+#include <Physics/Interaction.h>
+#include <Physics/Photon.h>
+#include <Physics/Physics.h>
 #include <Physics/Rayleigh.h>
 
 class GammaStats
@@ -22,8 +26,6 @@ public:
     void SetMaterialType(int s);
     bool Load();
     int GetMaterial() const;
-    void GetInteractionProbs(double e, double & pe, double & comp,
-                             double & ray) const;
     bool LogMaterial() const {
         return (log_material);
     }
@@ -33,11 +35,24 @@ public:
     bool InteractionsEnabled() const;
     void DisableInteractions();
     std::string GetName() const;
-    double GetComptonScatterAngle(double energy) const;
-    double GetRayleighScatterAngle(double energy) const;
     void DisableRayleigh();
+    void ComptonScatter(Photon& p) const;
+    void RayleighScatter(Photon& p) const;
+    bool Distance(Photon& photon, double max_dist) const;
+    Interaction::Type Interact(Photon& photon) const;
 
 private:
+    struct AttenLengths {
+        double energy;
+        double photoelectric;
+        double compton;
+        double rayleigh;
+        double total() const {
+            return (photoelectric + compton + rayleigh);
+        }
+    };
+    AttenLengths GetAttenLengths(double energy) const;
+
     std::string name;
     int index;
     std::string filename;
@@ -58,6 +73,9 @@ private:
 
     Compton compton_scatter;
     Rayleigh rayleigh_scatter;
+
+    mutable std::mutex cache_lock;
+    mutable AttenLengths cache_len;
 };
 
 #endif

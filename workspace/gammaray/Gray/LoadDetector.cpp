@@ -162,8 +162,6 @@ bool LoadDetector::HandleConfigCommand(const std::string & command,
         config.set_log_nondepositing_inter(true);
     } else if (command == "log_nonsensitive") {
         config.set_log_nonsensitive(true);
-    } else if (command == "log_nointeraction") {
-        config.set_log_nointeraction(true);
     } else if (command == "log_errors") {
         config.set_log_errors(true);
     } else if (command == "log_all") {
@@ -270,7 +268,7 @@ bool LoadDetector::Load(const std::string & filename,
         "coinc_format", "hits_output", "singles_output", "coinc_output",
         "process_file", "process", "mapping_file", "hits_var_mask",
         "singles_var_mask", "coinc_var_mask", "time", "start_time", "seed",
-        "log_positron", "log_nonsensitive", "log_nointeraction", "log_errors",
+        "log_positron", "log_nonsensitive", "log_errors",
         "log_all", "log_nondepositing"};
 
     while (!file_stack.empty()) {

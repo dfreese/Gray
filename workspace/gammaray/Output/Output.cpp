@@ -121,7 +121,7 @@ void Output::LogInteractions(const vector<Interaction> & interactions) {
             b.y = (float) interact.pos.y;
             b.z = (float) interact.pos.z;
             b.det_id = interact.det_id;
-            b.log = MakeLogWord(interact.type, interact.color,
+            b.log = MakeLogWord((int)interact.type, interact.color,
                                 interact.scatter_compton_phantom, interact.mat_id,
                                 interact.src_id);
         }
@@ -136,7 +136,7 @@ void Output::LogInteractions(const vector<Interaction> & interactions) {
             b.time = interact.time;
             b.energy = interact.energy;
             b.det_id = interact.det_id;
-            b.log = MakeLogWord(interact.type, interact.color,
+            b.log = MakeLogWord((int)interact.type, interact.color,
                                 interact.scatter_compton_phantom, interact.mat_id,
                                 interact.src_id);
         }
@@ -145,7 +145,7 @@ void Output::LogInteractions(const vector<Interaction> & interactions) {
     } else if (format == FULL_ASCII) {
         for (const auto & interact: interactions) {
             char str[256];
-            (*log_file) << " " << interact.type << " ";
+            (*log_file) << " " << (int)interact.type << " ";
             (*log_file) << interact.decay_id;
             (*log_file) << " " << interact.color << " ";
             sprintf(str,"%23.16e ", interact.time);
@@ -188,7 +188,7 @@ void Output::LogInteraction(const Interaction & interact) {
             b.y = (float) interact.pos.y;
             b.z = (float) interact.pos.z;
             b.det_id = interact.det_id;
-            b.log = MakeLogWord(interact.type, interact.color,
+            b.log = MakeLogWord((int)interact.type, interact.color,
                                 interact.scatter_compton_phantom, interact.mat_id,
                                 interact.src_id);
             log_file->write(reinterpret_cast<char*>(&b), sizeof(b));
@@ -199,14 +199,14 @@ void Output::LogInteraction(const Interaction & interact) {
             b.time = interact.time;
             b.energy = interact.energy;
             b.det_id = interact.det_id;
-            b.log = MakeLogWord(interact.type, interact.color,
+            b.log = MakeLogWord((int)interact.type, interact.color,
                                 interact.scatter_compton_phantom, interact.mat_id,
                                 interact.src_id);
             log_file->write(reinterpret_cast<char*>(&b), sizeof(b));
         } break;
         case FULL_ASCII: {
             char str[256];
-            (*log_file) << " " << interact.type << " ";
+            (*log_file) << " " << (int)interact.type << " ";
             (*log_file) << interact.decay_id;
             (*log_file) << " " << interact.color << " ";
             sprintf(str,"%23.16e ", interact.time);
@@ -576,7 +576,7 @@ bool Output::write_variable_ascii(const Interaction & inter,
         output << " " << std::setw(3) << inter.color;
     }
     if (flags.type) {
-        output << " " << std::setw(3) << inter.type;
+        output << " " << std::setw(3) << (int)inter.type;
     }
     if (flags.pos) {
         output << resetiosflags(ios::floatfield)

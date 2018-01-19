@@ -9,7 +9,6 @@
 #include <vector>
 
 class GammaStats;
-class Interaction;
 
 class Input
 {
@@ -26,7 +25,7 @@ public:
     Output::WriteFlags get_write_flags() const;
 
 private:
-    static void parse_log_word(int log, int & interaction, int & color,
+    static void parse_log_word(int log, Interaction::Type& type, int & color,
                         int & scatter, int & det_mat, int & src_id);
     static bool read_header_binary(std::istream & input, int & version);
     static bool read_header_ascii(std::istream & input, int & version);

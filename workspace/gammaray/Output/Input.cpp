@@ -18,10 +18,10 @@ void Input::set_format(Output::Format format) {
 }
 
 
-void Input::parse_log_word(int log, int & interaction, int & color,
+void Input::parse_log_word(int log, Interaction::Type& type, int & color,
                            int & scatter, int & det_mat, int & src_id)
 {
-    interaction = ((log & 0xF0000000) >> 28);
+    type = (Interaction::Type)((log & 0xF0000000) >> 28);
     color = ((log & 0x0F000000) >> 24);
     scatter = ((log & 0x00F00000) >> 20);
     det_mat = ((log & 0x000FF000) >> 12);
@@ -254,7 +254,7 @@ bool Input::read_variables_binary(std::vector<Interaction> & interactions,
             inter.color = *reinterpret_cast<int*>(event_ptr + offsets.color);
         }
         if (flags.type) {
-            inter.type = *reinterpret_cast<int*>(event_ptr + offsets.type);
+            inter.type = *reinterpret_cast<Interaction::Type*>(event_ptr + offsets.type);
         }
         if (flags.pos) {
             inter.pos.x = *reinterpret_cast<double*>(event_ptr + offsets.pos);
@@ -325,7 +325,9 @@ bool Input::read_variables_ascii(std::vector<Interaction> & interactions,
             line_ss >> inter.color;
         }
         if (flags.type) {
-            line_ss >> inter.type;
+            int type;
+            line_ss >> type;
+            inter.type = (Interaction::Type)type;
         }
         if (flags.pos) {
             line_ss >> inter.pos.x;
@@ -471,7 +473,9 @@ bool Input::read_full_ascii(std::vector<Interaction> & interactions,
         }
         stringstream ss(line);
         Interaction & interact = read_buf[no_events];
-        ss >> interact.type;
+        int type;
+        ss >> type;
+        interact.type = (Interaction::Type)type;
         ss >> interact.decay_id;
         ss >> interact.color;
         ss >> interact.time;
