@@ -1,3 +1,13 @@
+/*
+ * Gray: a Ray Tracing-based Monte Carlo Simulator for PET
+ *
+ * Copyright (c) 2018, David Freese, Peter Olcott, Sam Buss, Craig Levin
+ *
+ * This software is distributed under the terms of the MIT License unless
+ * otherwise noted.  See LICENSE for further details.
+ *
+ */
+
 #include "gtest/gtest.h"
 #include <memory>
 #include "Daq/Mapping.h"
@@ -60,4 +70,3 @@ TEST(MergeTest, BasicMergeMax) {
     EXPECT_EQ(events[0].dropped, true);
     EXPECT_EQ(events[1].energy, energy[0] + energy[1]);
 }
-

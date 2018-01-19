@@ -1,3 +1,13 @@
+/*
+ * Gray: a Ray Tracing-based Monte Carlo Simulator for PET
+ *
+ * Copyright (c) 2018, David Freese, Peter Olcott, Sam Buss, Craig Levin
+ *
+ * This software is distributed under the terms of the MIT License unless
+ * otherwise noted.  See LICENSE for further details.
+ *
+ */
+
 #include "gtest/gtest.h"
 #include <algorithm>
 #include <numeric>
@@ -191,4 +201,3 @@ TEST_F(InterpolateEdgeTest, Edge) {
     EXPECT_NEAR(Math::interpolate(x, y, 0.299), y[3], 1e-2);
     EXPECT_NEAR(Math::interpolate(x, y, 0.3), y[4], 1e-2);
 }
-

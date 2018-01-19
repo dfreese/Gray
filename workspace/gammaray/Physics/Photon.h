@@ -1,5 +1,15 @@
-#ifndef CSE167_PHOTON_H
-#define CSE167_PHOTON_H
+/*
+ * Gray: a Ray Tracing-based Monte Carlo Simulator for PET
+ *
+ * Copyright (c) 2018, David Freese, Peter Olcott, Sam Buss, Craig Levin
+ *
+ * This software is distributed under the terms of the MIT License unless
+ * otherwise noted.  See LICENSE for further details.
+ *
+ */
+
+#ifndef PHOTON_H
+#define PHOTON_H
 
 #include <VrMath/LinearR3.h>
 

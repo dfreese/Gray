@@ -1,3 +1,13 @@
+/*
+ * Gray: a Ray Tracing-based Monte Carlo Simulator for PET
+ *
+ * Copyright (c) 2018, David Freese, Peter Olcott, Sam Buss, Craig Levin
+ *
+ * This software is distributed under the terms of the MIT License unless
+ * otherwise noted.  See LICENSE for further details.
+ *
+ */
+
 #include <fstream>
 #include <iostream>
 #include <Daq/Mapping.h>
@@ -152,7 +162,7 @@ int main(int argc, char ** argv) {
     if (config.get_log_singles()) {
         output.LogSingles(daq_model.singles_begin(), daq_model.singles_end());
     }
-    
+
     for (size_t idx = 0; idx < daq_model.no_coinc_processes(); idx++) {
         daq_model.stop_coinc(idx);
         if (config.get_log_coinc()) {

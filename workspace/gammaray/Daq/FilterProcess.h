@@ -1,10 +1,12 @@
-//
-//  filterprocess.h
-//  graypipeline
-//
-//  Created by David Freese on 4/6/17.
-//
-//
+/*
+ * Gray: a Ray Tracing-based Monte Carlo Simulator for PET
+ *
+ * Copyright (c) 2018, David Freese, Peter Olcott, Sam Buss, Craig Levin
+ *
+ * This software is distributed under the terms of the MIT License unless
+ * otherwise noted.  See LICENSE for further details.
+ *
+ */
 
 #ifndef filterprocess_h
 #define filterprocess_h

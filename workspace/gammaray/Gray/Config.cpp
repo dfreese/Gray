@@ -49,6 +49,10 @@ int Config::ProcessCommandLine(int argc, char **argv, bool fail_without_scene)
             Config::version();
             return (2);
         }
+        if (argument == "--license") {
+            Config::license();
+            return (3);
+        }
         if (argument == "--test_overlap") {
             run_overlap_test = true;
         }
@@ -193,6 +197,7 @@ void Config::usage() {
     cout << "gray (-v) -f [Scene Description]\n"
     << "  -h or --help : print help message\n"
     << "  --version : print version information\n"
+    << "  --license: print license information\n"
     << "  -i [filename] : set the output hits file / input for gray-daq\n"
     << "  -s [filename] : set the output for the singles file\n"
     << "  -c [filename] : set an output for the coinc files (order matters)\n"
@@ -222,11 +227,37 @@ void Config::usage() {
 void Config::version() {
     cout << "Gray: a Ray Tracing-based Monte Carlo Simulator for PET\n"
          << "\n"
-         << "  Copyright: Peter D. Olcott and David L. Freese, "
-         << Version::CopyrightYear() << "\n"
+         << "  Copyright (c) " << Version::CopyrightYear()
+         << ", David L. Freese, Peter D. Olcott, Sam R. Buss, and Craig S. Levin\n"
+         << "  License: MIT\n"
          << "  Version: "  << Version::VersionStr() << "\n"
          << "  Git Commit: " << Version::GitSHA1() << "\n"
          << "\n";
+}
+
+void Config::license() {
+    cout << "The MIT License\n"
+         << "\n"
+         << "Copyright (c) " << Version::CopyrightYear()
+         << ", David L. Freese, Peter D. Olcott, Sam R. Buss, and Craig S. Levin\n"
+         << "\n"
+         << "Permission is hereby granted, free of charge, to any person obtaining a copy\n"
+         << "of this software and associated documentation files (the \"Software\"), to deal\n"
+         << "in the Software without restriction, including without limitation the rights\n"
+         << "to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n"
+         << "copies of the Software, and to permit persons to whom the Software is\n"
+         << "furnished to do so, subject to the following conditions:\n"
+         << "\n"
+         << "The above copyright notice and this permission notice shall be included in\n"
+         << "all copies or substantial portions of the Software.\n"
+         << "\n"
+         << "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n"
+         << "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n"
+         << "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n"
+         << "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n"
+         << "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n"
+         << "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\n"
+         << "THE SOFTWARE.\n";
 }
 
 void Config::set_filename_scene(const std::string & name) {
