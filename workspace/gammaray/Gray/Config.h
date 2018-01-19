@@ -103,9 +103,9 @@ private:
     bool format_hits_set = false;
     bool format_singles_set = false;
     bool format_coinc_set = false;
-    Output::Format format_hits = Output::VARIABLE_ASCII;
-    Output::Format format_singles = Output::VARIABLE_ASCII;
-    Output::Format format_coinc = Output::VARIABLE_ASCII;
+    Output::Format format_hits = Output::Format::VariableAscii;
+    Output::Format format_singles = Output::Format::VariableAscii;
+    Output::Format format_coinc = Output::Format::VariableAscii;
     bool log_nondepositing_inter = false;
     bool log_nuclear_decays = false;
     bool log_nonsensitive = false;

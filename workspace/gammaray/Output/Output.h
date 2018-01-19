@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <fstream>
 #include <memory>
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -14,15 +15,13 @@ class Interaction;
 class Output
 {
 public:
-    enum Format {
-        FULL_ASCII,
-        FULL_BINARY,
-        NO_POS_BINARY,
-        VARIABLE_ASCII,
-        VARIABLE_BINARY,
+    enum class Format : int {
+        VariableAscii,
+        VariableBinary
     };
+    friend std::ostream& operator << (std::ostream& os, const Output::Format& fmt);
 
-    Output();
+    Output() = default;
     Output(Output&&) = default;
 
     bool SetLogfile(const std::string & name, bool write_header);
@@ -100,9 +99,6 @@ public:
     void SetVariableOutputMask(const WriteFlags & flags);
 
 private:
-    int MakeLogWord(int interaction, int color, int scatter, int det_mat,
-                    int src_id);
-
     // GCC 4.8 didn't implement move support for ostream, including ofstream,
     // so use unique_ptr to hack that back in for now.  April 2019, when
     // Ubuntu 14.04 LTS reaches end-of-life would be a reasonable point to

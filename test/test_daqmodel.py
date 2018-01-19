@@ -9,12 +9,9 @@ def _run_merge(filename, output_filename, map_filename, proc_filename,
     cmd = 'gray-daq -i %s -s %s -m %s -p %s' % (
         filename, output_filename, map_filename, proc_filename
     )
+    cmd += ' --fmt var_binary'
     if verbose:
         cmd += ' -v'
-    if input_dtype == gray.standard_dtype:
-        cmd += ' --fmt full_binary'
-    elif input_dtype == gray.no_position_dtype:
-        cmd += ' --fmt no_pos_binary'
     if coinc_filenames is not None:
         for coinc_name in coinc_filenames:
             cmd += ' -c %s' % coinc_name
@@ -50,11 +47,12 @@ def _create_and_run_merge(data, cmd_lines, verbose=False, clear_files=True):
     if not isinstance(cmd_lines, list):
         cmd_lines = [cmd_lines,]
     input_osfid, input_fname = tempfile.mkstemp()
-    with os.fdopen(input_osfid, 'wb') as input_fid:
-        data.tofile(input_fid)
+    # with os.fdopen(input_osfid, 'wb') as input_fid:
+    #    data.tofile(input_fid)
+    gray.write_variable_binary(input_fname, data)
 
     map_osfid, map_fname = tempfile.mkstemp()
-    _create_test_map_file(map_osfid, (data['det'].max() // 64 + 1) * 64)
+    _create_test_map_file(map_osfid, (data['det_id'].max() // 64 + 1) * 64)
 
     proc_osfid, proc_fname = tempfile.mkstemp()
     _create_test_process_file(proc_osfid, cmd_lines)
@@ -72,10 +70,10 @@ def _create_and_run_merge(data, cmd_lines, verbose=False, clear_files=True):
     _run_merge(input_fname, output_fname, map_fname, proc_fname, data.dtype,
                verbose, coinc_fnames)
 
-    out = np.fromfile(output_fname, dtype=data.dtype)
+    out = gray.load_variable_binary(output_fname)
     coinc_outs = []
     for name in coinc_fnames:
-        coinc_outs.append(np.fromfile(name, dtype=data.dtype))
+        coinc_outs.append(gray.load_variable_binary(name))
         os.remove(name)
 
     if clear_files:
@@ -89,7 +87,7 @@ def _create_and_run_merge(data, cmd_lines, verbose=False, clear_files=True):
         return [out,] + coinc_outs
 
 def test_merge_outside_window():
-    data = np.zeros(2, dtype=gray.no_position_dtype)
+    data = np.zeros(2, dtype=gray.interaction_all_dtype())
     merge_window = 300.0
 
     data[0]['energy'] = 300.0
@@ -103,7 +101,7 @@ def test_merge_outside_window():
            is outside the merge window'''
 
 def test_merge_inside_window():
-    data = np.zeros(2, dtype=gray.no_position_dtype)
+    data = np.zeros(2, dtype=gray.interaction_all_dtype())
     merge_window = 300.0
 
     data[0]['energy'] = 300.0
@@ -124,7 +122,7 @@ def test_merge_inside_window():
 
 def test_merge_across_read_boundary():
     read_interval = 100000 # gray-daq reads this many events at a time.
-    data = np.zeros(2 * read_interval, dtype=gray.no_position_dtype)
+    data = np.zeros(2 * read_interval, dtype=gray.interaction_all_dtype())
     merge_window = 10.0
 
     data['time'] = np.arange(0, data.size * (merge_window / 2), (merge_window / 2))
@@ -134,7 +132,7 @@ def test_merge_across_read_boundary():
         'Half of events should have been merged'
 
 def test_merge_inside_window_basic_flag():
-    data = np.zeros(2, dtype=gray.no_position_dtype)
+    data = np.zeros(2, dtype=gray.interaction_all_dtype())
     merge_window = 300.0
 
     data[0]['energy'] = 300.0
@@ -149,14 +147,14 @@ def test_merge_inside_window_basic_flag():
     assert((output == flagged).all()), 'Max flag should be default'
 
 def test_merge_different_detectors():
-    data = np.zeros(3, dtype=gray.no_position_dtype)
+    data = np.zeros(3, dtype=gray.interaction_all_dtype())
     merge_window = 300.0
 
     data[0]['energy'] = 300.0
     data[2]['time'] = merge_window - 1e-6
     data[2]['energy'] = 250.0
     data[1]['time'] = merge_window / 3.0 * 2.0
-    data[1]['det'] = 1
+    data[1]['det_id'] = 1
 
     output = _create_and_run_merge(data, ('merge', 'detector', merge_window))
     assert(output.size == 2), 'Events should have been merged to two events'
@@ -166,7 +164,7 @@ def test_merge_different_detectors():
     assert(output[1] == data[1]), 'Second event should be unchanged'
 
 def test_merge_different_detectors_interspersed():
-    data = np.zeros(5, dtype=gray.no_position_dtype)
+    data = np.zeros(5, dtype=gray.interaction_all_dtype())
     merge_window = 300.0
 
     times = np.array((0, merge_window / 3.0 * 2.0, merge_window - 1e-6,
@@ -175,7 +173,7 @@ def test_merge_different_detectors_interspersed():
     dets = np.array((0, 1, 0, 1, 1))
     energies = np.array((300.0, 500.0, 250.0, 11.0, 40.0))
     data['time'] = times
-    data['det'] = dets
+    data['det_id'] = dets
     data['energy'] = energies
 
     expected = data[np.array((0, 1, 4))]
@@ -190,7 +188,7 @@ def test_merge_different_detectors_interspersed():
 
 
 def test_deadtime():
-    data = np.zeros(7, dtype=gray.no_position_dtype)
+    data = np.zeros(7, dtype=gray.interaction_all_dtype())
     deadtime = 100.0
 
     times = np.array((0.0, 50.0, 75.0, 174.99, 300.0, 399.999, 400.0),
@@ -223,7 +221,7 @@ def test_deadtime():
         'Event times are not as expected for paralyzable deadtime'
 
 def test_egate_low():
-    data = np.zeros(5, dtype=gray.no_position_dtype)
+    data = np.zeros(5, dtype=gray.interaction_all_dtype())
     egate_low = 100.0
 
     energies = np.array((99.9999, 100.0, 200.0, 300.0, 300.001),
@@ -237,7 +235,7 @@ def test_egate_low():
            '''Energies above the threshold are not correct'''
 
 def test_egate_high():
-    data = np.zeros(5, dtype=gray.no_position_dtype)
+    data = np.zeros(5, dtype=gray.interaction_all_dtype())
     egate_high = 300.0
 
     energies = np.array((99.9999, 100.0, 200.0, 300.0, 300.001),
@@ -251,7 +249,7 @@ def test_egate_high():
            '''Energies above the threshold are not correct'''
 
 def test_energy_blur():
-    data = np.zeros(5, dtype=gray.no_position_dtype)
+    data = np.zeros(5, dtype=gray.interaction_all_dtype())
     eres = 0.13
 
     energies = np.array((99.9999, 100.0, 200.0, 300.0, 300.001),
@@ -265,7 +263,7 @@ def test_energy_blur():
             'At least one energy should change with blurring (statistically)'
 
 def test_energy_blur_std():
-    data = np.zeros(100000, dtype=gray.no_position_dtype)
+    data = np.zeros(100000, dtype=gray.interaction_all_dtype())
     ref_energy = 0.511
     eres = 0.13
     data['energy'][:] = ref_energy
@@ -283,7 +281,7 @@ def test_energy_blur_std():
     assert(np.abs(exp_eres - eres_out) / exp_eres < 1e-2)
 
 def test_time_blur():
-    data = np.zeros(5, dtype=gray.no_position_dtype)
+    data = np.zeros(5, dtype=gray.interaction_all_dtype())
     tres = 2.0
 
     times = np.array((0.0, 10.0, 20.0, 50.0, 60.0),
@@ -299,7 +297,7 @@ def test_time_blur():
             'The blur should be capped to 3 FWHM in either direction'
 
 def test_time_blur_std():
-    data = np.zeros(100000, dtype=gray.no_position_dtype)
+    data = np.zeros(100000, dtype=gray.interaction_all_dtype())
 
     tres_sigma = 2.0
     tres = tres_sigma * gray.sigma_to_fwhm()
@@ -314,7 +312,7 @@ def test_time_blur_std():
     assert(np.abs(tres_sigma - std_out) / tres_sigma < 1e-2)
 
 def test_coinc():
-    data = np.zeros(7, dtype=gray.no_position_dtype)
+    data = np.zeros(7, dtype=gray.interaction_all_dtype())
     coinc_win = 15.0
     times = np.array((0.0, 10.0, 24.999, 50.0, 65.0, 90.0, 100.0),
                      dtype=data.dtype['time'])
@@ -323,6 +321,8 @@ def test_coinc():
     expected = data[np.array((0, 1, 5, 6))]
     [singles, output] = _create_and_run_merge(data, ('coinc', 'window', coinc_win))
 
+    expected['coinc_id'] = np.array((0, 0, 1, 1))
+
     assert(output.size == expected.size), \
             'Size not expected for nonparalyzable coinc sort'
     assert((output == expected).all()), \
@@ -330,6 +330,8 @@ def test_coinc():
 
     expected = data[np.array((5, 6))]
     [singles, output] = _create_and_run_merge(data, ('coinc', 'window', coinc_win, 'paralyzable'))
+
+    expected['coinc_id'] = np.array((0, 0))
 
     assert(output.size == expected.size), \
             'Size not expected for paralyzable coinc sort'
@@ -340,6 +342,8 @@ def test_coinc():
     expected = data[np.array((0, 1, 0, 2, 1, 2, 5, 6))]
     [singles, output] = _create_and_run_merge(data, ('coinc', 'window', coinc_win,
                                           'keep_multiples paralyzable'))
+
+    expected['coinc_id'] = np.array((0, 0, 0, 0, 0, 0, 1, 1))
     assert(output.size == expected.size), \
             'Size not expected for paralyzable coinc sort keeping mutiples'
     assert((output == expected).all()), \
@@ -347,7 +351,7 @@ def test_coinc():
             mutiples'''
 
 def test_delayed_window():
-    data = np.zeros(9, dtype=gray.no_position_dtype)
+    data = np.zeros(9, dtype=gray.interaction_all_dtype())
     coinc_win = 15.0
     times = np.array((0.0, 10.0, 24.999, 50.0, 65.0, 90.0, 100.0, 160.0, 161.0),
                      dtype=data.dtype['time'])
@@ -367,6 +371,7 @@ def test_delayed_window():
         ('coinc', 'delay', coinc_win, str(delay_window)),
         ])
 
+    expected['coinc_id'] = np.array((0, 0, 1, 1))
     assert(output.size == expected.size), \
             'Size not expected for nonparalyzable delayed window'
     assert((output == expected).all()), \
@@ -377,6 +382,7 @@ def test_delayed_window():
     [singles, output] = _create_and_run_merge(data, [
         ('coinc', 'delay', coinc_win, str(delay_window) + ' paralyzable'),])
 
+    expected['coinc_id'] = np.array((0, 0, 1, 1))
     assert(output.size == expected.size), \
             'Size not expected for paralyzable delayed window'
     assert((output == expected).all()), \
@@ -389,6 +395,7 @@ def test_delayed_window():
         ('coinc', 'delay', coinc_win, str(delay_window) + ' keep_multiples'),
         ])
 
+    expected['coinc_id'] = np.array((0, 0, 1, 1, 2, 2, 2, 2, 2, 2,))
     assert(output.size == expected.size), \
             '''Size not expected for delayed window keeping multiples'''
     assert((output == expected).all()), \
@@ -396,7 +403,7 @@ def test_delayed_window():
             keeping multiples'''
 
 
-    data = np.zeros(5, dtype=gray.no_position_dtype)
+    data = np.zeros(5, dtype=gray.interaction_all_dtype())
     times = np.array((0.0, 55.0, 145.0, 195.0, 200.0),
                      dtype=data.dtype['time'])
     data['time'] = times
@@ -408,6 +415,8 @@ def test_delayed_window():
         ('coinc', 'window', coinc_win),
         ('coinc', 'delay', coinc_win, str(delay_window)),
         ])
+    expected_coinc['coinc_id'] = np.array((0, 0))
+    expected_delay['coinc_id'] = np.array((0, 0))
 
     assert(delays.size == expected_delay.size), \
             'Size not expected for nonparalyzable delayed window'
@@ -424,6 +433,7 @@ def test_delayed_window():
     [singles, output] = _create_and_run_merge(data, [
         ('coinc', 'delay', coinc_win, str(delay_window) + ' keep_multiples'),])
 
+    expected['coinc_id'] = np.array((0, 0, 1, 1, 1, 1, 1, 1))
     assert(output.size == expected.size), \
             '''Size not expected for nonparalyzable delayed window keeping
             multiples'''
@@ -432,19 +442,19 @@ def test_delayed_window():
             keeping multiples'''
 
 def test_multiple_merge_egate_coinc():
-    data = np.zeros(8, dtype=gray.no_position_dtype)
+    data = np.zeros(8, dtype=gray.interaction_all_dtype())
     merge_window = 10.0
     coinc_win = 15.0
     egate_low = 400.0
     times = np.array((0.0, 10.0, 19.999, 50.0, 54.0, 60.0, 69.999, 100.0),
                      dtype=data.dtype['time'])
     detectors = np.array((0, 1, 1, 2, 2, 64, 65, 80),
-                         dtype=data.dtype['det'])
+                         dtype=data.dtype['det_id'])
     energies = np.array((511.0, 200.0, 311.0, 200.0, 199.999, 511.0, 400.0,
                          511.0),
                         dtype=data.dtype['energy'])
     data['time'] = times
-    data['det'] = detectors
+    data['det_id'] = detectors
     data['energy'] = energies
 
     expected = data[np.array((0, 1, 5, 6))]
@@ -455,6 +465,7 @@ def test_multiple_merge_egate_coinc():
         ('filter', 'egate_low', egate_low),
         ('coinc', 'window', coinc_win)])
 
+    expected['coinc_id'] = np.array((0, 0, 1, 1))
     assert(output.size == expected.size), \
             'Size not expected for coinc sort'
     assert((output == expected).all()), \
@@ -468,6 +479,7 @@ def test_multiple_merge_egate_coinc():
         ('filter', 'egate_low', egate_low),
         ('coinc', 'window', coinc_win)])
 
+    expected['coinc_id'] = np.array((0, 0,))
     assert(output.size == expected.size), \
             'Size not expected for coinc sort'
     assert((output == expected).all()), \
@@ -475,7 +487,7 @@ def test_multiple_merge_egate_coinc():
 
 
 def test_merge_array_outside_window():
-    data = np.zeros(2, dtype=gray.no_position_dtype)
+    data = np.zeros(2, dtype=gray.interaction_all_dtype())
     merge_window = 300.0
 
     data[0]['energy'] = 300.0
@@ -488,7 +500,7 @@ def test_merge_array_outside_window():
            is outside the merge window'''
 
 def test_merge_array_inside_window():
-    data = np.zeros(2, dtype=gray.no_position_dtype)
+    data = np.zeros(2, dtype=gray.interaction_all_dtype())
     merge_window = 300.0
 
     data[0]['energy'] = 300.0
@@ -502,14 +514,14 @@ def test_merge_array_inside_window():
            ''' Energy should be the sum of the input'''
 
 def test_merge_array_different_arrays():
-    data = np.zeros(3, dtype=gray.no_position_dtype)
+    data = np.zeros(3, dtype=gray.interaction_all_dtype())
     merge_window = 300.0
 
     data[0]['energy'] = 300.0
     data[2]['time'] = merge_window - 1e-6
     data[2]['energy'] = 250.0
     data[1]['time'] = merge_window / 3.0 * 2.0
-    data[1]['det'] = 64
+    data[1]['det_id'] = 64
 
     output = _create_and_run_merge(data, ('merge', 'block', merge_window,
                                    'anger bx by bz'))
@@ -520,13 +532,13 @@ def test_merge_array_different_arrays():
     assert(output[1] == data[1]), 'Second event should be unchanged'
 
 def test_merge_array_basic():
-    data = np.zeros(2, dtype=gray.no_position_dtype)
+    data = np.zeros(2, dtype=gray.interaction_all_dtype())
     merge_window = 300.0
 
     data[0]['energy'] = 250.0
     data[1]['time'] = merge_window - 1e-6
     data[1]['energy'] = 300.0
-    data[1]['det'] = 24 + 5
+    data[1]['det_id'] = 24 + 5
 
     new_energy = data[0]['energy'] + data[1]['energy']
     output = _create_and_run_merge(data, ('merge', 'block', merge_window,
@@ -534,17 +546,17 @@ def test_merge_array_basic():
     assert(output.size == 1), 'Events should have been merged to one'
     assert(output[0]['energy'] == new_energy), \
            'Energy should be the sum of the input'
-    assert(output[0]['det'] == data[0]['det']), \
+    assert(output[0]['det_id'] == data[0]['det_id']), \
            'New detector should the first in time'
 
 def test_merge_array_basic_type0():
-    data = np.zeros(2, dtype=gray.standard_dtype)
+    data = np.zeros(2, dtype=gray.interaction_all_dtype())
     merge_window = 300.0
 
     data[0]['energy'] = 250.0
     data[1]['time'] = merge_window - 1e-6
     data[1]['energy'] = 300.0
-    data[1]['det'] = 24 + 5
+    data[1]['det_id'] = 24 + 5
 
     new_energy = data[0]['energy'] + data[1]['energy']
     output = _create_and_run_merge(data, ('merge', 'block', merge_window,
@@ -552,34 +564,34 @@ def test_merge_array_basic_type0():
     assert(output.size == 1), 'Events should have been merged to one'
     assert(output[0]['energy'] == new_energy), \
            'Energy should be the sum of the input'
-    assert(output[0]['det'] == data[0]['det']), \
+    assert(output[0]['det_id'] == data[0]['det_id']), \
            'New detector should the first in time'
 
 def test_merge_array_basic_type0_default():
-    data = np.zeros(2, dtype=gray.standard_dtype)
+    data = np.zeros(2, dtype=gray.interaction_all_dtype())
     merge_window = 300.0
 
     data[0]['energy'] = 250.0
     data[1]['time'] = merge_window - 1e-6
     data[1]['energy'] = 300.0
-    data[1]['det'] = 24 + 5
+    data[1]['det_id'] = 24 + 5
 
     new_energy = data[0]['energy'] + data[1]['energy']
     output = _create_and_run_merge(data, ('merge', 'block', merge_window))
     assert(output.size == 1), 'Events should have been merged to one'
     assert(output[0]['energy'] == new_energy), \
            'Energy should be the sum of the input'
-    assert(output[0]['det'] == data[1]['det']), \
+    assert(output[0]['det_id'] == data[1]['det_id']), \
            'New detector should be from the largest energy'
 
 def test_merge_array_max():
-    data = np.zeros(2, dtype=gray.no_position_dtype)
+    data = np.zeros(2, dtype=gray.interaction_all_dtype())
     merge_window = 300.0
 
     data[0]['energy'] = 250.0
     data[1]['time'] = merge_window - 1e-6
     data[1]['energy'] = 300.0
-    data[1]['det'] = 24 + 5
+    data[1]['det_id'] = 24 + 5
 
     new_energy = data[0]['energy'] + data[1]['energy']
     output = _create_and_run_merge(data, ('merge', 'block', merge_window,
@@ -587,76 +599,76 @@ def test_merge_array_max():
     assert(output.size == 1), 'Events should have been merged to one'
     assert(output[0]['energy'] == new_energy), \
            'Energy should be the sum of the input'
-    assert(output[0]['det'] == data[1]['det']), \
+    assert(output[0]['det_id'] == data[1]['det_id']), \
            'New detector should the second with the max energy'
 
 def test_merge_array_weighted_mean_same_col():
-    data = np.zeros(2, dtype=gray.no_position_dtype)
+    data = np.zeros(2, dtype=gray.interaction_all_dtype())
     merge_window = 300.0
 
     data[0]['energy'] = 300.0
     data[1]['time'] = merge_window - 1e-6
     data[1]['energy'] = 250.0
-    data[1]['det'] = 7
+    data[1]['det_id'] = 7
 
     new_energy = data[0]['energy'] + data[1]['energy']
     # We've chosen crystals in the same row, so they should be a straight
     # linear combination
-    new_det = int(data[0]['det'] * (data[0]['energy'] / new_energy) +
-                  data[1]['det'] * (data[1]['energy'] / new_energy))
+    new_det = int(data[0]['det_id'] * (data[0]['energy'] / new_energy) +
+                  data[1]['det_id'] * (data[1]['energy'] / new_energy))
 
     output = _create_and_run_merge(data, ('merge', 'block', merge_window,
                                    'anger bx by bz'))
     assert(output.size == 1), 'Events should have been merged to one'
     assert(output[0]['energy'] == new_energy), \
            'Energy should be the sum of the input'
-    assert(output[0]['det'] == new_det), \
+    assert(output[0]['det_id'] == new_det), \
            'New detector should be a weighted linear combination of the two'
 
 def test_merge_array_weighted_mean_same_row():
-    data = np.zeros(2, dtype=gray.no_position_dtype)
+    data = np.zeros(2, dtype=gray.interaction_all_dtype())
     merge_window = 300.0
 
     data[0]['energy'] = 300.0
     data[1]['time'] = merge_window - 1e-6
     data[1]['energy'] = 250.0
-    data[1]['det'] = 24
+    data[1]['det_id'] = 24
 
     new_energy = data[0]['energy'] + data[1]['energy']
     # We've chosen crystals in the same row, so they should be a straight
     # linear combination
-    new_det = 8 * int(data[0]['det'] // 8 * (data[0]['energy'] / new_energy) +
-                      data[1]['det'] // 8 * (data[1]['energy'] / new_energy))
+    new_det = 8 * int(data[0]['det_id'] // 8 * (data[0]['energy'] / new_energy) +
+                      data[1]['det_id'] // 8 * (data[1]['energy'] / new_energy))
 
     output = _create_and_run_merge(data, ('merge', 'block', merge_window,
                                    'anger bx by bz'))
     assert(output.size == 1), 'Events should have been merged to one'
     assert(output[0]['energy'] == new_energy), \
            'Energy should be the sum of the input'
-    assert(output[0]['det'] == new_det), \
+    assert(output[0]['det_id'] == new_det), \
            'New detector should be a weighted linear combination of the two'
 
 def test_merge_array_weighted_mean():
-    data = np.zeros(2, dtype=gray.no_position_dtype)
+    data = np.zeros(2, dtype=gray.interaction_all_dtype())
     merge_window = 300.0
 
     data[0]['energy'] = 300.0
     data[1]['time'] = merge_window - 1e-6
     data[1]['energy'] = 250.0
-    data[1]['det'] = 24 + 5
+    data[1]['det_id'] = 24 + 5
 
     array_size = 64
     column_size = 8
     new_energy = data[0]['energy'] + data[1]['energy']
-    det0_local = data[0]['det'] % array_size
-    det1_local = data[1]['det'] % array_size
+    det0_local = data[0]['det_id'] % array_size
+    det1_local = data[1]['det_id'] % array_size
     # We've chosen crystals in the same row, so they should be a straight
     # linear combination
     new_col = int(det0_local // column_size * (data[0]['energy'] / new_energy) +
                   det1_local // column_size * (data[1]['energy'] / new_energy))
     new_row = int(det0_local % column_size * (data[0]['energy'] / new_energy) +
                   det1_local % column_size * (data[1]['energy'] / new_energy))
-    new_det = ((data['det'][0] // array_size) * array_size +
+    new_det = ((data['det_id'][0] // array_size) * array_size +
                column_size * new_col + new_row)
 
     output = _create_and_run_merge(data, ('merge', 'block', merge_window,
@@ -665,32 +677,32 @@ def test_merge_array_weighted_mean():
     assert(output.size == 1), 'Events should have been merged to one'
     assert(output[0]['energy'] == new_energy), \
            'Energy should be the sum of the input'
-    assert(output[0]['det'] == new_det), \
+    assert(output[0]['det_id'] == new_det), \
            'New detector should be a weighted mean of the two'
 
 
 def test_merge_array_weighted_mean_next_array():
-    data = np.zeros(2, dtype=gray.no_position_dtype)
+    data = np.zeros(2, dtype=gray.interaction_all_dtype())
     merge_window = 300.0
 
     data[0]['energy'] = 300.0
     data[1]['time'] = merge_window - 1e-6
     data[1]['energy'] = 250.0
-    data[1]['det'] = 24 + 5
+    data[1]['det_id'] = 24 + 5
 
     array_size = 64
     column_size = 8
-    data['det'] += array_size
+    data['det_id'] += array_size
     new_energy = data[0]['energy'] + data[1]['energy']
-    det0_local = data[0]['det'] % array_size
-    det1_local = data[1]['det'] % array_size
+    det0_local = data[0]['det_id'] % array_size
+    det1_local = data[1]['det_id'] % array_size
     # We've chosen crystals in the same row, so they should be a straight
     # linear combination
     new_col = int(det0_local // column_size * (data[0]['energy'] / new_energy) +
                   det1_local // column_size * (data[1]['energy'] / new_energy))
     new_row = int(det0_local % column_size * (data[0]['energy'] / new_energy) +
                   det1_local % column_size * (data[1]['energy'] / new_energy))
-    new_det = ((data['det'][0] // array_size) * array_size +
+    new_det = ((data['det_id'][0] // array_size) * array_size +
                column_size * new_col + new_row)
 
     output = _create_and_run_merge(data, ('merge', 'block', merge_window,
@@ -699,29 +711,25 @@ def test_merge_array_weighted_mean_next_array():
     assert(output.size == 1), 'Events should have been merged to one'
     assert(output[0]['energy'] == new_energy), \
            'Energy should be the sum of the input'
-    assert(output[0]['det'] == new_det), \
+    assert(output[0]['det_id'] == new_det), \
            'New detector should be a weighted mean of the two'
 
 
 def test_stats_merge():
-    data = np.zeros(3, dtype=gray.no_position_expanded_dtype)
+    data = np.zeros(3, dtype=gray.interaction_all_dtype())
     merge_window = 100.0
 
     time = np.array((0.0, 50.0, 75.0,), dtype=data.dtype['time'])
-    scatter = np.array((1, 3, 2), dtype=data.dtype['scatter'])
+    scatter = np.array((1, 3, 2), dtype=data.dtype['scatter_compton_detector'])
     color = np.array((0, 1, 0), dtype=data.dtype['color'])
     data['time'] = time
-    data['scatter'] = scatter
+    data['scatter_compton_detector'] = scatter
     data['color'] = color
 
-    data_small = gray.collapse_detector_format(data)
-    assert((data == gray.expand_detector_format(data_small)).all())
-
     expected = data[np.array((0,))]
-    expected[0]['scatter'] = 5
-    output = _create_and_run_merge(data_small, [
+    expected[0]['scatter_compton_detector'] = 5
+    output = _create_and_run_merge(data, [
         ('merge', 'detector', merge_window),])
-    output = gray.expand_detector_format(output)
 
     assert(output.size == expected.size), \
             'Expected number of events not merged stats merge test'

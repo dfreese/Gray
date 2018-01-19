@@ -13,8 +13,7 @@ class GammaStats;
 class Input
 {
 public:
-    Input();
-    ~Input();
+    Input() = default;
     bool set_logfile(const std::string & name);
     void set_format(Output::Format format);
     bool read_interaction(Interaction & interact);
@@ -25,8 +24,6 @@ public:
     Output::WriteFlags get_write_flags() const;
 
 private:
-    static void parse_log_word(int log, Interaction::Type& type, int & color,
-                        int & scatter, int & det_mat, int & src_id);
     static bool read_header_binary(std::istream & input, int & version);
     static bool read_header_ascii(std::istream & input, int & version);
     static bool read_write_flags_binary(Output::WriteFlags & flags,
@@ -41,13 +38,6 @@ private:
                                      size_t no_interactions,
                                      std::istream & input,
                                      const Output::WriteFlags & flags);
-    static bool read_no_pos_binary(std::vector<Interaction> & interactions,
-                                   size_t no_interactions,
-                                   std::istream & input);
-    static bool read_full_binary(std::vector<Interaction> & interactions,
-                                 size_t no_interactions, std::istream & input);
-    static bool read_full_ascii(std::vector<Interaction> & interactions,
-                                size_t no_interactions, std::istream & input);
     std::ifstream log_file;
     Output::Format format;
     Output::WriteFlags var_format_write_flags;

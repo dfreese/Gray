@@ -4,28 +4,8 @@
 
 using namespace std;
 
-Input::Input()
-{
-}
-
-Input::~Input()
-{
-    log_file.close();
-}
-
 void Input::set_format(Output::Format format) {
     this->format = format;
-}
-
-
-void Input::parse_log_word(int log, Interaction::Type& type, int & color,
-                           int & scatter, int & det_mat, int & src_id)
-{
-    type = (Interaction::Type)((log & 0xF0000000) >> 28);
-    color = ((log & 0x0F000000) >> 24);
-    scatter = ((log & 0x00F00000) >> 20);
-    det_mat = ((log & 0x000FF000) >> 12);
-    src_id = ((log & 0x00000FFF) >> 0);
 }
 
 bool Input::read_interaction(Interaction & interact) {
@@ -47,26 +27,12 @@ bool Input::read_interactions(std::vector<Interaction> & interactions,
                               size_t no_interactions)
 {
     switch (format) {
-        case Output::VARIABLE_ASCII:
+        case Output::Format::VariableAscii:
             return(read_variables_ascii(interactions, no_interactions, log_file,
                                         var_format_write_flags));
-            break;
-        case Output::VARIABLE_BINARY:
+        case Output::Format::VariableBinary:
             return(read_variables_binary(interactions, no_interactions,
                                          log_file, var_format_write_flags));
-            break;
-        case Output::FULL_BINARY:
-            return (read_full_binary(interactions, no_interactions, log_file));
-            break;
-        case Output::NO_POS_BINARY:
-            return (read_no_pos_binary(interactions, no_interactions, log_file));
-            break;
-        case Output::FULL_ASCII:
-            return (read_full_ascii(interactions, no_interactions, log_file));
-            break;
-        default:
-            throw std::runtime_error("Unsupported input format type");
-            break;
     }
 }
 
@@ -81,12 +47,15 @@ bool Input::set_logfile(const std::string & name)
     }
 
     bool success = true;
-    if (format == Output::VARIABLE_ASCII) {
-        success &= read_header_ascii(log_file, var_format_version);
-        success &= read_write_flags_ascii(var_format_write_flags, log_file);
-    } else if (format == Output::VARIABLE_BINARY) {
-        success &= read_header_binary(log_file, var_format_version);
-        success &= read_write_flags_binary(var_format_write_flags, log_file);
+    switch (format) {
+        case Output::Format::VariableAscii:
+            success &= read_header_ascii(log_file, var_format_version);
+            success &= read_write_flags_ascii(var_format_write_flags, log_file);
+            break;
+        case Output::Format::VariableBinary:
+            success &= read_header_binary(log_file, var_format_version);
+            success &= read_write_flags_binary(var_format_write_flags, log_file);
+            break;
     }
     return(success);
 }
@@ -374,129 +343,6 @@ bool Input::read_variables_ascii(std::vector<Interaction> & interactions,
     } else {
         return(true);
     }
-}
-
-bool Input::read_no_pos_binary(std::vector<Interaction> & interactions,
-                               size_t no_interactions, std::istream & input)
-{
-    constexpr size_t event_size = sizeof(GrayBinaryNoPosition);
-    vector<GrayBinaryNoPosition> read_buf(no_interactions);
-    input.read(reinterpret_cast<char *>(read_buf.data()), read_buf.size() * event_size);
-    size_t no_events = no_interactions;
-    if (input.fail()) {
-        if (input.bad()) {
-            return(false);
-        }
-        // Handle the case where we didn't read as much as we requested.
-        size_t no_events = input.gcount() / event_size;
-        // Bail if we were somehow at the end of the file
-        if (no_events == 0) {
-            return(false);
-        }
-        // Or if the bytes we read doesn't match with what's required for
-        // an event.
-        if ((input.gcount() % event_size) != 0) {
-            return(false);
-        }
-        read_buf.resize(no_events);
-    }
-    interactions.reserve(interactions.size() + no_events);
-
-
-    for (auto & b: read_buf) {
-        interactions.emplace_back();
-        Interaction & interact = interactions.back();
-        interact.decay_id = b.i;
-        interact.time = b.time;
-        interact.energy = b.energy;
-        interact.det_id = b.det_id;
-        parse_log_word(b.log, interact.type, interact.color,
-                       interact.scatter_compton_phantom, interact.mat_id,
-                       interact.src_id);
-    }
-    return(true);
-}
-
-bool Input::read_full_binary(std::vector<Interaction> & interactions,
-                             size_t no_interactions, std::istream & input)
-{
-    constexpr size_t event_size = sizeof(GrayBinaryStandard);
-    vector<GrayBinaryStandard> read_buf(no_interactions);
-    input.read(reinterpret_cast<char *>(read_buf.data()), read_buf.size() * event_size);
-    size_t no_events = no_interactions;
-    if (input.fail()) {
-        if (input.bad()) {
-            return(false);
-        }
-        // Handle the case where we didn't read as much as we requested.
-        size_t no_events = input.gcount() / event_size;
-        // Bail if we were somehow at the end of the file
-        if (no_events == 0) {
-            return(false);
-        }
-        // Or if the bytes we read doesn't match with what's required for
-        // an event.
-        if ((input.gcount() % event_size) != 0) {
-            return(false);
-        }
-        read_buf.resize(no_events);
-    }
-    interactions.reserve(interactions.size() + no_events);
-
-
-    for (auto & b: read_buf) {
-        interactions.emplace_back();
-        Interaction & interact = interactions.back();
-        interact.decay_id = b.i;
-        interact.time = b.time;
-        interact.energy = b.energy;
-        interact.pos.x = b.x;
-        interact.pos.y = b.y;
-        interact.pos.z = b.z;
-        interact.det_id = b.det_id;
-        parse_log_word(b.log, interact.type, interact.color,
-                       interact.scatter_compton_phantom, interact.mat_id,
-                       interact.src_id);
-    }
-    return(true);
-}
-
-bool Input::read_full_ascii(std::vector<Interaction> & interactions,
-                            size_t no_interactions, std::istream & input)
-{
-    std::vector<Interaction> read_buf(no_interactions);
-    size_t no_events = 0;
-    for (; no_events < no_interactions; ++no_events) {
-        string line;
-        if (!getline(input, line)) {
-            break;
-        }
-        stringstream ss(line);
-        Interaction & interact = read_buf[no_events];
-        int type;
-        ss >> type;
-        interact.type = (Interaction::Type)type;
-        ss >> interact.decay_id;
-        ss >> interact.color;
-        ss >> interact.time;
-        ss >> interact.energy;
-        ss >> interact.pos.x;
-        ss >> interact.pos.y;
-        ss >> interact.pos.z;
-        ss >> interact.src_id;
-        ss >> interact.scatter_compton_phantom;
-        ss >> interact.mat_id;
-        ss >> interact.det_id;
-        if (ss.fail()) {
-            break;
-        }
-    }
-    if (no_events == 0) {
-        return(false);
-    }
-
-    interactions.insert(interactions.end(), read_buf.begin(), read_buf.end());
-    return(true);
 }
 
 void Input::set_variable_mask(const Output::WriteFlags & flags) {

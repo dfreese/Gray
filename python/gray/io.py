@@ -6,7 +6,7 @@ def variable_field_mask(data):
     Goes through every field in interaction_fields, and checks if it exists in
     in the data array that was passed.
     '''
-    return [f in data.dtype.descr for f in interaction_all_dtype.descr]
+    return [f in data.dtype.descr for f in gray.interaction_all_dtype().descr]
 
 def write_variable_binary(filename, data):
     with open(filename, 'wb') as fid:
@@ -16,17 +16,6 @@ def write_variable_binary(filename, data):
                   dtype=np.int32).tofile(fid)
         fields.tofile(fid)
         data.tofile(fid)
-
-def load_detector_output(filename, full=False, expand=False):
-    if full:
-        data = np.fromfile(filename, dtype=gray.standard_dtype)
-    else:
-        data = np.fromfile(filename, dtype=gray.no_position_dtype)
-
-    if expand:
-        return gray.expand_detector_format(data, full)
-    else:
-        return data
 
 def load_variable_binary(filename):
     with open(filename, 'r') as fid:
