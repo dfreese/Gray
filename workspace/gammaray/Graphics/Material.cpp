@@ -18,11 +18,135 @@
  *
  */
 
+#include <Graphics/Light.h>
 #include <Graphics/Material.h>
 
 // This Material works with the Phong illumination model.
 
 const Material Material::Default;
+
+Material::Material(const std::string & name) :
+    name(name)
+{
+}
+
+bool Material::IsReflective() const {
+    return ReflectiveFlag;
+}
+
+bool Material::IsTransmissive() const {
+    return TransmissiveFlag;
+}
+
+bool Material::CalcRefractDir(
+        const VectorR3& normal,
+        const VectorR3& indir,
+        VectorR3& outdir) const
+{
+    return Material::CalcRefractDir(
+            IndexOfRefraction, IndexOfRefractionInv,
+            normal, indir, outdir);
+}
+
+VectorR3 Material::GetReflectionColor(
+        const VisiblePoint& visPoint,
+        const VectorR3& outDir,
+        const VectorR3& fromDir) const
+{
+    return ColorReflective;
+}
+
+VectorR3 Material::GetTransmissionColor(
+        const VisiblePoint& visPoint,
+        const VectorR3& outDir,
+        const VectorR3& fromDir) const
+{
+    return ColorTransmissive;
+}
+
+void Material::SetColorAmbient(const VectorR3& color) {
+    ColorAmbient = color;
+}
+
+void Material::SetColorDiffuse(const VectorR3& color) {
+    ColorDiffuse = color;
+}
+
+void Material::SetColorAmbientDiffuse(const VectorR3& color) {
+    ColorAmbient = color;
+    ColorDiffuse = color;
+}
+
+void Material::SetColorSpecular(const VectorR3& color) {
+    ColorSpecular = color;
+}
+
+void Material::SetColorEmissive(const VectorR3& color) {
+    ColorEmissive = color;
+}
+
+void Material::SetColorTransmissive(const VectorR3& color) {
+    TransmissiveFlag = (color.NormSq() == 0.0);
+    ColorTransmissive = color;
+}
+
+void Material::SetColorReflective(const VectorR3& color) {
+    ReflectiveFlag = (color.NormSq() != 0.0);
+    ColorReflective = color;
+}
+
+
+const VectorR3& Material::GetColorAmbient() const {
+    return ColorAmbient;
+}
+
+const VectorR3& Material::GetColorDiffuse() const {
+    return ColorDiffuse;
+}
+
+const VectorR3& Material::GetColorSpecular() const {
+    return ColorSpecular;
+}
+
+const VectorR3& Material::GetColorEmissive() const {
+    return ColorEmissive;
+}
+
+const VectorR3& Material::GetColorTransmissive() const {
+    return ColorTransmissive;
+}
+
+const VectorR3& Material::GetColorReflective() const {
+    return ColorReflective;
+}
+
+void Material::SetShininess(double exponent) {
+    Shininess = exponent;
+}
+
+double Material::GetPhongShininess() const {
+    return Shininess;
+}
+
+double Material::GetShininess()  const {
+    return Shininess;
+}
+
+std::string Material::GetName() const {
+    return(name);
+}
+void Material::SetName(const std::string & mat_name) {
+name = mat_name;
+}
+
+void Material::SetIndexOfRefraction(double x) {
+    IndexOfRefraction = x;
+    IndexOfRefractionInv = 1.0/x;
+}
+
+double Material::GetIndexOfRefraction() const {
+    return IndexOfRefraction;
+}
 
 // General purpose calculation of refraction direction.
 // Return false if "total internal reflection".
