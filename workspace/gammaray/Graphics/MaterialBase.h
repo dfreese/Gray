@@ -63,38 +63,11 @@ public:
         const VectorR3& L, const VectorR3* H ) const = 0;
 
 
-    void SetColorAmbient( double r, double g, double b);
-    void SetColorDiffuse( double r, double g, double b);
-    void SetColorAmbientDiffuse( double r, double g, double b);
-    void SetColorSpecular( double r, double g, double b);
-    void SetColorEmissive( double r, double g, double b);
-
-    void SetColorAmbient( double* color );
-    void SetColorDiffuse( double* color );
-    void SetColorAmbientDiffuse( double* color );
-    void SetColorSpecular( double* color );
-    void SetColorEmissive( double* color );
-
-    void SetColorAmbient( float* color );
-    void SetColorDiffuse( float* color );
-    void SetColorAmbientDiffuse( float* color );
-    void SetColorSpecular( float* color );
-    void SetColorEmissive( float* color );
-
     void SetColorAmbient( const VectorR3& color );
     void SetColorDiffuse( const VectorR3& color );
     void SetColorAmbientDiffuse( const VectorR3& color );
     void SetColorSpecular( const VectorR3& color );
     void SetColorEmissive( const VectorR3& color );
-
-    void GetColorAmbient( double* ) const;
-    void GetColorDiffuse( double* ) const;
-    void GetColorSpecular( double* ) const;
-    void GetColorEmissive( double* ) const;
-    void GetColorAmbient( float* ) const;
-    void GetColorDiffuse( float* ) const;
-    void GetColorSpecular( float* ) const;
-    void GetColorEmissive( float* ) const;
 
     const VectorR3& GetColorAmbient() const;
     const VectorR3& GetColorDiffuse() const;
@@ -133,32 +106,6 @@ inline void MaterialBase::SetName(const std::string & mat_name)
     name = mat_name;
 }
 
-inline void MaterialBase::SetColorAmbient(double r, double g, double b )
-{
-    ColorAmbient.Set( r, g, b );
-}
-
-inline void MaterialBase::SetColorDiffuse(double r, double g, double b )
-{
-    ColorDiffuse.Set( r, g, b );
-}
-
-inline void MaterialBase::SetColorSpecular(double r, double g, double b )
-{
-    ColorSpecular.Set( r, g, b );
-}
-
-inline void MaterialBase::SetColorEmissive(double r, double g, double b )
-{
-    ColorEmissive.Set( r, g, b );
-}
-
-inline void MaterialBase::SetColorAmbientDiffuse(double r, double g, double b )
-{
-    SetColorAmbient(r,g,b);
-    SetColorDiffuse(r,g,b);
-}
-
 inline void MaterialBase::SetColorAmbient( const VectorR3& color )
 {
     ColorAmbient = color;
@@ -183,98 +130,6 @@ inline void MaterialBase::SetColorSpecular( const VectorR3& color )
 inline void MaterialBase::SetColorEmissive( const VectorR3& color )
 {
     ColorEmissive = color;
-}
-
-inline void MaterialBase::SetColorAmbient( double* color )
-{
-    SetColorAmbient( *color, *(color+1), *(color+2) );
-}
-
-inline void MaterialBase::SetColorDiffuse( double* color )
-{
-    SetColorDiffuse( *color, *(color+1), *(color+2) );
-}
-
-inline void MaterialBase::SetColorAmbientDiffuse( double* color )
-{
-    SetColorAmbient( color );
-    SetColorDiffuse( color );
-}
-
-inline void MaterialBase::SetColorSpecular( double* color )
-{
-    SetColorSpecular( *color, *(color+1), *(color+2) );
-}
-
-inline void MaterialBase::SetColorEmissive( double* color )
-{
-    SetColorEmissive( *color, *(color+1), *(color+2) );
-}
-
-inline void MaterialBase::SetColorAmbient( float* color )
-{
-    SetColorAmbient( *color, *(color+1), *(color+2) );
-}
-
-inline void MaterialBase::SetColorDiffuse( float* color )
-{
-    SetColorDiffuse( *color, *(color+1), *(color+2) );
-}
-
-inline void MaterialBase::SetColorAmbientDiffuse( float* color )
-{
-    SetColorAmbient( color );
-    SetColorDiffuse( color );
-}
-
-inline void MaterialBase::SetColorSpecular( float* color )
-{
-    SetColorSpecular( *color, *(color+1), *(color+2) );
-}
-
-inline void MaterialBase::SetColorEmissive( float* color )
-{
-    SetColorEmissive( *color, *(color+1), *(color+2) );
-}
-
-inline void MaterialBase::GetColorAmbient( double* c) const
-{
-    ColorAmbient.Dump(c);
-}
-
-inline void MaterialBase::GetColorDiffuse( double* c) const
-{
-    ColorDiffuse.Dump(c);
-}
-
-inline void MaterialBase::GetColorSpecular( double* c) const
-{
-    ColorSpecular.Dump(c);
-}
-
-inline void MaterialBase::GetColorEmissive( double* c) const
-{
-    ColorEmissive.Dump(c);
-}
-
-inline void MaterialBase::GetColorAmbient( float* c) const
-{
-    ColorAmbient.Dump(c);
-}
-
-inline void MaterialBase::GetColorDiffuse( float* c) const
-{
-    ColorDiffuse.Dump(c);
-}
-
-inline void MaterialBase::GetColorSpecular( float* c) const
-{
-    ColorSpecular.Dump(c);
-}
-
-inline void MaterialBase::GetColorEmissive( float* c) const
-{
-    ColorEmissive.Dump(c);
 }
 
 inline const VectorR3& MaterialBase::GetColorAmbient() const
@@ -329,10 +184,6 @@ inline bool MaterialBase::CalcRefractDir( double indexOfRefraction, double index
     outdir += Tlat;
     outdir.ReNormalize();
     assert ( fabs(outdir.NormSq()-1.0)<0.000001 );
-    /*if (!fabs(outdir.NormSq()-1.0)<0.000001) {
-    	outdir.Set(rand()/(double)RAND_MAX, rand()/(double)RAND_MAX, rand()/(double)RAND_MAX);
-    	outdir.ReNormalize();
-    }*/
     return true;
 }
 
