@@ -82,7 +82,6 @@ add_library(gammaray
     KdTree/KdTree.cpp
     Math/Math.h
     Math/Math.cpp
-    Output/BinaryFormat.h
     Output/Detector.cpp
     Output/Detector.h
     Output/DetectorArray.cpp

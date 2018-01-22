@@ -14,7 +14,6 @@
 #include <Daq/DaqModel.h>
 #include <Gray/Config.h>
 #include <Gray/LoadDetector.h>
-#include <Output/BinaryFormat.h>
 #include <Output/Input.h>
 #include <Output/Output.h>
 #include <Physics/Interaction.h>

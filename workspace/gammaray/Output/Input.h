@@ -11,14 +11,11 @@
 #ifndef INPUT_H
 #define INPUT_H
 #include <Physics/Interaction.h>
-#include <Output/BinaryFormat.h>
 #include <Output/Output.h>
 #include <stdlib.h>
 #include <fstream>
 #include <string>
 #include <vector>
-
-class GammaStats;
 
 class Input
 {

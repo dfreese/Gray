@@ -11,7 +11,6 @@
 #ifndef OUTPUT_H_
 #define OUTPUT_H_
 #include <Physics/Interaction.h>
-#include <Output/BinaryFormat.h>
 #include <stdlib.h>
 #include <fstream>
 #include <memory>
@@ -19,7 +18,6 @@
 #include <string>
 #include <vector>
 
-class GammaStats;
 class Interaction;
 
 class Output
