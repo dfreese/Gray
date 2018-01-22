@@ -858,7 +858,7 @@ bool LoadDetector::Load(const std::string & filename,
                         CurrentPos.x += (double)i * UnitStep.x;
                         CurrentPos.y += (double)j * UnitStep.y;
                         CurrentPos.z += (double)k * UnitStep.z;
-                        if (curMaterial->LogMaterial()) {
+                        if (curMaterial->IsSensitive()) {
                             int det_id = detector_array.AddDetector(
                                     CurrentPos, UnitSize, MatrixStack.top(),
                                     i, j, k, block_id);
@@ -874,7 +874,7 @@ bool LoadDetector::Load(const std::string & filename,
                 }
             }
             // Increment block detector id after a repeat statement
-            if (curMaterial->LogMaterial()) {
+            if (curMaterial->IsSensitive()) {
                 block_id++;
             }
         } else if (command == "cyl") {
@@ -937,7 +937,7 @@ bool LoadDetector::Load(const std::string & filename,
                 return(false);
             }
             int det_id = -1;
-            if (curMaterial->LogMaterial()) {
+            if (curMaterial->IsSensitive()) {
                 det_id = IncrementDetector(MatrixStack.top(), detector_array);
             }
             auto pieces = MakeAnnulusCylinder(center, axis, inner_radius,
@@ -1124,7 +1124,7 @@ bool LoadDetector::Load(const std::string & filename,
             baseCenter *= polygonScale;
             baseSize *= polygonScale;
             // FIXED: detector only is used when material is sensitive
-            if (curMaterial->LogMaterial()) {
+            if (curMaterial->IsSensitive()) {
                 int det_id = detector_array.AddDetector(baseCenter,
                                                        baseSize,
                                                        MatrixStack.top(),
@@ -1158,7 +1158,7 @@ bool LoadDetector::Load(const std::string & filename,
                 // arbitrary triangles must use increment to advance detector ids
                 // detector only is used when material is sensitive
                 int polygon_det_id_if_sensitive = -1;
-                if (curMaterial->LogMaterial()) {
+                if (curMaterial->IsSensitive()) {
                     polygon_det_id_if_sensitive = polygon_det_id;
                 }
                 // Choose if we're adding this to the vector source's scene or

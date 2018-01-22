@@ -31,13 +31,9 @@ public:
                std::vector<double> matten_rayl, std::vector<double> x,
                std::vector<double> form_factor,
                std::vector<double> scattering_func);
-    void SetName(const std::string & n);
-    void SetFileName(const std::string & n);
-    void SetMaterialType(int s);
     bool Load();
-    int GetMaterial() const;
-    bool LogMaterial() const;
-    void SetLogMaterial(bool val);
+    int GetId() const;
+    bool IsSensitive() const;
     bool InteractionsEnabled() const;
     void DisableInteractions();
     void DisableRayleigh();
@@ -74,7 +70,7 @@ private:
     const std::vector<double> scattering_func;
 
     bool enable_interactions;
-    bool log_material;
+    bool sensitive;
 
     Compton compton_scatter;
     Rayleigh rayleigh_scatter;

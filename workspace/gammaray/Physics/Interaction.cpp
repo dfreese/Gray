@@ -50,7 +50,7 @@ Interaction::Interaction(
     energy(deposit),
     color(p.GetColor()),
     src_id(p.GetSrc()),
-    mat_id(mat.GetMaterial()),
+    mat_id(mat.GetId()),
     det_id(p.GetDetId()),
     scatter_compton_phantom(p.GetScatterComptonPhantom()),
     scatter_compton_detector(p.GetScatterComptonDetector()),
@@ -71,7 +71,7 @@ Interaction::Interaction(
     energy(p.GetEnergy()),
     color(Photon::Color::P_YELLOW),
     src_id(p.GetSourceId()),
-    mat_id(mat.GetMaterial()),
+    mat_id(mat.GetId()),
     det_id(-1),
     scatter_compton_phantom(0),
     scatter_compton_detector(0),
@@ -160,9 +160,9 @@ void Interaction::MergeStats(Interaction & i0, const Interaction & i1) {
 bool Interaction::Dropped(Type type, const GammaStats& mat) {
     switch (type) {
         case Type::COMPTON:
-            return (!mat.LogMaterial());
+            return (!mat.IsSensitive());
         case Type::PHOTOELECTRIC:
-            return (!mat.LogMaterial());
+            return (!mat.IsSensitive());
         case Type::RAYLEIGH:
             return (true);
         case Type::NUCLEAR_DECAY:
