@@ -35,9 +35,8 @@ add_library(gammaray
     Graphics/CameraView.cpp
     Graphics/CameraView.h
     Graphics/Light.h
-    Graphics/Material.cpp
     Graphics/Material.h
-    Graphics/MaterialBase.h
+    Graphics/Material.cpp
     Graphics/SceneDescription.cpp
     Graphics/SceneDescription.h
     Graphics/TransformViewable.cpp

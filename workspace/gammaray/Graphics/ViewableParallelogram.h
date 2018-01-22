@@ -21,8 +21,8 @@
 #ifndef VIEWABLEPARALLELOGRAM_H
 #define VIEWABLEPARALLELOGRAM_H
 
-#include <Graphics/ViewableBase.h>
 #include <Graphics/Material.h>
+#include <Graphics/ViewableBase.h>
 #include <assert.h>
 
 // This class subsumes reactangles and squares
@@ -90,8 +90,8 @@ protected:
     VectorR3 VertexC;
     VectorR3 VertexD;
 
-    const MaterialBase* FrontMat;
-    const MaterialBase* BackMat;	// Null point if not visible from back
+    const Material* FrontMat;
+    const Material* BackMat;	// Null point if not visible from back
 
     VectorR3 Normal;			// Unit normal to the plane of Parallelogram
     double PlaneCoef;			// Constant coef in def'n of the plane

@@ -27,7 +27,6 @@
 
 #include <VrMath/LinearR3.h>
 #include <VrMath/Aabb.h>
-#include <Graphics/MaterialBase.h>
 #include <Graphics/Material.h>
 #include <Graphics/VisiblePoint.h>
 
@@ -99,14 +98,14 @@ public:
         return src_id;
     }
 
-    void SetMaterial( const MaterialBase* material );
-    void SetMaterialFront( const MaterialBase* frontmaterial );
-    void SetMaterialBack( const MaterialBase* backmaterial );
-    const MaterialBase* GetMaterialFront() const
+    void SetMaterial( const Material* material );
+    void SetMaterialFront( const Material* frontmaterial );
+    void SetMaterialBack( const Material* backmaterial );
+    const Material* GetMaterialFront() const
     {
         return FrontMat;
     }
-    const MaterialBase* GetMaterialBack() const
+    const Material* GetMaterialBack() const
     {
         return BackMat;
     }
@@ -124,8 +123,8 @@ private:
     int detector_id;
     int src_id;
 
-    const MaterialBase* FrontMat;
-    const MaterialBase* BackMat;	// Null point if not visible from back
+    const Material* FrontMat;
+    const Material* BackMat;	// Null point if not visible from back
 };
 
 inline ViewableBase::ViewableBase() :
@@ -136,18 +135,18 @@ inline ViewableBase::ViewableBase() :
 {
 }
 
-inline void ViewableBase::SetMaterial(const MaterialBase* material )
+inline void ViewableBase::SetMaterial(const Material* material )
 {
     SetMaterialFront(material);
     SetMaterialBack(material);
 }
 
-inline void ViewableBase::SetMaterialFront(const MaterialBase* frontmaterial )
+inline void ViewableBase::SetMaterialFront(const Material* frontmaterial )
 {
     FrontMat = frontmaterial;
 }
 
-inline void ViewableBase::SetMaterialBack( const MaterialBase* backmaterial )
+inline void ViewableBase::SetMaterialBack( const Material* backmaterial )
 {
     BackMat = backmaterial;
 }

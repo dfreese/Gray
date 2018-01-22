@@ -234,7 +234,7 @@ bool LoadDetector::Load(const std::string & filename,
     bool parse_VectorSource = false;
     double vector_source_activity = -1;
     unique_ptr<SceneDescription> vector_source_scene;
-    
+
     GammaMaterial * curMaterial = static_cast<GammaMaterial *>(
             &theScene.GetDefaultMaterial());
 
@@ -1212,7 +1212,7 @@ bool LoadDetector::Load(const std::string & filename,
 
 void LoadDetector::ProcessDetector(const VectorR3 & detCenter,
                                    const VectorR3 & detSize,
-                                   const Material * curMaterial,
+                                   const Material* curMaterial,
                                    int id,
                                    SceneDescription & scene,
                                    const RigidMapR3 & current_matrix)
@@ -1350,7 +1350,7 @@ std::string LoadDetector::ScanForSecondField(const std::string & inbuf)
 std::vector<ViewableTriangle> LoadDetector::MakeAnnulusCylinder(
         const VectorR3 & center, const VectorR3 & axis,
         double radius_inner, double radius_outer, double width,
-        int det_id, MaterialBase * material)
+        int det_id, Material * material)
 {
     RigidMapR3 transform = RefAxisPlusTransToMap(axis, center);
     auto pieces = MakeAnnulusCylinder(radius_inner, radius_outer, width);

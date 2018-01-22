@@ -21,8 +21,8 @@
 #ifndef VIEWABLETORUS_H
 #define VIEWABLETORUS_H
 
-#include <Graphics/ViewableBase.h>
 #include <Graphics/Material.h>
+#include <Graphics/ViewableBase.h>
 #include <VrMath/LinearR4.h>
 
 class ViewableTorus : public ViewableBase
@@ -61,11 +61,11 @@ public:
     //    the texture coordinate u=0.5 line is in the direction of the axisA.
     void SetRadialAxis( const VectorR3& axisA );
 
-    void SetMaterialOuter( const MaterialBase *material )
+    void SetMaterialOuter( const Material *material )
     {
         ViewableBase::SetMaterialFront(material);
     };
-    void SetMaterialInner( const MaterialBase *material )
+    void SetMaterialInner( const Material *material )
     {
         ViewableBase::SetMaterialBack(material);
     };
@@ -96,11 +96,11 @@ public:
     {
         return AxisB;    // Axis B
     }
-    const MaterialBase* GetMaterialOuter () const
+    const Material* GetMaterialOuter () const
     {
         return(ViewableBase::GetMaterialFront());
     }
-    const MaterialBase* GetMaterialInner () const
+    const Material* GetMaterialInner () const
     {
         return(ViewableBase::GetMaterialBack());
     }

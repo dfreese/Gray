@@ -21,8 +21,8 @@
 #ifndef VIEWABLEPARALLELEPIPED_H
 #define VIEWABLEPARALLELEPIPED_H
 
-#include <Graphics/ViewableBase.h>
 #include <Graphics/Material.h>
+#include <Graphics/ViewableBase.h>
 #include <VrMath/LinearR3.h>
 #include <assert.h>
 

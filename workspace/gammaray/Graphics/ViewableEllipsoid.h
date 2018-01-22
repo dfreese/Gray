@@ -21,8 +21,8 @@
 #ifndef VIEWABLEELLIPSOID_H
 #define VIEWABLEELLIPSOID_H
 
-#include "ViewableBase.h"
-#include "Material.h"
+#include <Graphics/ViewableBase.h>
+#include <Graphics/Material.h>
 #include <VrMath/LinearR3.h>
 
 class ViewableEllipsoid : public ViewableBase
@@ -67,11 +67,11 @@ public:
     void SetuvCylindrical();	// Sets u,v coords to be cylidrical projection
     void ResetUV();
 
-    void SetMaterialOuter( const MaterialBase *material )
+    void SetMaterialOuter( const Material *material )
     {
         SetMaterialFront(material);
     };
-    void SetMaterialInner( const MaterialBase *material )
+    void SetMaterialInner( const Material *material )
     {
         SetMaterialBack(material);
     };
@@ -140,11 +140,11 @@ public:
         *radiusB = RadiusB;
         *radiusC = RadiusC;
     }
-    const MaterialBase* GetMaterialOuter()  const
+    const Material* GetMaterialOuter()  const
     {
         return GetMaterialFront();
     };
-    const MaterialBase* GetMaterialInner()  const
+    const Material* GetMaterialInner()  const
     {
         return GetMaterialBack();
     };

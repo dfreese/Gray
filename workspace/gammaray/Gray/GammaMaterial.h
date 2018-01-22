@@ -6,7 +6,7 @@
 
 class GammaMaterial : public Material, public GammaStats {
 public:
-    GammaMaterial() : Material(), GammaStats() {}
+    GammaMaterial() : Material(), GammaStats() {};
     GammaMaterial(
         const std::string & name, int index,
         double density, bool sensitive, std::vector<double> energy,

@@ -21,8 +21,8 @@
 #ifndef VIEWABLECONE_H
 #define VIEWABLECONE_H
 
-#include <Graphics/ViewableBase.h>
 #include <Graphics/Material.h>
+#include <Graphics/ViewableBase.h>
 #include <VrMath/LinearR3.h>
 
 class ViewableCone : public ViewableBase
@@ -94,10 +94,10 @@ public:
         return IsRightConeFlag;
     }
 
-    void SetMaterialInner(const MaterialBase *material) {
+    void SetMaterialInner(const Material *material) {
         ViewableBase::SetMaterialBack(material);
     }
-    void SetMaterialOuter(const MaterialBase *material) {
+    void SetMaterialOuter(const Material *material) {
         ViewableBase::SetMaterialFront(material);
     }
 
@@ -179,19 +179,19 @@ public:
         *planenormal = BaseNormal;
         *planeCoef = BasePlaneCoef;
     }
-    const MaterialBase* GetMaterialSideOuter() const
+    const Material* GetMaterialSideOuter() const
     {
         return(ViewableBase::GetMaterialFront());
     }
-    const MaterialBase* GetMaterialSideInner() const
+    const Material* GetMaterialSideInner() const
     {
         return(ViewableBase::GetMaterialBack());
     }
-    const MaterialBase* GetMaterialBaseOuter() const
+    const Material* GetMaterialOuter() const
     {
         return(ViewableBase::GetMaterialFront());
     }
-    const MaterialBase* GetMaterialBaseInner() const
+    const Material* GetMaterialInner() const
     {
         return(ViewableBase::GetMaterialBack());
     }

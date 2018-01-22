@@ -35,7 +35,7 @@ class ViewableParallelogram;
 class ViewableSphere;
 class ViewableTorus;
 class ViewableTriangle;
-class MaterialBase;
+class Material;
 
 // The GlutRenderer class controls rendering Graphics items from the RayTrace
 //	software package using GLUT.   This allows real time modification
@@ -118,8 +118,8 @@ private:
     void ApplyGlobalAmbientLight();
     void ApplyBackgroundColor();
 
-    void SetFrontMaterial( const MaterialBase* mat );
-    void SetBackMaterial( const MaterialBase* mat );
+    void SetFrontMaterial( const Material* mat );
+    void SetBackMaterial( const Material* mat );
     void SetNormal( const VectorR3& normal );
     void PutVertex( const VectorR3& vertPos );
 

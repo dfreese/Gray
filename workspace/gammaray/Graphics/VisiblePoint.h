@@ -27,7 +27,7 @@
 
 #include <VrMath/LinearR2.h>
 #include <VrMath/LinearR3.h>
-#include <Graphics/MaterialBase.h>
+#include <Graphics/Material.h>
 class ViewableBase;
 
 //  VisiblePoint is a class storing information about a visible point.
@@ -52,7 +52,7 @@ public:
     {
         Normal = normal;
     }
-    void SetMaterial( const MaterialBase& material );
+    void SetMaterial( const Material& material );
     void SetFrontFace ( bool frontface=true )
     {
         FrontFace = frontface;
@@ -79,11 +79,11 @@ public:
     {
         return Normal;
     }
-    const MaterialBase& GetMaterial() const
+    const Material& GetMaterial() const
     {
         return *Mat;
     }
-    MaterialBase& GetMaterialMutable()   //assert(MatNeedsFreeing);
+    Material& GetMaterialMutable()   //assert(MatNeedsFreeing);
     {
         return *Mat;
     }
@@ -136,12 +136,10 @@ public:
         return *TheObject;
     }
 
-    void MakeMaterialMutable();
-
 private:
     VectorR3 Position;
     VectorR3 Normal;		// Outward Normal
-    MaterialBase* Mat;
+    Material* Mat;
     VectorR2 uvCoords;		// (u,v) coordinates for texture mapping & etc.
     int FaceNumber;			// Index of face number (non-negative).
     const ViewableBase* TheObject;		// The object from which the visible point came.
@@ -159,25 +157,13 @@ inline VisiblePoint::~VisiblePoint()
     }
 }
 
-inline void VisiblePoint::SetMaterial( const MaterialBase& material )
+inline void VisiblePoint::SetMaterial( const Material& material )
 {
     if ( MatNeedsFreeing ) {
         delete Mat;
     }
-    Mat = const_cast<MaterialBase*>(&material);
+    Mat = const_cast<Material*>(&material);
     MatNeedsFreeing = false;
-}
-
-// Mutable and deletable materials are the same thing (properties not separable)
-
-inline void VisiblePoint::MakeMaterialMutable( )
-{
-    if ( MatNeedsFreeing ) {
-        return;						// Material already mutable.
-    } else {
-        Mat = Mat->Clone();
-        MatNeedsFreeing = true;
-    }
 }
 
 

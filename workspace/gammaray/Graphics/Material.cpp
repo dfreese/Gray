@@ -19,17 +19,45 @@
  */
 
 #include <Graphics/Material.h>
-#include <Graphics/Light.h>
 
 // This Material works with the Phong illumination model.
 
 const Material Material::Default;
 
-MaterialBase* Material::Clone() const
+// General purpose calculation of refraction direction.
+// Return false if "total internal reflection".
+bool Material::CalcRefractDir(
+        double indexOfRefraction, double indexOfRefractionInv,
+        const VectorR3& normal, const VectorR3& indir, VectorR3& outdir)
 {
-    Material* ret = new Material();
-    *ret = *this;
-    return (MaterialBase*)ret;
+    if ( indexOfRefraction==1.0 ) {
+        outdir = indir;
+        return true;
+    }
+    double ip = normal^indir;	// cosine of incident angle
+    bool fromoutside = ( ip<0.0 );
+    double etaInv;		// index of refraction from indir to outdir
+    etaInv = fromoutside ? indexOfRefractionInv : indexOfRefraction;
+    VectorR3 Tlat = normal;
+    Tlat *= -ip;
+    Tlat += indir;				// Lateral part of indir (parallel to surface)
+
+    Tlat *= etaInv;				// Now lateral part of outdir
+
+    // TsinSq = sine(transmission angle) squared
+    double TsinSq = Tlat.NormSq();
+    if (TsinSq >= 1.0 ) {
+        return false;		// No transmission
+    }
+    outdir = normal;
+    if ( fromoutside ) {
+        outdir.Negate();
+    }
+    outdir *= sqrt(1.0-TsinSq);	// mult by Cosine(transmission angle)
+    outdir += Tlat;
+    outdir.ReNormalize();
+    assert(std::abs(outdir.NormSq()-1.0) < 0.000001);
+    return true;
 }
 
 void Material::CalcLocalLighting(
@@ -103,5 +131,4 @@ void Material::CalcLocalLighting(
 
     // Scale by attenuation (the ambient part too)
     colorReturned *= lightAttenuation;
-
 }

@@ -100,24 +100,24 @@ public:
     {
         return MaterialArray.size();
     }
-    void AddMaterial(std::unique_ptr<MaterialBase> newMaterial);
-    MaterialBase& GetMaterial( int i )
+    void AddMaterial(std::unique_ptr<Material> newMaterial);
+    Material& GetMaterial( int i )
     {
         return *MaterialArray[i];
     }
-    const MaterialBase& GetMaterial( int i ) const
+    const Material& GetMaterial( int i ) const
     {
         return *MaterialArray[i];
     }
     bool HasMaterial(const std::string & name) {
         return (material_names_map.count(name));
     }
-    MaterialBase& GetMaterial(const std::string & name)
+    Material& GetMaterial(const std::string & name)
     {
         int idx = GetMaterialIndex(name);
         return *MaterialArray.at(idx);
     }
-    const MaterialBase& GetMaterial(const std::string & name) const
+    const Material& GetMaterial(const std::string & name) const
     {
         int idx = GetMaterialIndex(name);
         return *MaterialArray.at(idx);
@@ -125,10 +125,10 @@ public:
     void SetDefaultMaterial(const std::string & name) {
         default_material = name;
     }
-    MaterialBase& GetDefaultMaterial() {
+    Material& GetDefaultMaterial() {
         return (GetMaterial(default_material));
     }
-    const MaterialBase& GetDefaultMaterial() const {
+    const Material& GetDefaultMaterial() const {
         return (GetMaterial(default_material));
     }
     size_t NumViewables() const
@@ -179,7 +179,7 @@ private:
     bool ScreenRegistered = false;
 
     std::vector<std::unique_ptr<Light>> LightArray;
-    std::vector<std::unique_ptr<MaterialBase>> MaterialArray;
+    std::vector<std::unique_ptr<Material>> MaterialArray;
     std::vector<std::unique_ptr<ViewableBase>> ViewableArray;
     std::map<std::string, int> material_names_map;
     KdTree kd_tree;

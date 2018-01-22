@@ -21,8 +21,8 @@
 #ifndef VIEWABLECYLINDER_H
 #define VIEWABLECYLINDER_H
 
-#include <Graphics/ViewableBase.h>
 #include <Graphics/Material.h>
+#include <Graphics/ViewableBase.h>
 #include <VrMath/LinearR3.h>
 
 class ViewableCylinder : public ViewableBase
@@ -97,16 +97,16 @@ public:
         return IsRightCylinderFlag;
     }
 
-    void SetMaterialInner(const MaterialBase *material) {
+    void SetMaterialInner(const Material *material) {
         ViewableBase::SetMaterialBack(material);
     }
-    void SetMaterialOuter(const MaterialBase *material) {
+    void SetMaterialOuter(const Material *material) {
         ViewableBase::SetMaterialFront(material);
     }
-    const MaterialBase* GetMaterialInner() const {
+    const Material* GetMaterialInner() const {
         return(ViewableBase::GetMaterialBack());
     }
-    const MaterialBase* GetMaterialOuter() const {
+    const Material* GetMaterialOuter() const {
         return(ViewableBase::GetMaterialFront());
     }
     // U-V coordinates are returned with the sides in [0,1]x[0,1], the bottom

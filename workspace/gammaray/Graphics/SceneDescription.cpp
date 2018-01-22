@@ -28,7 +28,7 @@ void SceneDescription::AddLight(std::unique_ptr<Light> newLight)
     LightArray.push_back(std::move(newLight));
 }
 
-void SceneDescription::AddMaterial(std::unique_ptr<MaterialBase> newMaterial) {
+void SceneDescription::AddMaterial(std::unique_ptr<Material> newMaterial) {
     int index = (int)MaterialArray.size();
     material_names_map[newMaterial->GetName()] = index;
     MaterialArray.push_back(std::move(newMaterial));
@@ -128,7 +128,7 @@ long SceneDescription::SeekIntersection(const VectorR3& pos,
 }
 
 bool SceneDescription::TestOverlapSingle(VectorR3 & start, const VectorR3 & dir) const {
-    std::stack<MaterialBase const *> mat_stack;
+    std::stack<Material const *> mat_stack;
     // Start by looking as far as possible in SeekIntersection
     double hit_dist = DBL_MAX;
     VisiblePoint point;

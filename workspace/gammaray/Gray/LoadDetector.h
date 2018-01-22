@@ -27,7 +27,7 @@ public:
     static std::vector<ViewableTriangle> MakeAnnulusCylinder(
             const VectorR3 & center, const VectorR3 & axis,
             double radius_inner, double radius_outer, double width,
-            int det_id, MaterialBase * material);
+            int det_id, Material * material);
     static std::vector<ViewableTriangle> MakeAnnulusCylinder(
             double radius_inner, double radius_outer, double width);
 private:

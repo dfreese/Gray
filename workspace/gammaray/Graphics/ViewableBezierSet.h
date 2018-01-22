@@ -22,8 +22,8 @@
 #define VIEWABLEBEZIERSET_H
 
 #include <vector>
-#include <Graphics/ViewableBase.h>
 #include <Graphics/Material.h>
+#include <Graphics/ViewableBase.h>
 #include <VrMath/LinearR2.h>
 #include <VrMath/LinearR3.h>
 #include <VrMath/LinearR4.h>
@@ -176,8 +176,8 @@ protected:
     VectorR4 CntlPts[4][4];		// 4x4 array of control for order 4x4 patch
     VectorR2 UvMin, UvMax;		// U and V min and max coordinates (texture coordinates)
 
-    const MaterialBase* BackMaterial;
-    const MaterialBase* FrontMaterial;
+    const Material* BackMaterial;
+    const Material* FrontMaterial;
 
     int FaceNum;			// The number of the original patch this belongs to
 

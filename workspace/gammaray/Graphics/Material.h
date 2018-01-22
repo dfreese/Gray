@@ -18,50 +18,131 @@
  *
  */
 
-#ifndef MATERIAL_H
-#define MATERIAL_H
+// New for Version 3.0 and later.
+//  All "Color3" and "Color4" functions are just named "Color".
+//  Colors are always VectorR3's.
 
+#ifndef MATERIAL_BASE_H
+#define MATERIAL_BASE_H
+
+#include <cassert>
+#include <cmath>
+#include <string>
+#include <Graphics/Light.h>
 #include <VrMath/LinearR3.h>
-#include <Graphics/MaterialBase.h>
 
-// the Material class inplements Phong lighting.  The base class MaterialBase
-//		has the basic date elements that are common to Phong lighting and
-//		Cook-Torrance lighting
+class VisiblePoint;
+class Light;
 
-class Material : public MaterialBase
+// This is a purely abstract class intended as the base class for different
+//	kinds of materials.  The materials to be supported are
+//
+//	  Material   (Phong lighting model).  This is the most commonly used one.
+//
+//	  MaterialCT (Variation of Blinn and Cook-Torrance lighting model)
+
+class Material
 {
 
 public:
-
     static const Material Default;
 
-    Material()
+    Material() = default;
+    Material(const std::string & name) : name(name) {}
+    virtual ~Material() {};
+    bool IsReflective() const {
+        return ReflectiveFlag;
+    }
+    bool IsTransmissive() const {
+        return TransmissiveFlag;
+    }
+    bool CalcRefractDir(
+            const VectorR3& normal,
+            const VectorR3& indir,
+            VectorR3& outdir) const
     {
-        Reset();
+        return Material::CalcRefractDir(
+                IndexOfRefraction, IndexOfRefractionInv,
+                normal, indir, outdir);
+    }
+    VectorR3 GetReflectionColor(
+            const VisiblePoint& visPoint,
+            const VectorR3& outDir,
+            const VectorR3& fromDir) const
+    {
+        return ColorReflective;
+    }
+    VectorR3 GetTransmissionColor(
+            const VisiblePoint& visPoint,
+            const VectorR3& outDir,
+            const VectorR3& fromDir) const
+    {
+        return ColorTransmissive;
+    }
+    void CalcLocalLighting(
+            VectorR3& colorReturned, const Light& light,
+            const VectorR3& percentLit, double lightAttenuation,
+            const VectorR3& N, const VectorR3& V,
+            const VectorR3& L, const VectorR3* H ) const;
+
+
+    void SetColorAmbient(const VectorR3& color) {
+        ColorAmbient = color;
+    }
+    void SetColorDiffuse(const VectorR3& color) {
+        ColorDiffuse = color;
+    }
+    void SetColorAmbientDiffuse(const VectorR3& color) {
+        ColorAmbient = color;
+        ColorDiffuse = color;
+    }
+    void SetColorSpecular(const VectorR3& color) {
+        ColorSpecular = color;
+    }
+    void SetColorEmissive(const VectorR3& color) {
+        ColorEmissive = color;
+    }
+    void SetColorTransmissive(const VectorR3& color) {
+        TransmissiveFlag = (color.NormSq() == 0.0);
+        ColorTransmissive = color;
+    }
+    void SetColorReflective(const VectorR3& color) {
+        ReflectiveFlag = (color.NormSq() != 0.0);
+        ColorReflective = color;
     }
 
-    Material(const std::string & name) : MaterialBase(name) {
-        Reset();
-    }
 
-    void Reset() {
-        Shininess = 0.0f;
-        SetColorAmbient({0.2, 0.2, 0.2});
-        SetColorDiffuse({0.5, 0.5, 0.5});
-        SetColorSpecular({0.2, 0.2, 0.2});
-        SetColorEmissive({0.0, 0.0, 0.2});
-        SetColorTransmissive({0.0, 0.0, 0.0});
-        SetColorReflective({0.1, 0.1, 0.1});
-        SetIndexOfRefraction( 1.0 );
-        isError = false;
+    const VectorR3& GetColorAmbient() const {
+        return ColorAmbient;
+    }
+    const VectorR3& GetColorDiffuse() const {
+        return ColorDiffuse;
+    }
+    const VectorR3& GetColorSpecular() const {
+        return ColorSpecular;
+    }
+    const VectorR3& GetColorEmissive() const {
+        return ColorEmissive;
+    }
+    const VectorR3& GetColorTransmissive() const {
+        return ColorTransmissive;
+    }
+    const VectorR3& GetColorReflective() const {
+        return ColorReflective;
     }
 
     void SetShininess(double exponent) {
         Shininess = exponent;
     }
-
     double GetPhongShininess() const {
         return Shininess;
+    }
+    double GetShininess()  const {
+        return Shininess;
+    }
+
+    std::string GetName() const {
+        return(name);
     }
 
     void SetIndexOfRefraction( double x ) {
@@ -73,85 +154,33 @@ public:
         return IndexOfRefraction;
     }
 
-    bool CalcRefractDir(
-            const VectorR3& normal,
-            const VectorR3& indir,
-            VectorR3& outdir) const
-    {
-        return MaterialBase::CalcRefractDir(
-                IndexOfRefraction, IndexOfRefractionInv,
-                normal, indir, outdir);
-    }
-
-
-    bool IsTransmissive() const {
-        return TransmissiveFlag;
-    }
-
-    bool IsReflective() const
-    {
-        return ReflectiveFlag;
-    }
-
-    void SetColorTransmissive(const VectorR3& color) {
-        TransmissiveFlag = (color.NormSq() == 0.0);
-        ColorTransmissive = color;
-    }
-
-    void SetColorReflective(const VectorR3& color) {
-        ReflectiveFlag = (color.NormSq() != 0.0);
-        ColorReflective = color;
-    }
-
-    double GetShininess()  const
-    {
-        return Shininess;
-    }
-
-    const VectorR3& GetColorTransmissive() const {
-        return ColorTransmissive;
-    }
-    const VectorR3& GetColorReflective() const {
-        return ColorReflective;
-    }
-
-    virtual VectorR3 GetReflectionColor(
-            const VisiblePoint& visPoint,
-            const VectorR3& outDir,
-            const VectorR3& fromDir) const
-    {
-        return GetColorReflective();
-    }
-    virtual VectorR3 GetTransmissionColor(
-            const VisiblePoint& visPoint,
-            const VectorR3& outDir,
-            const VectorR3& fromDir) const
-    {
-        return GetColorTransmissive();
-    }
-
-    virtual void CalcLocalLighting(
-        VectorR3& colorReturned, const Light& light,
-        const VectorR3& percentLit, double lightAttenuation,
-        const VectorR3& N, const VectorR3& V,
-        const VectorR3& L, const VectorR3* H ) const;
-
-    MaterialBase* Clone() const;
-
-
 protected:
-    VectorR3 ColorTransmissive;
-    VectorR3 ColorReflective;		// Global reflection color coefficients
+    VectorR3 ColorAmbient = {0.2, 0.2, 0.2};
+    VectorR3 ColorDiffuse = {0.5, 0.5, 0.5};
+    VectorR3 ColorSpecular = {0.2, 0.2, 0.2};
+    VectorR3 ColorEmissive = {0.0, 0.0, 0.2};
+    VectorR3 ColorTransmissive = {0.0, 0.0, 0.0};
+    VectorR3 ColorReflective = {0.1, 0.1, 0.1};		// Global reflection color coefficients
 
-    double IndexOfRefraction;
-    double IndexOfRefractionInv;	// 1/(index of refraction)
+    double IndexOfRefraction = 1.0;
+    double IndexOfRefractionInv = 1.0;	// 1/(index of refraction)
 
-    bool TransmissiveFlag;		// Is transmissive color non-black?
-    bool ReflectiveFlag;		// Is reflective color non-black?
+    bool TransmissiveFlag = false;		// Is transmissive color non-black?
+    bool ReflectiveFlag = false;		// Is reflective color non-black?
 
-    double Shininess;			// Shininess exponent
-    bool isError;
+    double Shininess = 0.0f; // Shininess exponent
+    bool isError = false;
+
+public:
+    static bool CalcRefractDir( double indexOfRefraction, double indexOfRefractionInv,
+                                const VectorR3& normal, const VectorR3& indir,
+                                VectorR3& outdir );
+
+    std::string name;
+    void SetName(const std::string & mat_name) {
+        name = mat_name;
+    }
 
 };
 
-#endif // MATERIAL_H
+#endif  // MATERIAL_BASE_H

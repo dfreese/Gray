@@ -21,8 +21,8 @@
 #ifndef VIEWABLESPHERE_H
 #define VIEWABLESPHERE_H
 
-#include "ViewableBase.h"
-#include "Material.h"
+#include <Graphics/ViewableBase.h>
+#include <Graphics/Material.h>
 
 class ViewableSphere : public ViewableBase
 {
@@ -32,7 +32,7 @@ public:
     // Constructors
     ViewableSphere();
     ViewableSphere( const VectorR3& center, double radius,
-                    const MaterialBase *material=&Material::Default );
+                    const Material *material=&Material::Default );
 
     // Returns an intersection if found with distance maxDistance
     // viewDir must be a unit vector.
@@ -58,11 +58,11 @@ public:
 
 
     void SetRadius( double radius );
-    void SetMaterialOuter( const MaterialBase *material )
+    void SetMaterialOuter( const Material *material )
     {
         ViewableBase::SetMaterialFront(material);
     };
-    void SetMaterialInner( const MaterialBase *material )
+    void SetMaterialInner( const Material *material )
     {
         ViewableBase::SetMaterialBack(material);
     };
@@ -89,11 +89,11 @@ public:
     {
         return RadiusSq;
     }
-    const MaterialBase* GetMaterialOuter () const
+    const Material* GetMaterialOuter () const
     {
         return(ViewableBase::GetMaterialFront());
     }
-    const MaterialBase* GetMaterialInner () const
+    const Material* GetMaterialInner () const
     {
         return(ViewableBase::GetMaterialBack());
     }
@@ -162,7 +162,7 @@ ViewableSphere::ViewableSphere( )
 
 inline
 ViewableSphere::ViewableSphere( const VectorR3& center, double radius,
-                                const MaterialBase *material )
+                                const Material *material )
 {
     SetRadius ( radius );
     SetCenter ( center );

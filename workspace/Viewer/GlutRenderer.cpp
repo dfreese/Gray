@@ -317,8 +317,8 @@ void GlutRenderer::RenderViewableCone( const ViewableCone& object )
     }
 
     // Set material properties for base of cone
-    SetFrontMaterial ( object.GetMaterialBaseOuter() );
-    SetBackMaterial( object.GetMaterialBaseInner() );
+    SetFrontMaterial ( object.GetMaterialOuter() );
+    SetBackMaterial( object.GetMaterialInner() );
 
     // Draw the base
     glBegin( GL_TRIANGLE_FAN );
@@ -647,7 +647,7 @@ void GlutRenderer::RenderViewableTriangle( const ViewableTriangle& object )
 }
 
 namespace {
-void SetFaceMaterial( GLenum faceID, const MaterialBase* mat )
+void SetFaceMaterial( GLenum faceID, const Material* mat )
 {
     GLfloat temp[4];							// Risky: must be C++ "float" or "double"
     // If fails, write new LinearR4::Dump() for new type
@@ -664,7 +664,7 @@ void SetFaceMaterial( GLenum faceID, const MaterialBase* mat )
 }
 }
 
-void GlutRenderer::SetFrontMaterial( const MaterialBase* mat )
+void GlutRenderer::SetFrontMaterial( const Material* mat )
 {
     if ( mat==0 ) {				// If no front material
         mat = &(Material::Default);
@@ -672,7 +672,7 @@ void GlutRenderer::SetFrontMaterial( const MaterialBase* mat )
     SetFaceMaterial( GL_FRONT, mat );
 }
 
-void GlutRenderer::SetBackMaterial( const MaterialBase* mat )
+void GlutRenderer::SetBackMaterial( const Material* mat )
 {
     if ( mat==0 ) {				// If no back material
         mat = &(Material::Default);
