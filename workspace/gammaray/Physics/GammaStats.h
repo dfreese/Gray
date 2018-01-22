@@ -36,15 +36,10 @@ public:
     void SetMaterialType(int s);
     bool Load();
     int GetMaterial() const;
-    bool LogMaterial() const {
-        return (log_material);
-    }
-    void SetLogMaterial(bool val) {
-        log_material = val;
-    }
+    bool LogMaterial() const;
+    void SetLogMaterial(bool val);
     bool InteractionsEnabled() const;
     void DisableInteractions();
-    std::string GetName() const;
     void DisableRayleigh();
     void ComptonScatter(Photon& p) const;
     void RayleighScatter(Photon& p) const;

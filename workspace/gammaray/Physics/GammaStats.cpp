@@ -102,9 +102,12 @@ int GammaStats::GetMaterial() const
     return index;
 }
 
-std::string GammaStats::GetName() const
-{
-    return name;
+bool GammaStats::LogMaterial() const {
+    return (log_material);
+}
+
+void GammaStats::SetLogMaterial(bool val) {
+    log_material = val;
 }
 
 bool GammaStats::InteractionsEnabled() const {
