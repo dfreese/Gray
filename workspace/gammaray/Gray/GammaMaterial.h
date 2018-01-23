@@ -4,7 +4,9 @@
 #include <vector>
 #include <Graphics/Material.h>
 #include <Physics/GammaStats.h>
+#include <Physics/Interaction.h>
 #include <Physics/Photon.h>
+#include <Physics/Physics.h>
 #include <Random/Random.h>
 
 class GammaMaterial : public Material, public GammaStats {
@@ -44,6 +46,22 @@ public:
         return (true);
     }
 
+    Interaction::Type Interact(Photon& photon) const {
+        AttenLengths len = GetAttenLengths(photon.GetEnergy());
+        double rand = len.total() * Random::Uniform();
+        if (rand <= len.photoelectric) {
+            photon.SetEnergy(0);
+            return (Interaction::Type::PHOTOELECTRIC);
+        } else if (rand <= (len.photoelectric + len.compton)) {
+            // perform compton kinematics
+            ComptonScatter(photon);
+            return (Interaction::Type::COMPTON);
+        } else {
+            // perform rayleigh kinematics
+            RayleighScatter(photon);
+            return (Interaction::Type::RAYLEIGH);
+        }
+    }
 
 };
 

@@ -33,7 +33,6 @@ public:
     void DisableRayleigh();
     void ComptonScatter(Photon& p) const;
     void RayleighScatter(Photon& p) const;
-    Interaction::Type Interact(Photon& photon) const;
     struct AttenLengths {
         double energy;
         double photoelectric;
