@@ -25,7 +25,8 @@
 
 const Material Material::Default;
 
-Material::Material(const std::string & name) :
+Material::Material(int id, const std::string & name) :
+    id(id),
     name(name)
 {
 }
@@ -132,11 +133,16 @@ double Material::GetShininess()  const {
     return Shininess;
 }
 
-std::string Material::GetName() const {
-    return(name);
+int Material::GetId() const {
+    return id;
 }
+
+std::string Material::GetName() const {
+    return name;
+}
+
 void Material::SetName(const std::string & mat_name) {
-name = mat_name;
+    name = mat_name;
 }
 
 void Material::SetIndexOfRefraction(double x) {

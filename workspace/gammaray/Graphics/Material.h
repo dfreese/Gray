@@ -43,7 +43,7 @@ public:
     static const Material Default;
 
     Material() = default;
-    Material(const std::string & name);
+    Material(int id, const std::string & name);
     virtual ~Material() = default;
     bool IsReflective() const;
     bool IsTransmissive() const;
@@ -84,6 +84,7 @@ public:
     double GetPhongShininess() const;
     double GetShininess() const;
 
+    int GetId() const;
     std::string GetName() const;
     void SetName(const std::string & mat_name);
 
@@ -112,6 +113,7 @@ private:
     bool isError = false;
 
     std::string name;
+    int id = -1;
 };
 
 #endif  // MATERIAL_BASE_H

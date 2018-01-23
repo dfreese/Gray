@@ -13,7 +13,7 @@
 
 #include <map>
 #include <VrMath/LinearR3.h>
-class GammaStats;
+class GammaMaterial;
 class Photon;
 class NuclearDecay;
 
@@ -31,10 +31,10 @@ public:
 
     Interaction() = default;
     Interaction(Type type, const Photon& p); // For error creation
-    Interaction(Type type, const Photon& p, const GammaStats& mat, double deposit);
-    Interaction(const NuclearDecay& p, const GammaStats& mat);
+    Interaction(Type type, const Photon& p, const GammaMaterial& mat, double deposit);
+    Interaction(const NuclearDecay& p, const GammaMaterial& mat);
     static void MergeStats(Interaction & i0, const Interaction & i1);
-    static bool Dropped(Type type, const GammaStats& mat);
+    static bool Dropped(Type type, const GammaMaterial& mat);
 
     Type type = Type::ERROR_EMPTY;
     int decay_id = 0;

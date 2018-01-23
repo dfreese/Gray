@@ -22,7 +22,6 @@
 using namespace std;
 
 GammaStats::GammaStats() :
-    index(-1),
     enable_interactions(true),
     sensitive(false),
     // Make the form factor always 1
@@ -33,13 +32,10 @@ GammaStats::GammaStats() :
 }
 
 GammaStats::GammaStats(
-    const std::string & name, int index,
     double density, bool sensitive, std::vector<double> energy,
     std::vector<double> matten_comp, std::vector<double> matten_phot,
     std::vector<double> matten_rayl, std::vector<double> x,
     std::vector<double> form_factor, std::vector<double> scattering_func) :
-        name(name),
-        index(index),
         energy(energy),
         photoelectric(matten_phot),
         compton(matten_comp),
@@ -79,10 +75,6 @@ GammaStats::GammaStats(
                    log_compton.begin(), log_func);
     std::transform(rayleigh.begin(), rayleigh.end(),
                    log_rayleigh.begin(), log_func);
-}
-
-int GammaStats::GetId() const {
-    return index;
 }
 
 bool GammaStats::IsSensitive() const {

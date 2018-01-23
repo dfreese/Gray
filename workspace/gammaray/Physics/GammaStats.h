@@ -25,14 +25,12 @@ class GammaStats
 public:
 
     GammaStats();
-    GammaStats(const std::string & name, int index,
-               double density, bool sensitive, std::vector<double> energy,
+    GammaStats(double density, bool sensitive, std::vector<double> energy,
                std::vector<double> matten_comp, std::vector<double> matten_phot,
                std::vector<double> matten_rayl, std::vector<double> x,
                std::vector<double> form_factor,
                std::vector<double> scattering_func);
     bool Load();
-    int GetId() const;
     bool IsSensitive() const;
     bool InteractionsEnabled() const;
     void DisableInteractions();
@@ -54,8 +52,6 @@ private:
     };
     AttenLengths GetAttenLengths(double energy) const;
 
-    std::string name;
-    int index;
     std::string filename;
     std::vector<double> energy;
     std::vector<double> photoelectric;

@@ -11,7 +11,7 @@
 #include <Physics/Interaction.h>
 #include <cmath>
 #include <iostream>
-#include <Physics/GammaStats.h>
+#include <Gray/GammaMaterial.h>
 #include <Physics/Photon.h>
 #include <Physics/NuclearDecay.h>
 
@@ -41,7 +41,7 @@ Interaction::Interaction(
 Interaction::Interaction(
         Type type,
         const Photon& p,
-        const GammaStats& mat,
+        const GammaMaterial& mat,
         double deposit) :
     type(type),
     decay_id(p.GetId()),
@@ -63,7 +63,7 @@ Interaction::Interaction(
 
 Interaction::Interaction(
         const NuclearDecay& p,
-        const GammaStats & mat) :
+        const GammaMaterial& mat) :
     type(Type::NUCLEAR_DECAY),
     decay_id(p.GetDecayNumber()),
     time(p.GetTime()),
@@ -157,7 +157,7 @@ void Interaction::MergeStats(Interaction & i0, const Interaction & i1) {
  * We can keep the interactions, such as errors in the buffer around to log them
  * as hits, but they will not be processed as singles.
  */
-bool Interaction::Dropped(Type type, const GammaStats& mat) {
+bool Interaction::Dropped(Type type, const GammaMaterial& mat) {
     switch (type) {
         case Type::COMPTON:
             return (!mat.IsSensitive());
