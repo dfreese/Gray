@@ -18,26 +18,23 @@ GammaMaterial::GammaMaterial(
 {}
 
 bool GammaMaterial::Distance(Photon& photon, double max_dist) const {
-    if (!InteractionsEnabled()) {
-        // move photon to interaction point, or exit point of material
-        photon.AddPos(max_dist * photon.GetDir());
-        photon.AddTime(max_dist * Physics::inverse_speed_of_light);
-        return (false);
+    double rand_dist = max_dist;
+    bool interacted = false;
+    if (InteractionsEnabled()) {
+        GammaStats::AttenLengths len = properties.GetAttenLengths(
+                photon.GetEnergy());
+        rand_dist = Random::Exponential(len.total());
+        interacted = true;
+        if (rand_dist >= max_dist) {
+            interacted = false;
+            rand_dist = max_dist;
+        }
     }
 
-    GammaStats::AttenLengths len = properties.GetAttenLengths(photon.GetEnergy());
-    double rand_dist = Random::Exponential(len.total());
-    if (rand_dist > max_dist) {
-        // move photon to the exit point of material
-        photon.AddPos(max_dist * photon.GetDir());
-        photon.AddTime(max_dist * Physics::inverse_speed_of_light);
-        return (false);
-    }
-
-    // move the photon to the interaction point
+    // move photon to interaction point, or exit point of material
     photon.AddPos(rand_dist * photon.GetDir());
     photon.AddTime(rand_dist * Physics::inverse_speed_of_light);
-    return (true);
+    return (interacted);
 }
 
 Interaction::Type GammaMaterial::Interact(Photon& photon) const {
