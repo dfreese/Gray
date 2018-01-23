@@ -66,6 +66,7 @@ add_library(gammaray
     Gray/Config.h
     Gray/Config.cpp
     Gray/GammaMaterial.h
+    Gray/GammaMaterial.cpp
     Gray/GammaRayTrace.cpp
     Gray/GammaRayTrace.h
     Gray/GammaRayTraceStats.h
