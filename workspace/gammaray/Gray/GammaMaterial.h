@@ -4,20 +4,46 @@
 #include <vector>
 #include <Graphics/Material.h>
 #include <Physics/GammaStats.h>
+#include <Physics/Photon.h>
+#include <Random/Random.h>
 
 class GammaMaterial : public Material, public GammaStats {
 public:
     GammaMaterial() = default;
     GammaMaterial(
-        const std::string & name, int index,
-        double density, bool sensitive, std::vector<double> energy,
+        int index, const std::string& name, bool sensitive, bool interactive,
+        double density, std::vector<double> energy,
         std::vector<double> matten_comp, std::vector<double> matten_phot,
         std::vector<double> matten_rayl, std::vector<double> x,
         std::vector<double> form_factor, std::vector<double> scattering_func) :
-            Material(index, name),
-            GammaStats(density, sensitive, energy, matten_comp, matten_phot,
+            Material(index, name, sensitive, interactive),
+            GammaStats(density, energy, matten_comp, matten_phot,
                        matten_rayl, x, form_factor, scattering_func)
     {}
+
+    bool Distance(Photon& photon, double max_dist) const {
+        if (!InteractionsEnabled()) {
+            // move photon to interaction point, or exit point of material
+            photon.AddPos(max_dist * photon.GetDir());
+            photon.AddTime(max_dist * Physics::inverse_speed_of_light);
+            return (false);
+        }
+
+        AttenLengths len = GetAttenLengths(photon.GetEnergy());
+        double rand_dist = Random::Exponential(len.total());
+        if (rand_dist > max_dist) {
+            // move photon to the exit point of material
+            photon.AddPos(max_dist * photon.GetDir());
+            photon.AddTime(max_dist * Physics::inverse_speed_of_light);
+            return (false);
+        }
+
+        // move the photon to the interaction point
+        photon.AddPos(rand_dist * photon.GetDir());
+        photon.AddTime(rand_dist * Physics::inverse_speed_of_light);
+        return (true);
+    }
+
 
 };
 

@@ -54,7 +54,7 @@ bool LoadMaterials::LoadMaterialJson(SceneDescription& scene,
             VectorizeArray(mat_info["scattering_func"]);
 
     std::unique_ptr<GammaMaterial> mat(new GammaMaterial(
-            mat_name, index, density, sensitive, energy, matten_comp,
+            index, mat_name, sensitive, true, density, energy, matten_comp,
             matten_phot, matten_rayl, x, form_factor, scattering_func));
     scene.AddMaterial(std::move(mat));
     return (true);
@@ -104,12 +104,11 @@ bool LoadMaterials::LoadPhysicsJson(SceneDescription& scene,
     // Perhaps look at allowing the default to be specified.
     const std::string def_mat_name = "dummy_default_world_material";
     std::unique_ptr<GammaMaterial> default_mat(new GammaMaterial(
-            def_mat_name, scene.NumMaterials(),
-            0.0, false, std::vector<double>(1, 0.0),
+            scene.NumMaterials(), def_mat_name, 
+            0.0, false, false, std::vector<double>(1, 0.0),
             std::vector<double>(1, 0.0), std::vector<double>(1, 0.0),
             std::vector<double>(1, 0.0), std::vector<double>(1, 0.0),
             std::vector<double>(1, 0.0), std::vector<double>(1, 0.0)));
-    default_mat->DisableInteractions();
     scene.AddMaterial(std::move(default_mat));
     scene.SetDefaultMaterial(def_mat_name);
     return (true);

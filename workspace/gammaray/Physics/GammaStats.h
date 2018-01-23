@@ -25,22 +25,15 @@ class GammaStats
 public:
 
     GammaStats();
-    GammaStats(double density, bool sensitive, std::vector<double> energy,
+    GammaStats(double density, std::vector<double> energy,
                std::vector<double> matten_comp, std::vector<double> matten_phot,
                std::vector<double> matten_rayl, std::vector<double> x,
                std::vector<double> form_factor,
                std::vector<double> scattering_func);
-    bool Load();
-    bool IsSensitive() const;
-    bool InteractionsEnabled() const;
-    void DisableInteractions();
     void DisableRayleigh();
     void ComptonScatter(Photon& p) const;
     void RayleighScatter(Photon& p) const;
-    bool Distance(Photon& photon, double max_dist) const;
     Interaction::Type Interact(Photon& photon) const;
-
-private:
     struct AttenLengths {
         double energy;
         double photoelectric;
@@ -52,6 +45,7 @@ private:
     };
     AttenLengths GetAttenLengths(double energy) const;
 
+private:
     std::string filename;
     std::vector<double> energy;
     std::vector<double> photoelectric;
@@ -64,9 +58,6 @@ private:
     const std::vector<double> x;
     const std::vector<double> form_factor;
     const std::vector<double> scattering_func;
-
-    bool enable_interactions;
-    bool sensitive;
 
     Compton compton_scatter;
     Rayleigh rayleigh_scatter;

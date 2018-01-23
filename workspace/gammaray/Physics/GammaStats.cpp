@@ -22,8 +22,6 @@
 using namespace std;
 
 GammaStats::GammaStats() :
-    enable_interactions(true),
-    sensitive(false),
     // Make the form factor always 1
     compton_scatter({0.0, 1.0}, {1.0, 1.0}),
     rayleigh_scatter({0.0, 1.0}, {1.0, 1.0}),
@@ -32,7 +30,7 @@ GammaStats::GammaStats() :
 }
 
 GammaStats::GammaStats(
-    double density, bool sensitive, std::vector<double> energy,
+    double density, std::vector<double> energy,
     std::vector<double> matten_comp, std::vector<double> matten_phot,
     std::vector<double> matten_rayl, std::vector<double> x,
     std::vector<double> form_factor, std::vector<double> scattering_func) :
@@ -47,8 +45,6 @@ GammaStats::GammaStats(
         x(x),
         form_factor(form_factor),
         scattering_func(scattering_func),
-        enable_interactions(true),
-        sensitive(sensitive),
         compton_scatter(x, scattering_func),
         rayleigh_scatter(x, form_factor),
         cache_len({-1, 0, 0, 0})
@@ -75,18 +71,6 @@ GammaStats::GammaStats(
                    log_compton.begin(), log_func);
     std::transform(rayleigh.begin(), rayleigh.end(),
                    log_rayleigh.begin(), log_func);
-}
-
-bool GammaStats::IsSensitive() const {
-    return (sensitive);
-}
-
-bool GammaStats::InteractionsEnabled() const {
-    return (enable_interactions);
-}
-
-void GammaStats::DisableInteractions() {
-    enable_interactions = false;
 }
 
 GammaStats::AttenLengths GammaStats::GetAttenLengths(double e) const {
@@ -124,29 +108,6 @@ void GammaStats::RayleighScatter(Photon& p) const {
     // If the photon scatters on a non-detector, it is a scatter, checked
     // inside SetScatter
     p.SetScatterRayleigh();
-}
-
-bool GammaStats::Distance(Photon& photon, double max_dist) const {
-    if (!InteractionsEnabled()) {
-        // move photon to interaction point, or exit point of material
-        photon.AddPos(max_dist * photon.GetDir());
-        photon.AddTime(max_dist * Physics::inverse_speed_of_light);
-        return (false);
-    }
-
-    AttenLengths len = GetAttenLengths(photon.GetEnergy());
-    double rand_dist = Random::Exponential(len.total());
-    if (rand_dist > max_dist) {
-        // move photon to the exit point of material
-        photon.AddPos(max_dist * photon.GetDir());
-        photon.AddTime(max_dist * Physics::inverse_speed_of_light);
-        return (false);
-    }
-
-    // move the photon to the interaction point
-    photon.AddPos(rand_dist * photon.GetDir());
-    photon.AddTime(rand_dist * Physics::inverse_speed_of_light);
-    return (true);
 }
 
 Interaction::Type GammaStats::Interact(Photon& photon) const {

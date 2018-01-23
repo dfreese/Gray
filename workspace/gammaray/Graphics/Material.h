@@ -43,7 +43,8 @@ public:
     static const Material Default;
 
     Material() = default;
-    Material(int id, const std::string & name);
+    Material(
+            int id, const std::string & name, bool sensitive, bool interactive);
     virtual ~Material() = default;
     bool IsReflective() const;
     bool IsTransmissive() const;
@@ -94,6 +95,8 @@ public:
     static bool CalcRefractDir( double indexOfRefraction, double indexOfRefractionInv,
                                 const VectorR3& normal, const VectorR3& indir,
                                 VectorR3& outdir );
+    bool IsSensitive() const;
+    bool InteractionsEnabled() const;
 
 private:
     VectorR3 ColorAmbient = {0.2, 0.2, 0.2};
@@ -114,6 +117,8 @@ private:
 
     std::string name;
     int id = -1;
+    bool sensitive = false;
+    bool interactive = true;
 };
 
 #endif  // MATERIAL_BASE_H

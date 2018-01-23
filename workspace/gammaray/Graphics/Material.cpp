@@ -25,9 +25,15 @@
 
 const Material Material::Default;
 
-Material::Material(int id, const std::string & name) :
+Material::Material(
+        int id,
+        const std::string & name,
+        bool sensitive,
+        bool interactive) :
     id(id),
-    name(name)
+    name(name),
+    sensitive(sensitive),
+    interactive(interactive)
 {
 }
 
@@ -152,6 +158,14 @@ void Material::SetIndexOfRefraction(double x) {
 
 double Material::GetIndexOfRefraction() const {
     return IndexOfRefraction;
+}
+
+bool Material::IsSensitive() const {
+    return (sensitive);
+}
+
+bool Material::InteractionsEnabled() const {
+    return (interactive);
 }
 
 // General purpose calculation of refraction direction.
