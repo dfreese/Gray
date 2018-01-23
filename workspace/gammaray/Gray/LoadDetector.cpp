@@ -1443,8 +1443,7 @@ int LoadDetector::IncrementDetector(const RigidMapR3 & current_matrix,
 
 void LoadDetector::DisableRayleigh(SceneDescription& scene) {
     for (size_t idx = 0; idx < scene.NumMaterials(); ++idx) {
-        GammaStats& stats = static_cast<GammaStats&>(
-                static_cast<GammaMaterial&>(scene.GetMaterial(idx)));
+        GammaMaterial& stats = static_cast<GammaMaterial&>(scene.GetMaterial(idx));
         stats.DisableRayleigh();
     }
 }

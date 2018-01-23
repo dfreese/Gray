@@ -9,7 +9,7 @@
 #include <Physics/Physics.h>
 #include <Random/Random.h>
 
-class GammaMaterial : public Material, public GammaStats {
+class GammaMaterial : public Material {
 public:
     GammaMaterial() = default;
     GammaMaterial(
@@ -19,7 +19,7 @@ public:
         std::vector<double> matten_rayl, std::vector<double> x,
         std::vector<double> form_factor, std::vector<double> scattering_func) :
             Material(index, name, sensitive, interactive),
-            GammaStats(density, energy, matten_comp, matten_phot,
+            properties(density, energy, matten_comp, matten_phot,
                        matten_rayl, x, form_factor, scattering_func)
     {}
 
@@ -31,7 +31,7 @@ public:
             return (false);
         }
 
-        AttenLengths len = GetAttenLengths(photon.GetEnergy());
+        GammaStats::AttenLengths len = properties.GetAttenLengths(photon.GetEnergy());
         double rand_dist = Random::Exponential(len.total());
         if (rand_dist > max_dist) {
             // move photon to the exit point of material
@@ -47,22 +47,28 @@ public:
     }
 
     Interaction::Type Interact(Photon& photon) const {
-        AttenLengths len = GetAttenLengths(photon.GetEnergy());
+        GammaStats::AttenLengths len = properties.GetAttenLengths(photon.GetEnergy());
         double rand = len.total() * Random::Uniform();
         if (rand <= len.photoelectric) {
             photon.SetEnergy(0);
             return (Interaction::Type::PHOTOELECTRIC);
         } else if (rand <= (len.photoelectric + len.compton)) {
             // perform compton kinematics
-            ComptonScatter(photon);
+            properties.ComptonScatter(photon);
             return (Interaction::Type::COMPTON);
         } else {
             // perform rayleigh kinematics
-            RayleighScatter(photon);
+            properties.RayleighScatter(photon);
             return (Interaction::Type::RAYLEIGH);
         }
     }
 
+    void DisableRayleigh() {
+        properties.DisableRayleigh();
+    }
+
+private:
+    GammaStats properties;
 };
 
 #endif // GAMMA_MATERIAL_H
