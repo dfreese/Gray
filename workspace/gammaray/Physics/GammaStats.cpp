@@ -24,8 +24,7 @@ using namespace std;
 GammaStats::GammaStats() :
     // Make the form factor always 1
     compton_scatter({0.0, 1.0}, {1.0, 1.0}),
-    rayleigh_scatter({0.0, 1.0}, {1.0, 1.0}),
-    cache_len({-1, 0, 0, 0})
+    rayleigh_scatter({0.0, 1.0}, {1.0, 1.0})
 {
 }
 
@@ -46,8 +45,7 @@ GammaStats::GammaStats(
         form_factor(form_factor),
         scattering_func(scattering_func),
         compton_scatter(x, scattering_func),
-        rayleigh_scatter(x, form_factor),
-        cache_len({-1, 0, 0, 0})
+        rayleigh_scatter(x, form_factor)
 {
     // Convert the mass attenuation coefficient to a linear attenuation
     // coefficient by multiplying by density.
@@ -74,18 +72,19 @@ GammaStats::GammaStats(
 }
 
 GammaStats::AttenLengths GammaStats::GetAttenLengths(double e) const {
-    std::lock_guard<std::mutex> lock(cache_lock);
-    if (e != cache_len.energy) {
-        size_t idx = Math::interp_index(energy, e);
-        const double log_e = std::log(e);
-        cache_len.energy = e;
-        cache_len.photoelectric =
-            std::exp(Math::interpolate(log_energy, log_photoelectric, log_e, idx));
-        cache_len.compton =
-            std::exp(Math::interpolate(log_energy, log_compton, log_e, idx));
-        cache_len.rayleigh =
-            std::exp(Math::interpolate(log_energy, log_rayleigh, log_e, idx));
-    }
+    // TODO: This function tends to be called twice with the same e value.  Look
+    // at caching this in a way that both causes a gain in speed, and no thread
+    // contention.
+    AttenLengths cache_len;
+    size_t idx = Math::interp_index(energy, e);
+    const double log_e = std::log(e);
+    cache_len.energy = e;
+    cache_len.photoelectric =
+        std::exp(Math::interpolate(log_energy, log_photoelectric, log_e, idx));
+    cache_len.compton =
+        std::exp(Math::interpolate(log_energy, log_compton, log_e, idx));
+    cache_len.rayleigh =
+        std::exp(Math::interpolate(log_energy, log_rayleigh, log_e, idx));
     return (cache_len);
 }
 

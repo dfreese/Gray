@@ -11,7 +11,6 @@
 #ifndef GAMMA_STATS_H
 #define GAMMA_STATS_H
 
-#include <mutex>
 #include <string>
 #include <vector>
 #include <Physics/Compton.h>
@@ -61,8 +60,6 @@ private:
     Compton compton_scatter;
     Rayleigh rayleigh_scatter;
 
-    mutable std::mutex cache_lock;
-    mutable AttenLengths cache_len;
 };
 
 #endif
