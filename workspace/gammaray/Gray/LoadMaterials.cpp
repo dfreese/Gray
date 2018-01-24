@@ -6,6 +6,7 @@
 #include <vector>
 #include <Gray/GammaMaterial.h>
 #include <Graphics/SceneDescription.h>
+#include <Physics/GammaStats.h>
 #include <json/json.h>
 
 std::vector<double> LoadMaterials::VectorizeArray(const Json::Value & array) {
@@ -52,10 +53,11 @@ bool LoadMaterials::LoadMaterialJson(SceneDescription& scene,
     std::vector<double> form_factor = VectorizeArray(mat_info["form_factor"]);
     std::vector<double> scattering_func =
             VectorizeArray(mat_info["scattering_func"]);
-
+    
+    GammaStats stats(density, energy, matten_comp, matten_phot, matten_rayl,
+             x, form_factor, scattering_func);
     std::unique_ptr<GammaMaterial> mat(new GammaMaterial(
-            index, mat_name, sensitive, true, density, energy, matten_comp,
-            matten_phot, matten_rayl, x, form_factor, scattering_func));
+            index, mat_name, sensitive, true, std::move(stats)));
     scene.AddMaterial(std::move(mat));
     return (true);
 }
@@ -103,12 +105,18 @@ bool LoadMaterials::LoadPhysicsJson(SceneDescription& scene,
     // material.
     // Perhaps look at allowing the default to be specified.
     const std::string def_mat_name = "dummy_default_world_material";
+
+    GammaStats stats(0.0,
+            std::vector<double>(1, 0.0),
+            std::vector<double>(1, 0.0),
+            std::vector<double>(1, 0.0),
+            std::vector<double>(1, 0.0),
+            std::vector<double>(1, 0.0),
+            std::vector<double>(1, 0.0),
+            std::vector<double>(1, 0.0));
     std::unique_ptr<GammaMaterial> default_mat(new GammaMaterial(
-            scene.NumMaterials(), def_mat_name, 
-            0.0, false, false, std::vector<double>(1, 0.0),
-            std::vector<double>(1, 0.0), std::vector<double>(1, 0.0),
-            std::vector<double>(1, 0.0), std::vector<double>(1, 0.0),
-            std::vector<double>(1, 0.0), std::vector<double>(1, 0.0)));
+            scene.NumMaterials(), def_mat_name, false, false,
+            std::move(stats)));
     scene.AddMaterial(std::move(default_mat));
     scene.SetDefaultMaterial(def_mat_name);
     return (true);
