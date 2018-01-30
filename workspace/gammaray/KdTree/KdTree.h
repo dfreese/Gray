@@ -1,5 +1,5 @@
 /*
- * Gray: a Ray Tracing-based Monte Carlo Simulator for PET
+ * Gray: A Ray Tracing-based Monte Carlo Simulator for PET
  *
  * Copyright (c) 2018, David Freese, Peter Olcott, Sam Buss, Craig Levin
  *

@@ -225,7 +225,7 @@ void Config::usage() {
 }
 
 void Config::version() {
-    cout << "Gray: a Ray Tracing-based Monte Carlo Simulator for PET\n"
+    cout << "Gray: A Ray Tracing-based Monte Carlo Simulator for PET\n"
          << "\n"
          << "  Copyright (c) " << Version::CopyrightYear()
          << ", David L. Freese, Peter D. Olcott, Sam R. Buss, and Craig S. Levin\n"
