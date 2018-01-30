@@ -1,34 +1,12 @@
 /*
+ * Gray: a Ray Tracing-based Monte Carlo Simulator for PET
  *
- * RayTrace Software Package, release 3.1.2.  February 12, 2007.
+ * Copyright (c) 2018, David Freese, Peter Olcott, Sam Buss, Craig Levin
  *
- * Mathematics Subpackage (VrMath)
- *
- * Author: Samuel R. Buss
- *
- * Software accompanying the book
- *        3D Computer Graphics: A Mathematical Introduction with OpenGL,
- *        by S. Buss, Cambridge University Press, 2003.
- *
- * Software is "as-is" and carries no warranty.  It may be used without
- *   restriction, but if you modify it, please change the filenames to
- *   prevent confusion between different versions.  Please acknowledge
- *   all use of the software in any publications or products based on it.
- *
- * Bug reports: Sam Buss, sbuss@ucsd.edu.
- * Web page: http://math.ucsd.edu/~sbuss/MathCG
+ * This software is distributed under the terms of the MIT License unless
+ * otherwise noted.  See LICENSE for further details.
  *
  */
-
-// KdTree.h
-//
-//   A general purpose KdTree which
-//        a) holds 3D objects of generic type
-//        b) supports ray tracing
-
-// Author: Sam Buss based on work by Sam Buss and Alex Kulungowski
-// Contact: sbuss@math.ucsd.edu
-
 
 #ifndef KDTREE_H
 #define KDTREE_H
@@ -133,7 +111,7 @@ private:
         InternalNodeValues Split;    // The values for an internal node
         LeafNodeValues Leaf;        // The values for a leaf
     } Data;
-    
+
 };
 
 
@@ -174,7 +152,7 @@ public:
     // By default this value is 4, and is the same for all objects.
     // That is, the cost of processing an object in a leaf node is
     //        four times the cost of traversing a internal node.
-    // To change this call one of the following.  
+    // To change this call one of the following.
     //    The first form sets the value to a new constant.
     //    The second form gives a callback function to get the relative costs
     void SetObjectCost ( double cost );        // Defaults 2.0.
@@ -182,7 +160,7 @@ public:
     // Set the cost function for the splitting decision
     // By default, uses a MacDonald-Booth method based on Goldsmith-Salmon surface area values.
     // But this can be modified by the following functions
-    void SetMacdonaldBoothSplitting( bool useModifiedCoefs = false );    
+    void SetMacdonaldBoothSplitting( bool useModifiedCoefs = false );
     void SetDoubleRecurseSplitting( bool useModifiedCoefs = false );
 
     // Set the stopping criterion
@@ -190,7 +168,7 @@ public:
     //        The "benefit" is measured in terms of time savings, the time saved is
     //        is measured in units of time required to traverse a single tree node.
     //        (Same units are used for "SetObjectCost".
-    //    numRays is the expected total number of rays to traced. 
+    //    numRays is the expected total number of rays to traced.
     //    All that really matters is the ratio  numAccesses/numRays which equals the
     //        expected time savings per average ray.
     //  Default values are 1,000,000 and 4.0.
@@ -247,7 +225,7 @@ private:
 
     // Routines used for building the tree
     void BuildSubTree( long baseIndex, AABB& aabb, double totalObjectCost,
-                    ExtentTripleArrayInfo& xExtents, ExtentTripleArrayInfo& yExtents, 
+                    ExtentTripleArrayInfo& xExtents, ExtentTripleArrayInfo& yExtents,
                     ExtentTripleArrayInfo& zExtents, long spaceAvailable );
     bool CalcBestSplit(const AABB& aabb, const VectorR3& deltaAABB,
                        double totalObjectCost,
@@ -258,25 +236,25 @@ private:
                        double* splitValue, long* numTriplesToLeft,
                        long* numObjectsToLeft, long* numObjectsToRight,
                        double* costObjectsToLeft, double* costObjectsToRight);
-    bool CalcBestSplit( double totalObjectCost, double costToBeat, 
-                        const ExtentTripleArrayInfo& extents, 
-                        double minOnAxis, double maxOnAxis, 
+    bool CalcBestSplit( double totalObjectCost, double costToBeat,
+                        const ExtentTripleArrayInfo& extents,
+                        double minOnAxis, double maxOnAxis,
                         double secondAxisLen, double thirdAxisLen,
-                        double* newBestCost, double* splitValue, 
+                        double* newBestCost, double* splitValue,
                         long* numTriplesToLeft, long* numObjectsToLeft, long* numObjectsToRight,
                         double* costObjectsToLeft, double* costObjectsToRight );
     void MakeAabbsForSubtree( unsigned char leftRightFlag, const ExtentTripleArrayInfo& theExtents,
                                 const AABB& theAabb );
     void CopyTriplesForSubtree( unsigned char leftRightFlag, int axisNumber,
-                                        ExtentTripleArrayInfo& fromExtents, 
-                                        ExtentTripleArrayInfo& toExtents ); 
-    void UpdateLeftRightCosts( const ExtentTriple& et, long* numObjectsLeft, long* numObjectsRight, 
+                                        ExtentTripleArrayInfo& fromExtents,
+                                        ExtentTripleArrayInfo& toExtents );
+    void UpdateLeftRightCosts( const ExtentTriple& et, long* numObjectsLeft, long* numObjectsRight,
                                double *costLeft, double *costRight );
     double CalcTotalCosts( const ExtentTripleArrayInfo& extents ) const;
 
-    // Routines and data used for split-cost-functions.  
+    // Routines and data used for split-cost-functions.
     // Only needed while building a kd-Tree.
-    //  CF = cost function.  
+    //  CF = cost function.
     double CF_MinOnAxis;            // Starting value for first axis
     double CF_MaxOnAxis;            // Ending value for first axis
     double CF_FirstAxisLenInv;        // One divided by length of first axis
@@ -365,7 +343,7 @@ public:
     void Init ( ExtentTriple* tripleArray, long numMaxMins, long numFlats );
 
     void SetNumbers( long numMaxMins, long numFlats );
-    
+
     // Add either a min and a max or a flat.
     long AddToEnd ( double min, double max, long objectID );
 
@@ -531,14 +509,14 @@ inline void KdTree::SetDoubleRecurseSplitting( bool useModifiedCoefs )
  * Emplace an object at the end of TreeNodes, and bump the size.  If we run
  * out of capacity, reserve 25% more.
  */
-inline long KdTree::NextIndex() 
+inline long KdTree::NextIndex()
 {
     long i = TreeNodes.size();
     if (i > TreeNodes.capacity()) {
         TreeNodes.reserve(i * 1.25);
     }
     TreeNodes.emplace_back();
-    return i; 
+    return i;
 }
 
 

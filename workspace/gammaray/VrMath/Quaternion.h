@@ -1,27 +1,12 @@
 /*
+ * Gray: a Ray Tracing-based Monte Carlo Simulator for PET
  *
- * RayTrace Software Package, release 3.0.  May 3, 2006.
+ * Copyright (c) 2018, David Freese, Peter Olcott, Sam Buss, Craig Levin
  *
- * Mathematics Subpackage (VrMath)
- *
- * Author: Samuel R. Buss
- *
- * Software is "as-is" and carries no warranty.  It may be used without
- *   restriction, but if you modify it, please change the filenames to
- *   prevent confusion between different versions.  Please acknowledge
- *   all use of the software in any publications or products based on it.
- *
- * Bug reports: Sam Buss, sbuss@ucsd.edu.
- * Web page: http://math.ucsd.edu/~sbuss/MathCG
+ * This software is distributed under the terms of the MIT License unless
+ * otherwise noted.  See LICENSE for further details.
  *
  */
-
-//
-// Quaternion Classes
-//
-//
-// Also has some miscellaneous solid geometry routines that do not really
-//	belong here (and may move in future releases).
 
 #ifndef QUATERNION_H
 #define QUATERNION_H

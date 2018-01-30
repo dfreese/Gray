@@ -1,33 +1,12 @@
 /*
+ * Gray: a Ray Tracing-based Monte Carlo Simulator for PET
  *
- * RayTrace Software Package, release 3.1.2.  February 12, 2007.
+ * Copyright (c) 2018, David Freese, Peter Olcott, Sam Buss, Craig Levin
  *
- * Mathematics Subpackage (VrMath)
- *
- * Author: Samuel R. Buss
- *
- * Software accompanying the book
- *		3D Computer Graphics: A Mathematical Introduction with OpenGL,
- *		by S. Buss, Cambridge University Press, 2003.
- *
- * Software is "as-is" and carries no warranty.  It may be used without
- *   restriction, but if you modify it, please change the filenames to
- *   prevent confusion between different versions.  Please acknowledge
- *   all use of the software in any publications or products based on it.
- *
- * Bug reports: Sam Buss, sbuss@ucsd.edu.
- * Web page: http://math.ucsd.edu/~sbuss/MathCG
+ * This software is distributed under the terms of the MIT License unless
+ * otherwise noted.  See LICENSE for further details.
  *
  */
-
-// KdTree.cpp
-//
-//   A general purpose KdTree which
-//		a) holds 3D objects of generic type
-//		b) supports ray tracing
-
-// Author: Sam Buss based on work by Sam Buss and Alex Kulungowski
-// Contact: sbuss@math.ucsd.edu
 
 #include <KdTree/KdTree.h>
 #include <cstdio>
@@ -261,7 +240,7 @@ void KdTree::BuildTree(long numObjects,
 		ZextentList.AddToEnd(aabb.GetMinZ(), aabb.GetMaxZ(), ii);
 	}
 
-	// Estimate upper bound on the space available.  
+	// Estimate upper bound on the space available.
 	// Need this for memory management of ExtentTriple lists
 	long spaceAvailable = 2*(ExtentTripleStorageMultiplier-1)*NumObjects;
 
@@ -269,7 +248,7 @@ void KdTree::BuildTree(long numObjects,
 	XextentList.Sort();
 	YextentList.Sort();
 	ZextentList.Sort();
-		
+
 	// Recursively build the entire tree!
     long root_index = NextIndex();
     KdTreeNode& RootNode = TreeNodes.at(root_index);
@@ -314,7 +293,7 @@ void KdTree::BuildTree(long numObjects,
 //		as appropriate
 // spaceAvailable gives the amount of room for growth of the ExtentTripleLists.
 void KdTree::BuildSubTree( long baseIndex, AABB& aabb, double totalObjectCost,
-					ExtentTripleArrayInfo& xExtents, ExtentTripleArrayInfo& yExtents, 
+					ExtentTripleArrayInfo& xExtents, ExtentTripleArrayInfo& yExtents,
 					ExtentTripleArrayInfo& zExtents, long spaceAvailable )
 {
 
@@ -394,8 +373,8 @@ void KdTree::BuildSubTree( long baseIndex, AABB& aabb, double totalObjectCost,
 						xExtents, yExtents, zExtents, spaceAvailable );
 		return;
 	}
-	
-	// Step 3. 
+
+	// Step 3.
 	// Two subtrees must be formed.
 	// Decide which objects go left and right - Store info in LeftRightStatus[]
 	ExtentTriple* etPtr = splitExtentList->TripleArray;
@@ -484,22 +463,22 @@ void KdTree::BuildSubTree( long baseIndex, AABB& aabb, double totalObjectCost,
 	// Create the AABB's for the smaller subtree
 	MakeAabbsForSubtree( leftRightFlag, xExtents, *smallerChildAabb );
 	// Copy the extent triples for the smaller subtree
-	CopyTriplesForSubtree( leftRightFlag, 0, xExtents, newXextents ); 
-	CopyTriplesForSubtree( leftRightFlag, 1, yExtents, newYextents ); 
-	CopyTriplesForSubtree( leftRightFlag, 2, zExtents, newZextents ); 
+	CopyTriplesForSubtree( leftRightFlag, 0, xExtents, newXextents );
+	CopyTriplesForSubtree( leftRightFlag, 1, yExtents, newYextents );
+	CopyTriplesForSubtree( leftRightFlag, 2, zExtents, newZextents );
 	// Recalculate total cost if necessary, i.e., if some objects go missing
 	if ( newXextents.NumObjects()!=smallerNumObjects ) {
 		smallerTotalCost = CalcTotalCosts( newXextents );
 	}
-	
+
 	// Step 8.
 	leftRightFlag = 3-leftRightFlag;
 	// Create the AABB's for the larger subtree
 	MakeAabbsForSubtree( leftRightFlag, xExtents, *largerChildAabb );
 	// Copy the extent triples for the larger subtree
-	CopyTriplesForSubtree( leftRightFlag, 0, xExtents, xExtents ); 
-	CopyTriplesForSubtree( leftRightFlag, 1, yExtents, yExtents ); 
-	CopyTriplesForSubtree( leftRightFlag, 2, zExtents, zExtents ); 
+	CopyTriplesForSubtree( leftRightFlag, 0, xExtents, xExtents );
+	CopyTriplesForSubtree( leftRightFlag, 1, yExtents, yExtents );
+	CopyTriplesForSubtree( leftRightFlag, 2, zExtents, zExtents );
 	leftRightFlag = 3-leftRightFlag;		// Reset to smaller subtree again
 	// Recalculate total cost if necessary, i.e., if some objects go missing
 	if ( xExtents.NumObjects()!=largerNumObjects ) {
@@ -542,10 +521,10 @@ bool KdTree::CalcBestSplit(const AABB& aabb, const VectorR3& deltaBox,
 
 	// Try each of the three axes in turn.
 	bool foundBetter = false;
-	double bestCostSoFar = totalObjectCost; 
-	if ( CalcBestSplit( totalObjectCost, costToBeat, xExtents, 
+	double bestCostSoFar = totalObjectCost;
+	if ( CalcBestSplit( totalObjectCost, costToBeat, xExtents,
 						aabb.GetMinX(), aabb.GetMaxX(), deltaBox.y, deltaBox.z,
-						&bestCostSoFar, splitValue, 
+						&bestCostSoFar, splitValue,
 						numTriplesToLeft, numObjectsToLeft, numObjectsToRight,
 						costObjectsToLeft, costObjectsToRight ) )
 	{
@@ -553,9 +532,9 @@ bool KdTree::CalcBestSplit(const AABB& aabb, const VectorR3& deltaBox,
 		*splitAxisID = KdTreeNode::KD_SPLIT_X;
 		costToBeat = bestCostSoFar;
 	}
-	if ( CalcBestSplit( totalObjectCost, costToBeat, yExtents, 
+	if ( CalcBestSplit( totalObjectCost, costToBeat, yExtents,
 						aabb.GetMinY(), aabb.GetMaxY(), deltaBox.x, deltaBox.z,
-						&bestCostSoFar, splitValue, 
+						&bestCostSoFar, splitValue,
 						numTriplesToLeft, numObjectsToLeft, numObjectsToRight,
 						costObjectsToLeft, costObjectsToRight ) )
 	{
@@ -563,9 +542,9 @@ bool KdTree::CalcBestSplit(const AABB& aabb, const VectorR3& deltaBox,
 		*splitAxisID = KdTreeNode::KD_SPLIT_Y;
 		costToBeat = bestCostSoFar;
 	}
-	if ( CalcBestSplit( totalObjectCost, costToBeat, zExtents, 
+	if ( CalcBestSplit( totalObjectCost, costToBeat, zExtents,
 						aabb.GetMinZ(), aabb.GetMaxZ(), deltaBox.x, deltaBox.y,
-						&bestCostSoFar, splitValue, 
+						&bestCostSoFar, splitValue,
 						numTriplesToLeft, numObjectsToLeft, numObjectsToRight,
 						costObjectsToLeft, costObjectsToRight ) )
 	{
@@ -577,11 +556,11 @@ bool KdTree::CalcBestSplit(const AABB& aabb, const VectorR3& deltaBox,
 
 // Returns true if a new better split is found on the axis.
 // The other return values will NOT be changed unless "true" is returned.
-bool KdTree::CalcBestSplit( double totalObjectCosts, double costToBeat, 
-						const ExtentTripleArrayInfo& extents, 
-						double minOnAxis, double maxOnAxis, 
+bool KdTree::CalcBestSplit( double totalObjectCosts, double costToBeat,
+						const ExtentTripleArrayInfo& extents,
+						double minOnAxis, double maxOnAxis,
 						double secondAxisLen, double thirdAxisLen,
-						double* retNewBestCost, double* retSplitValue, 
+						double* retNewBestCost, double* retSplitValue,
 						long* retNumTriplesToLeft, long* retNumObjectsToLeft, long* retNumObjectsToRight,
 						double* retCostObjectsToLeft, double* retCostObjectsToRight )
 {
@@ -599,7 +578,7 @@ bool KdTree::CalcBestSplit( double totalObjectCosts, double costToBeat,
 	long numObjectsLeft = 0;					// number of ojects on the left during the scan
 	long numObjectsRight = extents.NumObjects();	// number of objects on the right during the scan
 	double costLeft = 0.0;					// cost of objects on the left during the scan
-	double costRight = totalObjectCosts;	// total cost of objects still on the right side during scan	
+	double costRight = totalObjectCosts;	// total cost of objects still on the right side during scan
 	ExtentTriple* etPtr = extents.TripleArray;
 	bool inFirstHalf = true;			// If still scanning first half, measured in distance along axis
 	double midPoint = 0.5*(minOnAxis+maxOnAxis);
@@ -614,7 +593,7 @@ bool KdTree::CalcBestSplit( double totalObjectCosts, double costToBeat,
 
 		// Skip past all TT_MAX's, and TT_FLAT's in first half, with this split value
 		while ( numTriplesLeft<numTriples ) {
-			if ( !( ((thisType==ExtentTriple::TT_MAX 
+			if ( !( ((thisType==ExtentTriple::TT_MAX
 						|| (thisType==ExtentTriple::TT_FLAT && inFirstHalf)))
 					&& sameSplitValue ) )
 			{
@@ -642,9 +621,9 @@ bool KdTree::CalcBestSplit( double totalObjectCosts, double costToBeat,
 
 		// Skip past all TT_MIN's, and TT_FLAT's in second half, with this split value
 		while ( numTriplesLeft<numTriples ) {
-			if ( !( sameSplitValue &&  
-					(thisType==ExtentTriple::TT_MIN 
-					|| (thisType==ExtentTriple::TT_FLAT && !inFirstHalf)) ) ) 
+			if ( !( sameSplitValue &&
+					(thisType==ExtentTriple::TT_MIN
+					|| (thisType==ExtentTriple::TT_FLAT && !inFirstHalf)) ) )
 			{
 				break;
 			}
@@ -661,7 +640,7 @@ bool KdTree::CalcBestSplit( double totalObjectCosts, double costToBeat,
 	return foundBetter;
 }
 
-void KdTree::UpdateLeftRightCosts( const ExtentTriple& et, long* numObjectsLeft, long* numObjectsRight, 
+void KdTree::UpdateLeftRightCosts( const ExtentTriple& et, long* numObjectsLeft, long* numObjectsRight,
 							   double *costLeft, double *costRight )
 {
 	double cost = ObjectConstantCost;
@@ -716,14 +695,14 @@ void KdTree::MakeAabbsForSubtree(unsigned char leftRightFlag,
 
 
 // Selectively copy and recalculate extent triples for a sub tree.
-//	leftRightFlag is 1 or 2 depending on whether this is for the left 
+//	leftRightFlag is 1 or 2 depending on whether this is for the left
 //		or right subtree.
 //	The Aabb's have already been set correctly for the new subtree.
-//  The new triples are created and copied in an order that promises to 
-//		be as sorted as possible, but they are not fully sorted yet.  
+//  The new triples are created and copied in an order that promises to
+//		be as sorted as possible, but they are not fully sorted yet.
 //		After that, they are ShellSorted.
 void KdTree::CopyTriplesForSubtree( unsigned char leftRightFlag, int axisNumber,
-											ExtentTripleArrayInfo& fromExtents, 
+											ExtentTripleArrayInfo& fromExtents,
 											ExtentTripleArrayInfo& toExtents )
 {
 	ExtentTriple* fromET = fromExtents.TripleArray;
@@ -737,7 +716,7 @@ void KdTree::CopyTriplesForSubtree( unsigned char leftRightFlag, int axisNumber,
 		if ( LeftRightStatus[objectID] & leftRightFlag ) {
 			toET->ObjectID = objectID;
 			toET->ExtentType = fromET->ExtentType;
-			switch ( fromET->ExtentType ) 
+			switch ( fromET->ExtentType )
 			{
 			case ExtentTriple::TT_MIN:
 				{
@@ -782,7 +761,7 @@ void KdTree::CopyTriplesForSubtree( unsigned char leftRightFlag, int axisNumber,
 	}
 	assert ( (iM&0x01) == 0 );
 	toExtents.SetNumbers( iM>>1, iF );
-	
+
 	// Now sort the new array of triples
 	toExtents.Sort();
 }
@@ -796,7 +775,7 @@ double KdTree::CalcTotalCosts( const ExtentTripleArrayInfo& extents ) const
 // ****************************************************************************
 // Code for cost functions
 // ****************************************************************************
-inline void KdTree::InitSplitCostFunction( double minOnAxis, double maxOnAxis, 
+inline void KdTree::InitSplitCostFunction( double minOnAxis, double maxOnAxis,
 											double secondAxisLen, double thirdAxisLen,
 											double costToBeat, double totalObjectCosts )
 {
@@ -815,7 +794,7 @@ inline void KdTree::InitSplitCostFunction( double minOnAxis, double maxOnAxis,
 	}
 }
 
-inline void KdTree::InitMacdonaldBooth( double minOnAxis, double maxOnAxis, 
+inline void KdTree::InitMacdonaldBooth( double minOnAxis, double maxOnAxis,
 										double secondAxisLen, double thirdAxisLen,
 										double costToBeat, double totalObjectCosts )
 {
@@ -829,7 +808,7 @@ inline void KdTree::InitMacdonaldBooth( double minOnAxis, double maxOnAxis,
 	CF_Area = 2.0*CF_EndArea + CF_Wrap;
 }
 
-inline void KdTree::InitDoubleRecurse( double minOnAxis, double maxOnAxis, 
+inline void KdTree::InitDoubleRecurse( double minOnAxis, double maxOnAxis,
 										double secondAxisLen, double thirdAxisLen,
 										double costToBeat, double totalObjectCosts )
 {
@@ -956,7 +935,7 @@ bool KdTree::CalcDoubleRecurseGS( double splitValue, double costLeft, double cos
             return true;
 		}
 		return false;
-	} 
+	}
 
 	if ( CF_EndArea==0.0 ) {
 		if ( alpha!=0.0 && beta!=0.0 ) {

@@ -1,10 +1,12 @@
-
-//
-// DoubleRecurse.h
-//
-//  Solves a particular kind of double recursion
-//
-// Author: Sam Buss   2004, 2005.
+/*
+ * Gray: a Ray Tracing-based Monte Carlo Simulator for PET
+ *
+ * Copyright (c) 2018, David Freese, Peter Olcott, Sam Buss, Craig Levin
+ *
+ * This software is distributed under the terms of the MIT License unless
+ * otherwise noted.  See LICENSE for further details.
+ *
+ */
 
 //  Consider a function which satisfies the following properties:
 //    1.   f(N) = 1 + A*f(alpha*N) + B*f(beta*N)
@@ -25,4 +27,3 @@ void FindDoubleRecurseSoln ( double A, double B, double alpha, double beta,
 bool FindDoubleRecurseSoln ( double A, double B, double alpha, double beta,
                              double* C, double* exponent, double* D,
                              double exponentToBeat );
-

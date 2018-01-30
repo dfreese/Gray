@@ -1,18 +1,10 @@
 /*
+ * Gray: a Ray Tracing-based Monte Carlo Simulator for PET
  *
- * RayTrace Software Package, release 3.2b.  May 3, 2006; October 5, 2008.
+ * Copyright (c) 2018, David Freese, Peter Olcott, Sam Buss, Craig Levin
  *
- * Mathematics Subpackage (VrMath)
- *
- * Author: Samuel R. Buss
- *
- * Software is "as-is" and carries no warranty.  It may be used without
- *   restriction, but if you modify it, please change the filenames to
- *   prevent confusion between different versions.  Please acknowledge
- *   all use of the software in any publications or products based on it.
- *
- * Bug reports: Sam Buss, sbuss@ucsd.edu.
- * Web page: http://math.ucsd.edu/~sbuss/MathCG
+ * This software is distributed under the terms of the MIT License unless
+ * otherwise noted.  See LICENSE for further details.
  *
  */
 
@@ -154,14 +146,10 @@ double SphereAngle( const VectorR3& u, const VectorR3& v, const VectorR3& w ) {
     double normProdInv = 1.0/sqrt(vuPerp.NormSq()*vwPerp.NormSq());
     costheta *= normProdInv;
     sintheta *= normProdInv;
-    
+
     double theta = atan2( sintheta, costheta );
     if (theta<0.0) {
         theta += PI2;
     }
     return theta;
 }
-
-
-
-
