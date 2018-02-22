@@ -11,6 +11,7 @@
 #ifndef mergeprocess_h
 #define mergeprocess_h
 
+#include <functional>
 #include <vector>
 #include <Daq/Mapping.h>
 #include <Daq/Process.h>
