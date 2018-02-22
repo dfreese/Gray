@@ -7,10 +7,6 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.8)
         message(FATAL_ERROR "GCC 4.8 or greater is required")
     endif()
-    if (CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 4.8)
-        # GCC 4.8 still requires pthreads
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -lpthread")
-    endif()
 endif()
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 3.3)
@@ -19,6 +15,8 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
@@ -63,4 +61,5 @@ add_subdirectory(gray)
 add_subdirectory(daqmodel)
 add_subdirectory(Viewer)
 add_subdirectory(test)
+
 
