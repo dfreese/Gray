@@ -27,7 +27,7 @@ How to install Gray:
 1. If glut libraries are not installed and you want to run the viewer:
 
     ```
-    sudo apt-get install freeglut3 freeglut3-dev
+    sudo apt-get install freeglut3 freeglut3-dev libxmu-dev libxi-dev
     ```
     (This assumes a debian system.  Gray has been tested on Ubuntu 14.04 and
     macOS Sierra primarily)
