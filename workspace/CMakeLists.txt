@@ -15,6 +15,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 option(ENABLE_LTO "Enable link-time optimization for the compilation" OFF)
+option(STATIC_BIN "Build fully staticially-linked binaries" OFF)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
