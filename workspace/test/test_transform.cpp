@@ -178,6 +178,21 @@ TEST(UniformAnnulusCylinderTest, Height) {
     }
 }
 
+TEST(UniformAnnulusCylinderTest, ThetaRandVar) {
+    const double height = 1;
+    const double radius = 1;
+    const double height_rand = 0.5;
+    for (double theta_rand: {0.0, 0.1, 0.4, 0.5, 0.6, 0.9, 1.0}) {
+        VectorR3 ret = Transform::UniformAnnulusCylinder(
+                height, radius, theta_rand, height_rand);
+
+        const double rad = 2 * M_PI * theta_rand;
+        const VectorR3 exp(std::cos(rad), std::sin(rad), 0);
+        // There may be some error in sin(pi/2) not being exactly zero.
+        EXPECT_LT((ret - exp).Norm(), 1e-16);
+    }
+}
+
 TEST(UniformAnnulusCylinderTest, HeightRandVar) {
     const double theta = 0.25; // Transformed to PI/2
     const double radius = 1;
