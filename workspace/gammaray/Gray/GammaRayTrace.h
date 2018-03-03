@@ -8,7 +8,7 @@
 #include <Physics/Photon.h>
 
 class GammaMaterial;
-class GammaRayTraceStats;
+struct GammaRayTraceStats;
 class SceneDescription;
 class Output;
 class NuclearDecay;

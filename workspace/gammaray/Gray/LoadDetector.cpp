@@ -177,7 +177,7 @@ bool LoadDetector::Load(const std::string & filename,
 {
     double polygonScale = 1.0;
     double actScale = 1.0;
-    unsigned int block_id = 0;
+    int block_id = 0;
 
     // Setup the matrix stack with one initial identity matrix.
     std::stack<RigidMapR3> MatrixStack;

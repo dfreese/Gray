@@ -14,7 +14,7 @@
 #include <functional>
 #include <Daq/Process.h>
 
-class ProcessStats;
+struct ProcessStats;
 
 class BlurProcess : public Process {
 public:

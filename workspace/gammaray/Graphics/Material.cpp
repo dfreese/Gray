@@ -20,8 +20,8 @@ Material::Material(
         const std::string & name,
         bool sensitive,
         bool interactive) :
-    id(id),
     name(name),
+    id(id),
     sensitive(sensitive),
     interactive(interactive)
 {

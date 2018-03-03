@@ -13,7 +13,7 @@
 
 #include <Daq/Process.h>
 
-class ProcessStats;
+struct ProcessStats;
 
 class SortProcess : public Process {
 public:

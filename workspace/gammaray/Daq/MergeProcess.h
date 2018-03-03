@@ -16,7 +16,7 @@
 #include <Daq/Mapping.h>
 #include <Daq/Process.h>
 
-class ProcessStats;
+struct ProcessStats;
 
 class MergeProcess : public Process {
 public:

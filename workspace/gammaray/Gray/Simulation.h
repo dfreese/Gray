@@ -32,7 +32,6 @@ private:
     SourceList sources;
     DaqModel daq_model;
     size_t thread_idx;
-    size_t no_threads;
     const SceneDescription& scene;
     const Config& config;
 

@@ -19,13 +19,12 @@ Simulation::Simulation(
         const SourceList& sources,
         const DaqModel& daq_model,
         size_t thread_idx, size_t no_threads) :
-    config(config),
+    outputs_coinc(daq_model.no_coinc_processes()),
     sources(sources),
-    scene(scene),
     daq_model(daq_model),
     thread_idx(thread_idx),
-    no_threads(no_threads),
-    outputs_coinc(daq_model.no_coinc_processes())
+    scene(scene),
+    config(config)
 {
     if (no_threads > 1) {
         this->sources.AdjustTimeForSplit(thread_idx, no_threads);

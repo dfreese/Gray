@@ -14,7 +14,7 @@
 #include <vector>
 #include <Physics/Interaction.h>
 
-class ProcessStats;
+struct ProcessStats;
 
 class Process {
 public:

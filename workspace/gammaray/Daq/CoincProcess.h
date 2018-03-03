@@ -13,7 +13,7 @@
 
 #include <Daq/Process.h>
 
-class ProcessStats;
+struct ProcessStats;
 
 class CoincProcess : public Process {
 public:

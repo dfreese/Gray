@@ -99,7 +99,6 @@ private:
     bool ReflectiveFlag = false;		// Is reflective color non-black?
 
     double Shininess = 0.0f; // Shininess exponent
-    bool isError = false;
 
     std::string name;
     int id = -1;
