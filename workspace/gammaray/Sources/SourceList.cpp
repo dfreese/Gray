@@ -309,7 +309,7 @@ bool SourceList::LoadIsotope(const std::string & iso_name,
 
     // If the value given is negative or the user disables source decay from
     // the command line, then set the half life to be infinite.
-    if ((half_life <= 0) && (!simulate_isotope_half_life)) {
+    if ((half_life <= 0.0) || (!simulate_isotope_half_life)) {
         half_life = std::numeric_limits<double>::infinity();
     }
 
