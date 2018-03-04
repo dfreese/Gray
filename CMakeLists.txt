@@ -34,6 +34,9 @@ set(VERSION_MINOR 8)
 set(VERSION_PATCH 0)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+enable_testing()
+
 add_subdirectory(src)
 add_subdirectory(test)
 
