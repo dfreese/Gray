@@ -41,10 +41,8 @@ How to install Gray:
 3. Compile:
 
     ```
-    mkdir build
-    mkdir bin
-    cd build
-    cmake ../workspace/ -DCMAKE_BUILD_TYPE=Release
+    mkdir build && mkdir bin && cd build
+    cmake .. -DCMAKE_BUILD_TYPE=Release
     make
     ```
 
