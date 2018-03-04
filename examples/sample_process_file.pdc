@@ -12,7 +12,7 @@ merge detector 5.0e-9 max
 # We don't have blocks mapped currently in the sample_mapping_file.map file
 # so we do not enable these.
 # merge block 300e-9 # max by default
-# merge block 300e-9 anger bx by bz 8 8 1
+# merge block 300e-9 anger bx by bz
 # deadtime block 10e-6
 
 # Energy gate everything below 0.4MeV

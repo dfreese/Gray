@@ -31,9 +31,6 @@ m Water
 push
 t -2.0 0.0 0.0
 sphere 0.0 0.0 0.0 6.0
-# create two cylindrical sources
-# cyl_src 0.0 -2.0 0.0 0.0 0.0 1.0 0.01 68 2.7027
-# cyl_src 0.0 2.0 0.0 0.0 0.0 1.0 0.01 68 2.7027
 # sphere source 10 uCi
 sp_src 0.0 0.0 0.0 0.5 5.0
 t -0.25 0.0 0.0

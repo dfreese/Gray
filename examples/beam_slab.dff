@@ -13,4 +13,6 @@ k 0.0 0.0 51.0 100.0 100.0 100.0
 k 0.0 0.0 -51.0 100.0 100.0 100.0
 
 hits_format var_binary
+
+# Save Rayleigh interactions, which don't deposit energy
 log_nondepositing
