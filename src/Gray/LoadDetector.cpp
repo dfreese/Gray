@@ -1,6 +1,7 @@
 #include "Gray/Gray/LoadDetector.h"
 #include <cstdio>
 #include <cstring>
+#include <iostream>
 #include <memory>
 #include <stack>
 #include <sstream>
