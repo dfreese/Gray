@@ -77,6 +77,8 @@ add_library(gammaray
     ${CMAKE_SOURCE_DIR}/src/Gray/Simulation.cpp
     ${CMAKE_SOURCE_DIR}/include/Gray/Gray/Simulation.h
     ${CMAKE_SOURCE_DIR}/include/Gray/Gray/SimulationStats.h
+    ${CMAKE_SOURCE_DIR}/include/Gray/Gray/Syntax.h
+    ${CMAKE_SOURCE_DIR}/src/Gray/Syntax.cpp
     ${CMAKE_SOURCE_DIR}/src/KdTree/DoubleRecurse.cpp
     ${CMAKE_SOURCE_DIR}/include/Gray/KdTree/DoubleRecurse.h
     ${CMAKE_SOURCE_DIR}/include/Gray/KdTree/KdTree.h

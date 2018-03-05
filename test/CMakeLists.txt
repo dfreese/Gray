@@ -33,6 +33,7 @@ add_executable(test_gray
     test_physics.cpp
     test_random.cpp
     test_source.cpp
+    test_syntax.cpp
     test_transform.cpp
     test_viewable.cpp
     )
