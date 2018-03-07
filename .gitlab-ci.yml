@@ -13,3 +13,7 @@ build:
         - cmake ..
         - make
         - make test
+    artifacts:
+        paths:
+            - build/test_detail.json
+        expire_in: 1 week

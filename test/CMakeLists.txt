@@ -40,4 +40,7 @@ add_executable(test_gray
 target_link_libraries(test_gray gammaray)
 target_link_libraries(test_gray gtest gtest_main)
 
-add_test(gray-unit-tests test_gray)
+add_test(
+    NAME gray-unit-tests
+    COMMAND test_gray --gtest_output=json
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
