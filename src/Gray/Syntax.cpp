@@ -9,6 +9,7 @@
  */
 
 #include "Gray/Gray/Syntax.h"
+#include "Gray/Gray/File.h"
 #include <algorithm>
 #include <iostream>
 #include <fstream>
@@ -83,8 +84,8 @@ std::list<Command> Syntax::ParseCommands(const Command& include) {
         err.back().MarkError("Too make options for include specified");
         return (err);
     }
-    // TODO: make include filename relative to file it was in.
-    std::string filename = include.tokens[1];
+    std::string filename = File::Join(
+            File::Dir(include.filename), include.tokens[1]);
     std::ifstream input(filename);
     if (!input) {
         std::list<Command> err({include});
