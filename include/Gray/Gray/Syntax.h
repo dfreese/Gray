@@ -26,6 +26,9 @@ public:
     std::string ErrorMsg() const;
     void MarkError(const std::string& err_msg);
     bool IsError() const;
+    bool operator==(const std::string& val) const;
+    std::string Join() const;
+    std::string JoinAll() const;
 private:
     bool is_error = false;
     std::string err_msg;

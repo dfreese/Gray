@@ -72,6 +72,8 @@ add_library(gammaray
     ${CMAKE_SOURCE_DIR}/src/Gray/GammaRayTrace.cpp
     ${CMAKE_SOURCE_DIR}/include/Gray/Gray/GammaRayTrace.h
     ${CMAKE_SOURCE_DIR}/include/Gray/Gray/GammaRayTraceStats.h
+    ${CMAKE_SOURCE_DIR}/src/Gray/Load.cpp
+    ${CMAKE_SOURCE_DIR}/include/Gray/Gray/Load.h
     ${CMAKE_SOURCE_DIR}/src/Gray/LoadDetector.cpp
     ${CMAKE_SOURCE_DIR}/include/Gray/Gray/LoadDetector.h
     ${CMAKE_SOURCE_DIR}/src/Gray/LoadMaterials.cpp

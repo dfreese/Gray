@@ -326,15 +326,13 @@ bool Config::set_format(const std::string & fmt) {
             set_format_coinc(fmt));
 }
 
-bool Config::set_format_hits(const std::string & fmt) {
-    if (format_hits_set) {
-        return(true);
-    }
-    if (Output::ParseFormat(fmt, format_hits) < 0) {
+bool Config::set_format_hits(const std::string & fmt_str) {
+    Output::Format fmt;
+    if (Output::ParseFormat(fmt_str, fmt) < 0) {
         return(false);
     }
-    format_hits_set = true;
-    return(true);
+    set_format_hits(fmt);
+    return (true);
 }
 
 void Config::set_format_hits(const Output::Format & fmt) {
@@ -352,15 +350,13 @@ bool Config::get_format_hits_set() const {
     return(format_hits_set);
 }
 
-bool Config::set_format_singles(const std::string & fmt) {
-    if (format_singles_set) {
-        return(true);
-    }
-    if (Output::ParseFormat(fmt, format_singles) < 0) {
+bool Config::set_format_singles(const std::string & fmt_str) {
+    Output::Format fmt;
+    if (Output::ParseFormat(fmt_str, fmt) < 0) {
         return(false);
     }
-    format_singles_set = true;
-    return(true);
+    set_format_singles(fmt);
+    return (true);
 }
 
 void Config::set_format_singles(const Output::Format & fmt) {
@@ -374,15 +370,13 @@ Output::Format Config::get_format_singles() const {
     return(format_singles);
 }
 
-bool Config::set_format_coinc(const std::string & fmt) {
-    if (format_coinc_set) {
-        return(true);
-    }
-    if (Output::ParseFormat(fmt, format_coinc) < 0) {
+bool Config::set_format_coinc(const std::string & fmt_str) {
+    Output::Format fmt;
+    if (Output::ParseFormat(fmt_str, fmt) < 0) {
         return(false);
     }
-    format_coinc_set = true;
-    return(true);
+    set_format_coinc(fmt);
+    return (true);
 }
 
 void Config::set_format_coinc(const Output::Format & fmt) {
