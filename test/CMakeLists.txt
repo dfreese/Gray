@@ -26,6 +26,7 @@ add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
 add_executable(test_gray
     test_main.cpp
     test_daq.cpp
+    test_file.cpp
     test_io.cpp
     test_linear.cpp
     test_mapping.cpp

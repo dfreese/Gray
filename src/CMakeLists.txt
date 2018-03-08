@@ -65,6 +65,8 @@ add_library(gammaray
     ${CMAKE_SOURCE_DIR}/include/Gray/Graphics/VisiblePoint.h
     ${CMAKE_SOURCE_DIR}/include/Gray/Gray/Config.h
     ${CMAKE_SOURCE_DIR}/src/Gray/Config.cpp
+    ${CMAKE_SOURCE_DIR}/src/Gray/File.cpp
+    ${CMAKE_SOURCE_DIR}/include/Gray/Gray/File.h
     ${CMAKE_SOURCE_DIR}/include/Gray/Gray/GammaMaterial.h
     ${CMAKE_SOURCE_DIR}/src/Gray/GammaMaterial.cpp
     ${CMAKE_SOURCE_DIR}/src/Gray/GammaRayTrace.cpp
