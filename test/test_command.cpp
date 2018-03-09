@@ -50,3 +50,15 @@ TEST(CommandTest, Parse) {
     EXPECT_FALSE(cmd.parse(i, j, k, x, y, z, too_many));
 }
 
+TEST(CommandTest, ParseEmpty) {
+    Command cmd("   # ignored comment");
+    EXPECT_FALSE(cmd.parse());
+    EXPECT_TRUE(cmd.parseAll());
+
+    cmd = Command("single_token     # ignored comment");
+    EXPECT_TRUE(cmd.parse());
+
+    std::string val;
+    EXPECT_TRUE(cmd.parseAll(val));
+    EXPECT_EQ(val, "single_token");
+}

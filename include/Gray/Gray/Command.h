@@ -32,7 +32,8 @@ public:
      */
     template<typename... Tail>
     bool parse(Tail&... tail) const {
-        if (tokens.empty()) {
+        if (tokens.size() < 1) {
+            // We assume at least one token below, so bail if we're empty
             return (false);
         }
         return (String::Parse(tokens.cbegin() + 1, tokens.cend(), tail...));
