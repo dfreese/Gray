@@ -63,6 +63,8 @@ add_library(gammaray
     ${CMAKE_SOURCE_DIR}/src/Graphics/ViewableTriangle.cpp
     ${CMAKE_SOURCE_DIR}/include/Gray/Graphics/ViewableTriangle.h
     ${CMAKE_SOURCE_DIR}/include/Gray/Graphics/VisiblePoint.h
+    ${CMAKE_SOURCE_DIR}/include/Gray/Gray/Command.h
+    ${CMAKE_SOURCE_DIR}/src/Gray/Command.cpp
     ${CMAKE_SOURCE_DIR}/include/Gray/Gray/Config.h
     ${CMAKE_SOURCE_DIR}/src/Gray/Config.cpp
     ${CMAKE_SOURCE_DIR}/src/Gray/File.cpp
@@ -81,6 +83,7 @@ add_library(gammaray
     ${CMAKE_SOURCE_DIR}/src/Gray/Simulation.cpp
     ${CMAKE_SOURCE_DIR}/include/Gray/Gray/Simulation.h
     ${CMAKE_SOURCE_DIR}/include/Gray/Gray/SimulationStats.h
+    ${CMAKE_SOURCE_DIR}/include/Gray/Gray/String.h
     ${CMAKE_SOURCE_DIR}/include/Gray/Gray/Syntax.h
     ${CMAKE_SOURCE_DIR}/src/Gray/Syntax.cpp
     ${CMAKE_SOURCE_DIR}/src/KdTree/DoubleRecurse.cpp

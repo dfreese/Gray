@@ -13,32 +13,12 @@
 
 #include <iosfwd>
 #include <list>
-#include <memory>
 #include <string>
 #include <vector>
-
-class Command {
-public:
-    std::string filename;
-    int line = -1;
-    std::vector<std::string> tokens;
-    Command(const std::string& line);
-    std::string ErrorMsg() const;
-    void MarkError(const std::string& err_msg);
-    bool IsError() const;
-    bool operator==(const std::string& val) const;
-    std::string Join() const;
-    std::string JoinAll() const;
-private:
-    bool is_error = false;
-    std::string err_msg;
-};
+#include "Gray/Gray/Command.h"
 
 namespace Syntax {
-std::vector<std::string> Split(
-        const std::string& text, const std::string& delims);
-std::list<Command> ParseCommands(
-        std::istream& input, const std::string& filename);
+std::list<Command> ParseCommands(std::istream& input, const std::string& filename);
 std::list<Command> ParseCommands(const Command& include);
 std::vector<Command> ParseCommands(const std::string& filename);
 void PruneEmpty(std::list<Command>& commands);

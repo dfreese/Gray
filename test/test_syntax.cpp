@@ -15,52 +15,8 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include "Gray/Gray/Command.h"
 #include "Gray/Gray/Syntax.h"
-
-TEST(SplitTest, EmptyString) {
-    std::vector<std::string> val = Syntax::Split("", " ");
-    std::vector<std::string> exp;
-    EXPECT_EQ(val, exp);
-}
-
-TEST(SplitTest, Basic) {
-    std::vector<std::string> val = Syntax::Split("hello world", " ");
-    std::vector<std::string> exp({"hello", "world"});
-    EXPECT_EQ(val, exp);
-}
-
-TEST(SplitTest, EmptySplit) {
-    std::vector<std::string> val = Syntax::Split("hello  world", " ");
-    std::vector<std::string> exp({"hello", "world"});
-    EXPECT_EQ(val, exp);
-}
-
-TEST(SplitTest, MultipleDelim) {
-    std::vector<std::string> val = Syntax::Split("hello, world", " ,");
-    std::vector<std::string> exp({"hello", "world"});
-    EXPECT_EQ(val, exp);
-}
-
-TEST(SplitTest, ManyVal) {
-    std::vector<std::string> val = Syntax::Split("  it was the best of times  ", " ,");
-    std::vector<std::string> exp({"it", "was", "the", "best", "of", "times"});
-    EXPECT_EQ(val, exp);
-}
-
-TEST(CommandTest, BasicSplit) {
-    Command cmd("    begin_repeat 5 # ignored comment");
-    ASSERT_EQ(cmd.tokens.size(), 2);
-    EXPECT_EQ(cmd.tokens[0], "begin_repeat");
-    EXPECT_EQ(cmd.tokens[1], "5");
-}
-
-TEST(CommandTest, MarkError) {
-    std::string err_msg("there are four lights!");
-    Command cmd("begin_repeat 5 # ignored comment");
-    cmd.MarkError(err_msg);
-    EXPECT_EQ(cmd.ErrorMsg(), err_msg);
-    EXPECT_TRUE(cmd.IsError());
-}
 
 TEST(SyntaxTest, SingleCommand) {
     std::stringstream ss;
