@@ -670,9 +670,8 @@ bool LoadDetector::Load(const std::string & filename,
             }
             MatrixStack.top().Transform(&center);
             MatrixStack.top().Transform3x3(&axis);
-            axis *= height;
             std::unique_ptr<EllipticCylinderSource> cyl(new EllipticCylinderSource(
-                    center, radius1, radius2, axis, actScale*activity));
+                    center, radius1, radius2, height, axis, actScale*activity));
             sources.AddSource(std::move(cyl));
         } else if (command == "annulus_ell_src") {
             VectorR3 center;
@@ -692,10 +691,10 @@ bool LoadDetector::Load(const std::string & filename,
             }
             MatrixStack.top().Transform(&center);
             MatrixStack.top().Transform3x3(&axis);
-            axis *= height;
             std::unique_ptr<AnnulusEllipticCylinderSource> cyl(
-                    new AnnulusEllipticCylinderSource(center, radius1, radius2,
-                                                      axis, actScale*activity));
+                    new AnnulusEllipticCylinderSource(
+                        center, radius1, radius2, height,
+                        axis, actScale*activity));
             sources.AddSource(std::move(cyl));
         } else if (command == "annulus_cyl_src") {
             VectorR3 center;

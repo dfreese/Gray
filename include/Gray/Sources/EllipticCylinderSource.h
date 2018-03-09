@@ -18,18 +18,19 @@
 class EllipticCylinderSource : public Source
 {
 public:
-    EllipticCylinderSource();
-    EllipticCylinderSource(const VectorR3 &pos, double radius1, double radius2, VectorR3 &L, double act);
+    EllipticCylinderSource() = default;
+    EllipticCylinderSource(
+            const VectorR3 &pos,
+            double radius1, double radius2, double height,
+            const VectorR3& axis, double act);
     VectorR3 Decay() const override;
     bool Inside(const VectorR3 & pos) const override;
-    void SetRadius(double r1, double r2);
-    void SetAxis(VectorR3 &L);
 
 private:
-    double radius1;
-    double radius2;
-    double length;
-    VectorR3 axis;
+    double radius1 = 1.0;
+    double radius2 = 1.0;
+    double height = 1.0;
+    VectorR3 axis = {0.0, 0.0, 1.0};
     RigidMapR3 local_to_global;
     RigidMapR3 global_to_local;
 };
