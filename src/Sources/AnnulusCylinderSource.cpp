@@ -11,28 +11,22 @@
 #include "Gray/Sources/AnnulusCylinderSource.h"
 #include "Gray/Random/Random.h"
 
-AnnulusCylinderSource::AnnulusCylinderSource() :
-    AnnulusCylinderSource({0, 0, 0}, 1.0, {0, 0, 1}, 0)
-{
-}
-
-AnnulusCylinderSource::AnnulusCylinderSource(const VectorR3 & position,
-                                             double radius,
-                                             VectorR3 L, double activity) :
+AnnulusCylinderSource::AnnulusCylinderSource(
+        const VectorR3& position,
+        double radius, double height,
+        const VectorR3& axis, double activity) :
     Source(position, activity),
     radius(radius),
-    length(L.Norm()),
-    local_to_global(RefAxisPlusTransToMap(L.MakeUnit(), position))
-
+    height(height),
+    local_to_global(RefAxisPlusTransToMap(axis, position))
 {
 }
 
 VectorR3 AnnulusCylinderSource::Decay() const {
-    return(local_to_global * Random::UniformAnnulusCylinder(length, radius));
+    return(local_to_global * Random::UniformAnnulusCylinder(height, radius));
 }
 
-bool AnnulusCylinderSource::Inside(const VectorR3 & pos) const
-{
+bool AnnulusCylinderSource::Inside(const VectorR3&) const {
     // Nothing can be inside of an Annulus which is infinitely thin.
     return (false);
 }

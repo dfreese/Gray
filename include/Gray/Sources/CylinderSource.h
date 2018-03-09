@@ -18,17 +18,22 @@
 class CylinderSource : public Source
 {
 public:
-    CylinderSource();
-    CylinderSource(const VectorR3 &pos, double radius, VectorR3 L, double act);
+    CylinderSource() = default;
+    CylinderSource(
+            const VectorR3& position,
+            double radius,
+            double height,
+            const VectorR3& axis,
+            double act);
     VectorR3 Decay() const override;
     bool Inside(const VectorR3 & pos) const override;
 
 private:
-    const double radius;
-    const double length;
-    const VectorR3 axis;
-    const RigidMapR3 local_to_global;
-    const RigidMapR3 global_to_local;
+    double radius = 1.0;
+    double height = 1.0;
+    VectorR3 axis = {0.0, 0.0, 1.0};
+    RigidMapR3 local_to_global;
+    RigidMapR3 global_to_local;
 };
 
 #endif /*CYLINDERSOURCE_H_*/

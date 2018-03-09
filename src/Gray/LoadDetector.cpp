@@ -715,9 +715,8 @@ bool LoadDetector::Load(const std::string & filename,
 
             MatrixStack.top().Transform(&center);
             MatrixStack.top().Transform3x3(&axis);
-            axis *= height;
             std::unique_ptr<AnnulusCylinderSource> cyl(new AnnulusCylinderSource(
-                    center, radius, axis, actScale*activity));
+                    center, radius, height, axis, actScale*activity));
             sources.AddSource(std::move(cyl));
         } else if (command == "scale_act") {
             double t_actScale = -1.0;
@@ -918,9 +917,8 @@ bool LoadDetector::Load(const std::string & filename,
 
             MatrixStack.top().Transform(&center);
             MatrixStack.top().Transform3x3(&axis);
-            axis *= height;
-            std::unique_ptr<Source> cyl(new CylinderSource(center, radius, axis,
-                                                           actScale*activity));
+            std::unique_ptr<Source> cyl(new CylinderSource(
+                        center, radius, height, axis, actScale*activity));
             sources.AddSource(std::move(cyl));
         } else if (command == "ann_cyl") {
             VectorR3 center;
