@@ -806,20 +806,20 @@ bool LoadDetector::Load(const std::string & filename,
             VectorR3 baseCenter;
             VectorR3 baseSize;
             // Always assume the rect_src is axis aligned for now.
-            VectorR3 orientation(0, 0, 1);
+            VectorR3 axis(0, 0, 1);
             double activity = -1.0;
-            int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf",
+            int scanCode = sscanf(args.c_str(), "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
                               &baseCenter.x, &baseCenter.y, &baseCenter.z,
-                              &baseSize.x, &baseSize.y, &baseSize.z, &activity);
-            if (scanCode != 7) {
+                              &baseSize.x, &baseSize.y, &baseSize.z,
+                              &axis.x, &axis.y, &axis.z, &activity);
+            if (scanCode != 10) {
                 print_parse_error(line);
                 return(false);
             }
             MatrixStack.top().Transform(&baseCenter);
-            MatrixStack.top().Transform(&orientation);
-            std::unique_ptr<RectSource> s(new RectSource(baseCenter, baseSize,
-                                                         orientation,
-                                                         actScale*activity));
+            MatrixStack.top().Transform3x3(&axis);
+            std::unique_ptr<RectSource> s(new RectSource(
+                        baseCenter, baseSize, axis, actScale*activity));
             sources.AddSource(std::move(s));
         } else if (command == "array") {
             // repeat detector in 3d

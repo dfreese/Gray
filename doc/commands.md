@@ -371,9 +371,9 @@ Creates a spherical source.
 
 ### rect_src
 ```
-rect_src ["k" options] [activity]
+rect_src [center xyz] [size xyz] [size xyz]
 ```
-Creates a rectangular source.
+Creates a rectangular source.  The axis defines the direction of z size.
 
 ### start_vecsrc
 ```
