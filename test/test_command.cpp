@@ -33,3 +33,20 @@ TEST(CommandTest, MarkError) {
     EXPECT_TRUE(cmd.IsError());
 }
 
+TEST(CommandTest, Parse) {
+    Command cmd(" value 1 2 3 0.0 1.0 2.0 # ignored comment");
+    int i, j, k;
+    double x, y, z;
+    EXPECT_TRUE(cmd.parse(i, j, k, x, y, z));
+    EXPECT_EQ(i, 1);
+    EXPECT_EQ(j, 2);
+    EXPECT_EQ(k, 3);
+    EXPECT_EQ(x, 0.0);
+    EXPECT_EQ(y, 1.0);
+    EXPECT_EQ(z, 2.0);
+
+    EXPECT_FALSE(cmd.parse(i, j, k, x, y));
+    std::string too_many;
+    EXPECT_FALSE(cmd.parse(i, j, k, x, y, z, too_many));
+}
+

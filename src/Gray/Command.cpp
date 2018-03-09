@@ -67,5 +67,3 @@ std::string Command::JoinAll() const {
                     return (a + ' ' + b);
                     }));
 }
-
-

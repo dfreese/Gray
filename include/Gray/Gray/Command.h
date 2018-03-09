@@ -13,6 +13,7 @@
 
 #include <string>
 #include <vector>
+#include "Gray/Gray/String.h"
 
 class Command {
 public:
@@ -26,6 +27,24 @@ public:
     bool operator==(const std::string& val) const;
     std::string Join() const;
     std::string JoinAll() const;
+    /*!
+     * Try and parse tokens[1:] into the given parameters using String::Parse.
+     */
+    template<typename... Tail>
+    bool parse(Tail&... tail) const {
+        if (tokens.empty()) {
+            return (false);
+        }
+        return (String::Parse(tokens.cbegin() + 1, tokens.cend(), tail...));
+    }
+    /*!
+     * Try and parse all of the tokens into the given parameters using
+     * String::Parse.
+     */
+    template<typename... Tail>
+    bool parseAll(Tail&... tail) const {
+        return (String::Parse(tokens.cbegin(), tokens.cend(), tail...));
+    }
 private:
     bool is_error = false;
     std::string err_msg;
