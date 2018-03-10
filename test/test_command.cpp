@@ -33,6 +33,14 @@ TEST(CommandTest, MarkError) {
     EXPECT_TRUE(cmd.IsError());
 }
 
+TEST(CommandTest, MarkWarning) {
+    std::string warn_msg("there are four lights!");
+    Command cmd("begin_repeat 5 # ignored comment");
+    cmd.MarkWarning(warn_msg);
+    EXPECT_EQ(cmd.WarningMsg(), warn_msg);
+    EXPECT_TRUE(cmd.IsWarning());
+}
+
 TEST(CommandTest, Parse) {
     Command cmd(" value 1 2 3 0.0 1.0 2.0 # ignored comment");
     int i, j, k;

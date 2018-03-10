@@ -443,8 +443,11 @@ public:
     double m24;
     double m34;
 
-    // Deprecated due to unsafeness of global initialization
-    //static const Matrix3x4 Identity;
+    static Matrix3x4 Identity() {
+        Matrix3x4 val;
+        val.SetIdentity();
+        return val;
+    }
 
 public:
     // Constructors set by columns!
@@ -732,10 +735,16 @@ class RigidMapR3 : public Matrix3x4
 
 public:
     RigidMapR3();
+    RigidMapR3(const RigidMapR3&) = default;
     RigidMapR3( const VectorR3&, const VectorR3&, const VectorR3&, const VectorR3& );
     RigidMapR3( double, double, double, double, double, double,
                 double, double, double, double, double, double );
     RigidMapR3( const Matrix3x3&, const VectorR3& );
+    static RigidMapR3 Identity() {
+        RigidMapR3 val;
+        val.SetIdentity();
+        return val;
+    }
 
     RigidMapR3& Set( const Matrix3x3&, const VectorR3& );   // Set to RotationMap & Vector
     RigidMapR3& SetTranslationPart( const VectorR3& );		// Set the translation part

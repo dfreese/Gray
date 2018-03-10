@@ -24,13 +24,6 @@
 
 using namespace std;
 
-SourceList::SourceList() :
-    decay_number(0),
-    simulate_isotope_half_life(true),
-    start_time(0)
-{
-}
-
 void SourceList::AddSource(std::unique_ptr<Source> s) {
     shared_ptr<Isotope> isotope = valid_isotopes[current_isotope];
     if (isotope == nullptr) {
@@ -57,6 +50,14 @@ void SourceList::AddIsotope(
         std::unique_ptr<Isotope> s)
 {
     valid_isotopes.emplace(name, std::move(s));
+}
+
+size_t SourceList::NumSources() const {
+    return (list.size());
+}
+
+std::shared_ptr<const Source> SourceList::GetSource(size_t idx) const {
+    return (list[idx]);
 }
 
 double SourceList::GetTime() const

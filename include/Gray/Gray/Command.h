@@ -24,6 +24,9 @@ public:
     std::string ErrorMsg() const;
     void MarkError(const std::string& err_msg);
     bool IsError() const;
+    std::string WarningMsg() const;
+    void MarkWarning(const std::string& warn_msg);
+    bool IsWarning() const;
     bool operator==(const std::string& val) const;
     std::string Join() const;
     std::string JoinAll() const;
@@ -49,6 +52,8 @@ public:
 private:
     bool is_error = false;
     std::string err_msg;
+    bool is_warning = false;
+    std::string warn_msg;
 };
 
 #endif // COMMAND_H

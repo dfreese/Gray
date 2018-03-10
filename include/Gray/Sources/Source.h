@@ -53,6 +53,10 @@ public:
         return activity;
     }
 
+    void SetActivity(double val) {
+        activity = val;
+    }
+
     /*!
      * Calculates the activity of the source given the isotope's half-life.
      */

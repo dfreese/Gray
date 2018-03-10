@@ -33,6 +33,19 @@ bool Command::IsError() const {
     return (is_error);
 }
 
+std::string Command::WarningMsg() const {
+    return (warn_msg);
+}
+
+void Command::MarkWarning(const std::string& warn_msg) {
+    this->warn_msg = warn_msg;
+    this->is_warning = true;
+}
+
+bool Command::IsWarning() const {
+    return (is_warning);
+}
+
 bool Command::operator==(const std::string& val) const {
     if (tokens.empty()) {
         return (false);

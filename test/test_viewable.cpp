@@ -12,17 +12,17 @@
 #include <cmath>
 #include <unordered_map>
 #include "Gray/VrMath/LinearR3.h"
-#include "Gray/Gray/LoadDetector.h"
+#include "Gray/Gray/Load.h"
 
 TEST(AnnulusCylinderTest, NoTriangles) {
-    auto pieces = LoadDetector::MakeAnnulusCylinder(50, 60, 20);
+    auto pieces = Load::MakeAnnulusCylinder(50, 60, 20);
     ASSERT_EQ(pieces.size(), 8 * 100);
 }
 
 TEST(AnnulusCylinderTest, SharedPointsFace) {
-    auto pieces = LoadDetector::MakeAnnulusCylinder(50, 60, 20);
+    auto pieces = Load::MakeAnnulusCylinder(50, 60, 20);
     ASSERT_EQ(pieces.size() % 2, 0);
-    for (size_t ii = 0; ii < (int) pieces.size(); ii += 2) {
+    for (size_t ii = 0; ii < pieces.size(); ii += 2) {
         const auto & first = pieces[ii];
         const auto & second = pieces[ii + 1];
         int no_shared_points = ((first.GetVertexA() == second.GetVertexA()) +
@@ -41,8 +41,7 @@ TEST(AnnulusCylinderTest, SharedPointsFace) {
 TEST(AnnulusCylinderTest, SharedPointsAll) {
     const double inner_radius = 50;
     const double outer_radius = 60;
-    auto pieces = LoadDetector::MakeAnnulusCylinder(inner_radius,
-                                                    outer_radius, 20);
+    auto pieces = Load::MakeAnnulusCylinder(inner_radius, outer_radius, 20);
     std::unordered_map<VectorR3, int> point_counts;
     for (const auto & triangle: pieces) {
         point_counts[triangle.GetVertexA()]++;
@@ -68,8 +67,7 @@ TEST(AnnulusCylinderTest, SharedPointsAll) {
 TEST(AnnulusCylinderTest, Radius) {
     const double inner_radius = 50;
     const double outer_radius = 60;
-    auto pieces = LoadDetector::MakeAnnulusCylinder(inner_radius,
-                                                    outer_radius, 20);
+    auto pieces = Load::MakeAnnulusCylinder(inner_radius, outer_radius, 20);
     ASSERT_EQ(pieces.size() % 2, 0);
     for (const auto & triangle: pieces) {
         const VectorR3 & a = triangle.GetVertexA();

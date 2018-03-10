@@ -181,7 +181,7 @@ private:
                                double & retStopDistance,
                                VisiblePoint & visible_point_return_ptr) const;
     VectorR3 TheGlobalAmbientLight = VectorR3(0, 0, 0);
-    VectorR3 TheBackgroundColor = VectorR3(0, 0, 0);
+    VectorR3 TheBackgroundColor = VectorR3(1.0, 1.0, 1.0);
 
     CameraView CameraAndViewer;
     double RegisteredScreenWidth;

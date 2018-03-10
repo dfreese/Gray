@@ -16,7 +16,7 @@
 #include "Gray/Gray/GammaMaterial.h"
 #include "Gray/Gray/GammaRayTrace.h"
 #include "Gray/Gray/LoadMaterials.h"
-#include "Gray/Gray/LoadDetector.h"
+#include "Gray/Gray/Load.h"
 #include "Gray/Gray/Config.h"
 #include "Gray/Gray/Simulation.h"
 #include "Gray/Output/DetectorArray.h"
@@ -56,8 +56,10 @@ int main(int argc, char ** argv) {
         << endl;
         return(1);
     }
-    if (!LoadDetector::Load(config.get_filename_scene(), scene, sources,
-                            config, detector_array))
+
+    Load load;
+    if (!load.File(config.get_filename_scene(), sources, scene,
+                detector_array, config))
     {
         cerr << "Loading file \"" << config.get_filename_scene()
              << "\" failed" << endl;

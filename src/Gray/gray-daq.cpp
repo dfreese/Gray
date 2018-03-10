@@ -13,7 +13,7 @@
 #include "Gray/Daq/Mapping.h"
 #include "Gray/Daq/DaqModel.h"
 #include "Gray/Gray/Config.h"
-#include "Gray/Gray/LoadDetector.h"
+#include "Gray/Gray/Load.h"
 #include "Gray/Output/Input.h"
 #include "Gray/Output/Output.h"
 #include "Gray/Physics/Interaction.h"
@@ -31,7 +31,8 @@ int main(int argc, char ** argv) {
     }
 
     if (!config.get_filename_scene().empty()) {
-        if (!LoadDetector::LoadConfig(config.get_filename_scene(), config)) {
+        Load load;
+        if (!load.ConfigFile(config.get_filename_scene(), config)) {
             cerr << "Error loading from scene/config file"
                  << config.get_filename_scene() << endl;
             return(2);

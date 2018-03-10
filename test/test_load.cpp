@@ -10,10 +10,19 @@
 
 #include "gtest/gtest.h"
 #include <string>
+#include "Gray/Graphics/SceneDescription.h"
+#include "Gray/Graphics/ViewableCylinder.h"
+#include "Gray/Graphics/ViewableEllipsoid.h"
+#include "Gray/Graphics/ViewableParallelepiped.h"
+#include "Gray/Graphics/ViewableSphere.h"
+#include "Gray/Graphics/ViewableTriangle.h"
 #include "Gray/Gray/Config.h"
 #include "Gray/Gray/Load.h"
 #include "Gray/Gray/Syntax.h"
+#include "Gray/Output/DetectorArray.h"
 #include "Gray/Output/Output.h"
+#include "Gray/Sources/SourceList.h"
+#include "Gray/Sources/VectorSource.h"
 
 TEST(LoadTest, HitsFormat) {
     Config config;
@@ -344,4 +353,203 @@ TEST(LoadTest, ConfigCommandsUnknown) {
     EXPECT_EQ(config.get_time(), 0.0);
     EXPECT_EQ(config.get_start_time(), 5.0);
     EXPECT_TRUE(config.get_log_all());
+}
+
+TEST(LoadTest, SceneCommandsConfigCommands) {
+    Config config;
+    SourceList sources;
+    SceneDescription scene;
+    DetectorArray det_array;
+
+    std::vector<Command> cmds;
+    cmds.emplace_back("seed 100");
+    cmds.emplace_back("start_time 5.0");
+    cmds.emplace_back("log_all");
+    Load load;
+    EXPECT_TRUE(load.SceneCommands(cmds, sources, scene, det_array, config));
+
+    EXPECT_EQ(config.get_seed(), 100);
+    EXPECT_EQ(config.get_time(), 0.0);
+    EXPECT_EQ(config.get_start_time(), 5.0);
+    EXPECT_TRUE(config.get_log_all());
+}
+
+TEST(LoadTest, SceneCommandsAnnCyl) {
+    Config config;
+    SourceList sources;
+    SceneDescription scene;
+    DetectorArray det_array;
+
+    std::vector<Command> cmds;
+    cmds.emplace_back("ann_cyl 0.0 0.0 0.0 0.0 0.0 1.0 30.0 50.0 10.0");
+    Load load;
+    EXPECT_TRUE(load.SceneCommands(cmds, sources, scene, det_array, config));
+
+    // ann_cyl creates 800 triangles to mimic the donut form.
+    EXPECT_EQ(scene.NumViewables(), 800);
+}
+
+TEST(LoadTest, SceneCommandsEllipticCyl) {
+    Config config;
+    SourceList sources;
+    SceneDescription scene;
+    DetectorArray det_array;
+
+    std::vector<Command> cmds;
+    cmds.emplace_back("elliptic_cyl 0.0 0.0 0.0 0.0 0.0 1.0 30.0 50.0 10.0");
+    Load load;
+    EXPECT_TRUE(load.SceneCommands(cmds, sources, scene, det_array, config));
+
+    ASSERT_EQ(scene.NumViewables(), 1);
+
+    //ViewableEllipsoid& ve;
+    ASSERT_TRUE(dynamic_cast<ViewableCylinder*>(&scene.GetViewable(0)));
+    ViewableCylinder& ve = dynamic_cast<ViewableCylinder&>(
+            scene.GetViewable(0));
+    EXPECT_EQ(ve.GetRadiusA(), 50.0);
+    EXPECT_EQ(ve.GetRadiusB(), 30.0);
+}
+
+TEST(LoadTest, SceneCommandsCyl) {
+    Config config;
+    SourceList sources;
+    SceneDescription scene;
+    DetectorArray det_array;
+
+    std::vector<Command> cmds;
+    cmds.emplace_back("scale_act 2");
+    // Need to add an isotope, since we haven't loaded them from a file.
+    cmds.emplace_back("isotope beam 0.0 0.0 0.0 0.0 0.511");
+    cmds.emplace_back("cyl 0.0 0.0 0.0 0.0 0.0 1.0 30.0 50.0");
+    cmds.emplace_back("cyl_src 0.0 0.0 0.0 0.0 0.0 1.0 30.0 50.0 10.0");
+    Load load;
+    EXPECT_TRUE(load.SceneCommands(cmds, sources, scene, det_array, config));
+    EXPECT_EQ(sources.NumSources(), 1);
+    auto src = sources.GetSource(0);
+    ASSERT_TRUE(src);
+    ASSERT_TRUE(src->Inside({0.0, 30.0, 25.0}));
+    // Files are in uCi, internal is in Bq
+    ASSERT_EQ(src->GetActivity(), 20.0 * 37000);
+    ASSERT_EQ(scene.NumViewables(), 1);
+    ViewableCylinder& ve = dynamic_cast<ViewableCylinder&>(
+            scene.GetViewable(0));
+    EXPECT_EQ(ve.GetRadiusA(), 30.0);
+    EXPECT_EQ(ve.GetHeight(), 50.0);
+}
+
+TEST(LoadTest, SceneCommandsSphere) {
+    Config config;
+    SourceList sources;
+    SceneDescription scene;
+    DetectorArray det_array;
+
+    std::vector<Command> cmds;
+    cmds.emplace_back("scale_act 2");
+    // Need to add an isotope, since we haven't loaded them from a file.
+    cmds.emplace_back("isotope beam 0.0 0.0 0.0 0.0 0.511");
+    cmds.emplace_back("sphere 0.0 0.0 0.0 1.0");
+    cmds.emplace_back("sp_src 1.0 1.0 1.0 1.0 10.0");
+    Load load;
+    EXPECT_TRUE(load.SceneCommands(cmds, sources, scene, det_array, config));
+    EXPECT_EQ(sources.NumSources(), 1);
+    auto src = sources.GetSource(0);
+    ASSERT_TRUE(src);
+    ASSERT_FALSE(src->Inside({1.0, 2.0, 1.0}));
+    ASSERT_TRUE(src->Inside({1.0, 2.0 - 1e-6, 1.0}));
+    // Files are in uCi, internal is in Bq
+    ASSERT_EQ(src->GetActivity(), 20.0 * 37000);
+    ASSERT_EQ(scene.NumViewables(), 1);
+    ViewableSphere & ve = dynamic_cast<ViewableSphere&>(
+            scene.GetViewable(0));
+    EXPECT_EQ(ve.GetRadius(), 1.0);
+}
+
+TEST(LoadTest, SceneCommandsRectangle) {
+    Config config;
+    SourceList sources;
+    SceneDescription scene;
+    DetectorArray det_array;
+
+    std::vector<Command> cmds;
+    cmds.emplace_back("k 0.0 0.0 0.0 1.0 1.0 1.0");
+
+    Load load;
+    EXPECT_TRUE(load.SceneCommands(cmds, sources, scene, det_array, config));
+    ASSERT_EQ(scene.NumViewables(), 1);
+    ViewableParallelepiped& v = dynamic_cast<ViewableParallelepiped&>(
+            scene.GetViewable(0));
+    EXPECT_EQ(v.GetVertexA(), VectorR3(-0.5, -0.5, -0.5));
+    EXPECT_EQ(v.GetVertexB(), VectorR3(-0.5, 0.5, -0.5));
+    EXPECT_EQ(v.GetVertexC(), VectorR3(-0.5, -0.5, 0.5));
+    EXPECT_EQ(v.GetVertexD(), VectorR3(0.5, -0.5, -0.5));
+}
+
+TEST(LoadTest, SceneCommandsArray) {
+    Config config;
+    SourceList sources;
+    SceneDescription scene;
+    DetectorArray det_array;
+
+    std::vector<Command> cmds;
+    cmds.emplace_back("array 0.0 0.0 0.0 1 3 3 1.1 1.1 1.1 1.0 1.0 1.0");
+
+    Load load;
+    EXPECT_TRUE(load.SceneCommands(cmds, sources, scene, det_array, config));
+    ASSERT_EQ(scene.NumViewables(), 9);
+    ViewableParallelepiped& v = dynamic_cast<ViewableParallelepiped&>(
+            scene.GetViewable(4));
+    EXPECT_EQ(v.GetVertexA(), VectorR3(-0.5, -0.5, -0.5));
+    EXPECT_EQ(v.GetVertexB(), VectorR3(-0.5, 0.5, -0.5));
+    EXPECT_EQ(v.GetVertexC(), VectorR3(-0.5, -0.5, 0.5));
+    EXPECT_EQ(v.GetVertexD(), VectorR3(0.5, -0.5, -0.5));
+}
+
+TEST(LoadTest, SceneCommandsPolygon) {
+    Config config;
+    SourceList sources;
+    SceneDescription scene;
+    DetectorArray det_array;
+
+    std::vector<Command> cmds;
+    cmds.emplace_back("p 3");
+    cmds.emplace_back("0.0 0.0 0.0");
+    cmds.emplace_back("1.0 0.0 0.0");
+    cmds.emplace_back("0.0 1.0 0.0");
+
+    Load load;
+    EXPECT_TRUE(load.SceneCommands(cmds, sources, scene, det_array, config));
+    ASSERT_EQ(scene.NumViewables(), 1);
+    EXPECT_EQ(scene.GetViewable(0).GetDetectorId(), -1);
+    auto v = dynamic_cast<ViewableTriangle&>(scene.GetViewable(0));
+    EXPECT_EQ(v.GetVertexA(), VectorR3(0.0, 0.0, 0.0));
+    EXPECT_EQ(v.GetVertexB(), VectorR3(1.0, 0.0, 0.0));
+    EXPECT_EQ(v.GetVertexC(), VectorR3(0.0, 1.0, 0.0));
+}
+
+TEST(LoadTest, SceneCommandsVectorSource) {
+    Config config;
+    SourceList sources;
+    SceneDescription scene;
+    DetectorArray det_array;
+
+    std::vector<Command> cmds;
+    cmds.emplace_back("scale_act 2");
+    // Need to add an isotope, since we haven't loaded them from a file.
+    cmds.emplace_back("isotope beam 0.0 0.0 0.0 0.0 0.511");
+    cmds.emplace_back("start_vecsrc 10");
+    cmds.emplace_back("p 3");
+    cmds.emplace_back("0.0 0.0 0.0");
+    cmds.emplace_back("1.0 0.0 0.0");
+    cmds.emplace_back("0.0 1.0 0.0");
+    cmds.emplace_back("end_vecsrc");
+
+    Load load;
+    EXPECT_TRUE(load.SceneCommands(cmds, sources, scene, det_array, config));
+    ASSERT_EQ(scene.NumViewables(), 0);
+    EXPECT_EQ(sources.NumSources(), 1);
+    auto src = sources.GetSource(0);
+    ASSERT_TRUE(src);
+    // Files are in uCi, internal is in Bq
+    ASSERT_EQ(src->GetActivity(), 20.0 * 37000);
+    EXPECT_NE(dynamic_cast<VectorSource const*>(src.get()), nullptr);
 }

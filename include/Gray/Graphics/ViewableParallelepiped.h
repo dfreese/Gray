@@ -28,6 +28,18 @@ public:
         Reset();
     }
 
+    ViewableParallelepiped(const VectorR3& center, const VectorR3& size) {
+        VertexA = center - size / 2.0;
+        VertexB = center - size / 2.0;
+        VertexC = center - size / 2.0;
+        VertexD = center - size / 2.0;
+
+        VertexB.y += size.y;
+        VertexC.z += size.z;
+        VertexD.x += size.x;
+        CalcPlaneInfo();
+    }
+
     void Reset();
 
     // Returns an intersection if found with distance maxDistance

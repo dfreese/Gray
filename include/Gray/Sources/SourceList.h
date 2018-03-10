@@ -27,7 +27,7 @@ class RigidMapR3;
 class SourceList
 {
 public:
-    SourceList();
+    SourceList() = default;
     NuclearDecay Decay();
     void AddSource(std::unique_ptr<Source> s);
     void AddIsotope(const std::string& name, std::unique_ptr<Isotope> s);
@@ -52,7 +52,8 @@ public:
         std::vector<double> & split_length) const;
     double SearchSplitTime(double start_time, double full_sim_time,
                            double split_start, double no_photons) const;
-
+    size_t NumSources() const;
+    std::shared_ptr<const Source> GetSource(size_t idx) const;
 private:
     bool CreateBeamIsotope(const std::string & iso,
                            const RigidMapR3& current_matrix);
@@ -81,17 +82,17 @@ private:
     std::vector<std::shared_ptr<const Source>> list;
     std::vector<std::shared_ptr<const Source>> neg_list;
     std::map<std::string, std::shared_ptr<Isotope>> valid_isotopes;
-    int decay_number;
+    int decay_number = 0;
     std::string current_isotope;
-    double simulation_time;
+    double simulation_time = 0;
 
     // Hold all of the information on the upcoming decays in a min-priority
     // queue, so the earliest time event is in front.
     std::priority_queue<DecayInfo, std::vector<DecayInfo>,
             std::greater<DecayInfo>> decay_list;
-    bool simulate_isotope_half_life;
-    double start_time;
-    double end_time;
+    bool simulate_isotope_half_life = true;
+    double start_time = 0;
+    double end_time = 0;
 };
 
 #endif
