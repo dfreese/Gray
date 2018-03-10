@@ -40,6 +40,7 @@ add_executable(test_gray
     test_syntax.cpp
     test_transform.cpp
     test_viewable.cpp
+    test_voxelsource.cpp
     )
 target_link_libraries(test_gray gammaray)
 target_link_libraries(test_gray gtest gtest_main)

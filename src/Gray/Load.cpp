@@ -220,3 +220,4 @@ bool Load::ConfigCommands(std::vector<Command>& cmds, Config& config) {
     }
     return (result);
 }
+

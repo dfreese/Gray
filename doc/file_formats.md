@@ -121,3 +121,14 @@ As a note of caution, these sizes are based on typical x64 linux system, but
 are technically platform dependent, which needs to be changed in the software
 to not assume little endian byte order, that "int" is 32 bits, or that double
 is a 64 bit IEEE double precision floating point number.
+
+## Voxelized image format
+Gray is able to import voxelized images to be used as sources.  We assume a
+binary format with the following structure:
+
+1. A magic (arbitrary) number 65531 (int32)
+2. A version number, 1 (int32)
+3. Number of voxels in X (int32)
+3. Number of voxels in Y (int32)
+3. Number of voxels in Z (int32)
+3. Voxel Values in c-like XZY order (x\*y\*z float32s)

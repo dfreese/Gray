@@ -403,11 +403,12 @@ to create a gamma ray beam of a particular energy.
 
 ### voxel_src
 ```
-voxel_src [filename] [no voxels xyz] [voxel size xyz] [activity]
+voxel_src [center xyz] [size xyz] [filename] [activity]
 ```
-Creates a voxelized phantom at 0, 0, 0.  It then loads in a file with a series
-of values listed as doubles in text.  Currently does not support being apart of
-multiple materials.
+Creates a source of a given size and center.  Uses the image file at filename
+to create a distribution with the given activity level.  The image file is
+described in the file formats doc.  It is assumed to be aligned to the current
+axes.
 
 ### ellipsoid_src
 ```

@@ -552,26 +552,20 @@ bool LoadDetector::Load(const std::string & filename,
         } else if (command == "voxel_src") {
             char string[256];
             VectorR3 position;
-            position.SetZero();
-            int dims[3];
-            VectorR3 voxelsize;
+            VectorR3 size;
+            // Assume z aligns with z for right now.
+            VectorR3 axis(0, 0, 1);
             double activity;
-            int scanCode = sscanf(args.c_str(), "%s %d %d %d %lf %lf %lf %lf",
-                                  string,
-                                  &dims[0],
-                                  &dims[1],
-                                  &dims[2],
-                                  &voxelsize.x,
-                                  &voxelsize.y,
-                                  &voxelsize.z,
-                                  &activity);
+            int scanCode = sscanf(args.c_str(),
+                    "%lf %lf %lf %lf %lf %lf %s %lf",
+                    &position.x, &position.y, &position.z,
+                    &size.x, &size.y, &size.z, string, &activity);
             if (scanCode != 8) {
                 print_parse_error(line);
                 return(false);
             }
-            std::unique_ptr<VoxelSource> s(new VoxelSource(position, dims,
-                                                           voxelsize,
-                                                           actScale * activity));
+            std::unique_ptr<VoxelSource> s(new VoxelSource(
+                        position, size, axis, actScale * activity));
             if (s->Load(string)) {
                 sources.AddSource(std::move(s));
             } else {
