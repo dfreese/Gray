@@ -5,14 +5,20 @@ image: ubuntu:16.04
 # Define commands that run before each job's script
 before_script:
   - apt-get update
-  - apt-get install -y g++ cmake git
+  - apt-get install -y g++ cmake git python-pip
+  - pip install numpy nose2
 
 build:
     script:
+        - source set_gray_dir.sh
         - mkdir bin && mkdir build && cd build
         - cmake .. -DENABLE_ASAN=ON
         - make
         - make test
+        - cd ../materials
+        - python build_materials.py
+        - cd ..
+        - nose2
     artifacts:
         paths:
             - build/test_detail.json
