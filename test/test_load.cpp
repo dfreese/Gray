@@ -17,10 +17,12 @@
 #include "Gray/Graphics/ViewableSphere.h"
 #include "Gray/Graphics/ViewableTriangle.h"
 #include "Gray/Gray/Config.h"
+#include "Gray/Gray/GammaMaterial.h"
 #include "Gray/Gray/Load.h"
 #include "Gray/Gray/Syntax.h"
 #include "Gray/Output/DetectorArray.h"
 #include "Gray/Output/Output.h"
+#include "Gray/Physics/GammaStats.h"
 #include "Gray/Sources/SourceList.h"
 #include "Gray/Sources/VectorSource.h"
 
@@ -355,12 +357,35 @@ TEST(LoadTest, ConfigCommandsUnknown) {
     EXPECT_TRUE(config.get_log_all());
 }
 
-TEST(LoadTest, SceneCommandsConfigCommands) {
+
+class SceneLoadTest : public ::testing::Test {
+public:
     Config config;
     SourceList sources;
     SceneDescription scene;
     DetectorArray det_array;
+protected:
+    virtual void SetUp() {
+        scene.AddMaterial(std::unique_ptr<GammaMaterial>(new GammaMaterial(
+                   0, "world", false, false, GammaStats())));
+        scene.AddMaterial(std::unique_ptr<GammaMaterial>(new GammaMaterial(
+                   1, "default", false, true, GammaStats())));
+        scene.AddMaterial(std::unique_ptr<GammaMaterial>(new GammaMaterial(
+                   2, "sensitive", true, true, GammaStats())));
+        scene.SetDefaultMaterial("default");
+        sources.AddIsotope("BackBack", std::unique_ptr<Positron>(
+                    new Positron(0.0, 1000.0, 0.0, 1.0)));
+        sources.AddIsotope("F18", std::unique_ptr<Positron>(
+                    new Positron(0.57, 6584.04, 0.0, 1.0)));
+        sources.SetCurIsotope("BackBack", RigidMapR3::Identity());
+    }
+};
 
+TEST_F(SceneLoadTest, SceneDefault) {
+    EXPECT_EQ(scene.GetDefaultMaterial().GetName(), "default");
+}
+
+TEST_F(SceneLoadTest, SceneCommandsConfigCommands) {
     std::vector<Command> cmds;
     cmds.emplace_back("seed 100");
     cmds.emplace_back("start_time 5.0");
@@ -374,27 +399,18 @@ TEST(LoadTest, SceneCommandsConfigCommands) {
     EXPECT_TRUE(config.get_log_all());
 }
 
-TEST(LoadTest, SceneCommandsAnnCyl) {
-    Config config;
-    SourceList sources;
-    SceneDescription scene;
-    DetectorArray det_array;
-
+TEST_F(SceneLoadTest, SceneCommandsAnnCyl) {
     std::vector<Command> cmds;
     cmds.emplace_back("ann_cyl 0.0 0.0 0.0 0.0 0.0 1.0 30.0 50.0 10.0");
     Load load;
     EXPECT_TRUE(load.SceneCommands(cmds, sources, scene, det_array, config));
 
     // ann_cyl creates 800 triangles to mimic the donut form.
-    EXPECT_EQ(scene.NumViewables(), 800);
+    size_t size = scene.NumViewables();
+    EXPECT_EQ(size, 800);
 }
 
-TEST(LoadTest, SceneCommandsEllipticCyl) {
-    Config config;
-    SourceList sources;
-    SceneDescription scene;
-    DetectorArray det_array;
-
+TEST_F(SceneLoadTest, SceneCommandsEllipticCyl) {
     std::vector<Command> cmds;
     cmds.emplace_back("elliptic_cyl 0.0 0.0 0.0 0.0 0.0 1.0 30.0 50.0 10.0");
     Load load;
@@ -410,16 +426,9 @@ TEST(LoadTest, SceneCommandsEllipticCyl) {
     EXPECT_EQ(ve.GetRadiusB(), 30.0);
 }
 
-TEST(LoadTest, SceneCommandsCyl) {
-    Config config;
-    SourceList sources;
-    SceneDescription scene;
-    DetectorArray det_array;
-
+TEST_F(SceneLoadTest, SceneCommandsCyl) {
     std::vector<Command> cmds;
     cmds.emplace_back("scale_act 2");
-    // Need to add an isotope, since we haven't loaded them from a file.
-    cmds.emplace_back("isotope beam 0.0 0.0 0.0 0.0 0.511");
     cmds.emplace_back("cyl 0.0 0.0 0.0 0.0 0.0 1.0 30.0 50.0");
     cmds.emplace_back("cyl_src 0.0 0.0 0.0 0.0 0.0 1.0 30.0 50.0 10.0");
     Load load;
@@ -437,16 +446,9 @@ TEST(LoadTest, SceneCommandsCyl) {
     EXPECT_EQ(ve.GetHeight(), 50.0);
 }
 
-TEST(LoadTest, SceneCommandsSphere) {
-    Config config;
-    SourceList sources;
-    SceneDescription scene;
-    DetectorArray det_array;
-
+TEST_F(SceneLoadTest, SceneCommandsSphere) {
     std::vector<Command> cmds;
     cmds.emplace_back("scale_act 2");
-    // Need to add an isotope, since we haven't loaded them from a file.
-    cmds.emplace_back("isotope beam 0.0 0.0 0.0 0.0 0.511");
     cmds.emplace_back("sphere 0.0 0.0 0.0 1.0");
     cmds.emplace_back("sp_src 1.0 1.0 1.0 1.0 10.0");
     Load load;
@@ -464,12 +466,7 @@ TEST(LoadTest, SceneCommandsSphere) {
     EXPECT_EQ(ve.GetRadius(), 1.0);
 }
 
-TEST(LoadTest, SceneCommandsRectangle) {
-    Config config;
-    SourceList sources;
-    SceneDescription scene;
-    DetectorArray det_array;
-
+TEST_F(SceneLoadTest, SceneCommandsRectangle) {
     std::vector<Command> cmds;
     cmds.emplace_back("k 0.0 0.0 0.0 1.0 1.0 1.0");
 
@@ -482,14 +479,27 @@ TEST(LoadTest, SceneCommandsRectangle) {
     EXPECT_EQ(v.GetVertexB(), VectorR3(-0.5, 0.5, -0.5));
     EXPECT_EQ(v.GetVertexC(), VectorR3(-0.5, -0.5, 0.5));
     EXPECT_EQ(v.GetVertexD(), VectorR3(0.5, -0.5, -0.5));
+    EXPECT_EQ(v.GetDetectorId(), -1);
 }
 
-TEST(LoadTest, SceneCommandsArray) {
-    Config config;
-    SourceList sources;
-    SceneDescription scene;
-    DetectorArray det_array;
+TEST_F(SceneLoadTest, SceneCommandsRectangleSensitive) {
+    std::vector<Command> cmds;
+    cmds.emplace_back("m sensitive");
+    cmds.emplace_back("k 0.0 0.0 0.0 1.0 1.0 1.0");
 
+    Load load;
+    EXPECT_TRUE(load.SceneCommands(cmds, sources, scene, det_array, config));
+    ASSERT_EQ(scene.NumViewables(), 1);
+    ViewableParallelepiped& v = dynamic_cast<ViewableParallelepiped&>(
+            scene.GetViewable(0));
+    EXPECT_EQ(v.GetVertexA(), VectorR3(-0.5, -0.5, -0.5));
+    EXPECT_EQ(v.GetVertexB(), VectorR3(-0.5, 0.5, -0.5));
+    EXPECT_EQ(v.GetVertexC(), VectorR3(-0.5, -0.5, 0.5));
+    EXPECT_EQ(v.GetVertexD(), VectorR3(0.5, -0.5, -0.5));
+    EXPECT_EQ(v.GetDetectorId(), 0);
+}
+
+TEST_F(SceneLoadTest, SceneCommandsArray) {
     std::vector<Command> cmds;
     cmds.emplace_back("array 0.0 0.0 0.0 1 3 3 1.1 1.1 1.1 1.0 1.0 1.0");
 
@@ -502,14 +512,22 @@ TEST(LoadTest, SceneCommandsArray) {
     EXPECT_EQ(v.GetVertexB(), VectorR3(-0.5, 0.5, -0.5));
     EXPECT_EQ(v.GetVertexC(), VectorR3(-0.5, -0.5, 0.5));
     EXPECT_EQ(v.GetVertexD(), VectorR3(0.5, -0.5, -0.5));
+    EXPECT_EQ(v.GetDetectorId(), -1);
 }
 
-TEST(LoadTest, SceneCommandsPolygon) {
-    Config config;
-    SourceList sources;
-    SceneDescription scene;
-    DetectorArray det_array;
+TEST_F(SceneLoadTest, SceneCommandsArraySensitive) {
+    std::vector<Command> cmds;
+    cmds.emplace_back("m sensitive");
+    cmds.emplace_back("array 0.0 0.0 0.0 1 3 3 1.1 1.1 1.1 1.0 1.0 1.0");
 
+    Load load;
+    EXPECT_TRUE(load.SceneCommands(cmds, sources, scene, det_array, config));
+    ASSERT_EQ(scene.NumViewables(), 9);
+    ViewableParallelepiped& v = dynamic_cast<ViewableParallelepiped&>(
+            scene.GetViewable(4));
+    EXPECT_EQ(v.GetDetectorId(), 4);
+}
+TEST_F(SceneLoadTest, SceneCommandsPolygon) {
     std::vector<Command> cmds;
     cmds.emplace_back("p 3");
     cmds.emplace_back("0.0 0.0 0.0");
@@ -526,16 +544,9 @@ TEST(LoadTest, SceneCommandsPolygon) {
     EXPECT_EQ(v.GetVertexC(), VectorR3(0.0, 1.0, 0.0));
 }
 
-TEST(LoadTest, SceneCommandsVectorSource) {
-    Config config;
-    SourceList sources;
-    SceneDescription scene;
-    DetectorArray det_array;
-
+TEST_F(SceneLoadTest, SceneCommandsVectorSource) {
     std::vector<Command> cmds;
     cmds.emplace_back("scale_act 2");
-    // Need to add an isotope, since we haven't loaded them from a file.
-    cmds.emplace_back("isotope beam 0.0 0.0 0.0 0.0 0.511");
     cmds.emplace_back("start_vecsrc 10");
     cmds.emplace_back("p 3");
     cmds.emplace_back("0.0 0.0 0.0");

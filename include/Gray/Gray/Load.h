@@ -75,7 +75,7 @@ private:
     double vector_source_activity = -1;
     std::unique_ptr<SceneDescription> vector_source_scene;
     double activity_scale = 1.0;
-    GammaMaterial* cur_material;
+    GammaMaterial* cur_material = nullptr;
 };
 
 #endif // LOAD_H

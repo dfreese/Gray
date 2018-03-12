@@ -252,6 +252,7 @@ bool Load::SceneCommands(
         DetectorArray& det_array,
         Config& config)
 {
+    cur_material = static_cast<GammaMaterial*>(&scene.GetDefaultMaterial());
     bool result = true;
     for (Command& cmd : cmds) {
         result &= Load::SceneCommand(cmd, sources, scene, det_array, config);
@@ -356,12 +357,10 @@ bool Load::SceneCommand(
         scene.AddViewable(std::move(vc));
         return (true);
     } else if (cmd == "isotope") {
-        std::string iso_name;
-        if (!cmd.parse(iso_name)) {
+        // The isotope command can create new isotopes, currently only a beam
+        // isotope, so pass along the rest of the command to SourceList.
+        if (!sources.SetCurIsotope(cmd.Join(), cur_matrix)) {
             cmd.MarkError("Invalid isotope: \"" + cmd.Join() + "\"");
-            return(false);
-        } else if (!sources.SetCurIsotope(iso_name, cur_matrix)) {
-            cmd.MarkError("Invalid isotope: \"" + iso_name + "\"");
             return(false);
         }
         return (true);
@@ -924,7 +923,8 @@ std::vector<ViewableTriangle> Load::MakeAnnulusCylinder(
         int det_id, Material * material)
 {
     RigidMapR3 transform = RefAxisPlusTransToMap(axis, center);
-    auto pieces = MakeAnnulusCylinder(radius_inner, radius_outer, width);
+    std::vector<ViewableTriangle> pieces = MakeAnnulusCylinder(
+            radius_inner, radius_outer, width);
     for (auto & triangle: pieces) {
         TransformWithRigid(&triangle, transform);
         triangle.SetDetectorId(det_id);
