@@ -1,3 +1,3 @@
-from xcom import (
+from .xcom import (
     compound
 )

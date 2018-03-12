@@ -1,4 +1,4 @@
-from nema import (
+from .nema import (
     displacement,
     nema_counts,
     sinogram_space,

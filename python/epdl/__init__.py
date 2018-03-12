@@ -1,4 +1,4 @@
-from epdl import (
+from .epdl import (
     standard_grid,
     loglog_interp,
     init,
