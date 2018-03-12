@@ -285,6 +285,84 @@ void SourceList::InitSources() {
     }
 }
 
+std::unique_ptr<Isotope> SourceList::IsotopeFactory(
+        Json::Value isotope, bool simulate_isotope_half_life)
+{
+    auto required_vals = {
+        "acolinearity_deg_fwhm",
+        "half_life_s",
+        "model",
+        "positron_emiss_prob",
+        "prompt_gamma_energy_mev"
+    };
+    for (auto val : required_vals) {
+        if (isotope[val].isNull()) {
+            std::cerr << "Required key, \"" << val << "\" does not exist.\n";
+            return (nullptr);
+        }
+    }
+    double acolinearity = isotope["acolinearity_deg_fwhm"].asDouble();
+    double half_life = isotope["half_life_s"].asDouble();
+    double positron_prob = isotope["positron_emiss_prob"].asDouble();
+    double gamma_energy = isotope["prompt_gamma_energy_mev"].asDouble();
+    std::string model = isotope["model"].asString();
+
+    // If the value given is negative or the user disables source decay from
+    // the command line, then set the half life to be infinite.
+    if ((half_life <= 0.0) || (!simulate_isotope_half_life)) {
+        half_life = std::numeric_limits<double>::infinity();
+    }
+
+    if ((positron_prob < 0) || (positron_prob > 1.0)) {
+        positron_prob = 1.0;
+    }
+    if (gamma_energy < 0) {
+        gamma_energy = 0;
+    }
+
+    std::unique_ptr<Isotope> iso = std::unique_ptr<Isotope>(
+            new Positron(acolinearity, half_life, positron_prob, gamma_energy));
+    Positron& cur_positron = dynamic_cast<Positron&>(*iso.get());
+
+    if (model == "none") {
+        // Currently do nothing...
+    } else if (model == "gauss") {
+        Json::Value fwhm_mm_json = isotope["fwhm_mm"];
+        Json::Value max_mm_json = isotope["max_range_mm"];
+        if (!fwhm_mm_json.isDouble() || !max_mm_json.isDouble()) {
+            std::cerr << "gauss model requires \"fwhm_mm\" and"
+                      << "\"max_range_mm\" double values\n";
+            return (nullptr);
+        }
+
+        double fwhm_mm = fwhm_mm_json.asDouble();
+        double max_mm = max_mm_json.asDouble();
+        cur_positron.SetPositronRange(fwhm_mm, max_mm);
+    } else if (model == "levin_exp") {
+        Json::Value c_json = isotope["prob_c"];
+        Json::Value k1_json = isotope["k1"];
+        Json::Value k2_json = isotope["k2"];
+        Json::Value max_mm_json = isotope["max_range_mm"];
+        if (!c_json.isDouble() || !k1_json.isDouble() ||
+            !k2_json.isDouble() || !max_mm_json.isDouble()) {
+            std::cerr << "levin_exp model requires \"prob_c\", "
+                         "\"k1\", \"k2\", and \"max_range_mm\" "
+                         "double values\n";
+            return (nullptr);
+        }
+        double c = c_json.asDouble();
+        double k1 = k1_json.asDouble();
+        double k2 = k2_json.asDouble();
+        double max_mm = max_mm_json.asDouble();
+        cur_positron.SetPositronRange(c, k1, k2, max_mm);
+    } else {
+        std::cerr << "Unrecognized model, \"" << model << "\"\n";
+        return (nullptr);
+    }
+
+    return (iso);
+}
+
 bool SourceList::LoadIsotope(const std::string & iso_name,
                              Json::Value isotope)
 {
@@ -372,39 +450,46 @@ bool SourceList::LoadIsotope(const std::string & iso_name,
 }
 
 bool SourceList::LoadIsotopes(const std::string& physics_filename) {
-    Json::Value root;
-    Json::Reader reader;
     std::ifstream input(physics_filename);
     if (!input) {
         cerr << physics_filename << " not found." << endl;
         return(false);
     }
-    std::stringstream buffer;
-    buffer << input.rdbuf();
+    return (LoadIsotopes(input));
+}
 
-    bool status = reader.parse(buffer.str(), root,
-                               /*collect_comments=*/false);
+bool SourceList::LoadIsotopes(std::istream& input) {
+    if (!input) {
+        return (false);
+    }
+    Json::Value root;
+    Json::Reader reader;
+    bool status = reader.parse(input, root, /*collect_comments=*/false);
     if (!status) {
-        std::cerr << "Reading of Physics File, \""
-                  << physics_filename << "\" failed\n"
+        std::cerr << "Reading of physics file failed\n"
                   << reader.getFormattedErrorMessages() << "\n";
         return (false);
     }
 
     Json::Value isotopes = root["isotopes"];
     if (isotopes.isNull()) {
-        std::cerr << "Reading of Physics File, \""
-                  << physics_filename << "\" failed\n"
-                  << "Json file does not have \"isotopes\" member\n";
+        std::cerr << "Physics Json File does not have \"isotopes\" member\n";
         return (false);
     }
 
     for (const std::string & iso_name : isotopes.getMemberNames ()) {
-        bool status = LoadIsotope(iso_name, isotopes[iso_name]);
-        if (!status) {
+        Json::Value isotope = isotopes[iso_name];
+        auto iso_ptr = IsotopeFactory(isotope, simulate_isotope_half_life);
+        if (!iso_ptr) {
             std::cerr << "Unable to load isotope, \"" << iso_name << "\"\n";
             return (false);
         }
+        AddIsotope(iso_name, std::move(iso_ptr));
+        Json::Value is_default = isotope["default"];
+        if (is_default.isBool() && is_default.asBool()) {
+            current_isotope = iso_name;
+        }
     }
+
     return(true);
 }

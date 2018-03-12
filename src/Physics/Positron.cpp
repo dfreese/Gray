@@ -16,8 +16,6 @@
 Positron::Positron(double acolinearity_deg_fwhm, double half_life,
                    double positron_emis_prob, double gamma_decay_energy_mev) :
     Isotope(half_life),
-    use_positron_dbexp(false),
-    use_positron_gauss(false),
     acolinearity(acolinearity_deg_fwhm / 180.0 * M_PI * Transform::fwhm_to_sigma),
     gamma_decay_energy(gamma_decay_energy_mev),
     positron_emission_prob(positron_emis_prob),
@@ -33,14 +31,22 @@ NuclearDecay Positron::Decay(int photon_number, double time, int src_id,
                      const VectorR3 & position) const
 {
     VectorR3 anni_position(position);
-    if (use_positron_dbexp) {
-        const double range = Random::TruncatedLevinDoubleExp(
-                positronC, positronK1, positronK2, positron_range_max_cm);
-        anni_position += range * Random::UniformSphere();
-    } else if (use_positron_gauss) {
-        const double range = Random::TruncatedGaussian(positron_range_sigma_cm,
-                                                       positron_range_max_cm);
-        anni_position += range * Random::UniformSphere();
+    // TODO: make these separate classes now that the isotope code is more
+    // coherent.
+    switch (model) {
+        case Model::None:
+            // Do nothing
+            break;
+        case Model::Gauss: {
+            const double range = Random::TruncatedGaussian(
+                    positron_range_sigma_cm, positron_range_max_cm);
+            anni_position += range * Random::UniformSphere();
+        } break;
+        case Model::DbExp: {
+            const double range = Random::TruncatedLevinDoubleExp(
+                    positronC, positronK1, positronK2, positron_range_max_cm);
+            anni_position += range * Random::UniformSphere();
+        } break;
     }
     // TODO: log the positron annihilation and nuclear decay positions
     // separately
@@ -70,9 +76,7 @@ NuclearDecay Positron::Decay(int photon_number, double time, int src_id,
 }
 
 void Positron::SetPositronRange(double c, double k1, double k2, double max) {
-    use_positron_dbexp = true;
-    use_positron_gauss  = false;
-
+    model = Model::DbExp;
     // generate cprime which is the scales the dual exponential into a form
     // that allows it to be monte-carlo generated.  It is the integral of
     // exponential k1 portion over the integral of total.
@@ -83,8 +87,7 @@ void Positron::SetPositronRange(double c, double k1, double k2, double max) {
 }
 
 void Positron::SetPositronRange(double fwhm, double max) {
-    use_positron_dbexp = false;
-    use_positron_gauss  = true;
+    model = Model::Gauss;
     positron_range_sigma_cm = fwhm * mm_to_cm * Transform::fwhm_to_sigma;
     positron_range_max_cm = max * mm_to_cm;
 }
@@ -95,4 +98,17 @@ double Positron::ExpectedNoPhotons() const {
         expected += 1.0;
     }
     return(expected);
+}
+
+bool Positron::operator==(const Positron& rhs) const {
+    return ((model == rhs.model) &&
+            (positron_range_max_cm  == rhs.positron_range_max_cm) &&
+            (positron_range_sigma_cm == rhs.positron_range_sigma_cm) &&
+            (positronC == rhs.positronC) &&
+            (positronK1 == rhs.positronK1) &&
+            (positronK2 == rhs.positronK2) &&
+            (acolinearity == rhs.acolinearity) &&
+            (gamma_decay_energy == rhs.gamma_decay_energy) &&
+            (positron_emission_prob == rhs.positron_emission_prob) &&
+            (emit_gamma == rhs.emit_gamma));
 }

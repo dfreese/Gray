@@ -11,6 +11,7 @@
 #ifndef SOURCELIST_H
 #define SOURCELIST_H
 
+#include <iosfwd>
 #include <map>
 #include <memory>
 #include <queue>
@@ -54,6 +55,9 @@ public:
                            double split_start, double no_photons) const;
     size_t NumSources() const;
     std::shared_ptr<const Source> GetSource(size_t idx) const;
+    static std::unique_ptr<Isotope> IsotopeFactory(
+            Json::Value isotope, bool simulate_isotope_half_life);
+    bool LoadIsotopes(std::istream& input);
 private:
     bool CreateBeamIsotope(const std::string & iso,
                            const RigidMapR3& current_matrix);

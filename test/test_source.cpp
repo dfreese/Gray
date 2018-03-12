@@ -118,3 +118,148 @@ TEST(SourceList, SearchSplitTime) {
     EXPECT_NEAR(list.ExpectedPhotons(0, time), exp_phot / 2.0, 1e-5);
     EXPECT_NEAR(list.ExpectedPhotons(time, 2.0 - time), exp_phot / 2.0, 1e-5);
 }
+
+TEST(SourceList, IsotopeFactoryNone) {
+    Json::Value iso_json;
+    Json::Reader reader;
+
+    // Use raw string literal to avoid escaping every quote.
+    // http://en.cppreference.com/w/cpp/language/string_literal
+    reader.parse(R"isotope_json({
+            "acolinearity_deg_fwhm": 0.0,
+            "default": true,
+            "half_life_s": 0.0,
+            "model": "none",
+            "positron_emiss_prob": 1.0,
+            "prompt_gamma_energy_mev": 0.0
+        })isotope_json",
+        iso_json, /*collect_comments=*/false);
+    auto isotope = SourceList::IsotopeFactory(iso_json, true);
+    ASSERT_TRUE(isotope);
+
+    Positron exp(0.0, std::numeric_limits<double>::infinity(), 1.0, 0.0);
+    Positron val(dynamic_cast<Positron&>(*isotope));
+    EXPECT_EQ(val, exp);
+}
+
+TEST(SourceList, IsotopeFactoryGauss) {
+    Json::Value iso_json;
+    Json::Reader reader;
+    // Use raw string literal to avoid escaping every quote.
+    // http://en.cppreference.com/w/cpp/language/string_literal
+    reader.parse(R"isotope_json({
+            "acolinearity_deg_fwhm": 0.0,
+            "default": true,
+            "half_life_s": 0.0,
+            "model": "levin_exp",
+            "k1": 24.5,
+            "k2": 1.76,
+            "model": "gauss",
+            "fwhm_mm": 1.5,
+            "prob_c": 0.501,
+            "max_range_mm": 3.0,
+            "positron_emiss_prob": 1.0,
+            "prompt_gamma_energy_mev": 0.0
+        })isotope_json",
+        iso_json, /*collect_comments=*/false);
+    auto isotope = SourceList::IsotopeFactory(iso_json, true);
+    ASSERT_TRUE(isotope);
+
+    Positron exp(0.0, std::numeric_limits<double>::infinity(), 1.0, 0.0);
+    exp.SetPositronRange(1.5, 3.0);
+    Positron val(dynamic_cast<Positron&>(*isotope));
+    EXPECT_EQ(val, exp);
+}
+
+TEST(SourceList, IsotopeFactoryDblExp) {
+    Json::Value iso_json;
+    Json::Reader reader;
+    // Use raw string literal to avoid escaping every quote.
+    // http://en.cppreference.com/w/cpp/language/string_literal
+    reader.parse(R"isotope_json({
+            "acolinearity_deg_fwhm": 0.0,
+            "default": true,
+            "half_life_s": 0.0,
+            "model": "levin_exp",
+            "k1": 24.5,
+            "k2": 1.76,
+            "prob_c": 0.501,
+            "max_range_mm": 3.0,
+            "positron_emiss_prob": 1.0,
+            "prompt_gamma_energy_mev": 0.0
+        })isotope_json",
+        iso_json, /*collect_comments=*/false);
+    auto isotope = SourceList::IsotopeFactory(iso_json, true);
+    ASSERT_TRUE(isotope);
+
+    Positron exp(0.0, std::numeric_limits<double>::infinity(), 1.0, 0.0);
+    exp.SetPositronRange(0.501, 24.5, 1.76, 3.0);
+    Positron val(dynamic_cast<Positron&>(*isotope));
+    EXPECT_EQ(val, exp);
+}
+
+TEST(SourceList, LoadIsotopes) {
+    auto phys_json = R"json({
+    "isotopes": {
+        "BackBack": {
+            "acolinearity_deg_fwhm": 0.0,
+            "default": true,
+            "half_life_s": 0.0,
+            "model": "none",
+            "positron_emiss_prob": 1.0,
+            "prompt_gamma_energy_mev": 0.0
+        },
+        "C11": {
+            "acolinearity_deg_fwhm": 0.57,
+            "half_life_s": 1221.66,
+            "k1": 24.5,
+            "k2": 1.76,
+            "max_range_mm": 3.0,
+            "model": "levin_exp",
+            "positron_emiss_prob": 0.9975,
+            "prob_c": 0.501,
+            "prompt_gamma_energy_mev": 0.0
+        },
+        "F18": {
+            "acolinearity_deg_fwhm": 0.57,
+            "half_life_s": 6584.04,
+            "k1": 27.9,
+            "k2": 2.91,
+            "max_range_mm": 3.0,
+            "model": "levin_exp",
+            "positron_emiss_prob": 0.9686,
+            "prob_c": 0.519,
+            "prompt_gamma_energy_mev": 0.0
+        }}})json";
+    stringstream ss(phys_json);
+    SourceList sources;
+
+    ASSERT_TRUE(sources.LoadIsotopes(ss));
+
+    const double act = 1.0;
+    const double act_uCi = act / Physics::decays_per_microcurie;
+    sources.AddSource(std::unique_ptr<Source>(
+                new SphereSource({0, 0, 0}, 1.0, act_uCi)));
+
+    ASSERT_TRUE(sources.SetCurIsotope("BackBack", RigidMapR3::Identity()));
+    ASSERT_TRUE(sources.SetCurIsotope("C11", RigidMapR3::Identity()));
+    ASSERT_TRUE(sources.SetCurIsotope("F18", RigidMapR3::Identity()));
+
+
+    // BackBack should have been the default
+    const Positron& val = dynamic_cast<const Positron&>(
+            sources.GetSource(0)->GetIsotope());
+    Positron exp(0.0, std::numeric_limits<double>::infinity(), 1.0, 0.0);
+    EXPECT_EQ(val, exp);
+
+
+    // The last positron we set was F18, so check that takes for the next
+    // source added.
+    sources.AddSource(std::unique_ptr<Source>(
+                new SphereSource({0, 0, 0}, 1.0, act_uCi)));
+    const Positron& val_f18 = dynamic_cast<const Positron&>(
+            sources.GetSource(1)->GetIsotope());
+    Positron exp_f18(0.57, 6584.04, 0.9686, 0.0);
+    exp_f18.SetPositronRange(0.519, 27.9, 2.91, 3.0);
+    EXPECT_EQ(val_f18, exp_f18);
+}

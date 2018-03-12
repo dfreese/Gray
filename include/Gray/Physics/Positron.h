@@ -16,6 +16,12 @@
 class Positron: public Isotope
 {
 public:
+    enum class Model : int {
+        None,
+        Gauss,
+        DbExp,
+    };
+
     Positron() = default;
     Positron(const Positron&) = default;
     Positron(double acolinearity_deg_fwhm, double half_life,
@@ -23,13 +29,13 @@ public:
     std::unique_ptr<Isotope> Clone() override;
     NuclearDecay Decay(int photon_number, double time, int src_id,
                        const VectorR3 & position) const override;
+    bool operator==(const Positron&) const;
     double ExpectedNoPhotons() const override;
     void SetPositronRange(double c, double k1, double k2, double max);
     void SetPositronRange(double fwhm_mm, double max_mm);
 
 private:
-    bool use_positron_dbexp = false;
-    bool use_positron_gauss = false;
+    Model model = Model::None;
     double positron_range_max_cm = 0;
     double positron_range_sigma_cm = 0;
     double positronC = 0;
