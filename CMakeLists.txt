@@ -14,6 +14,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     endif()
 endif()
 
+option(ENABLE_TEST "Build the testing suite" OFF)
 option(ENABLE_LTO "Enable link-time optimization for the compilation" OFF)
 option(STATIC_BIN "Build fully staticially-linked binaries" OFF)
 option(ENABLE_ASAN "Build executables with address sanitizer enabled" OFF)
@@ -40,8 +41,10 @@ set(VERSION_PATCH 0)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-enable_testing()
-
 add_subdirectory(src)
-add_subdirectory(test)
+
+if (ENABLE_TEST)
+    enable_testing()
+    add_subdirectory(test)
+endif (ENABLE_TEST)
 

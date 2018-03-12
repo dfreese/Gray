@@ -14,7 +14,7 @@ build:
     script:
         - source set_gray_dir.sh
         - mkdir bin && mkdir build && cd build
-        - cmake .. -DENABLE_ASAN=ON
+        - cmake .. -DENABLE_TEST=ON -DENABLE_ASAN=ON
         - make
         - make test
         - cd ../materials
