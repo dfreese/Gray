@@ -83,8 +83,8 @@ void Positron::SetPositronRange(double c, double k1, double k2, double max) {
 }
 
 void Positron::SetPositronRange(double fwhm, double max) {
-    use_positron_dbexp = true;
-    use_positron_gauss  = false;
+    use_positron_dbexp = false;
+    use_positron_gauss  = true;
     positron_range_sigma_cm = fwhm * mm_to_cm * Transform::fwhm_to_sigma;
     positron_range_max_cm = max * mm_to_cm;
 }
