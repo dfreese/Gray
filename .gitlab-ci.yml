@@ -9,6 +9,8 @@ before_script:
   - pip install numpy nose2
 
 build:
+    variables:
+        CTEST_OUTPUT_ON_FAILURE: 1
     script:
         - source set_gray_dir.sh
         - mkdir bin && mkdir build && cd build
