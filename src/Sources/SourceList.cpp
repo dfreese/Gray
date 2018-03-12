@@ -323,7 +323,7 @@ bool SourceList::LoadIsotope(const std::string & iso_name,
 
     auto iso = std::unique_ptr<Isotope>(
             new Positron(acolinearity, half_life, positron_prob, gamma_energy));
-    Positron cur_positron = dynamic_cast<Positron&>(*iso.get());
+    Positron& cur_positron = dynamic_cast<Positron&>(*iso.get());
 
     Json::Value is_default = isotope["default"];
     if (is_default.isBool()) {
