@@ -10,7 +10,7 @@ before_script:
 build:
     script:
         - mkdir bin && mkdir build && cd build
-        - cmake ..
+        - cmake .. -DENABLE_ASAN=ON
         - make
         - make test
     artifacts:

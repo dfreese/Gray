@@ -16,11 +16,16 @@ endif()
 
 option(ENABLE_LTO "Enable link-time optimization for the compilation" OFF)
 option(STATIC_BIN "Build fully staticially-linked binaries" OFF)
+option(ENABLE_ASAN "Build executables with address sanitizer enabled" OFF)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
+if (ENABLE_ASAN)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
+endif (ENABLE_ASAN)
 
 if (ENABLE_LTO)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -flto")
