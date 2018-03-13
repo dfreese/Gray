@@ -277,8 +277,8 @@ void SourceList::AdjustTimeForSplit(int idx, int n) {
 
 bool SourceList::PrintSplits(int n) const {
     if (simulation_time <= 0) {
-        std::cerr << "Error: unable to calculate splits for simulation time of"
-            << simulation_time << "s\n";
+        std::cerr << "Error: unable to calculate splits for simulation time"
+            << " of " << simulation_time << "s\n";
         return (false);
     }
     std::vector<double> split_starts, split_times;
