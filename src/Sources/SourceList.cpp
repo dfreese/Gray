@@ -275,18 +275,28 @@ void SourceList::AdjustTimeForSplit(int idx, int n) {
     SetSimulationTime(split_times[idx]);
 }
 
-void SourceList::PrintSplits(int n) const {
+bool SourceList::PrintSplits(int n) const {
+    if (simulation_time <= 0) {
+        std::cerr << "Error: unable to calculate splits for simulation time of"
+            << simulation_time << "s\n";
+        return (false);
+    }
     std::vector<double> split_starts, split_times;
     CalculateEqualPhotonTimeSplits(
             start_time, simulation_time, n, split_starts, split_times);
     const std::string output_name("gray_splits.dat");
     std::ofstream output(output_name);
+    if (!output) {
+        std::cerr << "Unable to open file: \"" << output_name << "\"\n";
+        return (false);
+    }
     output << "# start split\n";
     for (int idx = 0; idx < n; ++idx) {
         output << split_starts[idx] << " " << split_times[idx] << "\n";
     }
 
     std::cout << "splits written to \"" << output_name << "\"\n";
+    return (true);
 }
 
 void SourceList::InitSources() {

@@ -45,7 +45,7 @@ public:
     void InitSources();
     bool LoadIsotopes(const std::string& physics_filename);
     void AdjustTimeForSplit(int idx, int n);
-    void PrintSplits(int n) const;
+    bool PrintSplits(int n) const;
     double ExpectedPhotons(double start_time, double sim_time) const;
     void CalculateEqualPhotonTimeSplits(
         double start_time, double full_sim_time, int n,

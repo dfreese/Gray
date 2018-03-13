@@ -100,8 +100,11 @@ int main(int argc, char ** argv) {
     sources.SetSimulationTime(config.get_time());
     sources.SetStartTime(config.get_start_time());
     if (config.get_print_splits()) {
-        sources.PrintSplits(config.get_no_threads());
-        return (0);
+        if (sources.PrintSplits(config.get_no_threads())) {
+            return (0);
+        } else {
+            return (6);
+        }
     }
 
     if (!config.get_filename_mapping().empty()) {
