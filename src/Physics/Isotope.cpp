@@ -20,6 +20,10 @@ double Isotope::GetHalfLife() const {
     return(half_life);
 }
 
+void Isotope::DisableHalfLife() {
+    half_life = std::numeric_limits<double>::infinity();
+}
+
 double Isotope::FractionRemaining(double time) const {
     // Note: this will produce a nan at time=infinity for infinite half_life.
     // Please don't do that....

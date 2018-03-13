@@ -25,7 +25,7 @@
 using namespace std;
 
 void SourceList::AddSource(std::unique_ptr<Source> s) {
-    shared_ptr<Isotope> isotope = valid_isotopes[current_isotope];
+    shared_ptr<const Isotope> isotope = valid_isotopes[current_isotope];
     if (isotope == nullptr) {
         string error = "Isotope named " + current_isotope
             + " somehow set as current isotope, but was not implemented";
@@ -192,8 +192,21 @@ void SourceList::SetSimulationTime(double time)
     end_time = start_time + simulation_time;
 }
 
-void SourceList::SetSimulateIsotopeHalfLife(bool val) {
-    simulate_isotope_half_life = val;
+void SourceList::DisableHalfLife() {
+    simulate_isotope_half_life = false;
+    for (auto& iso_pair : valid_isotopes) {
+        // This very deliberatly breaks the const-ness of the isotopes for the
+        // sourcelist, as we assume that const-ness was only for threading
+        // purposes.  This only occurs during loading of the scene file, and
+        // there is only one thread running at that time.  This is a dirty hack
+        // but I didn't want to, again, rewrite the loading to process all of
+        // the things needed for loading of isotopes/materials.  We actually
+        // end up doing the same thing with disabling of Rayleigh scattering, I
+        // just didn't think about it because the SceneDescription class isn't
+        // as careful about only exposing const members after initialization.
+        Isotope& iso = const_cast<Isotope&>(*iso_pair.second);
+        iso.DisableHalfLife();
+    }
 }
 
 void SourceList::SetStartTime(double val)

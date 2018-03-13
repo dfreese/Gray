@@ -315,7 +315,11 @@ bool Load::SceneCommand(
         }
         return (true);
     } else if (cmd == "disable_half_life") {
-        sources.SetSimulateIsotopeHalfLife(false);
+        if (!cmd.parse()) {
+            cmd.MarkError("disable_half_life takes no options");
+            return (false);
+        }
+        sources.DisableHalfLife();
         return (true);
     } else if (cmd == "ann_cyl") {
         VectorR3 center, axis;

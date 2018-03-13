@@ -40,7 +40,7 @@ public:
     double GetEndTime() const;
     bool SimulationIncomplete() const;
     std::vector<VectorR3> GetSourcePositions() const;
-    void SetSimulateIsotopeHalfLife(bool val);
+    void DisableHalfLife();
     void SetStartTime(double val);
     void InitSources();
     bool LoadIsotopes(const std::string& physics_filename);
@@ -85,7 +85,7 @@ private:
     // it stays that way.
     std::vector<std::shared_ptr<const Source>> list;
     std::vector<std::shared_ptr<const Source>> neg_list;
-    std::map<std::string, std::shared_ptr<Isotope>> valid_isotopes;
+    std::map<std::string, std::shared_ptr<const Isotope>> valid_isotopes;
     int decay_number = 0;
     std::string current_isotope;
     double simulation_time = 0;

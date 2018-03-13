@@ -26,6 +26,7 @@ public:
     virtual NuclearDecay Decay(int photon_number, double time, int src_id,
                                const VectorR3 & position) const = 0;
     double GetHalfLife() const;
+    void DisableHalfLife();
     double FractionRemaining(double time) const;
     double FractionIntegral(double start, double time) const;
     virtual double ExpectedNoPhotons() const = 0;
