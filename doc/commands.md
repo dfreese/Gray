@@ -371,7 +371,7 @@ Creates a spherical source.
 
 ### rect_src
 ```
-rect_src [center xyz] [size xyz] [size xyz]
+rect_src [center xyz] [size xyz] [axis xyz] [activity]
 ```
 Creates a rectangular source.  The axis defines the direction of z size.
 

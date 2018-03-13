@@ -17,7 +17,8 @@
 #include "Gray/Gray/String.h"
 
 Command::Command(const std::string& line) :
-    tokens(String::Split(line.substr(0, line.find_first_of("#")), " "))
+    tokens(String::Split(line.substr(0, line.find_first_of("#")), " ")),
+    original(line)
 {}
 
 std::string Command::ErrorMsg() const {
@@ -44,6 +45,10 @@ void Command::MarkWarning(const std::string& warn_msg) {
 
 bool Command::IsWarning() const {
     return (is_warning);
+}
+
+std::string Command::Original() const {
+    return (original);
 }
 
 bool Command::operator==(const std::string& val) const {

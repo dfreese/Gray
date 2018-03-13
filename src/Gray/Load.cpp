@@ -258,7 +258,8 @@ bool Load::SceneCommands(
         result &= Load::SceneCommand(cmd, sources, scene, det_array, config);
         if (cmd.IsError()) {
             std::cerr << "Error in " << cmd.filename << ", line "
-                << cmd.line << ": " << cmd.ErrorMsg() << "\n";
+                << cmd.line << ":\n\"" << cmd.Original() << "\"\n"
+                << cmd.ErrorMsg() << "\n";
         } else if (cmd.IsWarning()) {
             std::cout << "Warning in " << cmd.filename << ", line "
                 << cmd.line << ": " << cmd.WarningMsg() << "\n";
@@ -302,7 +303,7 @@ bool Load::SceneCommand(
         // the input file.
         polygon_verts.push_back(point);
         if (!status) {
-            cmd.MarkError("Invalid vertex point");
+            cmd.MarkError("vertex point format: [x] [y] [z]");
             return (true);
         }
         if ((int)polygon_verts.size() == no_polygon_verts) {
@@ -323,7 +324,8 @@ bool Load::SceneCommand(
                     axis.x, axis.y, axis.z,
                     outer_radius, inner_radius, height))
         {
-            cmd.MarkError("Invalid values for ann_cyl");
+            cmd.MarkError("format: ann_cyl [center xyz] [axis xyz]"
+                    " [outer_radius] [inner_radius] [height]");
             return (false);
         }
         int det_id = -1;
@@ -344,7 +346,8 @@ bool Load::SceneCommand(
                     axis.x, axis.y, axis.z,
                     radius1, radius2, height))
         {
-            cmd.MarkError("Invalid values for elliptic_cyl");
+            cmd.MarkError("format: elliptic_cyl [center xyz] [axis xyz]"
+                    " [radius1] [radius2] [height]");
             return (false);
         }
         std::unique_ptr<ViewableCylinder> vc(new ViewableCylinder());
@@ -370,7 +373,8 @@ bool Load::SceneCommand(
         if (!cmd.parse(center.x, center.y, center.z,
                     axis.x, axis.y, axis.z, radius, height, activity))
         {
-            cmd.MarkError("Invalid values for cyl_src");
+            cmd.MarkError("format: cyl_src  [center xyz] [axis xyz]"
+                    "[radius] [height] [activity]");
             return (false);
         }
         cur_matrix.Transform(&center);
@@ -383,7 +387,7 @@ bool Load::SceneCommand(
         VectorR3 center;
         double radius, activity;
         if (!cmd.parse(center.x, center.y, center.z, radius, activity)) {
-            cmd.MarkError("Invalid values for sp_src");
+            cmd.MarkError("format: sp_src [center xyz] [radius] [activity]");
             return (false);
         }
         cur_matrix.Transform(&center);
@@ -398,7 +402,8 @@ bool Load::SceneCommand(
                     size.x, size.y, size.z,
                     axis.x, axis.y, axis.z, activity))
         {
-            cmd.MarkError("Invalid values for rect_src");
+            cmd.MarkError(
+                    "rect_src format [center xyz] [size xyz] [axis xyz] [act]");
             return (false);
         }
         cur_matrix.Transform(&center);
@@ -412,7 +417,7 @@ bool Load::SceneCommand(
         VectorR3 center;
         double activity;
         if (!cmd.parse(center.x, center.y, center.z, activity)) {
-            cmd.MarkError("Invalid values for pt_src");
+            cmd.MarkError("format: pt_src [center xyz] [activity]");
             return (false);
         }
         cur_matrix.Transform(&center);
@@ -430,7 +435,8 @@ bool Load::SceneCommand(
         if (!cmd.parse(center.x, center.y, center.z,
                     size.x, size.y, size.z, filename, activity))
         {
-            cmd.MarkError("Invalid values for voxel_src");
+            cmd.MarkError("format: voxel_src [center xyz] [size xyz]"
+                    " [filename] [activity]");
             return (false);
         }
         // Make the file relative to whichever file in which the command was
@@ -534,7 +540,7 @@ bool Load::SceneCommand(
     } else if (cmd == "m") {
         std::string mat_name;
         if (!cmd.parse(mat_name)) {
-            cmd.MarkError("Incorrect syntax for material");
+            cmd.MarkError("format: m [material name]");
             return (false);
         } else if (!scene.HasMaterial(mat_name)) {
             cmd.MarkError("Invalid material: " + mat_name);
@@ -553,7 +559,7 @@ bool Load::SceneCommand(
     } else if (cmd == "t") {
         VectorR3 trans;
         if (!cmd.parse(trans.x, trans.y, trans.z)) {
-            cmd.MarkError("Invalid values for t (transltate)");
+            cmd.MarkError("format: t [shift xyz]");
             return (false);
         }
         // This doesn't seem to be the most obvious, or correct way to apply
@@ -586,7 +592,7 @@ bool Load::SceneCommand(
         VectorR3 axis;
         double degree;
         if (!cmd.parse(axis.x, axis.y, axis.z, degree)) {
-            cmd.MarkError("Invalid values for raxis");
+            cmd.MarkError("format: raxis [axis xyz] [angle (deg)]");
             return (false);
         }
         const double theta = degree * (M_PI / 180.0);
@@ -596,7 +602,7 @@ bool Load::SceneCommand(
         VectorR3 center;
         double radius;
         if (!cmd.parse(center.x, center.y, center.z, radius)) {
-            cmd.MarkError("Invalid values for sphere");
+            cmd.MarkError("sphere format: [center xyz] [radius]");
             return (false);
         }
         std::unique_ptr<ViewableSphere> s(new ViewableSphere(center, radius));
@@ -610,7 +616,8 @@ bool Load::SceneCommand(
         if (!cmd.parse(center.x, center.y, center.z,
                    axis.x, axis.y, axis.z, radius, height))
         {
-            cmd.MarkError("Invalid values for cyl");
+            cmd.MarkError("cyl format [center xyz] [axis xyz]"
+                    " [radius] [height]");
             return (false);
         }
         std::unique_ptr<ViewableCylinder> vc(new ViewableCylinder());
@@ -644,7 +651,7 @@ bool Load::SceneCommand(
     } else if (cmd == "k") {
         VectorR3 center, size;
         if (!cmd.parse(center.x, center.y, center.z, size.x, size.y, size.z)) {
-            cmd.MarkError("Invalid values for rectangle");
+            cmd.MarkError("k format: [center xyz] [size xyz]");
             return (false);
         }
 
@@ -669,7 +676,8 @@ bool Load::SceneCommand(
                     step.x, step.y, step.z,
                     size.x, size.y, size.z))
         {
-            cmd.MarkError("Invalid values for array");
+            cmd.MarkError("array format: [center xyz] [no steps xyz]"
+                    "[pitch xyz] [size xyz]");
             return (false);
         }
 

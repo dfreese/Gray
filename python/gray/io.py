@@ -76,5 +76,5 @@ def save_mapping_file(filename, mapping):
 
     '''
     with open(filename, 'w') as fid:
-        print >>fid, ' '.join(mapping.dtype.names)
+        fid.write(' '.join(mapping.dtype.names) + '\n')
         np.savetxt(fid, mapping, fmt='%d')
