@@ -99,6 +99,11 @@ int main(int argc, char ** argv) {
 
     sources.SetSimulationTime(config.get_time());
     sources.SetStartTime(config.get_start_time());
+    // Allow a world size and rank to be set via the command line, as well as
+    // by the number of threads internally.
+    if (config.get_world_size() > 1) {
+        sources.AdjustTimeForSplit(config.get_rank(), config.get_world_size());
+    }
     if (config.get_print_splits()) {
         if (sources.PrintSplits(config.get_no_threads())) {
             return (0);

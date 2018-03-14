@@ -163,6 +163,16 @@ int Config::ProcessCommandLine(int argc, char **argv, bool fail_without_scene)
                 return(-11);
             }
             print_splits = true;
+        } else if (argument == "-r") {
+            if ((follow_arg_ss >> rank).fail()) {
+                cerr << "Invalid rank: " << following_argument << endl;
+                return(-2);
+            }
+        } else if (argument == "-w") {
+            if ((follow_arg_ss >> world_size).fail()) {
+                cerr << "Invalid world size: " << following_argument << endl;
+                return(-2);
+            }
         } else if (argument.front() == '-') {
             cerr << "Unrecognized command line argument: " << argument << "\n";
             return (-99);
@@ -219,6 +229,8 @@ void Config::usage() {
     << "  --write_map [filename] : write out mapping information used to file\n"
     << "  -nt [number or \"auto\"] : number of threads to use, default = 1\n"
     << "  --print_splits [number] : print out start and sim times for even cpu load\n"
+    << "  -r [number] : the rank of the job in the world if split over multiple nodes\n"
+    << "  -w [number] : the number of the jobs in the world if split over multiple nodes\n"
     << " gray-daq only: \n"
     << "  --sort [time] : sort the incoming events, assuming this max out of order time\n"
     << endl;
@@ -589,4 +601,12 @@ int Config::get_no_threads() const {
 
 bool Config::get_print_splits() const {
     return (print_splits);
+}
+
+int Config::get_world_size() const {
+    return (world_size);
+}
+
+int Config::get_rank() const {
+    return (rank);
 }
