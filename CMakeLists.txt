@@ -4,8 +4,8 @@ project (Gray)
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     # https://stackoverflow.com/a/31313226/2465202
     # https://stackoverflow.com/a/39110966/2465202
-    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.8)
-        message(FATAL_ERROR "GCC 4.8 or greater is required")
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
+        message(FATAL_ERROR "GCC 4.9 or greater is required")
     endif()
 endif()
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")

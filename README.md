@@ -6,7 +6,7 @@ A ray-tracing based Monte-Carlo simulation for PET
 * CMake 2.8.12 or later
 * OpenGL, GLU, and GLUT (Optional for viewing)
 * Python 2.7 or later to generate the materials files from EPDL
-* A C++11 compatible compiler.  GCC 4.8 is supported, but 5 or greater
+* A C++11 compatible compiler.  GCC 4.9 is supported, but 5 or greater
  is suggested. Clang 3.3 or later is supported.
 
 ## Structure
