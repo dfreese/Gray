@@ -55,7 +55,6 @@ VectorR3 VoxelSource::Decay() const {
 
 bool VoxelSource::Load(const std::string& filename) {
     std::ifstream input(filename);
-    std::array<int,3> dims;
     if (!Load(input, prob, dims)) {
         return (false);
     }
