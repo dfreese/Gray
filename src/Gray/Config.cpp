@@ -67,7 +67,7 @@ int Config::ProcessCommandLine(int argc, char **argv, bool fail_without_scene)
         string following_argument(argv[ix + 1]);
         stringstream follow_arg_ss(following_argument);
         if (argument == "--seed") {
-            unsigned int tmp_seed;
+            unsigned long tmp_seed;
             if (!(follow_arg_ss >> tmp_seed)) {
                 cerr << "Invalid seed: " << following_argument << endl;
                 return(-1);
