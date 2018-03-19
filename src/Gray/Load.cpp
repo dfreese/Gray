@@ -281,7 +281,12 @@ bool Load::File(
         Config& config)
 {
     auto cmds = Syntax::ParseCommands(filename);
-    return (SceneCommands(cmds, sources, scene, det_array, config));
+    if (SceneCommands(cmds, sources, scene, det_array, config)) {
+        SetCameraView(scene);
+        return (true);
+    } else {
+        return (false);
+    }
 }
 
 bool Load::SceneCommand(
@@ -780,12 +785,14 @@ bool Load::SceneCommand(
             cmd.MarkError("Invalid values for from vector");
             return (false);
         }
+        view_pos_set = true;
         return (true);
     } else if (cmd == "at") {
         if (!cmd.parse(at.x, at.y, at.z)) {
             cmd.MarkError("Invalid values for at vector");
             return (false);
         }
+        lookat_pos_set = true;
         return (true);
     } else if (cmd == "up") {
         if (!cmd.parse(up.x, up.y, up.z)) {
@@ -864,7 +871,6 @@ bool Load::SceneCommand(
 
 void Load::SetCameraView(SceneDescription& scene) {
     CameraView& view = scene.GetCameraView();
-    view.SetLookAt(from, at, up);
     if (!lookat_pos_set) {
         AABB extents = scene.GetExtents();
         at.x = (extents.GetMaxX() + extents.GetMinX()) / 2.0;
@@ -878,6 +884,7 @@ void Load::SetCameraView(SceneDescription& scene) {
         from = at;
         from.z += at.z + 1.2 * (0.5 *  maxdim / std::atan(fov_angle* 0.5 ));
     }
+    view.SetLookAt(from, at, up);
     if (scene.NumLights() == 0) {
         scene.SetGlobalAmbientLight(3.5, 3.5, 3.5);
     }
