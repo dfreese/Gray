@@ -49,7 +49,6 @@ VectorR3 VoxelSource::Decay() const {
             ((x + Random::Uniform()) / dims[0] - 0.5) * size.x,
             ((y + Random::Uniform()) / dims[1] - 0.5) * size.y,
             ((z + Random::Uniform()) / dims[2] - 0.5) * size.z);
-    pos -= size / 2;
     return (local_to_global * pos);
 }
 
