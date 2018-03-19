@@ -689,10 +689,6 @@ bool Load::SceneCommand(
             for (int j = 0; j < dims[1]; j++) {
                 for (int i = 0; i < dims[0]; i++) {
                     int det_id = -1;
-                    if (cur_material->IsSensitive()) {
-                        det_id = det_array.AddDetector(
-                                center, size, cur_matrix, i, j, k, block_id);
-                    }
                     VectorR3 local_center(
                             center.x - (dims[0] - 1) * step.x / 2.0,
                             center.y - (dims[1] - 1) * step.y / 2.0,
@@ -700,6 +696,12 @@ bool Load::SceneCommand(
                     local_center.x += i * step.x;
                     local_center.y += j * step.y;
                     local_center.z += k * step.z;
+
+                    if (cur_material->IsSensitive()) {
+                        det_id = det_array.AddDetector(
+                                local_center, size, cur_matrix,
+                                i, j, k, block_id);
+                    }
 
                     std::unique_ptr<ViewableParallelepiped> vp(
                             new ViewableParallelepiped(local_center, size));
