@@ -870,7 +870,7 @@ bool Load::SceneCommand(
 }
 
 void Load::SetCameraView(SceneDescription& scene) {
-    constexpr double deg_to_rad = 180.0 / M_PI;
+    constexpr double deg_to_rad = M_PI / 180.0;
     double fov_angle = fov_angle_deg * deg_to_rad;
     CameraView& view = scene.GetCameraView();
     if (!lookat_pos_set) {
