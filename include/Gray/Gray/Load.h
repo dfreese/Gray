@@ -61,7 +61,7 @@ private:
     VectorR3 up = {0, 1, 0};
     VectorR3 from;
     VectorR3 at = {0, 0, 0};
-    double fov_angle = 0.6108652382; // 35 degrees in radians
+    double fov_angle_deg = 35.0;
     bool view_pos_set = false;
     bool lookat_pos_set = false;
     bool load_polygon_lines = false;
