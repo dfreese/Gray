@@ -183,8 +183,7 @@ void Simulation::CombineOutputs(
             coincs.emplace_back(new std::ofstream(name));
         }
     }
-    for (int idx = 0; idx < sims.size(); idx++) {
-        const Simulation& sim = sims[idx];
+    for (const auto& sim : sims) {
         if (config.get_log_hits()) {
             std::ifstream hits_seg(sim.output_hits.GetFilename());
             hits << hits_seg.rdbuf();

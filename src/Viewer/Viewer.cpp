@@ -35,8 +35,7 @@ static void ResizeWindow(GLsizei w, GLsizei h)
 // The "g" or space bar commands have the same effect: switch between
 //		rendering with OpenGL and rendering with Glut.
 // *******************************************************************
-void myKeyboardFunc( unsigned char key, int x, int y )
-{
+void myKeyboardFunc(unsigned char key, int, int) {
     switch ( key ) {
         case 'q':
         case 'Q':
@@ -49,8 +48,7 @@ void myKeyboardFunc( unsigned char key, int x, int y )
 // *******************************************************************
 // Handle all "special" key presses.
 // *******************************************************************
-void mySpecialFunc( int key, int x, int y )
-{
+void mySpecialFunc( int key, int, int) {
     switch ( key ) {
         case GLUT_KEY_UP:
             ActiveScene->GetCameraView().RotateViewUp( 0.1 );

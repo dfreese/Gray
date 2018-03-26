@@ -150,8 +150,10 @@ bool ViewableTriangle::CalcExtentsInBox( const AABB& boundingAABB, AABB& retAABB
     return true;
 }
 
-bool ViewableTriangle::CalcPartials( const VisiblePoint& visPoint,
-                                     VectorR3& retPartialU, VectorR3& retPartialV ) const
+bool ViewableTriangle::CalcPartials(
+        const VisiblePoint&,
+        VectorR3& retPartialU,
+        VectorR3& retPartialV) const
 {
     retPartialU = VertexB;
     retPartialU -= VertexA;

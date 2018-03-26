@@ -14,7 +14,8 @@ std::vector<double> LoadMaterials::VectorizeArray(const Json::Value & array) {
         return (std::vector<double>());
     }
     std::vector<double> values(array.size());
-    for (int ii = 0; ii < array.size(); ++ii) {
+    // json arrays are indexed by ints
+    for (int ii = 0; ii < static_cast<int>(array.size()); ++ii) {
         values[ii] = array[ii].asDouble();
     }
     return (values);

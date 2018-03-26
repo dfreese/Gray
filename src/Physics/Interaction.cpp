@@ -10,6 +10,7 @@
 
 #include "Gray/Physics/Interaction.h"
 #include <cmath>
+#include <exception>
 #include <iostream>
 #include "Gray/Gray/GammaMaterial.h"
 #include "Gray/Physics/Photon.h"
@@ -174,4 +175,5 @@ bool Interaction::Dropped(Type type, const GammaMaterial& mat) {
         case Type::ERROR_MATCH:
             return (true);
     }
+    throw std::runtime_error("Inavlid Type");
 }

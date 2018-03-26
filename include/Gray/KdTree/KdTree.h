@@ -359,8 +359,8 @@ private:
     // You must maintain this condition:
     // EndOfArray will *always* equal TripleArray+NumTriples().
 
-    const long NumObjects () const { return NumMaxMins + NumFlats; }
-    const long NumTriples () const { return (NumMaxMins<<1) + NumFlats; }
+    long NumObjects () const { return NumMaxMins + NumFlats; }
+    long NumTriples () const { return (NumMaxMins<<1) + NumFlats; }
 };
 
 inline void ExtentTriple::Set( TripleType theType, double value, long objectID )
@@ -512,7 +512,7 @@ inline void KdTree::SetDoubleRecurseSplitting( bool useModifiedCoefs )
 inline long KdTree::NextIndex()
 {
     long i = TreeNodes.size();
-    if (i > TreeNodes.capacity()) {
+    if (i > static_cast<long>(TreeNodes.capacity())) {
         TreeNodes.reserve(i * 1.25);
     }
     TreeNodes.emplace_back();

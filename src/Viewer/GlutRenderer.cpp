@@ -721,7 +721,7 @@ void GlutRenderer::InitLightsAndView(const SceneDescription & scene)
     SetupCameraView(scene.GetCameraView());
 
     // Define all light sources
-    for (int i = 0; i < scene.NumLights(); i++) {
+    for (size_t i = 0; i < scene.NumLights(); i++) {
         AddLight(scene.GetLight(i));
     }
     SetGlobalAmbientLight(scene.GlobalAmbientLight());

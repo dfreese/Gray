@@ -170,6 +170,7 @@ add_library(gammaray
     ${CMAKE_SOURCE_DIR}/src/json/jsoncpp.cpp
 )
 target_include_directories(gammaray PUBLIC ${CMAKE_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/generated)
+target_compile_options(gammaray PRIVATE -Wall -Wextra -Werror)
 
 
 ################################################################################
@@ -178,9 +179,10 @@ find_package(Threads REQUIRED)
 add_executable(gray
     ${CMAKE_SOURCE_DIR}/src/Gray/gray.cpp
     )
-target_link_libraries(gray gammaray ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(gray PUBLIC gammaray ${CMAKE_THREAD_LIBS_INIT})
+target_compile_options(gray PRIVATE -Wall -Wextra -Werror)
 if (STATIC_BIN)
-    target_link_libraries(gray "-static")
+    target_compile_options(gray PRIVATE -static)
 endif (STATIC_BIN)
 add_custom_command(TARGET gray POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E copy  "$<TARGET_FILE:gray>" "${CMAKE_SOURCE_DIR}/bin/")
@@ -190,9 +192,10 @@ add_custom_command(TARGET gray POST_BUILD
 add_executable(gray-daq
     ${CMAKE_SOURCE_DIR}/src/Gray/gray-daq.cpp
 )
-target_link_libraries(gray-daq gammaray)
+target_link_libraries(gray-daq PUBLIC gammaray)
+target_compile_options(gray-daq PRIVATE -Wall -Wextra -Werror)
 if (STATIC_BIN)
-    target_link_libraries(gray-daq "-static")
+    target_compile_options(gray-daq PRIVATE -static)
 endif (STATIC_BIN)
 
 add_custom_command(TARGET gray-daq POST_BUILD
@@ -212,9 +215,9 @@ if (OPENGL_FOUND AND OPENGL_GLU_FOUND AND GLUT_FOUND)
         ${CMAKE_SOURCE_DIR}/include/Gray/Viewer/Viewer.h
         )
     target_include_directories(gray-view PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-    target_link_libraries(gray-view ${OPENGL_LIBRARIES})
-    target_link_libraries(gray-view ${GLUT_LIBRARIES})
-    target_link_libraries(gray-view gammaray)
+    target_link_libraries(gray-view PUBLIC
+        gammaray ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
+    target_compile_options(gray-view PRIVATE -Wall -Wextra -Werror)
 
     add_custom_command(TARGET gray-view POST_BUILD
         COMMAND "${CMAKE_COMMAND}" -E copy  "$<TARGET_FILE:gray-view>" "${CMAKE_SOURCE_DIR}/bin/")

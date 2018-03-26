@@ -212,7 +212,7 @@ void KdTree::BuildTree(long numObjects,
     ObjectAABBs.resize(numObjects);
 
 	// Calculate all initial extents
-	for (size_t ii = 0; ii < numObjects; ii++ ) {
+	for (long ii = 0; ii < numObjects; ii++ ) {
 		ExtentFunc(ii, ObjectAABBs[ii]);
 	}
 
@@ -233,7 +233,7 @@ void KdTree::BuildTree(long numObjects,
 	LeftRightStatus = new unsigned char[NumObjects];
 
 	// Loop over all objects, creating the extent triples.
-	for (size_t ii = 0; ii < numObjects; ii++ ) {
+	for (long ii = 0; ii < numObjects; ii++ ) {
         const AABB & aabb = ObjectAABBs[ii];
 		XextentList.AddToEnd(aabb.GetMinX(), aabb.GetMaxX(), ii);
 		YextentList.AddToEnd(aabb.GetMinY(), aabb.GetMaxY(), ii);

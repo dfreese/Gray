@@ -19,7 +19,6 @@ VectorR3 PointSource::Decay() const {
     return(position);
 }
 
-bool PointSource::Inside(const VectorR3 & pos) const
-{
+bool PointSource::Inside(const VectorR3&) const {
     return false;
 }

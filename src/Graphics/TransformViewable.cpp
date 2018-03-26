@@ -33,9 +33,8 @@
 void TransformWithRigid(  ViewableBezierSet* theObject, const RigidMapR3& theTransform )
 {
     BezierArray thePatches = theObject->GetPatchList();
-    for (long i=0; i < thePatches.size(); i++) {
-        BezierPatch* thisBezierPatch = &(thePatches[i]);
-        TransformBezierPatchRecursive( theTransform, thisBezierPatch );
+    for (auto& patch : thePatches) {
+        TransformBezierPatchRecursive(theTransform, &patch);
     }
 
     // Transform bounding sphere appropriately

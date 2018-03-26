@@ -63,11 +63,6 @@ const double GoldenRatioInv = (sqrt(5.0)-1.0)*0.5;  // 1.0/GoldenRatio
 const double OnePlusEpsilon15 = 1.0+1.0e-15;
 const double OneMinusEpsilon15 = 1.0-1.0e-15;
 
-inline double ZeroValue(const double& x)
-{
-    return 0.0;
-}
-
 // Inner product -- so can be used in templated situations
 
 inline double InnerProduct( double x, double y )

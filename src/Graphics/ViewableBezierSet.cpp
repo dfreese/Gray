@@ -63,7 +63,7 @@ bool ViewableBezierSet::FindIntersectionNT (
 
     // Loop over each patch, check their bounding parallelepiped.
     //   For those that are hit, push them into the stack.
-    for (long i = 0; i < PatchList.size(); i++ ) {
+    for (size_t i = 0; i < PatchList.size(); i++ ) {
         const BezierPatch* bPatch = &(PatchList[i]);
         if ( ViewableParallelepiped::QuickIntersectTest( viewPos, viewDir, maxDist,
                 &intersectDistanceIn, &intersectDistanceOut,

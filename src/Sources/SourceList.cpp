@@ -134,9 +134,9 @@ NuclearDecay SourceList::Decay() {
 }
 
 bool SourceList::InsideNegative(const VectorR3 & pos) const {
-    for (int i = 0; i < neg_list.size(); i++) {
-        if (neg_list[i]->Inside(pos)) {
-            double ratio = -1 * neg_list[i]->GetActivity();
+    for (const auto& source : neg_list) {
+        if (source->Inside(pos)) {
+            double ratio = -1 * source->GetActivity();
             if (Random::Selection(ratio)) {
                 return true;
             }

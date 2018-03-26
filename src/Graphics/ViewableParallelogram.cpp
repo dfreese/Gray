@@ -93,14 +93,17 @@ bool ViewableParallelogram::FindIntersectionNT (
     return true;
 }
 
-bool ViewableParallelogram::CalcPartials( const VisiblePoint& visPoint,
-        VectorR3& retPartialU, VectorR3& retPartialV ) const
+bool ViewableParallelogram::CalcPartials(
+        const VisiblePoint&,
+        VectorR3& retPartialU,
+        VectorR3& retPartialV ) const
 {
     retPartialU = VertexB;
     retPartialU -= VertexA;
     retPartialV = VertexD;
     retPartialV -= VertexA;
-    return true;			// Not a singularity point (parallelograms should not be degenerate)
+    // Not a singularity point (parallelograms should not be degenerate)
+    return true;
 }
 
 void ViewableParallelogram::CalcBoundingPlanes( const VectorR3& u,

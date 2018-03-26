@@ -46,17 +46,17 @@ bool Material::CalcRefractDir(
 }
 
 VectorR3 Material::GetReflectionColor(
-        const VisiblePoint& visPoint,
-        const VectorR3& outDir,
-        const VectorR3& fromDir) const
+        const VisiblePoint&,
+        const VectorR3&,
+        const VectorR3&) const
 {
     return ColorReflective;
 }
 
 VectorR3 Material::GetTransmissionColor(
-        const VisiblePoint& visPoint,
-        const VectorR3& outDir,
-        const VectorR3& fromDir) const
+        const VisiblePoint&,
+        const VectorR3&,
+        const VectorR3&) const
 {
     return ColorTransmissive;
 }

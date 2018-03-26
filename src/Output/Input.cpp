@@ -9,6 +9,7 @@
  */
 
 #include "Gray/Output/Input.h"
+#include <exception>
 #include <sstream>
 #include "Gray/Physics/Interaction.h"
 
@@ -44,6 +45,7 @@ bool Input::read_interactions(std::vector<Interaction> & interactions,
             return(read_variables_binary(interactions, no_interactions,
                                          log_file, var_format_write_flags));
     }
+    throw std::runtime_error("Invalid Format");
 }
 
 bool Input::set_logfile(const std::string & name)
