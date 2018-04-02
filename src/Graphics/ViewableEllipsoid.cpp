@@ -49,12 +49,12 @@ bool ViewableEllipsoid::FindIntersectionNT (
         }
         // Found an intersection from outside.
         returnedPoint.SetFrontFace();
-        returnedPoint.SetMaterial(*GetMaterialInner());
+        returnedPoint.SetMaterial(GetMaterialInner());
         *intersectDistance = alpha1;
     } else if ( numRoots==2 && alpha2>0.0 && alpha2<maxDistance ) {
         // Found an intersection from inside.
         returnedPoint.SetBackFace();
-        returnedPoint.SetMaterial(*GetMaterialOuter());
+        returnedPoint.SetMaterial(GetMaterialOuter());
         *intersectDistance = alpha2;
     } else {
         return false;	// Both intersections behind us (should never get here)

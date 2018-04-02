@@ -29,12 +29,11 @@ class VisiblePoint
 public:
     VisiblePoint() = default;
 
-    void SetPosition( const VectorR3& pos )
-    {
+    void SetPosition(const VectorR3& pos) {
         Position = pos;
     }
-    void SetMaterial(const Material& material) {
-        Mat = &material;
+    void SetMaterial(const Material* material) {
+        Mat = material;
     }
     void SetFrontFace() {
         FrontFace = true;
@@ -42,31 +41,22 @@ public:
     void SetBackFace() {
         FrontFace = false;
     }
-
-    bool IsFrontFacing() const
-    {
+    bool IsFrontFacing() const {
         return FrontFace;
     }
-    bool IsBackFacing() const
-    {
+    bool IsBackFacing() const {
         return !FrontFace;
     }
-
-    const VectorR3& GetPosition() const
-    {
+    const VectorR3& GetPosition() const {
         return Position;
     }
-    const Material& GetMaterial() const
-    {
-        return *Mat;
+    const Material* GetMaterial() const {
+        return Mat;
     }
-
-    void SetObject( const ViewableBase *object )
-    {
+    void SetObject(const ViewableBase *object) {
         TheObject = object;
     }
-    const ViewableBase& GetObject() const
-    {
+    const ViewableBase& GetObject() const {
         return *TheObject;
     }
 

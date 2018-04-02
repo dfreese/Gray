@@ -81,7 +81,7 @@ bool ViewableParallelogram::FindIntersectionNT (
 
     // Front/Back face info already set above
     returnedPoint.SetPosition( v );
-    returnedPoint.SetMaterial( (mdotn<=0) ? *FrontMat : *BackMat );
+    returnedPoint.SetMaterial((mdotn<=0) ? FrontMat:BackMat);
     return true;
 }
 

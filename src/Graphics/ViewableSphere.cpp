@@ -47,7 +47,7 @@ bool ViewableSphere::FindIntersectionNT (
         v *= *intersectDistance;
         v += viewPos;					//  Position of intersection
         returnedPoint.SetPosition( v );
-        returnedPoint.SetMaterial (*GetMaterialOuter());
+        returnedPoint.SetMaterial(GetMaterialOuter());
         returnedPoint.SetFrontFace();	// Front face direction
         return true;
     } else if ( (D>0.0 || D*D<BSq) && D<maxDist && BSq<Square(D-maxDist) ) {
@@ -58,7 +58,7 @@ bool ViewableSphere::FindIntersectionNT (
         v *= *intersectDistance;
         v += viewPos;
         returnedPoint.SetPosition( v );
-        returnedPoint.SetMaterial (*GetMaterialInner());
+        returnedPoint.SetMaterial(GetMaterialInner());
         returnedPoint.SetBackFace();
         return true;
     } else {

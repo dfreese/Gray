@@ -79,11 +79,11 @@ void GammaRayTrace::TracePhoton(
                 // in a detector or inside a phantom
                 photon.SetDetId(visPoint.GetObject().GetDetectorId());
                 MatStack.emplace(static_cast<GammaMaterial const * const>(
-                            &visPoint.GetMaterial()));
+                            visPoint.GetMaterial()));
             } else {
                 // Check to make sure we are exiting the material we think
                 // we are currently in.
-                if (&visPoint.GetMaterial() != MatStack.top()) {
+                if (visPoint.GetMaterial() != MatStack.top()) {
                     if (log_errors){
                         interactions.emplace_back(
                                 Interaction(Interaction::Type::ERROR_MATCH, photon));
@@ -182,7 +182,7 @@ std::stack<GammaMaterial const *> GammaRayTrace::BuildStack(
             dir, hit_dist, point);
 
     while (obj_num >= 0) {
-        materials.push(static_cast<GammaMaterial const *>(&point.GetMaterial()));
+        materials.push(static_cast<GammaMaterial const *>(point.GetMaterial()));
         if (point.IsFrontFacing()) {
             front_face.push(true);
         } else {
@@ -265,7 +265,7 @@ std::stack<GammaMaterial const *> GammaRayTrace::UpdateStack(
         if (point.IsFrontFacing()) {
             // Front face means we are entering a material.
             mat_stack.emplace(static_cast<GammaMaterial const *>(
-                    &point.GetMaterial()));
+                    point.GetMaterial()));
         } else if (point.IsBackFacing()) {
             // Back face means we are exiting a material
             if (mat_stack.empty()) {
@@ -273,7 +273,7 @@ std::stack<GammaMaterial const *> GammaRayTrace::UpdateStack(
                 // front face.
                 break;
             }
-            if (mat_stack.top() != (&point.GetMaterial())) {
+            if (mat_stack.top() != (point.GetMaterial())) {
                 // If the material we find on the back face isn't the material
                 // we think we're in, then there's probably some weird overlap.
                 break;

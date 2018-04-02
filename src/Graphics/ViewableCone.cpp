@@ -129,9 +129,9 @@ bool ViewableCone::FindIntersectionNT (
     v += viewPos;
     returnedPoint.SetPosition( v );		// Intersection point
     if ( returnedPoint.IsFrontFacing() ) {
-        returnedPoint.SetMaterial(*GetMaterialOuter());
+        returnedPoint.SetMaterial(GetMaterialOuter());
     } else {
-        returnedPoint.SetMaterial(*GetMaterialInner());
+        returnedPoint.SetMaterial(GetMaterialInner());
     }
     return true;
 }

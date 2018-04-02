@@ -171,11 +171,11 @@ bool ViewableParallelepiped::FindIntersectionNT (
     if ( maxFrontDist>0.0 ) {
         alpha = maxFrontDist;
         returnedPoint.SetFrontFace();
-        returnedPoint.SetMaterial(*ViewableBase::GetMaterialBack());
+        returnedPoint.SetMaterial(ViewableBase::GetMaterialBack());
     } else if ( minBackDist>0.0 && minBackDist<maxDistance ) {
         alpha = minBackDist;
         returnedPoint.SetBackFace();
-        returnedPoint.SetMaterial(*ViewableBase::GetMaterialFront());
+        returnedPoint.SetMaterial(ViewableBase::GetMaterialFront());
     } else {
         return false;
     }

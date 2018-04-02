@@ -87,10 +87,10 @@ bool ViewableTriangle::FindIntersectionNT (
 
     // Front/Back face info already set above
     if ( frontFace ) {
-        returnedPoint.SetMaterial(*ViewableBase::GetMaterialFront());
+        returnedPoint.SetMaterial(ViewableBase::GetMaterialFront());
         returnedPoint.SetFrontFace();
     } else {
-        returnedPoint.SetMaterial(*ViewableBase::GetMaterialBack());
+        returnedPoint.SetMaterial(ViewableBase::GetMaterialBack());
         returnedPoint.SetBackFace();
     }
     return true;

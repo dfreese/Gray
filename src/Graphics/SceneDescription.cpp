@@ -130,7 +130,7 @@ bool SceneDescription::TestOverlapSingle(VectorR3 & start, const VectorR3 & dir)
         start += (hit_dist + ray_trace_epsilon) * dir;
         if (point.IsFrontFacing()) {
             // Front face means we are entering a material.
-            mat_stack.push(&point.GetMaterial());
+            mat_stack.push(point.GetMaterial());
         } else if (point.IsBackFacing()) {
             // Back face means we are exiting a material
             if (mat_stack.empty()) {
@@ -138,7 +138,7 @@ bool SceneDescription::TestOverlapSingle(VectorR3 & start, const VectorR3 & dir)
                 // front face.
                 return (false);
             }
-            if (mat_stack.top() != (&point.GetMaterial())) {
+            if (mat_stack.top() != (point.GetMaterial())) {
                 // If the material we find on the back face isn't the material
                 // we think we're in, then there's probably some weird overlap.
                 return (false);

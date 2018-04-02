@@ -147,9 +147,9 @@ bool ViewableCylinder::FindIntersectionNT (
     returnedPoint.SetPosition(viewDir * alpha + viewPos); 
 
     if (returnedPoint.IsFrontFacing()) {
-        returnedPoint.SetMaterial(*GetMaterialOuter());
+        returnedPoint.SetMaterial(GetMaterialOuter());
     } else {
-        returnedPoint.SetMaterial(*GetMaterialInner());
+        returnedPoint.SetMaterial(GetMaterialInner());
     }
 
     return true;

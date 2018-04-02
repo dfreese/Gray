@@ -138,10 +138,10 @@ bool ViewableBezierSet::FindIntersectionNT (
                     bp->EvalPatchNormal( uVmaybe, tempHg, &temp, &(bp->NormalC) );
                     if ( (viewDir^temp) < 0 ) {	// if front face hit
                         bestIntersection->SetFrontFace();
-                        bestIntersection->SetMaterial(*ViewableBase::GetMaterialFront());
+                        bestIntersection->SetMaterial(ViewableBase::GetMaterialFront());
                     } else {
                         bestIntersection->SetBackFace();
-                        bestIntersection->SetMaterial(*ViewableBase::GetMaterialBack());
+                        bestIntersection->SetMaterial(ViewableBase::GetMaterialBack());
                     }
                 }
                 // Done with this patch.  Remove from stack and continue looping
