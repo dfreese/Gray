@@ -13,24 +13,14 @@ GammaMaterial::GammaMaterial(
     properties(std::move(stats))
 {}
 
-bool GammaMaterial::Distance(Photon& photon, double max_dist) const {
-    double rand_dist = max_dist;
-    bool interacted = false;
+double GammaMaterial::Distance(double photon_energy) const {
     if (InteractionsEnabled()) {
         GammaStats::AttenLengths len = properties.GetAttenLengths(
-                photon.GetEnergy());
-        rand_dist = Random::Exponential(len.total());
-        interacted = true;
-        if (rand_dist >= max_dist) {
-            interacted = false;
-            rand_dist = max_dist;
-        }
+                photon_energy);
+        return (Random::Exponential(len.total()));
+    } else {
+        return (DBL_MAX);
     }
-
-    // move photon to interaction point, or exit point of material
-    photon.AddPos(rand_dist * photon.GetDir());
-    photon.AddTime(rand_dist * Physics::inverse_speed_of_light);
-    return (interacted);
 }
 
 Interaction::Type GammaMaterial::Interact(Photon& photon) const {

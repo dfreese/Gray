@@ -14,7 +14,7 @@ public:
     GammaMaterial(
         int index, const std::string& name, bool sensitive, bool interactive,
         GammaStats stats);
-    bool Distance(Photon& photon, double max_dist) const;
+    double Distance(double photon_energy) const;
     Interaction::Type Interact(Photon& photon) const;
     void DisableRayleigh();
 

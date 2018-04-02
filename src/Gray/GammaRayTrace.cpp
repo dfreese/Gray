@@ -36,7 +36,7 @@ void GammaRayTrace::TracePhoton(
         std::stack<GammaMaterial const *> MatStack,
         GammaRayTraceStats& stats) const
 {
-    for (int trace_depth = 0; trace_depth < max_trace_depth; trace_depth++) {
+    for (int trace_depth = 0; trace_depth < max_trace_depth; ++trace_depth) {
         if (MatStack.empty()) {
             // Should always have the default material at the bottom of the
             // stack.  If we somehow pop that out, it means we somehow detected
@@ -52,28 +52,24 @@ void GammaRayTrace::TracePhoton(
         }
         const GammaMaterial & mat_gamma_prop = *MatStack.top();
 
+        // Will return a distance of interaction within the material, or a
+        // double max if the material doesn't interact.  Either way, this is
+        // the maximum distance we should trace.  If we get to the end of the
+        // material before this point, then there was no interaction.  If we
+        // don't intersect with a material, then an interaction happened at the
+        // distance we calculated, we just need to figure out what type of
+        // interaction it was.
+        double hitDist = mat_gamma_prop.Distance(photon.GetEnergy());
 
-        double hitDist = DBL_MAX;
         VisiblePoint visPoint;
-        long intersectNum = scene.SeekIntersection(photon.GetPos(), photon.GetDir(),
-                                                   hitDist, visPoint);
-        // There was nothing further in the environment to hit, so return.
-        if (intersectNum < 0) {
-            stats.no_interaction++;
-            return;
-        }
+        // Seek intersection will modify hitDist to a smaller distance if the
+        // ray interacts with an object.
+        long intersectNum = scene.SeekIntersection(
+                photon.GetPos(), photon.GetDir(), hitDist, visPoint);
 
-        double deposit = photon.GetEnergy();
-        Interaction::Type type;
-        // Check to see if the photon interacts in the material, and if so then
-        // check to see what type it is.  Distance will move the photon the
-        // appropriate distance whether or not it interacts in the material.
-        if (mat_gamma_prop.Distance(photon, hitDist)) {
-            type = mat_gamma_prop.Interact(photon);
-            deposit -= photon.GetEnergy();
-        } else {
-            // If no interaction, recursively traverse the in the direction
-            // the photon was travelling
+        if (intersectNum >= 0) {
+            // If we hit something, then we no we didn't interact.  Move the
+            // photon to that point, and then enter or exit the material.
             if (visPoint.IsFrontFacing()) {
                 // This detector id will be used to determine if we scatter
                 // in a detector or inside a phantom
@@ -94,10 +90,38 @@ void GammaRayTrace::TracePhoton(
                 photon.SetDetId(-1);
                 MatStack.pop();
             }
-            // Make sure not to hit same place in kdtree
-            photon.AddPos(photon.GetDir() * SceneDescription::ray_trace_epsilon);
+            // Make sure not to hit same place in kdtree, by adding an offset
+            // of a small delta.  This is very much a hack, and a better way
+            // would be to make sure the KdTree doesn't just avoids this
+            // object.
+            hitDist += SceneDescription::ray_trace_epsilon;
+            photon.AddPos(hitDist * photon.GetDir());
+            photon.AddTime(hitDist * Physics::inverse_speed_of_light);
             continue;
         }
+
+        // We've reached either the edge of the world or the interaction point.
+        // We need to differentiate between the two cases.  We do this by
+        // assuming that if we are at the default world material, that we hit
+        // the edge of the world.  The default world material won't trigger an
+        // interaction. The hit distance should also be at double max.
+        if (MatStack.size() == 1) {
+            // There was nothing further in the environment to hit, so return
+            // from the function.
+            stats.no_interaction++;
+            return;
+        }
+
+        // We now know the photon underwent some type of interaction in the
+        // current material, so we can figure out what that was.  First we need
+        // to advance the photon to the interaction point.
+        photon.AddPos(hitDist * photon.GetDir());
+        photon.AddTime(hitDist * Physics::inverse_speed_of_light);
+
+        double deposit = photon.GetEnergy();
+        Interaction::Type type = mat_gamma_prop.Interact(photon);
+        deposit -= photon.GetEnergy();
+
         bool is_sensitive = (photon.GetDetId() >= 0);
         bool log_interact = (log_nonsensitive || is_sensitive);
 
