@@ -21,8 +21,6 @@ bool ViewableCylinder::FindIntersectionNT (
 {
     double maxFrontDist = -DBL_MAX;
     double minBackDist = DBL_MAX;
-    int frontType, backType;		// 0, 1, 2 = top, bottom, side
-
 
     // Start with the bounding planes
     if ( IsRightCylinder() ) {
@@ -34,24 +32,18 @@ bool ViewableCylinder::FindIntersectionNT (
             }
             // Hits top from above
             maxFrontDist = (HalfHeight-pdotn)/udotn;
-            frontType = 0;
             minBackDist = -(HalfHeight+pdotn)/udotn;
-            backType = 1;
         } else if ( pdotn < -HalfHeight ) {
             if ( udotn<=0.0 ) {
                 return false;		// Below bottom, pointing down
             }
             // Hits bottom plane from below
             maxFrontDist = -(HalfHeight+pdotn)/udotn;
-            frontType = 1;
             minBackDist = (HalfHeight-pdotn)/udotn;
-            backType = 0;
         } else if ( udotn<0.0 ) { // Inside, pointing down
             minBackDist = -(HalfHeight+pdotn)/udotn;
-            backType = 1;
         } else if ( udotn>0.0 ) {		// Inside, pointing up
             minBackDist = (HalfHeight-pdotn)/udotn;
-            backType = 0;
         }
     } else {
         // Has two bounding planes (not right cylinder)
@@ -63,12 +55,10 @@ bool ViewableCylinder::FindIntersectionNT (
                 return false;		// Above top plane, pointing up
             }
             maxFrontDist = (TopPlaneCoef-pdotnCap)/udotnCap;
-            frontType = 0;
         } else if ( pdotnCap<TopPlaneCoef ) {
             if ( udotnCap>0.0 ) {
                 // Below top plane, pointing up
                 minBackDist = (TopPlaneCoef-pdotnCap)/udotnCap;
-                backType = 0;
             }
         }
         // Second, handle the bottom plane
@@ -82,7 +72,6 @@ bool ViewableCylinder::FindIntersectionNT (
                 }
                 if ( newBackDist<minBackDist ) {
                     minBackDist = newBackDist;
-                    backType = 1;
                 }
             }
         } else if ( pdotnCap>BottomPlaneCoef ) {
@@ -96,7 +85,6 @@ bool ViewableCylinder::FindIntersectionNT (
             }
             if ( newFrontDist>maxFrontDist ) {
                 maxFrontDist = newFrontDist;
-                frontType = 1;
             }
         }
     }
@@ -105,12 +93,10 @@ bool ViewableCylinder::FindIntersectionNT (
     }
 
     // Now handle the cylinder sides
-    VectorR3 v = viewPos;
-    v -= Center;
-    double pdotuA = v^AxisA;
-    double pdotuB = v^AxisB;
-    double udotuA = viewDir^AxisA;
-    double udotuB = viewDir^AxisB;
+    double pdotuA = viewPos ^ AxisA;
+    double pdotuB = viewPos ^ AxisB;
+    double udotuA = viewDir ^ AxisA;
+    double udotuB = viewDir ^ AxisB;
 
     double C = pdotuA*pdotuA + pdotuB*pdotuB - 1.0;
     double B = (pdotuA*udotuA + pdotuB*udotuB);
@@ -133,28 +119,23 @@ bool ViewableCylinder::FindIntersectionNT (
             return false;
         }
         maxFrontDist = alpha1;
-        frontType = 2;
     }
     if ( numRoots==2 && alpha2<minBackDist ) {
         if ( alpha2<maxFrontDist ) {
             return false;
         }
         minBackDist = alpha2;
-        backType = 2;
     }
 
     // Put it all together:
 
     double alpha;
-    int hitSurface;
     if ( maxFrontDist>0.0 ) {
         returnedPoint.SetFrontFace();	// Hit from outside
         alpha = maxFrontDist;
-        hitSurface = frontType;
     } else {
         returnedPoint.SetBackFace();	// Hit from inside
         alpha = minBackDist;
-        hitSurface = backType;
     }
 
     if ( alpha >= maxDistance ) {
@@ -162,81 +143,16 @@ bool ViewableCylinder::FindIntersectionNT (
     }
 
     *intersectDistance = alpha;
-    // Set v to the intersection point
-    v = viewDir;
-    v *= alpha;
-    v += viewPos;
-    returnedPoint.SetPosition( v );		// Intersection point
+    // Intersection point
+    returnedPoint.SetPosition(viewDir * alpha + viewPos); 
 
-    // Now set v equal to returned position relative to the center
-    v -= Center;
-    double vdotuA = v^AxisA;
-    double vdotuB = v^AxisB;
-
-    switch ( hitSurface ) {
-
-    case 0:		// Top surface
-        returnedPoint.SetNormal( TopNormal );
-        if ( returnedPoint.IsFrontFacing() ) {
-            returnedPoint.SetMaterial(*GetMaterialOuter());
-        } else {
-            returnedPoint.SetMaterial(*GetMaterialInner());
-        }
-
-        // Calculate U-V values for texture coordinates
-        vdotuA = 0.5*(1.0-vdotuA);
-        vdotuB = 0.5*(1.0+vdotuB);
-        returnedPoint.SetUV( vdotuA, vdotuB );
-        returnedPoint.SetFaceNumber( TopFaceNum );
-        break;
-
-    case 1:		// Bottom face
-        returnedPoint.SetNormal( BottomNormal );
-        if ( returnedPoint.IsFrontFacing() ) {
-            returnedPoint.SetMaterial(*GetMaterialOuter());
-        } else {
-            returnedPoint.SetMaterial(*GetMaterialInner());
-        }
-
-        // Calculate U-V values for texture coordinates
-        vdotuA = 0.5*(1.0+vdotuA);
-        vdotuB = 0.5*(1.0+vdotuB);
-        returnedPoint.SetUV( vdotuA, vdotuB );
-        returnedPoint.SetFaceNumber( BaseFaceNum );
-        break;
-
-    case 2:		// Cylinder's side
-        VectorR3 normal;
-        normal = vdotuA*AxisA;
-        normal += vdotuB*AxisB;
-        normal.Normalize();
-        returnedPoint.SetNormal( normal );
-        if ( returnedPoint.IsFrontFacing() ) {
-            returnedPoint.SetMaterial(*GetMaterialOuter());
-        } else {
-            returnedPoint.SetMaterial(*GetMaterialInner());
-        }
-
-        // Calculate u-v coordinates for texture mapping (in range[0,1]x[0,1])
-        double uCoord = atan2( vdotuB, vdotuA )/ (2 * M_PI) + 0.5;
-        double vCoord;
-        if ( IsRightCylinder() ) {
-            vCoord = ((v^CenterAxis)+HalfHeight)/Height;
-        } else {
-            const VectorR3& hitPos=returnedPoint.GetPosition();
-            double distUp = (TopPlaneCoef-(hitPos^TopNormal))/(CenterAxis^TopNormal);
-            double distDown = -(BottomPlaneCoef-(hitPos^BottomNormal))/(CenterAxis^BottomNormal);
-            if ( distDown+distUp > 0.0 ) {
-                vCoord = distDown/(distDown+distUp);
-            } else {
-                vCoord = 0.5;	// At corner
-            }
-        }
-        returnedPoint.SetUV( uCoord, vCoord );
-        returnedPoint.SetFaceNumber( SideFaceNum );
+    if (returnedPoint.IsFrontFacing()) {
+        returnedPoint.SetMaterial(*GetMaterialOuter());
+    } else {
+        returnedPoint.SetMaterial(*GetMaterialInner());
     }
-    return true;
 
+    return true;
 }
 
 void ViewableCylinder::CalcBoundingPlanes( const VectorR3& u, double *minDot, double *maxDot ) const
@@ -307,77 +223,3 @@ void ViewableCylinder::CalcBoundingPlanes( const VectorR3& u, double *minDot, do
     *maxDot = maxD;
 }
 
-bool ViewableCylinder::CalcPartials( const VisiblePoint& visPoint,
-                                     VectorR3& retPartialU, VectorR3& retPartialV ) const
-{
-    switch( visPoint.GetFaceNumber() ) {
-
-    case SideFaceNum:	// Sides of cylinder
-        retPartialV = CenterAxis;
-        if ( IsRightCylinder() ) {
-            retPartialV *= Height;
-            retPartialU = visPoint.GetPosition();
-            retPartialU -= Center;
-            retPartialU *= CenterAxis;
-            retPartialU *= -2 * M_PI;		// Convert from [-pi,pi] to [0,1] and fix sign
-        } else {
-            double u = visPoint.GetU();
-            double phi = 2 * M_PI*(u-0.5);		// Adjust from [0,1] to [-pi,pi]
-            VectorR3 temp;
-            retPartialU = AxisA;
-            double radiusAxB = RadiusA*RadiusB;
-            retPartialU *= -radiusAxB*sin(phi);
-            temp = AxisB;
-            temp *= radiusAxB*cos(phi);
-            retPartialU += temp;			// This would be OK for parallel top&bottom faces
-            double adjustUp = (retPartialV^TopNormal)/(CenterAxis^TopNormal);
-            double adjustDown = (retPartialV^BottomNormal)/(CenterAxis^BottomNormal);
-            temp = CenterAxis;
-            temp *= (1-u)*adjustUp + u*adjustDown;
-            retPartialU -= temp;
-
-            const VectorR3& hitPos = visPoint.GetPosition();
-            double distUp = (TopPlaneCoef-(hitPos^TopNormal))/(CenterAxis^TopNormal);
-            double distDown = -(BottomPlaneCoef-(hitPos^BottomNormal))/(CenterAxis^BottomNormal);
-            retPartialV *= (distUp+distDown);
-        }
-
-        break;
-
-    case BaseFaceNum:
-        //	Base of cylinder
-        retPartialU = AxisB;
-        retPartialV = AxisA;
-        retPartialU *= 2.0*Square(RadiusB);		// Adjust to diameter instead of radius
-        retPartialV *= 2.0*Square(RadiusA);
-        if ( !IsRightCylinder() ) {
-            VectorR3 temp;
-            temp = CenterAxis;
-            temp *= (retPartialU^BottomNormal)/(CenterAxis^BottomNormal);
-            retPartialU -= temp;
-            temp = CenterAxis;
-            temp *= (retPartialV^BottomNormal)/(CenterAxis^BottomNormal);
-            retPartialV -= temp;
-        }
-        break;
-
-    case TopFaceNum:
-        // Top of cylinder
-        retPartialU = AxisB;
-        retPartialV = AxisA;
-        retPartialU *= 2.0*Square(RadiusB);		// Adjust to diameter instead of radius
-        retPartialV *= -2.0*Square(RadiusA);	// Fix sign too
-        if ( !IsRightCylinder() ) {
-            VectorR3 temp;
-            temp = CenterAxis;
-            temp *= (retPartialU^TopNormal)/(CenterAxis^TopNormal);
-            retPartialU -= temp;
-            temp = CenterAxis;
-            temp *= (retPartialV^TopNormal)/(CenterAxis^TopNormal);
-            retPartialV -= temp;
-        }
-        break;
-    }
-
-    return true;
-}

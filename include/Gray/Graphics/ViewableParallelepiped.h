@@ -50,8 +50,6 @@ public:
         double *intersectDistance, VisiblePoint& returnedPoint ) const;
     void CalcBoundingPlanes( const VectorR3& u, double *minDot, double *maxDot ) const;
     bool CalcExtentsInBox( const AABB& boundingAABB, AABB& retAABB ) const;
-    bool CalcPartials( const VisiblePoint& visPoint,
-                       VectorR3& retPartialU, VectorR3& retPartialV ) const;
 
     // The next tests are good for bounding parallelepipeds
     //  They return the distance to the hit and check against maxDistance,
@@ -127,14 +125,6 @@ public:
         RightFaceNum = 4,
         LeftFaceNum = 5,
     };
-
-    // Texture Coordinates:  (OLD - This is no longer used.)
-    //	Front face: [0,1]x[0,1]		- face number 0
-    //	Back face:  [-2,-1]x[0,1]	- face number 1
-    //	Right face: [1,2]x[0,1]		- face number 2
-    //  Left face:  [-1,0]x[0,1]	- face number 3
-    //  Top face:   [0,1]x[1,2]		- face number 4
-    //  Bottom face:[0,1]x[-1,0]	- face number 5
 
 protected:
     VectorR3 VertexA;		// Main corner vertex

@@ -47,18 +47,10 @@ bool ViewableSphere::FindIntersectionNT (
         v *= *intersectDistance;
         v += viewPos;					//  Position of intersection
         returnedPoint.SetPosition( v );
-        v -= Center;
-        v /= Radius;	// Normalize: normal out from intersection pt
-        v.ReNormalize();
-        returnedPoint.SetNormal( v );
         returnedPoint.SetMaterial (*GetMaterialOuter());
         returnedPoint.SetFrontFace();	// Front face direction
-        CalcUV( v, &(returnedPoint.GetUV()) );
-        returnedPoint.SetFaceNumber( 0 );
         return true;
-    }
-
-    else if ( (D>0.0 || D*D<BSq) && D<maxDist && BSq<Square(D-maxDist) ) {
+    } else if ( (D>0.0 || D*D<BSq) && D<maxDist && BSq<Square(D-maxDist) ) {
 
         // return the point where view exits the sphere
         *intersectDistance = D+sqrt(BSq);
@@ -66,17 +58,10 @@ bool ViewableSphere::FindIntersectionNT (
         v *= *intersectDistance;
         v += viewPos;
         returnedPoint.SetPosition( v );
-        v -= Center;
-        v /= Radius;	// Normalize, but still points outward
-        v.ReNormalize(); // Just in case
-        returnedPoint.SetNormal( v );
         returnedPoint.SetMaterial (*GetMaterialInner());
         returnedPoint.SetBackFace();
-        CalcUV( v, &(returnedPoint.GetUV()) );
         return true;
-    }
-
-    else {
+    } else {
         return false;
     }
 }
@@ -121,90 +106,11 @@ bool ViewableSphere::QuickIntersectTest(
     }
 }
 
-
-void ViewableSphere::CalcUV( const VectorR3& posVec, VectorR2* returnedUV ) const
-{
-    double z = posVec^AxisA;
-    double y = posVec^AxisC;
-    double x = posVec^AxisB;
-
-    CalcUV( x, y, z, uvProjectionType, returnedUV );
-}
-
-void ViewableSphere::CalcUV( double x, double y, double z, int uvprojectiontype,
-                             VectorR2* returnedUV )
-{
-
-    double u = atan2(x,z)*PI2inv + 0.5;
-    double v;
-
-    switch ( uvprojectiontype ) {
-
-    case 0:		// Spherical projection
-        if ( y>=1.0 ) {
-            v = 1.0;				// avoid roundoff error exceptions
-        } else if ( y<=-1.0 ) {
-            v = 0.0;				// and again
-        } else {
-            v = 1.0-acos(y)*PIinv;	// We usually do this.
-        }
-        break;
-
-    case 1:		// Cylindrical projection
-
-        v = (y+1.0)*0.5;
-
-        break;
-    }
-
-    returnedUV->Set(u, v);
-}
-
 void ViewableSphere::CalcBoundingPlanes( const VectorR3& u, double *minDot, double *maxDot ) const
 {
     double cd = (u^Center);
     *maxDot = cd+Radius;
     *minDot = cd-Radius;
-}
-
-bool ViewableSphere::CalcPartials( const VisiblePoint& visPoint,
-                                   VectorR3& retPartialU, VectorR3& retPartialV ) const
-{
-    retPartialV = visPoint.GetPosition();
-    retPartialV -= Center;
-    retPartialU = retPartialV;
-    retPartialU *= AxisC;			// Magnitude = R sin(phi).
-    retPartialU *= -2 * M_PI;			// Adjust for [0,1] domain instead of [-pi,pi]
-
-    retPartialV *= retPartialU;		// Pointing in right direction, magnitude 2 pi R^2 sin(phi)
-    // Sign and magnitude adjusted below.
-    double badMagSq = retPartialV.NormSq();
-    double h;
-
-    switch ( uvProjectionType ) {
-
-    case 0:	// Spherical projection
-        h = sqrt(badMagSq);
-        if ( h==0.0 ) {
-            retPartialV = AxisB;
-            return false;
-        }
-        retPartialV *= (M_PI*Radius/h);  // Convert to domain [0,1] instead of [-pi/2,pi/2].
-        // Compensate for sign and R^2 magnitude.
-        break;
-
-    case 1:
-        h = 2.0*(visPoint.GetV()-0.5);	// In range [-1,1]
-        h = sqrt(badMagSq*(1.0 - h*h));			// Derivative of arcsin(h) = 1/sqrt(1-h^2)
-        if ( h==0 ) {
-            retPartialV = AxisB;
-            return false;
-        }
-        retPartialV *= M_PI*Radius/h;			// Adjust sign and magnitude
-        break;
-
-    }
-    return true;
 }
 
 namespace {

@@ -72,12 +72,7 @@ bool ViewableEllipsoid::FindIntersectionNT (
     double vdotuC = v^AxisC;
     v = vdotuA*AxisA + vdotuB*AxisB + vdotuC*AxisC;
     v.Normalize();
-    returnedPoint.SetNormal( v );
 
-    // Calculate u-v coordinates
-    ViewableSphere::CalcUV( vdotuB, vdotuC, vdotuA, uvProjectionType,
-                            &returnedPoint.GetUV() );
-    returnedPoint.SetFaceNumber( 0 );
     return true;
 }
 
@@ -89,42 +84,4 @@ void ViewableEllipsoid::CalcBoundingPlanes( const VectorR3& u, double *minDot, d
                            +Square(RadiusC*RadiusC*(u^AxisC)));
     *maxDot = centerDot + deltaDot;
     *minDot = centerDot - deltaDot;
-}
-
-
-bool ViewableEllipsoid::CalcPartials( const VisiblePoint& visPoint,
-                                      VectorR3& retPartialU, VectorR3& retPartialV ) const
-{
-    double theta = 2 * M_PI*(visPoint.GetU()-0.5);	// Range [-pi,pi]
-    double phi = M_PI*(visPoint.GetV()-0.5);		// Range [-pi/2,pi/2]
-    double sinphi = sin(phi);
-    double cosphi = cos(phi);
-    double sintheta = sin(theta);
-    double costheta = cos(theta);
-    double radiusASq = Square(RadiusA);
-    double radiusBSq = Square(RadiusB);
-    retPartialV = AxisA;
-    retPartialV *= -sinphi*costheta*radiusASq;
-    VectorR3 temp = AxisB;
-    temp *= -sinphi*sintheta*radiusBSq;
-    retPartialV += temp;
-    temp = AxisC;
-    temp *= cosphi;
-    retPartialV += temp*RadiusC*RadiusC;
-
-    retPartialU = AxisA;
-    retPartialU *= -cosphi*sintheta*radiusASq;
-    temp = AxisB;
-    temp *= cosphi*costheta*radiusBSq;
-    retPartialU += temp;
-
-    if ( uvProjectionType==1 ) {	// If cylindrical projection
-        double denom = sqrt(1-Square(2.0*(visPoint.GetV()-0.5)));
-        if ( denom==0.0 ) {
-            return false;
-        }
-        retPartialV /= denom;
-    }
-
-    return (cosphi!=0.0);
 }

@@ -135,11 +135,7 @@ bool ViewableBezierSet::FindIntersectionNT (
                     }
                     bestIntersectDist = alpha;
                     bestIntersection->SetPosition(hitPosMaybe);
-                    bestIntersection->SetUV(Lerp(bp->UvMin.x,bp->UvMax.x,uVmaybe.x),
-                                            Lerp(bp->UvMin.y,bp->UvMax.y,uVmaybe.y));
-                    bestIntersection->SetFaceNumber( bp->FaceNum );
                     bp->EvalPatchNormal( uVmaybe, tempHg, &temp, &(bp->NormalC) );
-                    bestIntersection->SetNormal ( temp );
                     if ( (viewDir^temp) < 0 ) {	// if front face hit
                         bestIntersection->SetFrontFace();
                         bestIntersection->SetMaterial(*ViewableBase::GetMaterialFront());
@@ -921,62 +917,6 @@ void ViewableBezierSet::CalcBoundingPlanes( const VectorR3& u, double *minDot, d
     }
     *minDot = min;
     *maxDot = max;
-}
-
-bool ViewableBezierSet::CalcPartials( const VisiblePoint& visPoint,
-                                      VectorR3& retPartialU, VectorR3& retPartialV ) const
-{
-    const VectorR2& uv = visPoint.GetUV();
-    int patchNum = visPoint.GetFaceNumber();
-    const BezierPatch& bp = OriginalPatches[patchNum];
-    VectorR2 localUv;
-    localUv.x = (uv.x - bp.UvMin.x)/(bp.UvMax.x - bp.UvMin.x);
-    localUv.y = (uv.y - bp.UvMin.y)/(bp.UvMax.y - bp.UvMin.y);
-    bool ret = bp.CalcPartials( localUv, retPartialU, retPartialV );
-    if ( ret ) {
-        retPartialU /= (bp.UvMax.x - bp.UvMin.x);
-        retPartialV /= (bp.UvMax.y - bp.UvMin.y);
-    }
-    return ret;
-}
-
-// Takes u,v in the range [0,1] (ignores UvMin and UvMax setting.
-//   See VewableBezierSet::CalcPartials for how to do this conversion.
-bool BezierPatch::CalcPartials( const VectorR2& uv, VectorR3& retPartialU, VectorR3& retPartialV) const
-{
-    //get value
-    VectorR4 outPts[7];
-    VectorR4 midCntls[4];
-    int i;
-    for ( i=0; i<4; i++ ) {
-        DeCasteljauSplit( uv.y, &CntlPts[i][0], outPts );
-        midCntls[i] = outPts[3];
-    }
-    DeCasteljauSplit(uv.x, &midCntls[0], outPts);
-    const VectorR4 patchVal = outPts[3];
-    // Get partial w.r.t. u
-    EvalFirstDeriv3( uv.x, patchVal, &midCntls[0], &retPartialU );
-
-    // Get partial w.r.t. v
-    VectorR4 inPts[4];
-    for ( int j=0; j<4; j++ ) {
-        for ( i=0; i<4; i++ ) {
-            inPts[i] = CntlPts[i][j];
-        }
-        DeCasteljauSplit( uv.x, &inPts[0], &outPts[0] );
-        midCntls[j] = outPts[3];
-    }
-    DeCasteljauSplit( uv.y, &midCntls[0], outPts);// DEBUG
-    EvalFirstDeriv3( uv.y, patchVal, &midCntls[0], &retPartialV );
-
-    VectorR3 normal = retPartialU;
-    normal *= retPartialV;		// Cross product
-
-    if ( normal.IsZero() ) {
-        return false;
-    }
-    return true;
-
 }
 
 void BezierPatch::EvalFirstDeriv3( double u, const VectorR4& evalVal, const VectorR4 cntlPts[4],

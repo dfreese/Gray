@@ -80,7 +80,7 @@ void GammaRayTrace::TracePhoton(
                 photon.SetDetId(visPoint.GetObject().GetDetectorId());
                 MatStack.emplace(static_cast<GammaMaterial const * const>(
                             &visPoint.GetMaterial()));
-            } else if (visPoint.IsBackFacing()) {
+            } else {
                 // Check to make sure we are exiting the material we think
                 // we are currently in.
                 if (&visPoint.GetMaterial() != MatStack.top()) {
@@ -93,8 +93,6 @@ void GammaRayTrace::TracePhoton(
                 }
                 photon.SetDetId(-1);
                 MatStack.pop();
-            } else {
-                throw(runtime_error("Material has no face"));
             }
             // Make sure not to hit same place in kdtree
             photon.AddPos(photon.GetDir() * SceneDescription::ray_trace_epsilon);

@@ -184,31 +184,6 @@ bool ViewableTorus::FindIntersectionNT (
                 returnedPoint.SetFrontFace();					// Orientation
                 returnedPoint.SetMaterial(*GetMaterialOuter());	// Material
             }
-
-            // Outward normal
-            Point -= Center;			// Now its the relative point
-            double xCoord = Point^AxisA;	// forward axis
-            double yCoord = Point^AxisB;	// rightward axis
-            double zCoord = Point^AxisC;	// upward axis
-            VectorR3 outN = AxisC;
-            outN *= -zCoord;
-            outN += Point;						// Project point down to plane of torus center
-            double outNnorm = outN.Norm();
-            outN *= MajorRadius/(-outNnorm);	// Negative point projected to center path of torus
-            outN += Point;						// Displacement of point from center path of torus
-            outN /= MinorRadius;				// Should be outward unit vector
-            outN.ReNormalize();					// Fix roundoff error problems
-            returnedPoint.SetNormal(outN);		// Outward normal
-
-            // u - v coordinates
-            double u = atan2( yCoord, xCoord );
-            u = u*PI2inv+0.5;
-            double bVal = outNnorm-MajorRadius;
-            double v = atan2( zCoord, bVal );
-            v = v*PI2inv+0.5;
-            returnedPoint.SetUV(u , v);
-            returnedPoint.SetFaceNumber( 0 );
-
             return true;
         }
     }
@@ -221,34 +196,4 @@ void ViewableTorus::CalcBoundingPlanes( const VectorR3& u, double *minDot, doubl
     double deltaDot = MajorRadius*sqrt(Square(u^AxisA)+Square(u^AxisB)) + MinorRadius;
     *maxDot = centerDot + deltaDot;
     *minDot = centerDot - deltaDot;
-}
-
-
-bool ViewableTorus::CalcPartials( const VisiblePoint& visPoint,
-                                  VectorR3& retPartialU, VectorR3& retPartialV ) const
-{
-    VectorR3 temp;
-    temp = Center;
-    temp -= visPoint.GetPosition();
-    temp *= AxisC;				// Cross product
-    temp *= 2 * M_PI;				// Times 2*Pi to convert from [0,1] to [-pi,pi]
-    retPartialU = temp;
-
-    double theta = 2 * M_PI * (visPoint.GetU() - 0.5);
-    double phi = 2 * M_PI * (visPoint.GetV() - 0.5);
-    double sinphi = sin(phi);
-    double cosphi = cos(phi);
-    double sintheta = sin(theta);
-    double costheta = cos(theta);
-    double pir = M_PI * MinorRadius;
-    retPartialV = AxisA;
-    retPartialV *= -pir*sinphi*costheta;
-    temp = AxisB;
-    temp *= -pir*sinphi*sintheta;
-    retPartialV += temp;
-    temp = AxisC;
-    temp *= pir*cosphi;
-    retPartialV += temp;
-
-    return true;
 }

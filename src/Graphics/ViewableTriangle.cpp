@@ -84,7 +84,6 @@ bool ViewableTriangle::FindIntersectionNT (
     }
 
     returnedPoint.SetPosition( q );		// Set point of intersection
-    returnedPoint.SetUV( vCoord, wCoord );
 
     // Front/Back face info already set above
     if ( frontFace ) {
@@ -94,9 +93,6 @@ bool ViewableTriangle::FindIntersectionNT (
         returnedPoint.SetMaterial(*ViewableBase::GetMaterialBack());
         returnedPoint.SetBackFace();
     }
-    returnedPoint.SetNormal( Normal );
-    returnedPoint.SetFaceNumber( 0 );
-
     return true;
 }
 
@@ -150,14 +146,3 @@ bool ViewableTriangle::CalcExtentsInBox( const AABB& boundingAABB, AABB& retAABB
     return true;
 }
 
-bool ViewableTriangle::CalcPartials(
-        const VisiblePoint&,
-        VectorR3& retPartialU,
-        VectorR3& retPartialV) const
-{
-    retPartialU = VertexB;
-    retPartialU -= VertexA;
-    retPartialV = VertexC;
-    retPartialV -= VertexA;
-    return true;			// Not a singularity point (triangles should not be degenerate)
-}

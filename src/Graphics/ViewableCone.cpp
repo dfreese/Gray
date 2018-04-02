@@ -27,7 +27,6 @@ bool ViewableCone::FindIntersectionNT (
 
     double maxFrontDist = -DBL_MAX;
     double minBackDist = DBL_MAX;
-    int frontType, backType;		// 0, 1 = base, side
 
     double viewPosdotCtr = viewPos^CenterAxis;
     double udotuCtr = viewDir^CenterAxis;
@@ -43,12 +42,10 @@ bool ViewableCone::FindIntersectionNT (
             return false;		// Above (=outside) base plane, pointing away
         }
         maxFrontDist = (BasePlaneCoef-pdotnCap)/udotnCap;
-        frontType = 0;
     } else if ( pdotnCap<BasePlaneCoef ) {
         if ( udotnCap>0.0 ) {
             // Below (=inside) base plane, pointing towards the plane
             minBackDist = (BasePlaneCoef-pdotnCap)/udotnCap;
-            backType = 0;
         }
     }
 
@@ -79,13 +76,11 @@ bool ViewableCone::FindIntersectionNT (
                 return false;
             }
             minBackDist = alpha1;
-            backType = 1;
         } else if ( numRoots==2 && alpha2>maxFrontDist && pdotuCtr+alpha2*udotuCtr<=0.0 ) {
             if ( alpha2>minBackDist ) {
                 return false;
             }
             maxFrontDist = alpha2;
-            frontType = 1;
         }
     } else {
         // view line enters and then leaves
@@ -97,7 +92,6 @@ bool ViewableCone::FindIntersectionNT (
                 return false;
             }
             maxFrontDist = alpha1;
-            frontType = 1;
         }
         if ( numRoots==2 && alpha2<minBackDist ) {
             if ( pdotuCtr+alpha2*udotuCtr>0.0 ) {
@@ -107,28 +101,24 @@ bool ViewableCone::FindIntersectionNT (
                 return false;
             }
             minBackDist = alpha2;
-            backType = 1;
         }
     }
 
     // Put it all together:
 
     double alpha;
-    int hitSurface;
     if ( maxFrontDist>=0.0 ) {
         if ( maxFrontDist >= maxDistance ) {
             return false;
         }
         returnedPoint.SetFrontFace();	// Hit from outside
         alpha = maxFrontDist;
-        hitSurface = frontType;
     } else {
         if ( minBackDist<0.0 || minBackDist >= maxDistance ) {
             return false;
         }
         alpha = minBackDist;
         returnedPoint.SetBackFace();	// Hit from inside
-        hitSurface = backType;
     }
 
 
@@ -138,62 +128,10 @@ bool ViewableCone::FindIntersectionNT (
     v *= alpha;
     v += viewPos;
     returnedPoint.SetPosition( v );		// Intersection point
-
-    // Now set v equal to returned position relative to the apex
-    v -= Apex;
-    double vdotuA = v^AxisA;
-    double vdotuB = v^AxisB;
-    double vdotuCtr = v^CenterAxis;
-
-    switch ( hitSurface ) {
-
-    case 0:		// Base face
-        returnedPoint.SetNormal( BaseNormal );
-        if ( returnedPoint.IsFrontFacing() ) {
-            returnedPoint.SetMaterial(*GetMaterialOuter());
-        } else {
-            returnedPoint.SetMaterial(*GetMaterialInner());
-        }
-
-        // Calculate U-V values for texture coordinates
-        vdotuA /= vdotuCtr;		// vdotuCtr is negative
-        vdotuB /= vdotuCtr;
-        vdotuA = 0.5*(1.0-vdotuA);
-        vdotuB = 0.5*(1.0-vdotuB);
-        returnedPoint.SetUV( vdotuB, vdotuA );
-        returnedPoint.SetFaceNumber( BaseFaceNum );
-        break;
-
-    case 1:		// Cone's side
-        VectorR3 normal;
-        normal = vdotuA*AxisA;
-        normal += vdotuB*AxisB;
-        normal -= vdotuCtr*CenterAxis;
-        normal.Normalize();
-        returnedPoint.SetNormal( normal );
-        if ( returnedPoint.IsFrontFacing() ) {
-            returnedPoint.SetMaterial(*GetMaterialSideOuter());
-        } else {
-            returnedPoint.SetMaterial(*GetMaterialSideInner());
-        }
-
-        // Calculate u-v coordinates for texture mapping (in range[0,1]x[0,1])
-        double uCoord = atan2( vdotuB, vdotuA )/ (2 * M_PI) + 0.5;
-        double vCoord;
-        if ( IsRightCone() ) {
-            vCoord = (vdotuCtr+Height)/Height;
-        } else {
-            const VectorR3& hitPos=returnedPoint.GetPosition();
-            double distDown = -(BasePlaneCoef-(hitPos^BaseNormal))/(CenterAxis^BaseNormal);
-            double distUp = -vdotuCtr;
-            if ( distDown+distUp > 0.0 ) {
-                vCoord = distDown/(distDown+distUp);
-            } else {
-                vCoord = 0.5;	// At corner
-            }
-        }
-        returnedPoint.SetUV( uCoord, vCoord );
-        returnedPoint.SetFaceNumber( SideFaceNum );
+    if ( returnedPoint.IsFrontFacing() ) {
+        returnedPoint.SetMaterial(*GetMaterialOuter());
+    } else {
+        returnedPoint.SetMaterial(*GetMaterialInner());
     }
     return true;
 }
@@ -272,60 +210,4 @@ void ViewableCone::CalcBoundingPlanes( const VectorR3& u, double *minDot, double
     }
     *minDot = minD;
     *maxDot = maxD;
-}
-
-bool ViewableCone::CalcPartials( const VisiblePoint& visPoint,
-                                 VectorR3& retPartialU, VectorR3& retPartialV ) const
-{
-    VectorR3 temp;
-    double distDown, distUp;
-
-    switch( visPoint.GetFaceNumber() ) {
-
-    case BaseFaceNum:
-        temp = Apex;
-        temp -= visPoint.GetPosition();
-        distDown = (temp^CenterAxis);	// Distance down along center axis
-
-        retPartialU = AxisB;
-        retPartialU *= distDown/(SlopeB*SlopeB);
-        retPartialV = AxisA;
-        retPartialV *= distDown/(SlopeA*SlopeA);
-
-        // Above would be OK for right cones.  Now adjust for base slope
-        retPartialU *= BaseNormal;
-        retPartialU *= BaseNormal;
-        retPartialU.Negate();
-        retPartialV *= BaseNormal;
-        retPartialV *= BaseNormal;
-        retPartialV.Negate();
-        break;
-
-    case SideFaceNum:
-        double phi = 2 * M_PI*(visPoint.GetU()-0.5);	// From [0,1] to [-pi,pi]
-        double sinphi = sin(phi);
-        double cosphi = cos(phi);
-        distDown = -(retPartialV^CenterAxis);
-        retPartialU = AxisA;
-        retPartialU *= -sinphi/Square(SlopeA);
-        temp = AxisB;
-        temp *= cosphi/Square(SlopeB);
-        retPartialU += temp;
-        retPartialU *= BaseNormal;
-        retPartialU *= BaseNormal;
-        retPartialU *= -2 * M_PI;		// Adjust sign and for range [-pi,pi]
-
-        // distance again measured along central axis.
-        retPartialV = Apex;
-        retPartialV -= visPoint.GetPosition();
-        distUp = -(BasePlaneCoef-(visPoint.GetPosition()^BaseNormal))/(CenterAxis^BaseNormal);
-        if (distUp==0.0) {
-            retPartialV.SetZero();
-            return false;
-        }
-        retPartialV *= (distDown+distUp)/distUp;
-        break;
-    }
-
-    return true;
 }

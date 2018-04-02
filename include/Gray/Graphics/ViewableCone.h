@@ -32,8 +32,6 @@ public:
         const VectorR3& viewPos, const VectorR3& viewDir, double maxDistance,
         double *intersectDistance, VisiblePoint& returnedPoint ) const;
     void CalcBoundingPlanes( const VectorR3& u, double *minDot, double *maxDot ) const;
-    bool CalcPartials( const VisiblePoint& visPoint,
-                       VectorR3& retPartialU, VectorR3& retPartialV ) const;
 
     // The center axis point up out of the top of the cone.
     // SetCenterAxis(...) should be called before the other set routines, otherwise

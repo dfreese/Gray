@@ -32,8 +32,6 @@ public:
         double *intersectDistance, VisiblePoint& returnedPoint ) const;
     void CalcBoundingPlanes( const VectorR3& u, double *minDot, double *maxDot ) const;
     bool CalcExtentsInBox( const AABB& boundingAABB, AABB& retAABB ) const;
-    bool CalcPartials( const VisiblePoint& visPoint,
-                       VectorR3& retPartialU, VectorR3& retPartialV ) const;
 
     // QuickIntersectTest returns (a) if hit occurs, and (b) distance.
     //		Useful for things like bounding sphere tests
@@ -116,14 +114,6 @@ public:
     const VectorR3& GetAxisC() const
     {
         return AxisC;
-    }
-
-    void CalcUV( const VectorR3& posVec, VectorR2* returnedUV ) const;
-    static void CalcUV( double x, double y, double z, int uvtype,
-                        VectorR2* returnedUV );
-    int GetDetectorId() const
-    {
-        return -1;
     }
 
 protected:

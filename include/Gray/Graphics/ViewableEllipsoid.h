@@ -35,8 +35,6 @@ public:
         const VectorR3& viewPos, const VectorR3& viewDir, double maxDistance,
         double *intersectDistance, VisiblePoint& returnedPoint ) const;
     void CalcBoundingPlanes( const VectorR3& u, double *minDot, double *maxDot ) const;
-    bool CalcPartials( const VisiblePoint& visPoint,
-                       VectorR3& retPartialU, VectorR3& retPartialV ) const;
 
     void SetCenter( double x, double y, double z );
     void SetCenter( const double *center );
@@ -149,10 +147,6 @@ public:
     bool IsUVCylindrical() const
     {
         return (uvProjectionType==1);
-    }
-    int GetDetectorId() const
-    {
-        return -1;
     }
 
 protected:

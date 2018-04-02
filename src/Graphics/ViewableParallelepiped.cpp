@@ -168,15 +168,12 @@ bool ViewableParallelepiped::FindIntersectionNT (
     }
 
     double alpha;
-    int faceNum;
     if ( maxFrontDist>0.0 ) {
         alpha = maxFrontDist;
-        faceNum = frontFaceNum;
         returnedPoint.SetFrontFace();
         returnedPoint.SetMaterial(*ViewableBase::GetMaterialBack());
     } else if ( minBackDist>0.0 && minBackDist<maxDistance ) {
         alpha = minBackDist;
-        faceNum = backFaceNum;
         returnedPoint.SetBackFace();
         returnedPoint.SetMaterial(*ViewableBase::GetMaterialFront());
     } else {
@@ -189,90 +186,7 @@ bool ViewableParallelepiped::FindIntersectionNT (
     *intersectDistance = alpha;
     returnedPoint.SetPosition( v );
 
-    double uCoord, vCoord;
-    switch ( faceNum>>1 ) {
-
-    case 0:
-        // Front or back face (ABC)
-        uCoord = ((v^NormalACD)-BottomCoefACD)/(TopCoefACD-BottomCoefACD);
-        vCoord = ((v^NormalABD)-BottomCoefABD)/(TopCoefABD-BottomCoefABD);
-        v = NormalABC;
-        if ( faceNum&0x01 ) {
-            uCoord = 1.0-uCoord;
-            v.Negate();
-        }
-        break;
-
-    case 1:
-        // Top or bottom face (ABD)
-        uCoord = ((v^NormalACD)-BottomCoefACD)/(TopCoefACD-BottomCoefACD);
-        vCoord = (TopCoefABC-(v^NormalABC))/(TopCoefABC-BottomCoefABC);
-        v = NormalABD;
-        if ( faceNum&0x01 ) {
-            vCoord = 1.0-vCoord;
-            v.Negate();
-        }
-        break;
-
-    case 2:
-        // Left or right face (ACD)
-        uCoord = (TopCoefABC-(v^NormalABC))/(TopCoefABC-BottomCoefABC);
-        vCoord =  ((v^NormalABD)-BottomCoefABD)/(TopCoefABD-BottomCoefABD);
-        v = NormalACD;
-        if ( faceNum&0x01 ) {
-            uCoord = 1.0-uCoord;
-            v.Negate();
-        }
-        break;
-    }
-    returnedPoint.SetUV(uCoord,vCoord);
-    returnedPoint.SetFaceNumber( faceNum );
-    returnedPoint.SetNormal( v );
-
     return true;
-}
-
-bool ViewableParallelepiped::CalcPartials( const VisiblePoint& visPoint,
-        VectorR3& retPartialU, VectorR3& retPartialV ) const
-{
-    int faceNum = visPoint.GetFaceNumber();
-    switch ( faceNum>>1 ) {
-    case 0:
-        // Front or back face (ABC)
-        retPartialU = VertexB;
-        retPartialU -= VertexA;
-        retPartialV = VertexC;
-        retPartialV -= VertexA;
-        if ( faceNum&0x01 ) {
-            retPartialU.Negate();
-        }
-        break;
-    case 1:
-        // Top or bottom face
-        retPartialU = VertexB;
-        retPartialU -= VertexA;
-        retPartialV = VertexD;
-        retPartialV -= VertexA;
-        if ( faceNum&0x01 ) {
-            retPartialV.Negate();
-        }
-        break;
-    case 2:
-        // Left or right face (ABD)
-        retPartialU = VertexD;
-        retPartialU -= VertexA;
-        retPartialV = VertexC;
-        retPartialV -= VertexA;
-        if ( faceNum&0x01 ) {
-            retPartialU.Negate();
-        }
-        break;
-    }
-    if ( faceNum & 0x01 ) {
-        retPartialU.Negate();
-    }
-
-    return true;			// Not a singularity point (parallelpipeds should not be degenerate)
 }
 
 void ViewableParallelepiped::CalcBoundingPlanes( const VectorR3& u,

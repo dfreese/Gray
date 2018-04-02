@@ -59,18 +59,6 @@ public:
     // Calculate the extent intersected with a bounding box
     virtual bool CalcExtentsInBox( const AABB& aabb, AABB& retAABB ) const;
 
-    // CalcPartials:
-    //   Returns partial derivatives with respect to u and v.
-    //   Letting p(u,v) be the point on the surface with coord's u,v;
-    //   CalcPartials returns (partial p)/(partial u) and (partial p)/(partial v).
-    //		in the vectors retPartialU and retPartialV.
-    //	 If at a singularity (so either partial is zero or infinity, then the boolean
-    //		return value is FALSE.  Otherwise the boolean return value is TRUE to indicate
-    //		that the returned partial derivative information is valid.
-    // Needed only for bump mapping at present.
-    virtual bool CalcPartials( const VisiblePoint& visPoint,
-                               VectorR3& retPartialU, VectorR3& retPartialV ) const = 0;
-
     int GetDetectorId() const
     {
         return detector_id;

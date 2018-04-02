@@ -51,8 +51,6 @@ public:
         double *intersectDistance, VisiblePoint& returnedPoint ) const;
     void CalcBoundingPlanes( const VectorR3& u, double *minDot, double *maxDot ) const;
     bool CalcExtentsInBox( const AABB& boundingAABB, AABB& retAABB ) const;
-    bool CalcPartials( const VisiblePoint& visPoint,
-                       VectorR3& retPartialU, VectorR3& retPartialV ) const;
 
     const VectorR3& GetVertexA() const
     {

@@ -82,27 +82,6 @@ bool ViewableParallelogram::FindIntersectionNT (
     // Front/Back face info already set above
     returnedPoint.SetPosition( v );
     returnedPoint.SetMaterial( (mdotn<=0) ? *FrontMat : *BackMat );
-    returnedPoint.SetNormal( Normal );
-
-    // Compute the u-v coordinates
-    double uCoord = (dotBCnormal-CoefBC)/(CoefDA-CoefBC);
-    double vCoord = (dotABnormal-CoefAB)/(CoefCD-CoefAB);
-    returnedPoint.SetUV(uCoord, vCoord);
-    returnedPoint.SetFaceNumber( 0 );
-
-    return true;
-}
-
-bool ViewableParallelogram::CalcPartials(
-        const VisiblePoint&,
-        VectorR3& retPartialU,
-        VectorR3& retPartialV ) const
-{
-    retPartialU = VertexB;
-    retPartialU -= VertexA;
-    retPartialV = VertexD;
-    retPartialV -= VertexA;
-    // Not a singularity point (parallelograms should not be degenerate)
     return true;
 }
 
