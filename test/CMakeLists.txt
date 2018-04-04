@@ -1,6 +1,8 @@
 
 # Download and unpack googletest at configure time
-configure_file(${CMAKE_SOURCE_DIR}/cmake/gtest_cmake.in googletest-download/CMakeLists.txt)
+configure_file(
+    ../cmake/gtest_cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/googletest-download/CMakeLists.txt)
 execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
   RESULT_VARIABLE result
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
@@ -20,8 +22,10 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
 # Add googletest directly to our build. This defines
 # the gtest and gtest_main targets.
-add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
-                 ${CMAKE_BINARY_DIR}/googletest-build)
+add_subdirectory(
+    ${CMAKE_CURRENT_BINARY_DIR}/googletest-src
+    ${CMAKE_CURRENT_BINARY_DIR}/googletest-build
+    )
 
 add_executable(test_gray
     test_main.cpp
