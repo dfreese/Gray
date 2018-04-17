@@ -18,8 +18,6 @@
 // Commonly used constants
 //
 
-const double DBL_NAN = sqrt(-1.0);	// Kludgy - ought to be an IEEE standard for this constant
-
 const double PI = 3.1415926535897932384626433832795028841972;
 const double PI2 = 2.0*PI;
 const double PI4 = 4.0*PI;

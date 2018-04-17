@@ -11,6 +11,7 @@
 #include "Gray/KdTree/KdTree.h"
 #include <cstdio>
 #include <cassert>
+#include <exception>
 #include <functional>
 #include <array>
 #include <sstream>
@@ -93,6 +94,9 @@ long KdTree::Traverse(const VectorR3& startPos, const VectorR3& dir,
                     thisDir = dir.z;
                     thisDirInv = dirInv.z;
                     thisStartPt = startPos.z;
+                    break;
+                default:
+                    throw std::runtime_error("Invalid split type");
                     break;
             }
             long nearNodeIdx;

@@ -259,7 +259,9 @@ double NewtonSolve_POLYRC( int degree, double* coefs, double startpos, double st
     double lastEst = startpos;
     double lastVal = startval;
     double scale = 1.0;
-    int lastSign;
+    // Sign(x) can only be -1, 0, or 1, so initalize it so it can start
+    // as equal to curSign.
+    int lastSign = -2;
 
     int i = 0;
     bool closeFlag = false;
@@ -391,7 +393,10 @@ int PolySolveRealAll( int degree, double* coefsarray, double* rootsarray)
         } else if ( lastSign!=curSign ) {
             double minRoot = last1Root;
             int cur2Sign = lastSign;		// Start with sign at curVal
-            double cur2Val, last2Val;
+            // compilers miss the logic that forces this to be used
+            // initialized.  make sure they don't complain.
+            double cur2Val = -1;
+            double last2Val = -1;
             bool last2ValValid = false;
             while ( (*p2Ptr)<(*p1Ptr) ) {
                 assert(*p2Ptr != DBL_MAX );
