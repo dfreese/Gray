@@ -3,6 +3,7 @@
 #include "Gray/Gray/GammaRayTrace.h"
 #include "Gray/Gray/GammaRayTraceStats.h"
 #include "Gray/Daq/DaqModel.h"
+#include "Gray/Random/Random.h"
 #include "Gray/Sources/SourceList.h"
 #include "Gray/Graphics/SceneDescription.h"
 #include <cstdio>
@@ -28,6 +29,7 @@ Simulation::Simulation(
 {
     if (no_threads > 1) {
         this->sources.AdjustTimeForSplit(thread_idx, no_threads);
+        Random::SetSeed(Random::GetSeed() + thread_idx);
     }
     this->sources.InitSources();
 

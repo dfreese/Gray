@@ -155,7 +155,13 @@ int main(int argc, char ** argv) {
         cout << "Warning: No output specified." << endl;
     }
 
-    Random::SetSeed(config.get_seed());
+    // We add an offset proportional to the rank within the world to make sure
+    // that each node would run a different simulation, assuming this was begin
+    // run on a cluster with each node receving a unique -r/--rank id.  We also
+    // take into account how many threads each simulation will run and leave
+    // space for each of the threads to index from there in the same manner.
+    Random::SetSeed(config.get_seed() +
+            (config.get_rank() * config.get_no_threads()));
     cout << "Using Seed: " << Random::GetSeed() << endl;
 
     int no_threads = config.get_no_threads();

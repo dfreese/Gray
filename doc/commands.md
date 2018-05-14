@@ -177,7 +177,11 @@ seed [unsigned int (0 to 4294967295)]
 Sets the seed for the random number generator for the simulation.  If a seed is
 not set, then the unix time in seconds is used.  Useful for repeating a
 simulation with the exact same output.  A mt19937 generator from the c++
-standard library is used.
+standard library is used.  For simulations using the rank/world feature or the
+multithreading feature, the thread is incremented by
+```
+(rank * number of threads) + thread index
+```
 
 ### disable_half_life
 ```
