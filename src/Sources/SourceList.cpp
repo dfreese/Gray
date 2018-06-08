@@ -10,7 +10,7 @@
 
 #include "Gray/Sources/SourceList.h"
 #include "Gray/Random/Random.h"
-#include "Gray/Physics/Beam.h"
+#include "Gray/Physics/GaussianBeam.h"
 #include "Gray/Physics/Positron.h"
 #include "Gray/Sources/PointSource.h"
 #include "Gray/Sources/VectorSource.h"
@@ -168,7 +168,7 @@ bool SourceList::CreateBeamIsotope(const std::string& iso,
         return (false);
     }
     current_matrix.Transform3x3(&axis);
-    AddIsotope(iso, std::unique_ptr<Isotope>(new Beam(axis, angle, energy)));
+    AddIsotope(iso, std::unique_ptr<Isotope>(new GaussianBeam(axis, angle, energy)));
     return (true);
 }
 

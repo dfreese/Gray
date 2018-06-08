@@ -51,6 +51,7 @@ add_library(gammaray
     Physics/Beam.cpp
     Physics/Compton.cpp
     Physics/GammaStats.cpp
+    Physics/GaussianBeam.cpp
     Physics/Interaction.cpp
     Physics/Isotope.cpp
     Physics/KleinNishina.cpp
