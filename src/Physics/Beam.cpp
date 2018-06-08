@@ -21,10 +21,10 @@ Beam::Beam() :
 {
 }
 
-Beam::Beam(const VectorR3 & axis, double angle_deg_fwhm, double energy) :
+Beam::Beam(const VectorR3 & axis, double angle_max_deg, double energy) :
     Isotope(std::numeric_limits<double>::infinity()),
     beam_axis(axis),
-    beam_angle((angle_deg_fwhm/180.0) * M_PI/2.35482005),
+    beam_angle_max((angle_max_deg / 180.0) * M_PI),
     beam_energy(energy)
 {
 
@@ -41,8 +41,8 @@ NuclearDecay Beam::Decay(int photon_number, double time, int src_id,
 
     VectorR3 dir;
     // Only randomly generate an angle if there's a non zero angle.
-    if (beam_angle) {
-        dir = Random::Acolinearity(beam_axis, beam_angle);
+    if (beam_angle_max) {
+        dir = Random::DeflectionUniform(beam_axis, beam_angle_max);
     } else {
         dir = beam_axis;
     }
@@ -55,4 +55,10 @@ NuclearDecay Beam::Decay(int photon_number, double time, int src_id,
 
 double Beam::ExpectedNoPhotons() const {
     return(2.0);
+}
+
+bool Beam::operator==(const Beam& rhs) const {
+    return (beam_axis == rhs.beam_axis) &&
+        (beam_angle_max == rhs.beam_angle_max) &&
+        (beam_energy == rhs.beam_energy);
 }

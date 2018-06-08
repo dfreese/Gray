@@ -10,6 +10,7 @@
 
 #include "Gray/Sources/SourceList.h"
 #include "Gray/Random/Random.h"
+#include "Gray/Physics/Beam.h"
 #include "Gray/Physics/GaussianBeam.h"
 #include "Gray/Physics/Positron.h"
 #include "Gray/Sources/PointSource.h"
@@ -145,6 +146,33 @@ bool SourceList::InsideNegative(const VectorR3 & pos) const {
     return false;
 }
 
+bool SourceList::CreateGaussianBeamIsotope(const std::string& iso,
+        const RigidMapR3& current_matrix) {
+    stringstream ss(iso);
+    std::string beam_str;
+    VectorR3 axis;
+    double angle;
+    double energy;
+
+    ss >> beam_str;
+    ss >> axis.x;
+    ss >> axis.y;
+    ss >> axis.z;
+    ss >> angle;
+    ss >> energy;
+    if (beam_str != "gauss_beam") {
+        return (false);
+    }
+    if (ss.fail()) {
+        std::cerr << "Invalid beam. \"" << iso << "\"\n"
+                  << "format: \"gauss_beam [axis] [angle] [energy]\"\n";
+        return (false);
+    }
+    current_matrix.Transform3x3(&axis);
+    AddIsotope(iso, std::unique_ptr<Isotope>(new GaussianBeam(axis, angle, energy)));
+    return (true);
+}
+
 bool SourceList::CreateBeamIsotope(const std::string& iso,
                                    const RigidMapR3& current_matrix) {
     stringstream ss(iso);
@@ -168,7 +196,7 @@ bool SourceList::CreateBeamIsotope(const std::string& iso,
         return (false);
     }
     current_matrix.Transform3x3(&axis);
-    AddIsotope(iso, std::unique_ptr<Isotope>(new GaussianBeam(axis, angle, energy)));
+    AddIsotope(iso, std::unique_ptr<Isotope>(new Beam(axis, angle, energy)));
     return (true);
 }
 
@@ -179,6 +207,9 @@ bool SourceList::SetCurIsotope(const std::string& iso,
         current_isotope = iso;
         return(true);
     } else if (CreateBeamIsotope(iso, current_matrix)) {
+        current_isotope = iso;
+        return (true);
+    } else if (CreateGaussianBeamIsotope(iso, current_matrix)) {
         current_isotope = iso;
         return (true);
     } else {

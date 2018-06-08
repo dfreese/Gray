@@ -353,13 +353,24 @@ Sets the current isotope to the given name.  This must match, exactly, the name
 given to the isotope in the isotopes file.
 
 ```
-isotope beam [direction xyz] [angle width (deg fwhm)] [energy] [activity]
+isotope beam [direction xyz] [max angle (deg)] [energy] [activity]
 ```
 Creates a monoenergetic source with a given direction.  The angle should be
 non-negative.  If it is greater than zero, an angle offset from the direction
 axis will randomly be selected, along with a random azimuthal coordinate around
 the axis.  This is typically paired with pt_src.  Gamma rays are emitted in
-both direction and (-direction).
+both direction and (-direction).  The polar angle is uniformly sampled between
+0 and the max angle given.
+
+```
+isotope gauss_beam [direction xyz] [angle width (deg fwhm)] [energy] [activity]
+```
+Creates a monoenergetic source with a given direction.  The angle should be
+non-negative.  If it is greater than zero, an angle offset from the direction
+axis will randomly be selected, along with a random azimuthal coordinate around
+the axis.  This is typically paired with pt_src.  Gamma rays are emitted in
+both direction and (-direction).  The polar angle is sampled from a gaussian
+distribution with the specified FWHM.
 
 ### cyl_src
 ```

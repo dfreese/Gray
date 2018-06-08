@@ -11,6 +11,8 @@
 #include "gtest/gtest.h"
 #include <limits>
 #include <memory>
+#include "Gray/Physics/Beam.h"
+#include "Gray/Physics/GaussianBeam.h"
 #include "Gray/Physics/Positron.h"
 #include "Gray/Sources/SourceList.h"
 #include "Gray/Sources/SphereSource.h"
@@ -262,4 +264,41 @@ TEST(SourceList, LoadIsotopes) {
     Positron exp_f18(0.57, 6584.04, 0.9686, 0.0);
     exp_f18.SetPositronRange(0.519, 27.9, 2.91, 3.0);
     EXPECT_EQ(val_f18, exp_f18);
+}
+
+TEST(SourceList, ParseBeamIsotope) {
+    SourceList sources;
+    ASSERT_TRUE(sources.SetCurIsotope("beam 0.0 0.0 1.0 3.0 0.511",
+                RigidMapR3::Identity()));
+
+    const double act = 1.0;
+    const double act_uCi = act / Physics::decays_per_microcurie;
+    sources.AddSource(std::unique_ptr<Source>(
+                new SphereSource({0, 0, 0}, 1.0, act_uCi)));
+
+
+    const Beam* beam = dynamic_cast<const Beam*>(
+            &sources.GetSource(0)->GetIsotope());
+    ASSERT_NE(beam, nullptr);
+
+    Beam cmp({0.0, 0.0, 1.0}, 3.0, 0.511);
+    EXPECT_EQ(cmp, *beam);
+}
+
+TEST(SourceList, ParseGaussianBeamIsotope) {
+    SourceList sources;
+    ASSERT_TRUE(sources.SetCurIsotope("gauss_beam 0.0 0.0 1.0 3.0 0.511",
+                RigidMapR3::Identity()));
+
+    const double act = 1.0;
+    const double act_uCi = act / Physics::decays_per_microcurie;
+    sources.AddSource(std::unique_ptr<Source>(
+                new SphereSource({0, 0, 0}, 1.0, act_uCi)));
+
+    const GaussianBeam* beam = dynamic_cast<const GaussianBeam*>(
+            &sources.GetSource(0)->GetIsotope());
+    ASSERT_NE(beam, nullptr);
+
+    GaussianBeam cmp({0.0, 0.0, 1.0}, 3.0, 0.511);
+    EXPECT_EQ(cmp, *beam);
 }

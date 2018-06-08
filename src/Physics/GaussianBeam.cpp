@@ -57,3 +57,9 @@ NuclearDecay GaussianBeam::Decay(int photon_number, double time, int src_id,
 double GaussianBeam::ExpectedNoPhotons() const {
     return(2.0);
 }
+
+bool GaussianBeam::operator==(const GaussianBeam& rhs) const {
+    return (beam_axis == rhs.beam_axis) &&
+        (beam_angle == rhs.beam_angle) &&
+        (beam_energy == rhs.beam_energy);
+}

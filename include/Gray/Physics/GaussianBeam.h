@@ -24,6 +24,7 @@ public:
     NuclearDecay Decay(int photon_number, double time, int src_id,
                        const VectorR3 & position) const override;
     double ExpectedNoPhotons() const override;
+    bool operator==(const GaussianBeam&) const;
 
 private:
     VectorR3 beam_axis;

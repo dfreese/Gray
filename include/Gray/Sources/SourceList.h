@@ -59,6 +59,8 @@ public:
             Json::Value isotope, bool simulate_isotope_half_life);
     bool LoadIsotopes(std::istream& input);
 private:
+    bool CreateGaussianBeamIsotope(const std::string & iso,
+            const RigidMapR3& current_matrix);
     bool CreateBeamIsotope(const std::string & iso,
                            const RigidMapR3& current_matrix);
     bool InsideNegative(const VectorR3 & pos) const;
