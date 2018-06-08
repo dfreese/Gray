@@ -8,8 +8,8 @@
  *
  */
 
-#ifndef BEAM_H
-#define BEAM_H
+#ifndef GAUSSIANBEAM_H
+#define GAUSSIANBEAM_H
 
 #include "Gray/Physics/Isotope.h"
 
@@ -31,4 +31,4 @@ private:
     double beam_energy;
 };
 
-#endif /* BEAM_H */
+#endif /* GAUSSIANBEAM_H */
